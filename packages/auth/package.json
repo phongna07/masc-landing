@@ -1,0 +1,24 @@
+{
+  "name": "@masc-landing/auth",
+  "type": "module",
+  "exports": {
+    ".": {
+      "default": "./src/index.ts"
+    },
+    "./*": {
+      "default": "./src/*.ts"
+    }
+  },
+  "scripts": {},
+  "dependencies": {
+    "@masc-landing/db": "workspace:*",
+    "@masc-landing/env": "workspace:*",
+    "better-auth": "catalog:",
+    "dotenv": "catalog:",
+    "zod": "catalog:"
+  },
+  "devDependencies": {
+    "@masc-landing/config": "workspace:*",
+    "typescript": "catalog:"
+  }
+}

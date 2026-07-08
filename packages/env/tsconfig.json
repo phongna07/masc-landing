@@ -1,0 +1,3 @@
+{
+  "extends": "@masc-landing/config/tsconfig.base.json"
+}

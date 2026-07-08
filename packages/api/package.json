@@ -1,0 +1,27 @@
+{
+  "name": "@masc-landing/api",
+  "type": "module",
+  "exports": {
+    ".": {
+      "default": "./src/index.ts"
+    },
+    "./*": {
+      "default": "./src/*.ts"
+    }
+  },
+  "scripts": {},
+  "dependencies": {
+    "@masc-landing/auth": "workspace:*",
+    "@masc-landing/db": "workspace:*",
+    "@masc-landing/env": "workspace:*",
+    "@trpc/client": "catalog:",
+    "@trpc/server": "catalog:",
+    "dotenv": "catalog:",
+    "next": "catalog:",
+    "zod": "catalog:"
+  },
+  "devDependencies": {
+    "@masc-landing/config": "workspace:*",
+    "typescript": "catalog:"
+  }
+}
