@@ -1,23 +1,24 @@
-import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import type { Metadata, Viewport } from "next";
+import localFont from "next/font/local";
 
 import "../index.css";
-import Header from "@/components/header";
 import Providers from "@/components/providers";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+const castela = localFont({
+  src: "../assets/BHNCastelaMolgateRegular.woff2",
+  variable: "--font-castela",
+  display: "swap",
+  weight: "400",
 });
 
 export const metadata: Metadata = {
-  title: "masc-landing",
-  description: "masc-landing",
+  title: "MASC 2026 — SUPERNOVA",
+  description:
+    "Marketing All-Star Challenge 2026: SUPERNOVA — Vietnam's arena for the next generation of marketing talent.",
+};
+
+export const viewport: Viewport = {
+  themeColor: "#07070a",
 };
 
 export default function RootLayout({
@@ -26,14 +27,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        <Providers>
-          <div className="grid grid-rows-[auto_1fr] h-svh">
-            <Header />
-            {children}
-          </div>
-        </Providers>
+    <html lang="en">
+      <body className={castela.variable}>
+        <Providers>{children}</Providers>
       </body>
     </html>
   );
