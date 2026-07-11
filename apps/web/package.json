@@ -13,7 +13,6 @@
     "@masc-landing/env": "workspace:*",
     "@masc-landing/ui": "workspace:*",
     "@swc/helpers": "^0.5.23",
-    "@tanstack/react-form": "^1.33.0",
     "@tanstack/react-query": "^5.101.2",
     "@trpc/client": "catalog:",
     "@trpc/server": "catalog:",

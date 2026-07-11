@@ -188,28 +188,10 @@
     }
   },
   "Auth": {
-    "email": "Email",
-    "password": "Mật khẩu",
-    "name": "Họ và tên",
-    "or": "hoặc",
-    "submitting": "Đang gửi...",
-    "invalidEmail": "Địa chỉ email không hợp lệ",
-    "passwordLength": "Mật khẩu phải có ít nhất 8 ký tự",
-    "nameLength": "Họ và tên phải có ít nhất 2 ký tự",
+    "title": "Tiếp tục đến MASC",
+    "description": "Sử dụng tài khoản Google để đăng nhập hoặc tạo tài khoản.",
     "google": {
       "button": "Tiếp tục với Google"
-    },
-    "signIn": {
-      "title": "Chào mừng bạn trở lại",
-      "button": "Đăng nhập",
-      "switch": "Chưa có tài khoản? Đăng ký",
-      "success": "Đăng nhập thành công"
-    },
-    "signUp": {
-      "title": "Tạo tài khoản",
-      "button": "Đăng ký",
-      "switch": "Đã có tài khoản? Đăng nhập",
-      "success": "Đăng ký thành công"
     }
   },
   "Dashboard": {

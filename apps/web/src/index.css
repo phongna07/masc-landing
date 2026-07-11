@@ -94,10 +94,7 @@ img {
 }
 
 .auth-header-status,
-.auth-panel-index,
-.auth-field label,
-.auth-submit,
-.auth-switch-button {
+.auth-panel-index {
   font-size: 10px;
   font-weight: 700;
   letter-spacing: 0.16em;
@@ -141,8 +138,7 @@ img {
 }
 
 .auth-panel-heading {
-  padding-bottom: 0px;
-  /* border-bottom: 1px solid var(--line); */
+  padding-bottom: 0;
 }
 
 .auth-panel h1 {
@@ -154,88 +150,18 @@ img {
   letter-spacing: -0.035em;
 }
 
-.auth-form {
-  display: grid;
-  gap: 22px;
-  margin-top: 32px;
-}
-
-.auth-field {
-  display: grid;
-  gap: 10px;
-}
-
-.auth-field label {
+.auth-panel-heading p {
+  max-width: 34ch;
+  margin: 20px 0 0;
   color: rgba(255, 255, 255, 0.62);
-}
-
-.auth-input {
-  height: 48px;
-  border-color: rgba(255, 255, 255, 0.18);
-  border-radius: 0;
-  color: var(--ink);
-  background: rgba(255, 255, 255, 0.045);
   font-size: 14px;
-  letter-spacing: 0.01em;
-}
-
-.auth-input:hover {
-  border-color: rgba(255, 255, 255, 0.32);
-}
-
-.auth-input:focus-visible {
-  border-color: #d9b774;
-  box-shadow: inset 3px 0 #d9b774;
-}
-
-.auth-field-error {
-  margin: 0;
-  color: #ffad79;
-  font-size: 12px;
-}
-
-.auth-submit {
-  width: 100%;
-  height: 52px;
-  justify-content: space-between;
-  margin-top: 8px;
-  padding: 0 18px;
-  border: 0;
-  border-radius: 999px;
-  color: #09090c;
-  background: var(--ink);
-}
-
-.auth-submit:hover:not(:disabled) {
-  color: #09090c;
-  background: #fff;
-  box-shadow: 0 10px 32px rgba(255, 255, 255, 0.15);
-  transform: translateY(-2px);
+  line-height: 1.6;
 }
 
 .auth-social {
   display: grid;
   gap: 18px;
   margin-top: 26px;
-}
-
-.auth-social-divider {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  color: rgba(255, 255, 255, 0.42);
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-}
-
-.auth-social-divider::before,
-.auth-social-divider::after {
-  flex: 1;
-  height: 1px;
-  content: "";
-  background: var(--line);
 }
 
 .google-sign-in-button {
@@ -263,27 +189,6 @@ img {
   width: 18px;
   height: 18px;
   flex: none;
-}
-
-.auth-switch {
-  display: flex;
-  justify-content: center;
-  margin-top: 26px;
-  padding-top: 24px;
-  border-top: 1px solid var(--line);
-}
-
-.auth-switch-button {
-  height: auto;
-  padding: 0;
-  color: rgba(255, 255, 255, 0.62);
-  text-decoration: none;
-}
-
-.auth-switch-button:hover,
-.auth-switch-button:focus-visible {
-  color: #f2d584;
-  text-decoration: none;
 }
 
 .auth-orbit {

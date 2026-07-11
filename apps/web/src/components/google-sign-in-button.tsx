@@ -61,7 +61,15 @@ export default function GoogleSignInButton() {
   }, [isPending]);
 
   const signInWithGoogle = async () => {
-    const popup = window.open("", "google-sign-in", "popup,width=500,height=600");
+    const width = 500;
+    const height = 600;
+    const left = window.screenX + (window.outerWidth - width) / 2;
+    const top = window.screenY + (window.outerHeight - height) / 2;
+    const popup = window.open(
+      "",
+      "google-sign-in",
+      `popup,width=${width},height=${height},left=${Math.round(left)},top=${Math.round(top)}`,
+    );
 
     if (!popup) {
       toast.error("Please allow popups to continue with Google.");

@@ -188,28 +188,10 @@
     }
   },
   "Auth": {
-    "email": "Email",
-    "password": "Password",
-    "name": "Name",
-    "or": "or",
-    "submitting": "Submitting...",
-    "invalidEmail": "Invalid email address",
-    "passwordLength": "Password must be at least 8 characters",
-    "nameLength": "Name must be at least 2 characters",
+    "title": "Continue to MASC",
+    "description": "Use your Google account to sign in or create an account.",
     "google": {
-      "button": "Login with Google"
-    },
-    "signIn": {
-      "title": "Welcome Back",
-      "button": "Sign In",
-      "switch": "Need an account? Sign Up",
-      "success": "Sign in successful"
-    },
-    "signUp": {
-      "title": "Create Account",
-      "button": "Sign Up",
-      "switch": "Already have an account? Sign In",
-      "success": "Sign up successful"
+      "button": "Continue with Google"
     }
   },
   "Dashboard": {
