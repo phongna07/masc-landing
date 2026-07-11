@@ -9,6 +9,10 @@ import image1 from "@/assets/image-1.png";
 import image2 from "@/assets/image-2.png";
 import image3 from "@/assets/image-3.png";
 import image4 from "@/assets/image-4.png";
+import mentor1 from "@/assets/mentor-1.png";
+import mentor2 from "@/assets/mentor-2.png";
+import mentor3 from "@/assets/mentor-3.png";
+import mentor4 from "@/assets/mentor-4.png";
 
 const registrationLink =
   "mailto:masc26.info@gmail.com?subject=MASC%202026%20Registration";
@@ -57,15 +61,42 @@ const rounds = [
   },
 ] as const;
 
-const partners: Array<{
+const mentors: Array<{
   name: string;
-  type: string;
   image: StaticImageData;
+  description: readonly string[];
 }> = [
-    { name: "Canifa", type: "Featured brand", image: image2 },
-    { name: "Nestlé", type: "Industry partner", image: image3 },
-    { name: "Kantar", type: "Research expertise", image: image4 },
-    { name: "Unilever", type: "Industry partner", image: image1 },
+    {
+      name: "Ms. Ngọc Nguyễn",
+      image: mentor1,
+      description: [
+        "Head of Brand Marketing Department tại Canifa",
+        "Dẫn dắt thành công chiến dịch “Say It Now” và “Yêu Nước Từ Trong Nôi” tại Canifa với hơn 15 năm kinh nghiệm",
+        "Giám khảo cuộc thi Z Marketer Mùa 5 và Hackathon mùa 6",
+      ],
+    },
+    {
+      name: "Mr. Duy Nguyễn",
+      image: mentor2,
+      description: [
+        "Brand Business Development Manager tại Nestlé",
+        "Former Senior Brand Manager",
+      ],
+    },
+    {
+      name: "Mr. Panos Dimitropoulos",
+      image: mentor3,
+      description: ["Founder Two Words Agency", "Ex-Senior Director tại Kantar"],
+    },
+    {
+      name: "Ms. Trang Hoàng",
+      image: mentor4,
+      description: [
+        "Co-Founder InnoSight Academy",
+        "Co-Founder Podcast Insight2Innovation",
+        "Mentor tại Unilever & Nestlé Vietnam’s Management Trainee",
+      ],
+    },
   ];
 
 export default function Home() {
@@ -121,7 +152,7 @@ export default function Home() {
         });
 
         gsap.fromTo(
-          ".portal img",
+          ".organizer-image",
           { yPercent: -10, scale: 1.12 },
           {
             yPercent: 10,
@@ -323,7 +354,8 @@ export default function Home() {
             <div className="portal parallax-frame">
               <Image
                 src={image2}
-                alt="A luminous figure moving through a colorful field of light"
+                alt="Organizer"
+                className="organizer-image"
                 fill
                 sizes="(max-width: 680px) 100vw, 1360px"
                 placeholder="blur"
@@ -477,30 +509,37 @@ export default function Home() {
         <section className="partners" id="mentors-sponsors" aria-labelledby="partners-title">
           <div className="page-shell partners-heading reveal">
             <div>
-              <p className="section-index">06 / Mentors &amp; sponsors</p>
+              <p className="section-index">06 / Mentors</p>
               <h2 id="partners-title">Guided by people who shape the <em>market.</em></h2>
             </div>
             <p>
-              Meet academic partners and experts connected to leading brands,
-              including Canifa, Nestlé, Kantar, and Unilever.
+              Meet the industry leaders bringing brand, research, and innovation
+              expertise directly to this year&apos;s competitors.
             </p>
           </div>
-          <div className="partner-rail" aria-label="Featured mentors and sponsors">
-            {partners.map((partner, index) => (
-              <a className="partner-card" href="#contact" key={partner.name}>
-                <Image src={partner.image} alt="" fill sizes="420px" placeholder="blur" />
-                <span className="partner-shade" />
-                <span className="partner-index">0{index + 1}</span>
-                <span className="partner-copy">
-                  <small>{partner.type}</small>
-                  <strong>{partner.name}</strong>
-                </span>
-                <span className="partner-arrow" aria-hidden="true">↗</span>
-              </a>
+          <div className="page-shell mentor-grid" aria-label="Featured mentors">
+            {mentors.map((mentor, index) => (
+              <article className="mentor-card reveal" key={mentor.name}>
+                <span className="mentor-index">0{index + 1}</span>
+                <div className="mentor-portrait">
+                  <Image
+                    src={mentor.image}
+                    alt={`Portrait of ${mentor.name}`}
+                    fill
+                    sizes="(max-width: 720px) 72vw, (max-width: 1100px) 36vw, 260px"
+                    placeholder="blur"
+                  />
+                </div>
+                <div className="mentor-copy">
+                  <h3>{mentor.name}</h3>
+                  <ul>
+                    {mentor.description.map((item) => (
+                      <li key={item}>{item}</li>
+                    ))}
+                  </ul>
+                </div>
+              </article>
             ))}
-          </div>
-          <div className="page-shell rail-note reveal">
-            <span>←</span> Scroll to explore the lineup <span>→</span>
           </div>
         </section>
 
