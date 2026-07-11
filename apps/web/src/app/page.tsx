@@ -2,8 +2,8 @@
 
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import Image from "next/image";
-import { useEffect, useRef } from "react";
+import Image, { type StaticImageData } from "next/image";
+import { useEffect, useRef, useState } from "react";
 
 import image1 from "@/assets/image-1.png";
 import image2 from "@/assets/image-2.png";
@@ -12,6 +12,61 @@ import image4 from "@/assets/image-4.png";
 
 const registrationLink =
   "mailto:masc26.info@gmail.com?subject=MASC%202026%20Registration";
+
+const rounds = [
+  {
+    marker: "0.5",
+    date: "August 10—27",
+    title: "The First Light",
+    summary: "An open door for incomplete teams and industry newcomers.",
+    detail:
+      "Build your team, prove your potential, and compete for one of two direct passes to Round 2.",
+  },
+  {
+    marker: "01",
+    date: "September 9—17",
+    title: "The Star Gathering",
+    summary: "Choose the field where your strongest marketing instincts live.",
+    detail:
+      "Teams enter Product & Growth, Societal & PR, or Market Research & Trade, with direct one-on-one feedback from industry mentors.",
+  },
+  {
+    marker: "02",
+    date: "September 25—October 9",
+    title: "The Stellar Forge",
+    summary: "The top six teams take on the Diamond Sponsor's challenge.",
+    detail:
+      "Solutions must balance breakthrough creativity, practical application, and meaningful positive impact for the community.",
+  },
+  {
+    marker: "03",
+    date: "Real-world execution",
+    title: "The Cosmic Crash",
+    summary: "Ideas leave the deck and enter the market.",
+    detail:
+      "The top four teams turn proposals into live media campaigns, gather real audience response, and prove what can work beyond the brief.",
+  },
+  {
+    marker: "04",
+    date: "October 16—17",
+    title: "Grand Finale",
+    summary: "Networking Night, final campaign pitches, and one last live test.",
+    detail:
+      "After presenting their executed campaigns, the top two teams solve a surprise mini case on stage under time pressure.",
+    finale: true,
+  },
+] as const;
+
+const partners: Array<{
+  name: string;
+  type: string;
+  image: StaticImageData;
+}> = [
+  { name: "Canifa", type: "Featured brand", image: image2 },
+  { name: "Nestlé", type: "Industry partner", image: image3 },
+  { name: "Kantar", type: "Research expertise", image: image4 },
+  { name: "Unilever", type: "Industry partner", image: image1 },
+];
 
 export default function Home() {
   const pageRef = useRef<HTMLDivElement>(null);
@@ -113,7 +168,6 @@ export default function Home() {
                 start: "top 68%",
                 end: "bottom 42%",
                 scrub: true,
-                toggleActions: "play reverse play reverse",
               },
             },
           );
@@ -189,25 +243,23 @@ export default function Home() {
         </a>
         <nav aria-label="Main navigation">
           <a href="#about">About</a>
-          <a href="#why">Why join</a>
           <a href="#journey">Journey</a>
+          <a href="#mentors-sponsors">Partners</a>
         </nav>
-        <a className="header-cta" href={registrationLink}>
-          Register <span aria-hidden="true">↗</span>
-        </a>
+        <div className="header-actions">
+          <a className="header-login" href="/login">
+            Log in
+          </a>
+          <span className="header-cta is-disabled" aria-label="Ticket sales coming soon">
+            Tickets soon
+          </span>
+        </div>
       </header>
 
       <main id="top">
         <section className="hero" aria-labelledby="hero-title">
           <div className="hero-media parallax-media" aria-hidden="true">
-            <Image
-              src={image1}
-              alt=""
-              fill
-              priority
-              sizes="100vw"
-              placeholder="blur"
-            />
+            <Image src={image1} alt="" fill priority sizes="100vw" placeholder="blur" />
           </div>
           <div className="hero-shade" aria-hidden="true" />
           <div className="hero-orbit orbit-one" aria-hidden="true" />
@@ -218,26 +270,27 @@ export default function Home() {
               Marketing All-Star Challenge <span>2026</span>
             </p>
             <h1 id="hero-title" className="hero-title reveal">
-              <span>Rise beyond.</span>
-              <em>Become the</em>
+              <span>Reignite.</span>
+              <em>Break beyond.</em>
               <strong>Supernova.</strong>
             </h1>
             <div className="hero-bottom reveal">
               <p>
-                Step into the ultimate arena for young marketers to push their
-                limits, embrace innovation, and create a lasting legacy.
+                Rebirth through innovation. Push past personal limits and leave
+                a completely new legacy in marketing.
               </p>
               <a className="primary-button" href={registrationLink}>
-                <span>Register now</span>
+                <span>Apply now</span>
                 <span aria-hidden="true">↗</span>
               </a>
             </div>
           </div>
 
-          <div className="hero-meta" aria-label="Registration details">
-            <span>Open across Vietnam</span>
+          <DeadlineCountdown />
+          <div className="hero-meta" aria-label="Participant details">
+            <span>Vietnam</span>
             <span>Ages 18—22</span>
-            <span>10.07—23.07</span>
+            <span>Applications / Jul 10—23</span>
           </div>
           <a className="scroll-cue" href="#about">
             <span /> Scroll to discover
@@ -248,21 +301,20 @@ export default function Home() {
           <div className="section-glow" aria-hidden="true" />
           <div className="page-shell about-grid">
             <div className="section-heading reveal">
-              <p className="section-index">01 / The challenge</p>
+              <p className="section-index">01 / The competition</p>
               <h2 id="about-title">
-                Where proven talent becomes <em>stellar.</em>
+                A new legacy starts with a <em>collapse.</em>
               </h2>
             </div>
             <div className="about-copy reveal">
               <p className="lead">
-                Not another case competition. MASC is an invitation to the young
-                marketers already shaping what comes next.
+                MASC 2026 is an exclusive national competition hosted by Kotler
+                Klub—the VinUni House of Marketers.
               </p>
               <p>
-                Hosted by <strong>Kotler Klub</strong>, the first marketing club at
-                VinUniversity, the challenge is designed for students who have
-                earned high ranks in marketing competitions, led university
-                business clubs, or advanced in Management Trainee programs.
+                This year&apos;s <strong>Supernova</strong> theme captures the moment
+                talent is reborn: old limits give way, innovation erupts, and a
+                stronger identity takes shape.
               </p>
             </div>
           </div>
@@ -278,185 +330,192 @@ export default function Home() {
               />
               <div className="portal-vignette" aria-hidden="true" />
               <p className="portal-label">
-                <span>Enter the arena</span>
-                <span>MASC / 2026</span>
+                <span>Hosted by Kotler Klub</span>
+                <span>VinUni House of Marketers</span>
               </p>
             </div>
             <p className="portal-caption reveal">
-              A national arena built for those ready to move from potential to
-              impact.
+              Not a search for safe answers. A proving ground for marketers ready
+              to build what comes next.
             </p>
+          </div>
+        </section>
+
+        <section className="updates" id="news" aria-labelledby="updates-title">
+          <div className="page-shell">
+            <div className="updates-heading reveal">
+              <p className="section-index">02 / On the radar</p>
+              <h2 id="updates-title">Signals from the <em>MASC universe.</em></h2>
+            </div>
+            <div className="update-grid">
+              <article className="update-card featured-update reveal" id="previous-season">
+                <p className="card-kicker">Academic event / Coming up</p>
+                <h3>Winner&apos;s Recipe</h3>
+                <p>
+                  Revisit the thinking, teamwork, and decisive moments behind the
+                  strongest work from previous MASC seasons.
+                </p>
+                <a href="#contact">Get event updates <span aria-hidden="true">↗</span></a>
+              </article>
+              <article className="update-card reveal">
+                <p className="card-kicker">Corporate experience</p>
+                <h3>Inside Green SM</h3>
+                <p>
+                  A closer look at how a fast-moving Vietnamese brand turns
+                  strategy into customer experience and market momentum.
+                </p>
+                <a href="#contact">Follow announcements <span aria-hidden="true">↗</span></a>
+              </article>
+              <article className="update-card reveal" id="video-challenge">
+                <p className="card-kicker">Community vote</p>
+                <h3>Video Challenge</h3>
+                <p>
+                  Meet the teams, watch their stories, and vote when the 2026
+                  video challenge officially goes live.
+                </p>
+                <span className="coming-soon">Voting opens soon</span>
+              </article>
+            </div>
           </div>
         </section>
 
         <section className="why" id="why" aria-labelledby="why-title">
           <div className="why-media parallax-media" aria-hidden="true">
-            <Image
-              src={image3}
-              alt=""
-              fill
-              sizes="100vw"
-              placeholder="blur"
-            />
+            <Image src={image3} alt="" fill sizes="100vw" placeholder="blur" />
           </div>
           <div className="why-shade" aria-hidden="true" />
           <div className="page-shell why-content">
             <div className="why-heading reveal">
-              <p className="section-index">02 / Why join</p>
+              <p className="section-index">03 / Who can enter</p>
               <h2 id="why-title">
-                Built to go <em>beyond the brief.</em>
+                Built for talent already in <em>motion.</em>
               </h2>
               <p>
-                Three ways MASC turns raw ambition into work that survives the
-                real world.
+                Open to young people aged 18–22 who live and study in Vietnam,
+                with the ambition to build a serious career in marketing.
               </p>
             </div>
 
             <div className="feature-list">
-              <article className="feature reveal">
-                <span className="feature-number">01</span>
-                <div>
-                  <h3>Personalized Tracks</h3>
-                  <p>
-                    Choose Product &amp; Growth, Societal + PR/MarCom, or Market
-                    Research + Trade—then sharpen your edge through 1-on-1
-                    guidance from industry mentors.
-                  </p>
-                </div>
-                <span className="feature-symbol" aria-hidden="true">
-                  ✦
-                </span>
-              </article>
-              <article className="feature reveal">
-                <span className="feature-number">02</span>
-                <div>
-                  <h3>Real-World Execution</h3>
-                  <p>
-                    The top 4 teams will not stop at pitching ideas. They will
-                    deploy actual campaigns, meet the market, and prove what
-                    works.
-                  </p>
-                </div>
-                <span className="feature-symbol" aria-hidden="true">
-                  ↗
-                </span>
-              </article>
-              <article className="feature reveal">
-                <span className="feature-number">03</span>
-                <div>
-                  <h3>Dual-Challenge Finale</h3>
-                  <p>
-                    Pitch your executed campaign, then solve a live Mini Case
-                    under time pressure. Strategy and instinct, tested on one
-                    stage.
-                  </p>
-                </div>
-                <span className="feature-symbol" aria-hidden="true">
-                  ∞
-                </span>
-              </article>
+              <Feature number="01" title="Competition Achievers" symbol="✦">
+                You have earned high placements in case competitions and are
+                ready to turn proven potential into a bigger result.
+              </Feature>
+              <Feature number="02" title="Student Leaders" symbol="↗">
+                You hold an executive role in a university club and know how to
+                move teams, ideas, and communities forward.
+              </Feature>
+              <Feature number="03" title="Future Marketers" symbol="∞">
+                You have reached advanced rounds of Management Trainee programs
+                or can demonstrate equal drive, discipline, and marketing focus.
+              </Feature>
             </div>
           </div>
         </section>
 
-        <section
-          className="journey"
-          id="journey"
-          aria-labelledby="journey-title"
-        >
+        <section className="journey" id="journey" aria-labelledby="journey-title">
           <div className="page-shell journey-intro reveal">
-            <p className="section-index">03 / The journey</p>
+            <p className="section-index">04 / Interactive timeline</p>
             <h2 id="journey-title">
               From first light
               <br />
               to <em>full impact.</em>
             </h2>
-            <p>
-              Five stages. Three specialist tracks. One chance to leave a mark
-              that outlives the moment.
-            </p>
+            <p>Select a stage to reveal its challenge, stakes, and progression.</p>
           </div>
 
           <div className="journey-layout page-shell">
             <div className="timeline" role="list" aria-label="Competition timeline">
-              <TimelineItem
-                marker="0.5"
-                date="August 10—24"
-                title="The First Light"
-              >
-                A special opening round for newcomers to earn a direct pass to
-                Round 2 or bypass the CV screening.
-              </TimelineItem>
-              <TimelineItem
-                marker="01"
-                date="Specialized tracks"
-                title="The Star Gathering"
-              >
-                Competitors split into their three chosen tracks and solve
-                sharply focused marketing problems.
-              </TimelineItem>
-              <TimelineItem
-                marker="02"
-                date="Top 6 teams"
-                title="The Stellar Forge"
-              >
-                The strongest teams tackle a cultural and social case provided
-                by the Diamond Sponsor.
-              </TimelineItem>
-              <TimelineItem
-                marker="03"
-                date="Top 4 teams"
-                title="The Cosmic Crash"
-              >
-                Proposals leave the page as finalists bring their campaigns to
-                life through real-world execution.
-              </TimelineItem>
-              <TimelineItem
-                marker="04"
-                date="October 16—17"
-                title="Grand Finale"
-                finale
-              >
-                Networking Night on October 16, followed by Final Pitching and
-                the live Mini Case on October 17.
-              </TimelineItem>
+              {rounds.map((round) => (
+                <TimelineItem key={round.marker} {...round} />
+              ))}
             </div>
 
             <div className="journey-visual" aria-hidden="true">
               <div className="journey-image parallax-frame">
-                <Image
-                  src={image4}
-                  alt=""
-                  fill
-                  sizes="(max-width: 680px) 100vw, 50vw"
-                  placeholder="blur"
-                />
+                <Image src={image4} alt="" fill sizes="(max-width: 680px) 100vw, 50vw" placeholder="blur" />
                 <div className="journey-vignette" />
               </div>
               <div className="journey-status">
                 <span />
                 <p>
-                  Current trajectory
+                  Final trajectory
                   <br />
-                  <strong>SUPERNOVA</strong>
+                  <strong>REAL-WORLD IMPACT</strong>
                 </p>
               </div>
             </div>
           </div>
         </section>
 
+        <section className="criteria" aria-labelledby="criteria-title">
+          <div className="page-shell criteria-layout">
+            <div className="criteria-intro reveal">
+              <p className="section-index">05 / The standard</p>
+              <h2 id="criteria-title">What the judges will <em>look for.</em></h2>
+            </div>
+            <div className="criteria-grid">
+              <article className="criteria-card reveal">
+                <span>Vòng 1</span>
+                <h3>Specialist clarity</h3>
+                <p>Commit to one track and sharpen the work through direct mentor feedback.</p>
+              </article>
+              <article className="criteria-card reveal">
+                <span>Vòng 2</span>
+                <h3>Creative responsibility</h3>
+                <p>Balance breakthrough thinking with feasibility and positive community impact.</p>
+              </article>
+              <article className="criteria-card reveal">
+                <span>Finale</span>
+                <h3>Execution under pressure</h3>
+                <p>Defend real campaign results, then solve an unseen mini case live on stage.</p>
+              </article>
+            </div>
+          </div>
+        </section>
+
+        <section className="partners" id="mentors-sponsors" aria-labelledby="partners-title">
+          <div className="page-shell partners-heading reveal">
+            <div>
+              <p className="section-index">06 / Mentors &amp; sponsors</p>
+              <h2 id="partners-title">Guided by people who shape the <em>market.</em></h2>
+            </div>
+            <p>
+              Meet academic partners and experts connected to leading brands,
+              including Canifa, Nestlé, Kantar, and Unilever.
+            </p>
+          </div>
+          <div className="partner-rail" aria-label="Featured mentors and sponsors">
+            {partners.map((partner, index) => (
+              <a className="partner-card" href="#contact" key={partner.name}>
+                <Image src={partner.image} alt="" fill sizes="420px" placeholder="blur" />
+                <span className="partner-shade" />
+                <span className="partner-index">0{index + 1}</span>
+                <span className="partner-copy">
+                  <small>{partner.type}</small>
+                  <strong>{partner.name}</strong>
+                </span>
+                <span className="partner-arrow" aria-hidden="true">↗</span>
+              </a>
+            ))}
+          </div>
+          <div className="page-shell rail-note reveal">
+            <span>←</span> Scroll to explore the lineup <span>→</span>
+          </div>
+        </section>
+
         <section className="final-cta" aria-labelledby="final-title">
           <div className="final-orbit" aria-hidden="true" />
           <div className="page-shell final-content reveal">
-            <p className="section-index">Your move / 2026</p>
+            <p className="section-index">Champion / Runner-up / Second Runner-up</p>
             <h2 id="final-title">
-              Don&apos;t just watch
+              Claim your place
               <br />
-              the future <em>happen.</em>
+              among the <em>stars.</em>
             </h2>
             <p>
-              Register from July 10 to July 23. Open to young talents aged 18 to
-              22 across Vietnam.
+              Applications are open July 10–23 for ambitious marketing talent
+              aged 18–22 living and studying in Vietnam.
             </p>
             <a className="primary-button light" href={registrationLink}>
               <span>Begin your journey</span>
@@ -466,7 +525,7 @@ export default function Home() {
         </section>
       </main>
 
-      <footer>
+      <footer id="contact">
         <div className="page-shell footer-grid">
           <div className="footer-brand">
             <span className="brand-mark">M</span>
@@ -479,23 +538,29 @@ export default function Home() {
           <div className="footer-contact">
             <p className="footer-label">Questions &amp; support</p>
             <a href="mailto:masc26.info@gmail.com">masc26.info@gmail.com</a>
-            <a
-              href="https://facebook.com/MarketingAllStarChallenge"
-              target="_blank"
-              rel="noreferrer"
-            >
-              Facebook <span aria-hidden="true">↗</span>
+            <a href="https://facebook.com/MarketingAllStarChallenge" target="_blank" rel="noreferrer">
+              Official Facebook <span aria-hidden="true">↗</span>
             </a>
+            <a href="tel:+84857129878">0857 129 878</a>
+            <a href="tel:+84782356586">0782 356 586</a>
+            <a href="tel:+84965350173">0965 350 173</a>
           </div>
           <div className="footer-people">
-            <p className="footer-label">Contact persons</p>
+            <p className="footer-label">Organizing leads</p>
             <p>
-              Mr. Leu Duc Anh
+              Lều Đức Anh — Co-Head
               <br />
-              Ms. Nguyen Mai Ngoc Nhi
+              Nguyễn Mai Ngọc Nhi — Co-Head
               <br />
-              Ms. Nguyen Minh Ngoc
+              Nguyễn Minh Ngọc — External Relations
             </p>
+          </div>
+          <div className="footer-shortcuts">
+            <p className="footer-label">Shortcuts</p>
+            <a href="#about">Competition</a>
+            <a href="#journey">Timeline</a>
+            <a href="#mentors-sponsors">Partners</a>
+            <a href="#news">News</a>
           </div>
         </div>
         <div className="page-shell footer-bottom">
@@ -507,32 +572,105 @@ export default function Home() {
   );
 }
 
+function DeadlineCountdown() {
+  const [now, setNow] = useState<number | null>(null);
+
+  useEffect(() => {
+    const update = () => setNow(Date.now());
+    update();
+    const timer = window.setInterval(update, 1000);
+    return () => window.clearInterval(timer);
+  }, []);
+
+  const opensAt = new Date("2026-07-10T00:00:00+07:00").getTime();
+  const closesAt = new Date("2026-07-23T23:59:59+07:00").getTime();
+  const target = now !== null && now >= opensAt ? closesAt : opensAt;
+  const remaining = now === null ? target - opensAt : Math.max(0, target - now);
+  const isOpen = now !== null && now >= opensAt && now < closesAt;
+  const isClosed = now !== null && now >= closesAt;
+  const days = Math.floor(remaining / 86_400_000);
+  const hours = Math.floor((remaining / 3_600_000) % 24);
+  const minutes = Math.floor((remaining / 60_000) % 60);
+  const seconds = Math.floor((remaining / 1000) % 60);
+
+  return (
+    <div className="deadline-panel" aria-live="polite">
+      <p>{isClosed ? "Round 0.5 applications" : isOpen ? "Applications close in" : "Round 0.5 opens in"}</p>
+      {isClosed ? (
+        <strong className="deadline-status">Submissions closed</strong>
+      ) : (
+        <div className="countdown" aria-label={`${days} days, ${hours} hours, ${minutes} minutes, ${seconds} seconds`}>
+          <TimeUnit value={days} label="Days" />
+          <TimeUnit value={hours} label="Hours" />
+          <TimeUnit value={minutes} label="Minutes" />
+          <TimeUnit value={seconds} label="Seconds" />
+        </div>
+      )}
+    </div>
+  );
+}
+
+function TimeUnit({ value, label }: { value: number; label: string }) {
+  return (
+    <span>
+      <strong>{String(value).padStart(2, "0")}</strong>
+      <small>{label}</small>
+    </span>
+  );
+}
+
+function Feature({
+  number,
+  title,
+  symbol,
+  children,
+}: {
+  number: string;
+  title: string;
+  symbol: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <article className="feature reveal">
+      <span className="feature-number">{number}</span>
+      <div>
+        <h3>{title}</h3>
+        <p>{children}</p>
+      </div>
+      <span className="feature-symbol" aria-hidden="true">{symbol}</span>
+    </article>
+  );
+}
+
 function TimelineItem({
   marker,
   date,
   title,
+  summary,
+  detail,
   finale = false,
-  children,
 }: {
   marker: string;
   date: string;
   title: string;
+  summary: string;
+  detail: string;
   finale?: boolean;
-  children: React.ReactNode;
 }) {
   return (
-    <article
-      className={`timeline-item${finale ? " finale-item" : ""}`}
-      role="listitem"
-    >
-      <div className="timeline-marker">
-        <span>{marker}</span>
-      </div>
-      <div className="timeline-copy">
-        <p className="timeline-date">{date}</p>
-        <h3>{title}</h3>
-        <p>{children}</p>
-      </div>
+    <article className={`timeline-item${finale ? " finale-item" : ""}`} role="listitem">
+      <div className="timeline-marker"><span>{marker}</span></div>
+      <details className="timeline-copy">
+        <summary>
+          <span className="timeline-date">{date}</span>
+          <span className="timeline-title-row">
+            <span className="timeline-title">{title}</span>
+            <span className="timeline-toggle" aria-hidden="true">+</span>
+          </span>
+          <span className="timeline-summary">{summary}</span>
+        </summary>
+        <p className="timeline-detail">{detail}</p>
+      </details>
     </article>
   );
 }
