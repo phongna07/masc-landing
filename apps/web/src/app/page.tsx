@@ -62,11 +62,11 @@ const partners: Array<{
   type: string;
   image: StaticImageData;
 }> = [
-  { name: "Canifa", type: "Featured brand", image: image2 },
-  { name: "Nestlé", type: "Industry partner", image: image3 },
-  { name: "Kantar", type: "Research expertise", image: image4 },
-  { name: "Unilever", type: "Industry partner", image: image1 },
-];
+    { name: "Canifa", type: "Featured brand", image: image2 },
+    { name: "Nestlé", type: "Industry partner", image: image3 },
+    { name: "Kantar", type: "Research expertise", image: image4 },
+    { name: "Unilever", type: "Industry partner", image: image1 },
+  ];
 
 export default function Home() {
   const pageRef = useRef<HTMLDivElement>(null);
@@ -267,12 +267,12 @@ export default function Home() {
 
           <div className="hero-content page-shell">
             <p className="eyebrow reveal">
-              Marketing All-Star Challenge <span>2026</span>
+              Kotler Klub - VinUni House of Marketers <span>2026</span>
             </p>
-            <h1 id="hero-title" className="hero-title reveal">
-              <span>Reignite.</span>
-              <em>Break beyond.</em>
-              <strong>Supernova.</strong>
+            <h1 id="hero-title" className="hero-title reveal uppercase">
+              <span>Marketing</span>
+              <em>All-Star</em>
+              <strong>Challenge</strong>
             </h1>
             <div className="hero-bottom reveal">
               <p>
