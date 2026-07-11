@@ -195,9 +195,76 @@
     }
   },
   "Dashboard": {
+    "eyebrow": "Competition registration",
     "title": "Dashboard",
     "welcome": "Welcome {name}",
-    "api": "API: {message}"
+    "nav": {
+      "homeLabel": "MASC 2026 — return home"
+    },
+    "registration": {
+      "section": "Registration",
+      "title": "Create your team",
+      "description": "Assemble a team of 2–5 members, including you as captain. Registration details cannot be edited after submission.",
+      "teamSection": "Team",
+      "teamDetails": "Team details",
+      "captainSection": "Captain",
+      "captainDetails": "Your information",
+      "membersSection": "Roster",
+      "membersTitle": "Team members",
+      "memberCount": "{count} of 5 team members",
+      "memberNumber": "Member {number}",
+      "submitNote": "Review all names and email addresses carefully before submitting.",
+      "sectionLabel": "Team registration form"
+    },
+    "fields": {
+      "teamName": "Team name",
+      "captainPhone": "Captain phone number",
+      "fullName": "Full name",
+      "email": "Email address",
+      "university": "University"
+    },
+    "actions": {
+      "addMember": "Add member",
+      "removeMember": "Remove member {number}",
+      "submit": "Submit registration",
+      "submitting": "Submitting…",
+      "retry": "Try again"
+    },
+    "validation": {
+      "required": "This field is required.",
+      "email": "Enter a valid email address.",
+      "phone": "Enter a valid phone number with 8–15 digits.",
+      "duplicateEmail": "Each team member must use a different email address."
+    },
+    "errors": {
+      "loadTitle": "We could not load your registration",
+      "loadDescription": "Check your connection and try again.",
+      "conflict": "You or one of these members is already registered with another team.",
+      "create": "Registration could not be submitted. Check the form and try again."
+    },
+    "success": {
+      "created": "Your team has been registered successfully."
+    },
+    "roles": {
+      "captain": "Team captain",
+      "member": "Team member"
+    },
+    "status": {
+      "pending": "Pending review",
+      "approved": "Approved",
+      "waitlisted": "Waitlisted"
+    },
+    "overview": {
+      "registration": "Your registration",
+      "captainMessage": "You are leading this team. Your submitted roster is shown below.",
+      "memberMessage": "You are registered as a member of this team.",
+      "details": "Team details",
+      "statusLabel": "Registration status",
+      "teamSize": "Team size",
+      "people": "{count, plural, one {# person} other {# people}}",
+      "captainContact": "Captain contact",
+      "roster": "Team roster"
+    }
   },
   "UserMenu": {
     "signIn": "Sign In",

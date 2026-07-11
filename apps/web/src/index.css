@@ -35,6 +35,408 @@ button {
   cursor: default;
 }
 
+/* Dashboard */
+.dashboard-page {
+  min-height: 100svh;
+  color: var(--ink);
+  background:
+    radial-gradient(circle at 78% 5%, rgba(123, 102, 255, 0.13), transparent 30rem),
+    radial-gradient(circle at 10% 60%, rgba(210, 166, 108, 0.07), transparent 32rem),
+    var(--night);
+}
+
+.dashboard-navbar {
+  position: sticky;
+  z-index: 50;
+  top: 0;
+  display: flex;
+  height: 76px;
+  align-items: center;
+  justify-content: space-between;
+  padding-inline: max(24px, calc((100vw - 1180px) / 2));
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(7, 7, 10, 0.78);
+  backdrop-filter: blur(18px);
+}
+
+.dashboard-nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.dashboard-nav-actions [data-slot="button"] {
+  min-height: 36px;
+  border-color: rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.dashboard-main {
+  width: min(100% - 48px, 1180px);
+  margin-inline: auto;
+  padding-block: clamp(54px, 8vw, 96px) 100px;
+}
+
+.dashboard-heading {
+  max-width: 760px;
+  margin-bottom: 46px;
+}
+
+.dashboard-eyebrow,
+.dashboard-card-index {
+  color: #d2a66c;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+.dashboard-heading h1 {
+  margin: 10px 0 16px;
+  font-family: var(--font-castela), Georgia, serif;
+  font-size: clamp(58px, 8vw, 104px);
+  font-weight: 400;
+  line-height: 0.9;
+  letter-spacing: -0.04em;
+}
+
+.dashboard-heading > p:last-child,
+.dashboard-card [data-slot="card-header"] > p:last-child,
+.registration-submit > p,
+.dashboard-state-card p {
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.65;
+}
+
+.registration-form,
+.team-overview {
+  display: grid;
+  gap: 18px;
+}
+
+.dashboard-card,
+.dashboard-state-card {
+  border-color: rgba(255, 255, 255, 0.14);
+  background: rgba(17, 16, 20, 0.76);
+  backdrop-filter: blur(12px);
+}
+
+.dashboard-card [data-slot="card-header"],
+.dashboard-card [data-slot="card-content"],
+.dashboard-state-card [data-slot="card-header"],
+.dashboard-state-card [data-slot="card-content"] {
+  padding-inline: clamp(22px, 4vw, 42px);
+}
+
+.dashboard-card [data-slot="card-header"] {
+  padding-block: 20px 12px;
+}
+
+.dashboard-card [data-slot="card-content"] {
+  padding-block: 12px 26px;
+}
+
+.dashboard-card [data-slot="card-title"],
+.dashboard-state-card [data-slot="card-title"] {
+  font-family: var(--font-castela), Georgia, serif;
+  font-size: clamp(27px, 3vw, 39px);
+  font-weight: 400;
+  line-height: 1.05;
+}
+
+.registration-intro {
+  position: relative;
+  overflow: hidden;
+  border-color: rgba(210, 166, 108, 0.3);
+  background: linear-gradient(110deg, rgba(210, 166, 108, 0.11), rgba(123, 102, 255, 0.08));
+}
+
+.registration-intro::after,
+.team-hero-card::after {
+  position: absolute;
+  top: -170px;
+  right: -80px;
+  width: 330px;
+  height: 330px;
+  content: "";
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+  box-shadow: 0 0 0 52px rgba(255, 255, 255, 0.018), 0 0 0 104px rgba(255, 255, 255, 0.01);
+}
+
+.dashboard-card-index {
+  margin: 0 0 10px;
+}
+
+.dashboard-fields {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.dashboard-field {
+  display: grid;
+  align-content: start;
+  gap: 8px;
+}
+
+.dashboard-field.field-full {
+  grid-column: 1 / -1;
+}
+
+.dashboard-field [data-slot="label"] {
+  color: rgba(255, 255, 255, 0.68);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.dashboard-field [data-slot="input"] {
+  height: 44px;
+  border-color: rgba(255, 255, 255, 0.17);
+  background: rgba(255, 255, 255, 0.035);
+  padding-inline: 14px;
+  font-size: 13px;
+}
+
+.field-error,
+.form-error {
+  color: #ff9189;
+  font-size: 11px;
+}
+
+.roster-form-header {
+  display: flex !important;
+  align-items: end !important;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.teammate-list {
+  display: grid;
+  gap: 14px;
+}
+
+.teammate-card {
+  padding: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.018);
+}
+
+.teammate-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.teammate-heading h3 {
+  margin: 0;
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.form-error {
+  margin: 0;
+  padding: 14px 18px;
+  border: 1px solid rgba(255, 107, 98, 0.35);
+  background: rgba(255, 107, 98, 0.08);
+}
+
+.registration-submit {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  margin-top: 8px;
+}
+
+.registration-submit p {
+  max-width: 52ch;
+  margin: 0;
+}
+
+.registration-submit [data-slot="button"] {
+  min-width: 190px;
+  height: 46px;
+}
+
+.team-hero-card {
+  position: relative;
+  min-height: 250px;
+  justify-content: flex-end;
+  border-color: rgba(123, 102, 255, 0.32);
+  background: linear-gradient(115deg, rgba(123, 102, 255, 0.15), rgba(210, 166, 108, 0.08));
+}
+
+.team-badges {
+  position: absolute;
+  z-index: 1;
+  top: 24px;
+  right: clamp(22px, 4vw, 42px);
+  display: flex;
+  gap: 8px;
+}
+
+.role-badge,
+.status-badge,
+.captain-tag {
+  padding: 7px 10px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.role-badge,
+.captain-tag,
+.status-approved {
+  color: #f2d584;
+  border-color: rgba(242, 213, 132, 0.32);
+  background: rgba(242, 213, 132, 0.07);
+}
+
+.status-waitlisted {
+  color: #c2b8ff;
+  border-color: rgba(123, 102, 255, 0.38);
+}
+
+.overview-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.detail-list {
+  display: grid;
+  gap: 0;
+}
+
+.detail-list > div {
+  display: grid;
+  grid-template-columns: 0.8fr 1.2fr;
+  gap: 20px;
+  padding-block: 13px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.detail-list dt {
+  color: var(--muted);
+}
+
+.detail-list dd {
+  margin: 0;
+  text-align: right;
+}
+
+.roster-list {
+  display: grid;
+}
+
+.roster-member {
+  display: grid;
+  grid-template-columns: 40px 1fr 1fr auto;
+  align-items: center;
+  gap: 20px;
+  padding-block: 19px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.09);
+}
+
+.roster-member:last-child,
+.detail-list > div:last-child {
+  border-bottom: 0;
+}
+
+.roster-index {
+  color: #d2a66c;
+  font-family: var(--font-castela), Georgia, serif;
+  font-size: 19px;
+}
+
+.roster-member h3,
+.roster-member p {
+  margin: 0;
+}
+
+.roster-member h3 {
+  font-size: 13px;
+}
+
+.roster-member p {
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+.dashboard-state-card [data-slot="card-content"] {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.dashboard-skeleton {
+  display: grid;
+  gap: 18px;
+}
+
+.dashboard-skeleton > div:nth-child(2) {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+}
+
+@media (max-width: 700px) {
+  .dashboard-navbar {
+    height: 68px;
+    padding-inline: 18px;
+  }
+
+  .dashboard-navbar .brand-copy,
+  .dashboard-navbar .language-trigger span {
+    display: none;
+  }
+
+  .dashboard-main {
+    width: min(100% - 30px, 1180px);
+    padding-top: 48px;
+  }
+
+  .dashboard-fields,
+  .overview-grid,
+  .dashboard-skeleton > div:nth-child(2) {
+    grid-template-columns: 1fr;
+  }
+
+  .roster-form-header,
+  .registration-submit,
+  .dashboard-state-card [data-slot="card-content"] {
+    align-items: stretch !important;
+    flex-direction: column;
+  }
+
+  .registration-submit [data-slot="button"] {
+    width: 100%;
+  }
+
+  .team-badges {
+    position: static;
+    margin-bottom: 28px;
+  }
+
+  .roster-member {
+    grid-template-columns: 34px 1fr auto;
+  }
+
+  .roster-member > p {
+    grid-column: 2 / -1;
+  }
+}
+
 a {
   color: inherit;
   text-decoration: none;

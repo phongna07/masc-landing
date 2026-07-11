@@ -195,9 +195,76 @@
     }
   },
   "Dashboard": {
-    "title": "Bảng điều khiển",
+    "eyebrow": "Đăng ký cuộc thi",
+    "title": "Dashboard",
     "welcome": "Chào mừng {name}",
-    "api": "API: {message}"
+    "nav": {
+      "homeLabel": "MASC 2026 — trở về trang chủ"
+    },
+    "registration": {
+      "section": "Đăng ký",
+      "title": "Tạo đội thi",
+      "description": "Thành lập đội gồm 2–5 thành viên, bao gồm bạn với vai trò đội trưởng. Thông tin không thể chỉnh sửa sau khi gửi.",
+      "teamSection": "Đội thi",
+      "teamDetails": "Thông tin đội thi",
+      "captainSection": "Đội trưởng",
+      "captainDetails": "Thông tin của bạn",
+      "membersSection": "Đội hình",
+      "membersTitle": "Thành viên đội",
+      "memberCount": "{count} trên 5 thành viên",
+      "memberNumber": "Thành viên {number}",
+      "submitNote": "Vui lòng kiểm tra kỹ họ tên và địa chỉ email trước khi gửi.",
+      "sectionLabel": "Biểu mẫu đăng ký đội thi"
+    },
+    "fields": {
+      "teamName": "Tên đội",
+      "captainPhone": "Số điện thoại đội trưởng",
+      "fullName": "Họ và tên",
+      "email": "Địa chỉ email",
+      "university": "Trường đại học"
+    },
+    "actions": {
+      "addMember": "Thêm thành viên",
+      "removeMember": "Xóa thành viên {number}",
+      "submit": "Gửi đăng ký",
+      "submitting": "Đang gửi…",
+      "retry": "Thử lại"
+    },
+    "validation": {
+      "required": "Vui lòng nhập thông tin này.",
+      "email": "Vui lòng nhập địa chỉ email hợp lệ.",
+      "phone": "Nhập số điện thoại hợp lệ gồm 8–15 chữ số.",
+      "duplicateEmail": "Mỗi thành viên phải sử dụng một địa chỉ email khác nhau."
+    },
+    "errors": {
+      "loadTitle": "Không thể tải thông tin đăng ký",
+      "loadDescription": "Vui lòng kiểm tra kết nối và thử lại.",
+      "conflict": "Bạn hoặc một thành viên đã đăng ký trong đội khác.",
+      "create": "Không thể gửi đăng ký. Vui lòng kiểm tra thông tin và thử lại."
+    },
+    "success": {
+      "created": "Đội của bạn đã được đăng ký thành công."
+    },
+    "roles": {
+      "captain": "Đội trưởng",
+      "member": "Thành viên"
+    },
+    "status": {
+      "pending": "Đang chờ duyệt",
+      "approved": "Đã duyệt",
+      "waitlisted": "Danh sách chờ"
+    },
+    "overview": {
+      "registration": "Đơn đăng ký của bạn",
+      "captainMessage": "Bạn đang dẫn dắt đội thi này. Đội hình đã đăng ký được hiển thị bên dưới.",
+      "memberMessage": "Bạn đã được đăng ký là thành viên của đội thi này.",
+      "details": "Thông tin đội thi",
+      "statusLabel": "Trạng thái đăng ký",
+      "teamSize": "Số thành viên",
+      "people": "{count} người",
+      "captainContact": "Liên hệ đội trưởng",
+      "roster": "Danh sách đội"
+    }
   },
   "UserMenu": {
     "signIn": "Đăng nhập",
