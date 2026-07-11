@@ -295,14 +295,26 @@ function TeamOverview({ membership }: { membership: Extract<Membership, { regist
       <Card className="dashboard-card roster-card">
         <CardHeader><CardTitle>{t("overview.roster")}</CardTitle></CardHeader>
         <CardContent className="roster-list">
-          {membership.team.members.map((member, index) => (
-            <article className="roster-member" key={member.id}>
-              <span className="roster-index">{String(index + 1).padStart(2, "0")}</span>
-              <div><h3>{member.fullName}</h3><p>{member.email}</p></div>
-              <p>{member.universityName}</p>
-              {member.isCaptain && <span className="captain-tag">{t("roles.captain")}</span>}
-            </article>
-          ))}
+          <table className="roster-table">
+            <thead>
+              <tr>
+                <th scope="col" aria-label="Number">#</th>
+                <th scope="col">{t("fields.fullName")}</th>
+                <th scope="col">{t("fields.university")}</th>
+                <th scope="col" aria-label={t("roles.captain")} />
+              </tr>
+            </thead>
+            <tbody>
+              {membership.team.members.map((member, index) => (
+                <tr key={member.id}>
+                  <td className="roster-index">{String(index + 1).padStart(2, "0")}</td>
+                  <td><h3>{member.fullName}</h3><p>{member.email}</p></td>
+                  <td><p>{member.universityName}</p></td>
+                  <td>{member.isCaptain && <span className="captain-tag">{t("roles.captain")}</span>}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </CardContent>
       </Card>
     </div>
