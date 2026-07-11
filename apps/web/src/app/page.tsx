@@ -660,17 +660,14 @@ function TimelineItem({
   return (
     <article className={`timeline-item${finale ? " finale-item" : ""}`} role="listitem">
       <div className="timeline-marker"><span>{marker}</span></div>
-      <details className="timeline-copy">
-        <summary>
-          <span className="timeline-date">{date}</span>
-          <span className="timeline-title-row">
-            <span className="timeline-title">{title}</span>
-            <span className="timeline-toggle" aria-hidden="true">+</span>
-          </span>
-          <span className="timeline-summary">{summary}</span>
-        </summary>
+      <div className="timeline-copy">
+        <span className="timeline-date">{date}</span>
+        <span className="timeline-title-row">
+          <span className="timeline-title">{title}</span>
+        </span>
+        <span className="timeline-summary">{summary}</span>
         <p className="timeline-detail">{detail}</p>
-      </details>
+      </div>
     </article>
   );
 }

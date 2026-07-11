@@ -949,15 +949,6 @@ img {
   padding: 5px 0 70px;
 }
 
-.timeline-copy summary {
-  list-style: none;
-  cursor: pointer;
-}
-
-.timeline-copy summary::-webkit-details-marker {
-  display: none;
-}
-
 .timeline-title-row {
   display: flex;
   align-items: flex-start;
@@ -970,23 +961,6 @@ img {
   font-family: var(--font-castela), Georgia, serif;
   font-size: clamp(30px, 3vw, 46px);
   line-height: 1;
-}
-
-.timeline-toggle {
-  display: grid;
-  flex: 0 0 auto;
-  width: 28px;
-  height: 28px;
-  place-items: center;
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  border-radius: 50%;
-  color: #d2a66c;
-  transition: transform 250ms ease, background 250ms ease;
-}
-
-.timeline-copy[open] .timeline-toggle {
-  transform: rotate(45deg);
-  background: rgba(255, 255, 255, 0.08);
 }
 
 .timeline-summary {
@@ -1009,14 +983,6 @@ img {
   margin: 0 0 26px;
   color: #8d8992;
   text-transform: uppercase;
-}
-
-.timeline-copy p:last-child {
-  max-width: 500px;
-  margin: 0;
-  color: #7c7982;
-  font-size: 14px;
-  line-height: 1.72;
 }
 
 .finale-item .timeline-marker {
