@@ -24,7 +24,7 @@
       "titleMarketing": "Marketing",
       "titleAllStar": "All-Star",
       "titleChallenge": "Challenge",
-      "description": "Rebirth through innovation. Push past personal limits and leave a completely new legacy in marketing.",
+      "description": "Push past your personal limits and create a completely new legacy in marketing.",
       "apply": "Apply now",
       "participantDetails": "Participant details",
       "country": "Vietnam",
@@ -45,106 +45,106 @@
     },
     "about": {
       "index": "01 / The competition",
-      "title": "A new legacy starts with a <em>collapse.</em>",
-      "lead": "MASC 2026 is an exclusive national competition hosted by Kotler Klub—the VinUni House of Marketers.",
-      "description": "This year’s <strong>Supernova</strong> theme captures the moment talent is reborn: old limits give way, innovation erupts, and a stronger identity takes shape.",
+      "title": "A new legacy forged through <em>breakthrough.</em>",
+      "lead": "Marketing All-Star Challenge (MASC) is an exclusive national marketing competition hosted by Kotler Klub — VinUni House of Marketers.",
+      "description": "Inspired by the supernova phenomenon, this year's <strong>Supernova</strong> theme symbolizes rebirth and breakthrough innovation. It is where top talent pushes past existing limits to create a completely new legacy.",
       "organizerAlt": "Organizer",
       "hostedBy": "Hosted by Kotler Klub",
       "organization": "VinUni House of Marketers",
-      "caption": "Not a search for safe answers. A proving ground for marketers ready to build what comes next."
+      "caption": "Not resting on past laurels. MASC 2026 is the arena for marketers ready to push their boundaries and shape the future."
     },
     "prizes": {
       "index": "02 / Prizes & awards",
       "overline": "For the teams that outshine the rest",
-      "title": "Great work deserves a <em>stellar reward.</em>",
-      "poolLabel": "Illustrative total prize pool",
+      "title": "Breakthrough effort deserves a <em>stellar reward.</em>",
+      "poolLabel": "Estimated total prize pool",
       "poolTitle": "Estimated total prize pool",
-      "poolDescription": "Cash prizes, partner benefits, and opportunities designed to carry winning ideas beyond the competition.",
+      "poolDescription": "Cash prizes, partner benefits, and career opportunities designed to carry winning ideas beyond the competition.",
       "upTo": "Up to",
       "grandKicker": "Grand prize / Champion",
       "grandTitle": "Supernova<break></break>Champion",
-      "grandDescription": "For the team that turns a bold strategy into the year’s most convincing real-world campaign.",
+      "grandDescription": "Awarded to the MASC 2026 Champion — the team that conquers the dual challenge and demonstrates outstanding real-world execution.",
       "secondKicker": "Second place / Runner-up",
       "secondTitle": "Rising Star",
-      "secondDescription": "Recognizing sharp insight, ambitious creativity, and a pitch that keeps the pressure on until the final moment.",
+      "secondDescription": "Recognizing sharp strategic insight, breakthrough creativity, and exceptional execution capabilities.",
       "impactKicker": "Special recognition",
       "impactTitle": "Impact Award",
-      "impactDescription": "Celebrating the campaign that creates the strongest positive impact for its audience and community."
+      "impactDescription": "Celebrating the campaign that creates the strongest positive impact for society and the community."
     },
     "eligibility": {
       "index": "03 / Who can enter",
-      "title": "Built for talent already in <em>motion.</em>",
-      "description": "Open to young people aged 18–22 who live and study in Vietnam, with the ambition to build a serious career in marketing.",
+      "title": "The arena for top <em>marketing talent.</em>",
+      "description": "Open to young adults aged 18–22 living and studying in Vietnam who are passionate about marketing and aspiring to pursue a marketing career.",
       "achieverTitle": "Competition Achievers",
-      "achieverDescription": "You have earned high placements in case competitions and are ready to turn proven potential into a bigger result.",
-      "leaderTitle": "Student Leaders",
-      "leaderDescription": "You hold an executive role in a university club and know how to move teams, ideas, and communities forward.",
-      "marketerTitle": "Future Marketers",
-      "marketerDescription": "You have reached advanced rounds of Management Trainee programs or can demonstrate equal drive, discipline, and marketing focus."
+      "achieverDescription": "High achievers in prestigious academic Marketing and Business case competitions (Champion, Runner-up, Top 20-50...).",
+      "leaderTitle": "Student Club Leaders",
+      "leaderDescription": "Executive board members of Marketing or Business student clubs at universities.",
+      "marketerTitle": "Management Trainees & Top MASC",
+      "marketerDescription": "Finalists/advanced candidates in corporate Management Trainee or Key Talent programs, or Top 50 in MASC'26 Round 0.5."
     },
     "journey": {
-      "index": "04 / Interactive timeline",
-      "title": "From first light<break></break>to <em>full impact.</em>",
-      "description": "Select a stage to reveal its challenge, stakes, and progression.",
+      "index": "04 / Competition timeline",
+      "title": "From first light<break></break>to the <em>Supernova peak.</em>",
+      "description": "Explore the comprehensive stages and rounds of Marketing All-Star Challenge 2026.",
       "timelineLabel": "Competition timeline",
       "status": "Final trajectory",
       "impact": "REAL-WORLD IMPACT",
       "rounds": {
         "round05": {
           "date": "August 10—27",
-          "title": "The First Light",
-          "summary": "An open door for incomplete teams and industry newcomers.",
-          "detail": "Build your team, prove your potential, and compete for one of two direct passes to Round 2."
+          "title": "Round 0.5: The First Light",
+          "summary": "An open track for newcomers and teams without a full all-star lineup.",
+          "detail": "The top 2 teams advance directly to Round 2. The top 50 bypass CV screening into Round 1 and receive exclusive access to case-review sessions and industry sharing sessions."
         },
         "round1": {
           "date": "September 9—17",
-          "title": "The Star Gathering",
-          "summary": "Choose the field where your strongest marketing instincts live.",
-          "detail": "Teams enter Product & Growth, Societal & PR, or Market Research & Trade, with direct one-on-one feedback from industry mentors."
+          "title": "Round 1: The Star Gathering",
+          "summary": "Three specialized tracks: Product & Growth, Societal + PR, Market Research + Trade.",
+          "detail": "Teams tackle specialized challenges from Mentor partners allocated on a first-come, first-served basis, with 1-on-1 mentor feedback. The top 2 teams from each track (6 teams total) advance to Round 2."
         },
         "round2": {
-          "date": "September 25—October 9",
-          "title": "The Stellar Forge",
-          "summary": "The top six teams take on the Diamond Sponsor’s challenge.",
-          "detail": "Solutions must balance breakthrough creativity, practical application, and meaningful positive impact for the community."
+          "date": "Sept 25—Oct 9",
+          "title": "Round 2: The Stellar Forge",
+          "summary": "The top 6 teams tackle the Diamond Sponsor's societal & cultural challenge.",
+          "detail": "Solutions must strictly balance breakthrough creativity, real-world feasibility, and positive community impact. The top 4 teams advance to the Real-World Execution Round."
         },
         "round3": {
-          "date": "Real-world execution",
+          "date": "Execution Round",
           "title": "The Cosmic Crash",
-          "summary": "Ideas leave the deck and enter the market.",
-          "detail": "The top four teams turn proposals into live media campaigns, gather real audience response, and prove what can work beyond the brief."
+          "summary": "The top 4 execute live marketing campaigns in the real market.",
+          "detail": "Teams develop proposals into actual live media campaigns with guidance from Mentors and Brand Partners. All 4 teams secure their place in the Grand Finale Pitching Night."
         },
         "round4": {
           "date": "October 16—17",
-          "title": "Grand Finale",
-          "summary": "Networking Night, final campaign pitches, and one last live test.",
-          "detail": "After presenting their executed campaigns, the top two teams solve a surprise mini case on stage under time pressure."
+          "title": "Grand Finale: The Infinite Glow",
+          "summary": "Networking Night (Oct 16), Final Pitching & Dual-Challenge Mini Case (Oct 17).",
+          "detail": "Top 4 defend their live campaign results before judges. The top 2 teams solve a surprise Mini Case live on stage under time pressure to determine the MASC'26 Champion."
         }
       }
     },
     "criteria": {
       "index": "05 / Evaluation Criteria",
       "title": "What the judges will <em>look for.</em>",
-      "round1": "Round 1",
-      "round1Title": "Specialist clarity",
-      "round1Description": "Commit to one track and sharpen the work through direct mentor feedback.",
-      "round2": "Round 2",
-      "round2Title": "Creative responsibility",
-      "round2Description": "Balance breakthrough thinking with feasibility and positive community impact.",
-      "finale": "Finale",
-      "finaleTitle": "Execution under pressure",
-      "finaleDescription": "Defend real campaign results, then solve an unseen mini case live on stage."
+      "round1": "Round 1 — The Star Gathering",
+      "round1Title": "Specialized track depth",
+      "round1Description": "Choose one of three specialized tracks (Product & Growth, Societal + PR/MarCom, Market Research + Trade) and refine your solution through 1-on-1 mentor feedback.",
+      "round2": "Round 2 — The Stellar Forge",
+      "round2Title": "Practical creativity & social impact",
+      "round2Description": "Solve the Diamond Sponsor's challenge by balancing breakthrough creativity, practical application, and meaningful positive community impact.",
+      "finale": "Finale — The Infinite Glow",
+      "finaleTitle": "Live execution & Mini Case challenge",
+      "finaleDescription": "Defend live executed campaign results before the judges, then Top 2 solve an unseen Mini Case live on stage under real-time pressure."
     },
     "mentors": {
       "index": "06 / Mentors",
-      "title": "Guided by people who shape the <em>market.</em>",
-      "description": "Meet the industry leaders bringing brand, research, and innovation expertise directly to this year’s competitors.",
+      "title": "Guided by leading <em>industry experts.</em>",
+      "description": "Meet distinguished leaders and experts from top brands, agencies, and corporations bringing real-world expertise directly to this year's contestants.",
       "featuredLabel": "Featured mentors",
       "portraitAlt": "Portrait of {name}",
       "mentor1": {
         "name": "Ms. Ngọc Nguyễn",
         "description1": "Head of Brand Marketing Department at Canifa",
-        "description2": "Successfully led Canifa’s “Say It Now” and “Yêu Nước Từ Trong Nôi” campaigns, backed by over 15 years of experience",
+        "description2": "Successfully led Canifa's “Say It Now” and “Yêu Nước Từ Trong Nôi” campaigns, backed by over 15 years of experience",
         "description3": "Judge for Z Marketer Season 5 and Hackathon Season 6"
       },
       "mentor2": {
@@ -160,15 +160,15 @@
       "mentor4": {
         "name": "Ms. Trang Hoàng",
         "description1": "Co-Founder of InnoSight Academy",
-        "description2": "Co-Founder of the Insight2Innovation Podcast",
-        "description3": "Mentor for the Unilever and Nestlé Vietnam Management Trainee programs"
+        "description2": "Co-Founder of Insight2Innovation Podcast",
+        "description3": "Mentor for Unilever & Nestlé Vietnam Management Trainee programs"
       }
     },
     "finalCta": {
       "index": "Champion / Runner-up / Second Runner-up",
-      "title": "Claim your place<break></break>among the <em>stars.</em>",
-      "description": "Applications are open July 10–23 for ambitious marketing talent aged 18–22 living and studying in Vietnam.",
-      "button": "Begin your journey"
+      "title": "Push your boundaries,<break></break>become a <em>Supernova.</em>",
+      "description": "Applications are open July 10–23 for ambitious marketing talent aged 18–22 nationwide.",
+      "button": "Apply now"
     },
     "footer": {
       "brand": "Marketing All-Star<break></break>Challenge 2026",
@@ -177,7 +177,7 @@
       "leads": "Organizing leads",
       "lead1": "Lê Đức Anh — Co-Head",
       "lead2": "Nguyễn Mai Ngọc Nhi — Co-Head",
-      "lead3": "Nguyễn Minh Ngọc — External Relations",
+      "lead3": "Nguyễn Minh Ngọc — Head of External Relations",
       "shortcuts": "Shortcuts",
       "competition": "Competition",
       "timeline": "Timeline",

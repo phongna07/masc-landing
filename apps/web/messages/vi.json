@@ -24,16 +24,16 @@
       "titleMarketing": "Marketing",
       "titleAllStar": "All-Star",
       "titleChallenge": "Challenge",
-      "description": "Tái sinh từ đổi mới. Vượt qua giới hạn bản thân và kiến tạo một di sản hoàn toàn mới trong marketing.",
-      "apply": "Ứng tuyển ngay",
+      "description": "Bứt phá giới hạn của chính mình và kiến tạo nên một di sản hoàn toàn mới trong marketing.",
+      "apply": "Đăng ký ngay",
       "participantDetails": "Thông tin thí sinh",
       "country": "Việt Nam",
       "age": "Độ tuổi 18—22",
-      "applications": "Ứng tuyển / 10—23 tháng 7",
+      "applications": "Mở đơn / 10—23 tháng 7",
       "scroll": "Cuộn để khám phá"
     },
     "countdown": {
-      "applications": "Đơn ứng tuyển Vòng 0.5",
+      "applications": "Đơn đăng ký Vòng 0.5",
       "closesIn": "Thời gian đóng đơn còn",
       "opensIn": "Vòng 0.5 mở đơn sau",
       "closed": "Đã đóng đơn",
@@ -45,130 +45,130 @@
     },
     "about": {
       "index": "01 / Cuộc thi",
-      "title": "Một di sản mới bắt đầu từ sự <em>sụp đổ.</em>",
-      "lead": "MASC 2026 là cuộc thi độc quyền quy mô toàn quốc do Kotler Klub—VinUni House of Marketers tổ chức.",
-      "description": "Chủ đề <strong>Supernova</strong> năm nay khắc họa khoảnh khắc tài năng được tái sinh: giới hạn cũ nhường chỗ, đổi mới bùng nổ và một bản sắc mạnh mẽ hơn thành hình.",
+      "title": "Kiến tạo di sản từ sự <em>bứt phá.</em>",
+      "lead": "Marketing All-Star Challenge (MASC) là cuộc thi Marketing độc quyền quy mô toàn quốc do Câu lạc bộ Kotler Klub — VinUni House of Marketers tổ chức.",
+      "description": "Chủ đề <strong>Supernova</strong> khơi nguồn từ hiện tượng siêu tân tinh — biểu tượng nguyên bản của sự tái sinh và đổi mới mang tính đột phá. Đây là nơi những cá nhân xuất sắc bứt phá giới hạn để kiến tạo nên một di sản hoàn toàn mới.",
       "organizerAlt": "Đơn vị tổ chức",
       "hostedBy": "Tổ chức bởi Kotler Klub",
       "organization": "VinUni House of Marketers",
-      "caption": "Không tìm kiếm những đáp án an toàn. Đây là nơi những marketer sẵn sàng kiến tạo tương lai chứng minh bản lĩnh."
+      "caption": "Không dừng lại ở những hào quang đã có. MASC 2026 là đấu trường cho những marketer sẵn sàng bứt phá đỉnh cao và kiến tạo tương lai."
     },
     "prizes": {
       "index": "02 / Giải thưởng",
       "overline": "Dành cho những đội thi tỏa sáng vượt trội",
-      "title": "Nỗ lực xuất sắc xứng đáng với một <em>phần thưởng rực rỡ.</em>",
+      "title": "Bứt phá đỉnh cao, nhận <em>giải thưởng xứng tầm.</em>",
       "poolLabel": "Tổng giá trị giải thưởng dự kiến",
       "poolTitle": "Tổng giá trị giải thưởng dự kiến",
-      "poolDescription": "Giải thưởng tiền mặt, quyền lợi từ đối tác và những cơ hội giúp các ý tưởng chiến thắng tiến xa hơn cuộc thi.",
+      "poolDescription": "Giải thưởng tiền mặt, quyền lợi từ đối tác và cơ hội nghề nghiệp giúp các ý tưởng chiến thắng vươn xa.",
       "upTo": "Lên đến",
       "grandKicker": "Giải Nhất / Quán quân",
       "grandTitle": "Supernova<break></break>Champion",
-      "grandDescription": "Dành cho đội biến một chiến lược táo bạo thành chiến dịch thực tế thuyết phục nhất năm.",
+      "grandDescription": "Vinh danh Quán quân MASC 2026 — đội thi xuất sắc vượt qua thử thách kép và chứng minh bản lĩnh thực chiến vượt trội.",
       "secondKicker": "Giải Nhì / Á quân",
       "secondTitle": "Rising Star",
-      "secondDescription": "Vinh danh tư duy sắc bén, sức sáng tạo đầy tham vọng và phần thuyết trình giữ trọn sức nóng đến giây phút cuối cùng.",
+      "secondDescription": "Vinh danh Á quân với tư duy chiến lược sắc bén, sức sáng tạo đột phá và khả năng thực thi ấn tượng.",
       "impactKicker": "Giải thưởng đặc biệt",
       "impactTitle": "Impact Award",
-      "impactDescription": "Tôn vinh chiến dịch tạo ra tác động tích cực mạnh mẽ nhất cho khán giả và cộng đồng."
+      "impactDescription": "Tôn vinh chiến dịch tạo ra tác động tích cực mạnh mẽ nhất cho xã hội và cộng đồng."
     },
     "eligibility": {
       "index": "03 / Đối tượng dự thi",
-      "title": "Dành cho những tài năng đang không ngừng <em>tiến bước.</em>",
-      "description": "Dành cho người trẻ 18–22 tuổi đang sinh sống và học tập tại Việt Nam, với khát vọng theo đuổi sự nghiệp marketing nghiêm túc.",
-      "achieverTitle": "Gương mặt nổi bật tại các cuộc thi",
-      "achieverDescription": "Bạn từng đạt thứ hạng cao tại các cuộc thi giải case và sẵn sàng biến tiềm năng đã được chứng minh thành thành tựu lớn hơn.",
-      "leaderTitle": "Thủ lĩnh sinh viên",
-      "leaderDescription": "Bạn giữ vai trò điều hành trong một câu lạc bộ đại học và biết cách đưa đội nhóm, ý tưởng cùng cộng đồng tiến về phía trước.",
-      "marketerTitle": "Marketer tương lai",
-      "marketerDescription": "Bạn từng tiến sâu tại các chương trình Quản trị viên tập sự hoặc thể hiện được động lực, kỷ luật và định hướng marketing tương đương."
+      "title": "Đấu trường dành cho <em>tài năng Marketing.</em>",
+      "description": "Dành cho các bạn trẻ từ 18 đến 22 tuổi đang sinh sống và học tập tại Việt Nam, có niềm yêu thích và định hướng phát triển sự nghiệp Marketing.",
+      "achieverTitle": "Thành tích cuộc thi uy tín",
+      "achieverDescription": "Đã đạt thành tích cao tại các cuộc thi học thuật về Marketing và Business uy tín (Quán quân, Á quân, Top 20-50...).",
+      "leaderTitle": "Ban điều hành Câu lạc bộ",
+      "leaderDescription": "Là thành viên Ban điều hành của các câu lạc bộ Marketing hoặc Kinh doanh tại các trường đại học.",
+      "marketerTitle": "Management Trainee & Top MASC",
+      "marketerDescription": "Đã lọt vào vòng trong các chương trình Management Trainee / Key Talent của tập đoàn lớn, hoặc Top 50 Vòng 0.5 MASC'26."
     },
     "journey": {
-      "index": "04 / Hành trình tương tác",
-      "title": "Từ ánh sáng đầu tiên<break></break>đến <em>tác động trọn vẹn.</em>",
-      "description": "Chọn từng chặng để khám phá thử thách, mục tiêu và bước tiến của hành trình.",
+      "index": "04 / Lộ trình cuộc thi",
+      "title": "Từ ánh sáng đầu tiên<break></break>đến <em>đỉnh cao Supernova.</em>",
+      "description": "Khám phá lộ trình chi tiết các vòng thi của Marketing All-Star Challenge 2026.",
       "timelineLabel": "Lộ trình cuộc thi",
       "status": "Điểm đến cuối cùng",
       "impact": "TÁC ĐỘNG THỰC TẾ",
       "rounds": {
         "round05": {
           "date": "10—27 tháng 8",
-          "title": "The First Light",
-          "summary": "Cánh cửa mở cho những đội hình chưa hoàn thiện và gương mặt mới của ngành.",
-          "detail": "Hoàn thiện đội hình, chứng minh tiềm năng và cạnh tranh một trong hai tấm vé trực tiếp vào Vòng 2."
+          "title": "Vòng 0.5: The First Light",
+          "summary": "Cơ hội mở cho newbie và các đội chưa đủ đội hình 'full all-star'.",
+          "detail": "Top 2 đội xuất sắc nhất tiến thẳng vào Vòng 2. Top 50 bước tiếp vào Vòng 1 không qua xét duyệt CV, cùng đặc quyền tham gia session chữa đề và Industry sharing session từ các chuyên gia."
         },
         "round1": {
           "date": "9—17 tháng 9",
-          "title": "The Star Gathering",
-          "summary": "Chọn lĩnh vực nơi bản năng marketing mạnh nhất của bạn được tỏa sáng.",
-          "detail": "Các đội lựa chọn Product & Growth, Societal & PR hoặc Market Research & Trade, đồng thời nhận phản hồi trực tiếp 1-1 từ mentor trong ngành."
+          "title": "Vòng 1: The Star Gathering",
+          "summary": "Phân hóa 3 track chuyên sâu: Product & Growth, Societal + PR, Market Research + Trade.",
+          "detail": "Mỗi track giải đề bài chuyên biệt từ Mentor/Partner theo nguyên tắc 'first come, first serve'. Các đội nhận phản hồi 1-1 từ mentor. Top 2 đội xuất sắc nhất mỗi track (tổng 6 đội) tiến vào Vòng 2."
         },
         "round2": {
           "date": "25 tháng 9—9 tháng 10",
-          "title": "The Stellar Forge",
-          "summary": "Sáu đội xuất sắc nhất đối mặt với thử thách từ Nhà tài trợ Kim cương.",
-          "detail": "Giải pháp phải cân bằng giữa sức sáng tạo đột phá, tính ứng dụng thực tế và tác động tích cực có ý nghĩa cho cộng đồng."
+          "title": "Vòng 2: The Stellar Forge",
+          "summary": "Top 6 đội thi giải bài toán xã hội & văn hóa từ Nhà tài trợ Kim Cương.",
+          "detail": "Đòi hỏi sự cân bằng khắt khe giữa tính sáng tạo đột phá, tính thực tiễn cao và tác động tích cực cho cộng đồng. Top 4 đội xuất sắc nhất bước tiếp vào Vòng Thực Chiến."
         },
         "round3": {
-          "date": "Triển khai thực tế",
+          "date": "Vòng Thực Chiến",
           "title": "The Cosmic Crash",
-          "summary": "Ý tưởng rời khỏi slide và bước vào thị trường.",
-          "detail": "Bốn đội xuất sắc nhất biến đề xuất thành chiến dịch truyền thông thực tế, thu thập phản hồi thật từ khán giả và chứng minh điều gì hiệu quả ngoài bản brief."
+          "summary": "Top 4 triển khai chiến dịch truyền thông thực tế trên thị trường.",
+          "detail": "Trực tiếp phát triển proposal thành chiến dịch thực tế dưới sự đồng hành định hướng của Mentor và Brand Partner. Toàn bộ Top 4 chắc suất bước vào Đêm Chung kết."
         },
         "round4": {
           "date": "16—17 tháng 10",
-          "title": "Grand Finale",
-          "summary": "Networking Night, phần thuyết trình chiến dịch cuối cùng và một thử thách trực tiếp quyết định.",
-          "detail": "Sau khi trình bày chiến dịch đã triển khai, hai đội dẫn đầu giải một mini case bất ngờ ngay trên sân khấu dưới áp lực thời gian."
+          "title": "Grand Finale: The Infinite Glow",
+          "summary": "Networking Night (16/10), Pitching Chung kết & Thử thách kép Mini Case (17/10).",
+          "detail": "Top 4 trình bày campaign thực chiến trước BGK. Top 2 đội điểm cao nhất bước vào phần giải Mini Case trực tiếp dưới áp lực thời gian để quyết định Quán quân MASC'26."
         }
       }
     },
     "criteria": {
       "index": "05 / Tiêu chí đánh giá",
-      "title": "Điều ban giám khảo <em>tìm kiếm.</em>",
-      "round1": "Vòng 1",
-      "round1Title": "Tư duy chuyên môn rõ nét",
-      "round1Description": "Theo đuổi một lĩnh vực và hoàn thiện bài làm qua phản hồi trực tiếp từ mentor.",
-      "round2": "Vòng 2",
-      "round2Title": "Sáng tạo có trách nhiệm",
-      "round2Description": "Cân bằng tư duy đột phá với tính khả thi và tác động tích cực cho cộng đồng.",
-      "finale": "Chung kết",
-      "finaleTitle": "Thực thi dưới áp lực",
-      "finaleDescription": "Bảo vệ kết quả chiến dịch thực tế, sau đó giải một mini case chưa từng biết ngay trên sân khấu."
+      "title": "Tiêu chí đánh giá từ <em>Ban Giám Khảo.</em>",
+      "round1": "Vòng 1 — The Star Gathering",
+      "round1Title": "Tư duy chuyên môn sâu theo Track",
+      "round1Description": "Lựa chọn 1 trong 3 track chuyên môn (Product & Growth, Societal + PR/MarCom, Market Research + Trade), hoàn thiện bài làm qua phản hồi 1-1 từ mentor.",
+      "round2": "Vòng 2 — The Stellar Forge",
+      "round2Title": "Sáng tạo thực tiễn & Tác động xã hội",
+      "round2Description": "Giải quyết bài toán từ Nhà tài trợ Kim Cương, cân bằng giữa tính sáng tạo đột phá, tính thực tiễn cao và tác động tích cực cho cộng đồng.",
+      "finale": "Chung kết — The Infinite Glow",
+      "finaleTitle": "Thực chiến & Giải Mini Case trực tiếp",
+      "finaleDescription": "Bảo vệ chiến dịch thực chiến đã triển khai trên thị trường, sau đó Top 2 giải quyết Mini Case dưới áp lực thời gian thực ngay trên sân khấu."
     },
     "mentors": {
       "index": "06 / Mentor",
-      "title": "Đồng hành bởi những người định hình <em>thị trường.</em>",
-      "description": "Gặp gỡ các chuyên gia đầu ngành mang kinh nghiệm về thương hiệu, nghiên cứu và đổi mới đến trực tiếp với thí sinh năm nay.",
+      "title": "Đồng hành cùng các <em>chuyên gia đầu ngành.</em>",
+      "description": "Gặp gỡ các chuyên gia đầu ngành đến từ các thương hiệu, agency, tập đoàn hàng đầu, mang kinh nghiệm thực chiến trực tiếp đến thí sinh.",
       "featuredLabel": "Các mentor nổi bật",
       "portraitAlt": "Chân dung {name}",
       "mentor1": {
         "name": "Ms. Ngọc Nguyễn",
-        "description1": "Trưởng phòng Marketing Thương hiệu tại Canifa",
-        "description2": "Dẫn dắt thành công các chiến dịch “Say It Now” và “Yêu Nước Từ Trong Nôi” của Canifa, với hơn 15 năm kinh nghiệm",
+        "description1": "Head of Brand Marketing Department tại Canifa",
+        "description2": "Dẫn dắt thành công các chiến dịch “Say It Now” và “Yêu Nước Từ Trong Nôi” tại Canifa, với hơn 15 năm kinh nghiệm",
         "description3": "Giám khảo Z Marketer Mùa 5 và Hackathon Mùa 6"
       },
       "mentor2": {
         "name": "Mr. Duy Nguyễn",
-        "description1": "Quản lý Phát triển Kinh doanh Thương hiệu tại Nestlé",
-        "description2": "Cựu Quản lý Thương hiệu Cấp cao"
+        "description1": "Brand Business Development Manager tại Nestlé",
+        "description2": "Former Senior Brand Manager"
       },
       "mentor3": {
         "name": "Mr. Panos Dimitropoulos",
-        "description1": "Nhà sáng lập Two Words Agency",
-        "description2": "Cựu Giám đốc Cấp cao tại Kantar"
+        "description1": "Founder Two Words Agency",
+        "description2": "Ex-Senior Director tại Kantar"
       },
       "mentor4": {
         "name": "Ms. Trang Hoàng",
-        "description1": "Đồng sáng lập InnoSight Academy",
-        "description2": "Đồng sáng lập Insight2Innovation Podcast",
-        "description3": "Mentor cho các chương trình Quản trị viên tập sự của Unilever và Nestlé Việt Nam"
+        "description1": "Co-Founder InnoSight Academy",
+        "description2": "Co-Founder Insight2Innovation Podcast",
+        "description3": "Mentor tại Unilever & Nestlé Vietnam's Management Trainee"
       }
     },
     "finalCta": {
-      "index": "Quán quân / Á quân / Giải Ba",
-      "title": "Ghi tên mình<break></break>giữa những <em>vì sao.</em>",
-      "description": "Đơn ứng tuyển mở từ ngày 10–23 tháng 7 dành cho các tài năng marketing tham vọng, 18–22 tuổi, đang sinh sống và học tập tại Việt Nam.",
-      "button": "Bắt đầu hành trình"
+      "index": "Quán quân / Á quân / Quý quân",
+      "title": "Bứt phá giới hạn,<break></break>trở thành <em>Supernova.</em>",
+      "description": "Đơn đăng ký mở từ ngày 10–23 tháng 7 dành cho các tài năng marketing tham vọng từ 18–22 tuổi trên toàn quốc.",
+      "button": "Đăng ký ngay"
     },
     "footer": {
       "brand": "Marketing All-Star<break></break>Challenge 2026",
@@ -177,7 +177,7 @@
       "leads": "Ban tổ chức",
       "lead1": "Lê Đức Anh — Đồng Trưởng ban",
       "lead2": "Nguyễn Mai Ngọc Nhi — Đồng Trưởng ban",
-      "lead3": "Nguyễn Minh Ngọc — Đối ngoại",
+      "lead3": "Nguyễn Minh Ngọc — Trưởng ban Đối ngoại",
       "shortcuts": "Lối tắt",
       "competition": "Cuộc thi",
       "timeline": "Lộ trình",
