@@ -1,16 +1,17 @@
-"use client";
+import { auth } from "@masc-landing/auth";
+import { headers } from "next/headers";
+import { redirect } from "next/navigation";
 
-import { useState } from "react";
+import LoginPageClient from "./login-page-client";
 
-import SignInForm from "@/components/sign-in-form";
-import SignUpForm from "@/components/sign-up-form";
+export default async function LoginPage() {
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
 
-export default function LoginPage() {
-  const [showSignIn, setShowSignIn] = useState(false);
+  if (session?.user) {
+    redirect("/dashboard");
+  }
 
-  return showSignIn ? (
-    <SignInForm onSwitchToSignUp={() => setShowSignIn(false)} />
-  ) : (
-    <SignUpForm onSwitchToSignIn={() => setShowSignIn(true)} />
-  );
+  return <LoginPageClient />;
 }

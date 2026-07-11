@@ -191,10 +191,14 @@
     "email": "Email",
     "password": "Password",
     "name": "Name",
+    "or": "or",
     "submitting": "Submitting...",
     "invalidEmail": "Invalid email address",
     "passwordLength": "Password must be at least 8 characters",
     "nameLength": "Name must be at least 2 characters",
+    "google": {
+      "button": "Login with Google"
+    },
     "signIn": {
       "title": "Welcome Back",
       "button": "Sign In",

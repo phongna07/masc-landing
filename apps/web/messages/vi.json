@@ -191,10 +191,14 @@
     "email": "Email",
     "password": "Mật khẩu",
     "name": "Họ và tên",
+    "or": "hoặc",
     "submitting": "Đang gửi...",
     "invalidEmail": "Địa chỉ email không hợp lệ",
     "passwordLength": "Mật khẩu phải có ít nhất 8 ký tự",
     "nameLength": "Họ và tên phải có ít nhất 2 ký tự",
+    "google": {
+      "button": "Tiếp tục với Google"
+    },
     "signIn": {
       "title": "Chào mừng bạn trở lại",
       "button": "Đăng nhập",

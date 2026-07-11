@@ -15,10 +15,10 @@ import mentor1 from "@/assets/mentor-1.png";
 import mentor2 from "@/assets/mentor-2.png";
 import mentor3 from "@/assets/mentor-3.png";
 import mentor4 from "@/assets/mentor-4.png";
-import LanguageSwitcher from "@/components/language-switcher";
+import SiteHeader from "@/components/site-header";
 
 const registrationLink =
-  "/register";
+  "/login";
 
 export default function Home() {
   const t = useTranslations("Home");
@@ -42,41 +42,41 @@ export default function Home() {
     image: StaticImageData;
     description: string[];
   }> = [
-    {
-      name: t("mentors.mentor1.name"),
-      image: mentor1,
-      description: [
-        t("mentors.mentor1.description1"),
-        t("mentors.mentor1.description2"),
-        t("mentors.mentor1.description3"),
-      ],
-    },
-    {
-      name: t("mentors.mentor2.name"),
-      image: mentor2,
-      description: [
-        t("mentors.mentor2.description1"),
-        t("mentors.mentor2.description2"),
-      ],
-    },
-    {
-      name: t("mentors.mentor3.name"),
-      image: mentor3,
-      description: [
-        t("mentors.mentor3.description1"),
-        t("mentors.mentor3.description2"),
-      ],
-    },
-    {
-      name: t("mentors.mentor4.name"),
-      image: mentor4,
-      description: [
-        t("mentors.mentor4.description1"),
-        t("mentors.mentor4.description2"),
-        t("mentors.mentor4.description3"),
-      ],
-    },
-  ];
+      {
+        name: t("mentors.mentor1.name"),
+        image: mentor1,
+        description: [
+          t("mentors.mentor1.description1"),
+          t("mentors.mentor1.description2"),
+          t("mentors.mentor1.description3"),
+        ],
+      },
+      {
+        name: t("mentors.mentor2.name"),
+        image: mentor2,
+        description: [
+          t("mentors.mentor2.description1"),
+          t("mentors.mentor2.description2"),
+        ],
+      },
+      {
+        name: t("mentors.mentor3.name"),
+        image: mentor3,
+        description: [
+          t("mentors.mentor3.description1"),
+          t("mentors.mentor3.description2"),
+        ],
+      },
+      {
+        name: t("mentors.mentor4.name"),
+        image: mentor4,
+        description: [
+          t("mentors.mentor4.description1"),
+          t("mentors.mentor4.description2"),
+          t("mentors.mentor4.description3"),
+        ],
+      },
+    ];
 
   useEffect(() => {
     gsap.registerPlugin(ScrollTrigger);
@@ -260,30 +260,7 @@ export default function Home() {
         <span />
       </div>
 
-      <header className="site-header">
-        <a className="brand" href="#top" aria-label={t("header.backToTop")}>
-          <span className="brand-mark">M</span>
-          <span className="brand-copy">
-            MASC
-            <br />
-            <small>SUPERNOVA &apos;26</small>
-          </span>
-        </a>
-        <nav aria-label={t("header.navigationLabel")}>
-          <a href="#">{t("header.lookingBack")}</a>
-          <a href="#">{t("header.videoChallenges")}</a>
-          <a href="#">{t("header.news")}</a>
-        </nav>
-        <div className="header-actions">
-          <LanguageSwitcher />
-          <a className="header-login" href="/login">
-            {t("header.login")}
-          </a>
-          <span className="header-cta is-disabled" aria-label={t("header.ticketsLabel")}>
-            {t("header.tickets")}
-          </span>
-        </div>
-      </header>
+      <SiteHeader landingPage />
 
       <main id="top">
         <section className="hero" aria-labelledby="hero-title">
