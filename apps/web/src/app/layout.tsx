@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import localFont from "next/font/local";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getTranslations } from "next-intl/server";
+import NextTopLoader from "nextjs-toploader";
 
 import "../index.css";
 import Providers from "@/components/providers";
@@ -36,6 +37,7 @@ export default async function RootLayout({
   return (
     <html lang={locale}>
       <body className={castela.variable}>
+        <NextTopLoader color="linear-gradient(90deg, var(--violet), #f5d078, var(--ember))" height={2} showSpinner={false}></NextTopLoader>
         <NextIntlClientProvider>
           <Providers>{children}</Providers>
         </NextIntlClientProvider>

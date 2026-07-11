@@ -3,6 +3,7 @@
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Image, { type StaticImageData } from "next/image";
+import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { useEffect, useRef, useState } from "react";
 
@@ -282,10 +283,10 @@ export default function Home() {
             </h1>
             <div className="hero-bottom reveal">
               <p>{t("hero.description")}</p>
-              <a className="primary-button" href={registrationLink}>
+              <Link className="primary-button" href={registrationLink}>
                 <span>{t("hero.apply")}</span>
                 <span aria-hidden="true">↗</span>
-              </a>
+              </Link>
             </div>
           </div>
 
@@ -531,10 +532,10 @@ export default function Home() {
               })}
             </h2>
             <p>{t("finalCta.description")}</p>
-            <a className="primary-button light" href={registrationLink}>
+            <Link className="primary-button light" href={registrationLink}>
               <span>{t("finalCta.button")}</span>
               <span aria-hidden="true">↗</span>
-            </a>
+            </Link>
           </div>
         </section>
       </main>

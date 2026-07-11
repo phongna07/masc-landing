@@ -24,6 +24,7 @@
     "lucide-react": "catalog:",
     "next": "catalog:",
     "next-intl": "^4.13.2",
+    "nextjs-toploader": "^3.9.17",
     "react": "catalog:",
     "react-dom": "catalog:",
     "sonner": "catalog:",
