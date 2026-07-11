@@ -537,7 +537,7 @@ img {
 .about {
   position: relative;
   overflow: hidden;
-  padding: 170px 0 190px;
+  padding: 120px 0;
   background: #07070a;
 }
 
@@ -662,7 +662,7 @@ img {
 
 .prizes {
   position: relative;
-  padding: 170px 0 180px;
+  padding: 150px 0;
   overflow: hidden;
   background: #0b0a10;
 }
@@ -936,7 +936,7 @@ img {
   display: grid;
   grid-template-columns: minmax(280px, 0.8fr) minmax(460px, 1fr);
   gap: 9vw;
-  padding: 210px 0;
+  padding: 120px 0;
 }
 
 .why-heading {
@@ -1005,7 +1005,7 @@ img {
 
 .journey {
   position: relative;
-  padding: 180px 0 220px;
+  padding: 120px 0;
   background: #08080b;
 }
 
@@ -1204,7 +1204,7 @@ img {
 
 .criteria {
   position: relative;
-  padding: 170px 0;
+  padding: 100px 0;
   overflow: clip;
   background: #0d0c11;
 }
@@ -1258,7 +1258,7 @@ img {
 }
 
 .criteria-card h3 {
-  margin: 68px 0 20px;
+  margin: 32px 0 20px;
 }
 
 .criteria-card p {
@@ -1711,7 +1711,7 @@ footer {
   }
 
   .about {
-    padding: 120px 0;
+    padding: 80px 0;
   }
 
   .about-grid {
@@ -1725,15 +1725,21 @@ footer {
   }
 
   .portal {
-    height: 56vh;
-    min-height: 380px;
+    height: auto;
+    min-height: 0;
+    aspect-ratio: 2 / 1;
     clip-path: none;
   }
 
   .portal img {
-    left: -35% !important;
-    width: 170% !important;
-    max-width: none;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover;
+    object-position: center;
+    transform: none !important;
+    will-change: auto;
   }
 
   .portal-caption {
@@ -1747,7 +1753,7 @@ footer {
   .prizes,
   .criteria,
   .partners {
-    padding: 120px 0;
+    padding: 60px 0;
   }
 
   .prizes-heading,
@@ -1783,7 +1789,7 @@ footer {
   }
 
   .why-content {
-    padding: 150px 0;
+    padding: 60px 0;
   }
 
   .feature {
@@ -1800,7 +1806,7 @@ footer {
   }
 
   .journey {
-    padding: 130px 0 150px;
+    padding: 60px 0;
   }
 
   .journey-intro {
