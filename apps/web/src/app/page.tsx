@@ -541,19 +541,21 @@ export default function Home() {
             <a href="https://facebook.com/MarketingAllStarChallenge" target="_blank" rel="noreferrer">
               Official Facebook <span aria-hidden="true">↗</span>
             </a>
-            <a href="tel:+84857129878">0857 129 878</a>
-            <a href="tel:+84782356586">0782 356 586</a>
-            <a href="tel:+84965350173">0965 350 173</a>
           </div>
           <div className="footer-people">
             <p className="footer-label">Organizing leads</p>
-            <p>
-              Lều Đức Anh — Co-Head
-              <br />
-              Nguyễn Mai Ngọc Nhi — Co-Head
-              <br />
-              Nguyễn Minh Ngọc — External Relations
-            </p>
+            <div className="footer-person">
+              <span>Lê Đức Anh — Co-Head</span>
+              <a href="tel:+84857129878">0857 129 878</a>
+            </div>
+            <div className="footer-person">
+              <span>Nguyễn Mai Ngọc Nhi — Co-Head</span>
+              <a href="tel:+84782356586">0782 356 586</a>
+            </div>
+            <div className="footer-person">
+              <span>Nguyễn Minh Ngọc — External Relations</span>
+              <a href="tel:+84965350173">0965 350 173</a>
+            </div>
           </div>
           <div className="footer-shortcuts">
             <p className="footer-label">Shortcuts</p>

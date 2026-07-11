@@ -1323,7 +1323,7 @@ footer {
 }
 
 .footer-contact a,
-.footer-people p:last-child,
+.footer-people a,
 .footer-shortcuts a {
   margin: 0;
   color: #c8c4cc;
@@ -1331,7 +1331,17 @@ footer {
   line-height: 1.75;
 }
 
+.footer-person {
+  display: flex;
+  flex-direction: column;
+}
+
+.footer-person a {
+  font-size: 11px;
+}
+
 .footer-contact a:hover,
+.footer-people a:hover,
 .footer-shortcuts a:hover {
   color: #fff;
 }
