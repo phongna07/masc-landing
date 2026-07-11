@@ -2,6 +2,7 @@
 
 import { useTranslations } from "next-intl";
 
+import { authClient } from "@/lib/auth-client";
 import LanguageSwitcher from "@/components/language-switcher";
 
 type SiteHeaderProps = {
@@ -10,6 +11,7 @@ type SiteHeaderProps = {
 
 export default function SiteHeader({ landingPage = false }: SiteHeaderProps) {
   const t = useTranslations("Home.header");
+  const { data: session, isPending } = authClient.useSession();
   const homeHref = landingPage ? "#top" : "/";
   const sectionHref = (hash: string) => (landingPage ? hash : `/${hash}`);
 
@@ -29,10 +31,12 @@ export default function SiteHeader({ landingPage = false }: SiteHeaderProps) {
         <a href={sectionHref("#news")}>{t("news")}</a>
       </nav>
       <div className="header-actions">
+        {!isPending && (
+          <a className="header-login" href={session?.user ? "/dashboard" : "/login"}>
+            {session?.user ? "Dashboard" : t("login")}
+          </a>
+        )}
         <LanguageSwitcher />
-        <a className="header-login" href="/login">
-          {t("login")}
-        </a>
         <span className="header-cta is-disabled" aria-label={t("ticketsLabel")}>
           {t("tickets")}
         </span>
