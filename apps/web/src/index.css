@@ -1633,10 +1633,6 @@ footer {
     font-size: 9px;
   }
 
-  .header-login {
-    display: none;
-  }
-
   .brand-copy {
     display: none;
   }
@@ -1715,7 +1711,7 @@ footer {
   }
 
   .about-grid {
-    margin-bottom: 80px;
+    margin-bottom: 30px;
   }
 
   .section-heading h2,
