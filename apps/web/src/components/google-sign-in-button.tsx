@@ -2,7 +2,6 @@
 
 import { Button } from "@masc-landing/ui/components/button";
 import { useTranslations } from "next-intl";
-import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 
@@ -21,7 +20,6 @@ function GoogleLogo() {
 
 export default function GoogleSignInButton() {
   const t = useTranslations("Auth");
-  const router = useRouter();
   const [isPending, setIsPending] = useState(false);
   const popupRef = useRef<Window | null>(null);
 
@@ -35,7 +33,7 @@ export default function GoogleSignInButton() {
       popupRef.current = null;
 
       if (event.data.success) {
-        router.push("/dashboard");
+        window.location.assign("/dashboard");
       } else {
         toast.error(event.data.error || "Google sign-in was cancelled.");
       }
@@ -43,7 +41,7 @@ export default function GoogleSignInButton() {
 
     window.addEventListener("message", handleGoogleAuthComplete);
     return () => window.removeEventListener("message", handleGoogleAuthComplete);
-  }, [router]);
+  }, []);
 
   useEffect(() => {
     if (!isPending || !popupRef.current) {

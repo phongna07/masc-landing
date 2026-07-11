@@ -11,13 +11,11 @@ import {
 import { Skeleton } from "@masc-landing/ui/components/skeleton";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
-import { useRouter } from "next/navigation";
 
 import { authClient } from "@/lib/auth-client";
 
 export default function UserMenu() {
   const t = useTranslations("UserMenu");
-  const router = useRouter();
   const { data: session, isPending } = authClient.useSession();
 
   if (isPending) {
@@ -48,7 +46,7 @@ export default function UserMenu() {
               authClient.signOut({
                 fetchOptions: {
                   onSuccess: () => {
-                    router.push("/");
+                    window.location.assign("/");
                   },
                 },
               });
