@@ -16,7 +16,7 @@ import mentor3 from "@/assets/mentor-3.png";
 import mentor4 from "@/assets/mentor-4.png";
 
 const registrationLink =
-  "mailto:masc26.info@gmail.com?subject=MASC%202026%20Registration";
+  "/register";
 
 const rounds = [
   {
@@ -71,31 +71,31 @@ const mentors: Array<{
       name: "Ms. Ngọc Nguyễn",
       image: mentor1,
       description: [
-        "Head of Brand Marketing Department tại Canifa",
-        "Dẫn dắt thành công chiến dịch “Say It Now” và “Yêu Nước Từ Trong Nôi” tại Canifa với hơn 15 năm kinh nghiệm",
-        "Giám khảo cuộc thi Z Marketer Mùa 5 và Hackathon mùa 6",
+        "Head of Brand Marketing Department at Canifa",
+        "Successfully led Canifa’s “Say It Now” and “Yêu Nước Từ Trong Nôi” campaigns, backed by over 15 years of experience",
+        "Judge for Z Marketer Season 5 and Hackathon Season 6",
       ],
     },
     {
       name: "Mr. Duy Nguyễn",
       image: mentor2,
       description: [
-        "Brand Business Development Manager tại Nestlé",
+        "Brand Business Development Manager at Nestlé",
         "Former Senior Brand Manager",
       ],
     },
     {
       name: "Mr. Panos Dimitropoulos",
       image: mentor3,
-      description: ["Founder Two Words Agency", "Ex-Senior Director tại Kantar"],
+      description: ["Founder of Two Words Agency", "Former Senior Director at Kantar"],
     },
     {
       name: "Ms. Trang Hoàng",
       image: mentor4,
       description: [
-        "Co-Founder InnoSight Academy",
-        "Co-Founder Podcast Insight2Innovation",
-        "Mentor tại Unilever & Nestlé Vietnam’s Management Trainee",
+        "Co-Founder of InnoSight Academy",
+        "Co-Founder of the Insight2Innovation Podcast",
+        "Mentor for the Unilever and Nestlé Vietnam Management Trainee programs",
       ],
     },
   ];
@@ -173,12 +173,12 @@ export default function Home() {
           {
             yPercent: -8,
             scale: 1.13,
-            filter: "brightness(0.58) saturate(0.82)",
+            filter: "brightness(0.48) saturate(0.82)",
           },
           {
             yPercent: 9,
             scale: 1.04,
-            filter: "brightness(0.36) saturate(0.65)",
+            filter: "brightness(0.32) saturate(0.65)",
             ease: "none",
             scrollTrigger: {
               trigger: ".why",
@@ -543,12 +543,12 @@ export default function Home() {
             </div>
             <div className="criteria-grid">
               <article className="criteria-card reveal">
-                <span>Vòng 1</span>
+                <span>Round 1</span>
                 <h3>Specialist clarity</h3>
                 <p>Commit to one track and sharpen the work through direct mentor feedback.</p>
               </article>
               <article className="criteria-card reveal">
-                <span>Vòng 2</span>
+                <span>Round 2</span>
                 <h3>Creative responsibility</h3>
                 <p>Balance breakthrough thinking with feasibility and positive community impact.</p>
               </article>
