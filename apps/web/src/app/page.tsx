@@ -373,41 +373,70 @@ export default function Home() {
           </div>
         </section>
 
-        <section className="updates" id="news" aria-labelledby="updates-title">
+        <section className="prizes" id="prizes" aria-labelledby="prizes-title">
+          <div className="prize-glow" aria-hidden="true" />
           <div className="page-shell">
-            <div className="updates-heading reveal">
-              <p className="section-index">02 / On the radar</p>
-              <h2 id="updates-title">Signals from the <em>MASC universe.</em></h2>
+            <div className="prizes-heading reveal">
+              <div>
+                <p className="section-index">02 / Prizes &amp; awards</p>
+                <p className="prize-overline">For the teams that outshine the rest</p>
+              </div>
+              <h2 id="prizes-title">
+                Great work deserves a <em>stellar reward.</em>
+              </h2>
             </div>
-            <div className="update-grid">
-              <article className="update-card featured-update reveal" id="previous-season">
-                <p className="card-kicker">Academic event / Coming up</p>
-                <h3>Winner&apos;s Recipe</h3>
-                <p>
-                  Revisit the thinking, teamwork, and decisive moments behind the
-                  strongest work from previous MASC seasons.
-                </p>
-                <a href="#contact">Get event updates <span aria-hidden="true">↗</span></a>
+
+            <div className="prize-pool reveal" aria-label="Illustrative total prize pool">
+              <div className="prize-pool-copy">
+                <span>Estimated total prize pool</span>
+                <p>Cash prizes, partner benefits, and opportunities designed to
+                  carry winning ideas beyond the competition.</p>
+              </div>
+              <p className="prize-pool-amount">
+                <span>Up to</span>
+                100M <small>VND</small>
+              </p>
+            </div>
+
+            <div className="prize-grid">
+              <article className="prize-card grand-prize reveal">
+                <div className="prize-rank" aria-hidden="true">01</div>
+                <div className="prize-card-copy">
+                  <p className="card-kicker">Grand prize / Champion</p>
+                  <h3>Supernova<br />Champion</h3>
+                  <p>For the team that turns a bold strategy into the year&apos;s most
+                    convincing real-world campaign.</p>
+                </div>
+                <p className="prize-amount">50M <span>VND</span></p>
               </article>
-              <article className="update-card reveal">
-                <p className="card-kicker">Corporate experience</p>
-                <h3>Inside Green SM</h3>
-                <p>
-                  A closer look at how a fast-moving Vietnamese brand turns
-                  strategy into customer experience and market momentum.
-                </p>
-                <a href="#contact">Follow announcements <span aria-hidden="true">↗</span></a>
+
+              <article className="prize-card reveal">
+                <div className="prize-rank" aria-hidden="true">02</div>
+                <div className="prize-card-copy">
+                  <p className="card-kicker">Second place / Runner-up</p>
+                  <h3>Rising Star</h3>
+                  <p>Recognizing sharp insight, ambitious creativity, and a pitch
+                    that keeps the pressure on until the final moment.</p>
+                </div>
+                <p className="prize-amount">30M <span>VND</span></p>
               </article>
-              <article className="update-card reveal" id="video-challenge">
-                <p className="card-kicker">Community vote</p>
-                <h3>Video Challenge</h3>
-                <p>
-                  Meet the teams, watch their stories, and vote when the 2026
-                  video challenge officially goes live.
-                </p>
-                <span className="coming-soon">Voting opens soon</span>
+
+              <article className="prize-card reveal">
+                <div className="prize-rank" aria-hidden="true">✦</div>
+                <div className="prize-card-copy">
+                  <p className="card-kicker">Special recognition</p>
+                  <h3>Impact Award</h3>
+                  <p>Celebrating the campaign that creates the strongest positive
+                    impact for its audience and community.</p>
+                </div>
+                <p className="prize-amount">20M <span>VND</span></p>
               </article>
             </div>
+
+            {/* <p className="prize-disclaimer reveal">
+              <span>Note</span> Prize values and benefits shown are illustrative.
+              The official award structure will be announced soon.
+            </p> */}
           </div>
         </section>
 
@@ -483,7 +512,7 @@ export default function Home() {
         <section className="criteria" aria-labelledby="criteria-title">
           <div className="page-shell criteria-layout">
             <div className="criteria-intro reveal">
-              <p className="section-index">05 / The standard</p>
+              <p className="section-index">05 / Evaluation Criteria</p>
               <h2 id="criteria-title">What the judges will <em>look for.</em></h2>
             </div>
             <div className="criteria-grid">
