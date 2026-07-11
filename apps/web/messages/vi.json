@@ -1,0 +1,221 @@
+{
+  "Metadata": {
+    "title": "MASC 2026 — SUPERNOVA",
+    "description": "Marketing All-Star Challenge 2026: SUPERNOVA — đấu trường dành cho thế hệ tài năng marketing tiếp theo tại Việt Nam."
+  },
+  "LanguageSwitcher": {
+    "label": "Thay đổi ngôn ngữ",
+    "english": "English",
+    "vietnamese": "Tiếng Việt"
+  },
+  "Home": {
+    "header": {
+      "backToTop": "MASC 2026 — về đầu trang",
+      "navigationLabel": "Điều hướng chính",
+      "lookingBack": "Nhìn lại MASC’24&25",
+      "videoChallenges": "Thử thách video",
+      "news": "Tin tức",
+      "login": "Đăng nhập",
+      "ticketsLabel": "Vé sắp được mở bán",
+      "tickets": "Sắp mở bán vé"
+    },
+    "hero": {
+      "eyebrow": "Kotler Klub - VinUni House of Marketers",
+      "titleMarketing": "Marketing",
+      "titleAllStar": "All-Star",
+      "titleChallenge": "Challenge",
+      "description": "Tái sinh từ đổi mới. Vượt qua giới hạn bản thân và kiến tạo một di sản hoàn toàn mới trong marketing.",
+      "apply": "Ứng tuyển ngay",
+      "participantDetails": "Thông tin thí sinh",
+      "country": "Việt Nam",
+      "age": "Độ tuổi 18—22",
+      "applications": "Ứng tuyển / 10—23 tháng 7",
+      "scroll": "Cuộn để khám phá"
+    },
+    "countdown": {
+      "applications": "Đơn ứng tuyển Vòng 0.5",
+      "closesIn": "Thời gian đóng đơn còn",
+      "opensIn": "Vòng 0.5 mở đơn sau",
+      "closed": "Đã đóng đơn",
+      "aria": "{days} ngày, {hours} giờ, {minutes} phút, {seconds} giây",
+      "days": "Ngày",
+      "hours": "Giờ",
+      "minutes": "Phút",
+      "seconds": "Giây"
+    },
+    "about": {
+      "index": "01 / Cuộc thi",
+      "title": "Một di sản mới bắt đầu từ sự <em>sụp đổ.</em>",
+      "lead": "MASC 2026 là cuộc thi độc quyền quy mô toàn quốc do Kotler Klub—VinUni House of Marketers tổ chức.",
+      "description": "Chủ đề <strong>Supernova</strong> năm nay khắc họa khoảnh khắc tài năng được tái sinh: giới hạn cũ nhường chỗ, đổi mới bùng nổ và một bản sắc mạnh mẽ hơn thành hình.",
+      "organizerAlt": "Đơn vị tổ chức",
+      "hostedBy": "Tổ chức bởi Kotler Klub",
+      "organization": "VinUni House of Marketers",
+      "caption": "Không tìm kiếm những đáp án an toàn. Đây là nơi những marketer sẵn sàng kiến tạo tương lai chứng minh bản lĩnh."
+    },
+    "prizes": {
+      "index": "02 / Giải thưởng",
+      "overline": "Dành cho những đội thi tỏa sáng vượt trội",
+      "title": "Nỗ lực xuất sắc xứng đáng với một <em>phần thưởng rực rỡ.</em>",
+      "poolLabel": "Tổng giá trị giải thưởng dự kiến",
+      "poolTitle": "Tổng giá trị giải thưởng dự kiến",
+      "poolDescription": "Giải thưởng tiền mặt, quyền lợi từ đối tác và những cơ hội giúp các ý tưởng chiến thắng tiến xa hơn cuộc thi.",
+      "upTo": "Lên đến",
+      "grandKicker": "Giải Nhất / Quán quân",
+      "grandTitle": "Supernova<break></break>Champion",
+      "grandDescription": "Dành cho đội biến một chiến lược táo bạo thành chiến dịch thực tế thuyết phục nhất năm.",
+      "secondKicker": "Giải Nhì / Á quân",
+      "secondTitle": "Rising Star",
+      "secondDescription": "Vinh danh tư duy sắc bén, sức sáng tạo đầy tham vọng và phần thuyết trình giữ trọn sức nóng đến giây phút cuối cùng.",
+      "impactKicker": "Giải thưởng đặc biệt",
+      "impactTitle": "Impact Award",
+      "impactDescription": "Tôn vinh chiến dịch tạo ra tác động tích cực mạnh mẽ nhất cho khán giả và cộng đồng."
+    },
+    "eligibility": {
+      "index": "03 / Đối tượng dự thi",
+      "title": "Dành cho những tài năng đang không ngừng <em>tiến bước.</em>",
+      "description": "Dành cho người trẻ 18–22 tuổi đang sinh sống và học tập tại Việt Nam, với khát vọng theo đuổi sự nghiệp marketing nghiêm túc.",
+      "achieverTitle": "Gương mặt nổi bật tại các cuộc thi",
+      "achieverDescription": "Bạn từng đạt thứ hạng cao tại các cuộc thi giải case và sẵn sàng biến tiềm năng đã được chứng minh thành thành tựu lớn hơn.",
+      "leaderTitle": "Thủ lĩnh sinh viên",
+      "leaderDescription": "Bạn giữ vai trò điều hành trong một câu lạc bộ đại học và biết cách đưa đội nhóm, ý tưởng cùng cộng đồng tiến về phía trước.",
+      "marketerTitle": "Marketer tương lai",
+      "marketerDescription": "Bạn từng tiến sâu tại các chương trình Quản trị viên tập sự hoặc thể hiện được động lực, kỷ luật và định hướng marketing tương đương."
+    },
+    "journey": {
+      "index": "04 / Hành trình tương tác",
+      "title": "Từ ánh sáng đầu tiên<break></break>đến <em>tác động trọn vẹn.</em>",
+      "description": "Chọn từng chặng để khám phá thử thách, mục tiêu và bước tiến của hành trình.",
+      "timelineLabel": "Lộ trình cuộc thi",
+      "status": "Điểm đến cuối cùng",
+      "impact": "TÁC ĐỘNG THỰC TẾ",
+      "rounds": {
+        "round05": {
+          "date": "10—27 tháng 8",
+          "title": "The First Light",
+          "summary": "Cánh cửa mở cho những đội hình chưa hoàn thiện và gương mặt mới của ngành.",
+          "detail": "Hoàn thiện đội hình, chứng minh tiềm năng và cạnh tranh một trong hai tấm vé trực tiếp vào Vòng 2."
+        },
+        "round1": {
+          "date": "9—17 tháng 9",
+          "title": "The Star Gathering",
+          "summary": "Chọn lĩnh vực nơi bản năng marketing mạnh nhất của bạn được tỏa sáng.",
+          "detail": "Các đội lựa chọn Product & Growth, Societal & PR hoặc Market Research & Trade, đồng thời nhận phản hồi trực tiếp 1-1 từ mentor trong ngành."
+        },
+        "round2": {
+          "date": "25 tháng 9—9 tháng 10",
+          "title": "The Stellar Forge",
+          "summary": "Sáu đội xuất sắc nhất đối mặt với thử thách từ Nhà tài trợ Kim cương.",
+          "detail": "Giải pháp phải cân bằng giữa sức sáng tạo đột phá, tính ứng dụng thực tế và tác động tích cực có ý nghĩa cho cộng đồng."
+        },
+        "round3": {
+          "date": "Triển khai thực tế",
+          "title": "The Cosmic Crash",
+          "summary": "Ý tưởng rời khỏi slide và bước vào thị trường.",
+          "detail": "Bốn đội xuất sắc nhất biến đề xuất thành chiến dịch truyền thông thực tế, thu thập phản hồi thật từ khán giả và chứng minh điều gì hiệu quả ngoài bản brief."
+        },
+        "round4": {
+          "date": "16—17 tháng 10",
+          "title": "Grand Finale",
+          "summary": "Networking Night, phần thuyết trình chiến dịch cuối cùng và một thử thách trực tiếp quyết định.",
+          "detail": "Sau khi trình bày chiến dịch đã triển khai, hai đội dẫn đầu giải một mini case bất ngờ ngay trên sân khấu dưới áp lực thời gian."
+        }
+      }
+    },
+    "criteria": {
+      "index": "05 / Tiêu chí đánh giá",
+      "title": "Điều ban giám khảo <em>tìm kiếm.</em>",
+      "round1": "Vòng 1",
+      "round1Title": "Tư duy chuyên môn rõ nét",
+      "round1Description": "Theo đuổi một lĩnh vực và hoàn thiện bài làm qua phản hồi trực tiếp từ mentor.",
+      "round2": "Vòng 2",
+      "round2Title": "Sáng tạo có trách nhiệm",
+      "round2Description": "Cân bằng tư duy đột phá với tính khả thi và tác động tích cực cho cộng đồng.",
+      "finale": "Chung kết",
+      "finaleTitle": "Thực thi dưới áp lực",
+      "finaleDescription": "Bảo vệ kết quả chiến dịch thực tế, sau đó giải một mini case chưa từng biết ngay trên sân khấu."
+    },
+    "mentors": {
+      "index": "06 / Mentor",
+      "title": "Đồng hành bởi những người định hình <em>thị trường.</em>",
+      "description": "Gặp gỡ các chuyên gia đầu ngành mang kinh nghiệm về thương hiệu, nghiên cứu và đổi mới đến trực tiếp với thí sinh năm nay.",
+      "featuredLabel": "Các mentor nổi bật",
+      "portraitAlt": "Chân dung {name}",
+      "mentor1": {
+        "name": "Ms. Ngọc Nguyễn",
+        "description1": "Trưởng phòng Marketing Thương hiệu tại Canifa",
+        "description2": "Dẫn dắt thành công các chiến dịch “Say It Now” và “Yêu Nước Từ Trong Nôi” của Canifa, với hơn 15 năm kinh nghiệm",
+        "description3": "Giám khảo Z Marketer Mùa 5 và Hackathon Mùa 6"
+      },
+      "mentor2": {
+        "name": "Mr. Duy Nguyễn",
+        "description1": "Quản lý Phát triển Kinh doanh Thương hiệu tại Nestlé",
+        "description2": "Cựu Quản lý Thương hiệu Cấp cao"
+      },
+      "mentor3": {
+        "name": "Mr. Panos Dimitropoulos",
+        "description1": "Nhà sáng lập Two Words Agency",
+        "description2": "Cựu Giám đốc Cấp cao tại Kantar"
+      },
+      "mentor4": {
+        "name": "Ms. Trang Hoàng",
+        "description1": "Đồng sáng lập InnoSight Academy",
+        "description2": "Đồng sáng lập Insight2Innovation Podcast",
+        "description3": "Mentor cho các chương trình Quản trị viên tập sự của Unilever và Nestlé Việt Nam"
+      }
+    },
+    "finalCta": {
+      "index": "Quán quân / Á quân / Giải Ba",
+      "title": "Ghi tên mình<break></break>giữa những <em>vì sao.</em>",
+      "description": "Đơn ứng tuyển mở từ ngày 10–23 tháng 7 dành cho các tài năng marketing tham vọng, 18–22 tuổi, đang sinh sống và học tập tại Việt Nam.",
+      "button": "Bắt đầu hành trình"
+    },
+    "footer": {
+      "brand": "Marketing All-Star<break></break>Challenge 2026",
+      "support": "Câu hỏi & hỗ trợ",
+      "facebook": "Facebook chính thức",
+      "leads": "Ban tổ chức",
+      "lead1": "Lê Đức Anh — Đồng Trưởng ban",
+      "lead2": "Nguyễn Mai Ngọc Nhi — Đồng Trưởng ban",
+      "lead3": "Nguyễn Minh Ngọc — Đối ngoại",
+      "shortcuts": "Lối tắt",
+      "competition": "Cuộc thi",
+      "timeline": "Lộ trình",
+      "partners": "Đối tác",
+      "news": "Tin tức",
+      "hosted": "Tổ chức bởi Kotler Klub, VinUniversity",
+      "backToTop": "Về đầu trang ↑"
+    }
+  },
+  "Auth": {
+    "email": "Email",
+    "password": "Mật khẩu",
+    "name": "Họ và tên",
+    "submitting": "Đang gửi...",
+    "invalidEmail": "Địa chỉ email không hợp lệ",
+    "passwordLength": "Mật khẩu phải có ít nhất 8 ký tự",
+    "nameLength": "Họ và tên phải có ít nhất 2 ký tự",
+    "signIn": {
+      "title": "Chào mừng bạn trở lại",
+      "button": "Đăng nhập",
+      "switch": "Chưa có tài khoản? Đăng ký",
+      "success": "Đăng nhập thành công"
+    },
+    "signUp": {
+      "title": "Tạo tài khoản",
+      "button": "Đăng ký",
+      "switch": "Đã có tài khoản? Đăng nhập",
+      "success": "Đăng ký thành công"
+    }
+  },
+  "Dashboard": {
+    "title": "Bảng điều khiển",
+    "welcome": "Chào mừng {name}",
+    "api": "API: {message}"
+  },
+  "UserMenu": {
+    "signIn": "Đăng nhập",
+    "account": "Tài khoản của tôi",
+    "signOut": "Đăng xuất"
+  }
+}

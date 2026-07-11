@@ -185,6 +185,55 @@ img {
   gap: 10px;
 }
 
+.language-trigger {
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 9px 7px;
+  border: 0;
+  color: rgba(255, 255, 255, 0.7);
+  background: transparent;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  transition: color 220ms ease;
+}
+
+.language-trigger:hover,
+.language-trigger:focus-visible,
+.language-trigger[data-popup-open] {
+  color: #fff;
+}
+
+.language-trigger:disabled {
+  cursor: wait;
+  opacity: 0.55;
+}
+
+.language-trigger svg {
+  width: 13px;
+  height: 13px;
+  transition: transform 180ms ease;
+}
+
+.language-trigger[data-popup-open] svg {
+  transform: rotate(180deg);
+}
+
+.language-menu {
+  min-width: 132px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(12, 12, 17, 0.96);
+  color: #fff;
+  backdrop-filter: blur(18px);
+}
+
+.language-check {
+  margin-left: auto;
+}
+
 .header-login {
   padding: 11px 4px;
   color: rgba(255, 255, 255, 0.7);
@@ -1519,7 +1568,8 @@ footer {
   }
 
   .site-header {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: auto 1fr;
+    gap: 16px;
     padding: 0 20px;
   }
 
@@ -1625,12 +1675,30 @@ footer {
 
   .site-header {
     height: 70px;
+    gap: 10px;
     padding: 0 16px;
   }
 
-  .header-cta {
-    padding: 10px 12px;
+  .header-actions {
+    gap: 6px;
+  }
+
+  .language-trigger {
+    padding-inline: 4px;
     font-size: 9px;
+    letter-spacing: 0.04em;
+  }
+
+  .header-login {
+    padding-inline: 2px;
+    font-size: 9px;
+    letter-spacing: 0.07em;
+  }
+
+  .header-cta {
+    padding: 10px 9px;
+    font-size: 9px;
+    letter-spacing: 0.05em;
   }
 
   .brand-copy {

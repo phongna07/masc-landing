@@ -10,11 +10,13 @@ import {
 } from "@masc-landing/ui/components/dropdown-menu";
 import { Skeleton } from "@masc-landing/ui/components/skeleton";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 
 import { authClient } from "@/lib/auth-client";
 
 export default function UserMenu() {
+  const t = useTranslations("UserMenu");
   const router = useRouter();
   const { data: session, isPending } = authClient.useSession();
 
@@ -25,7 +27,7 @@ export default function UserMenu() {
   if (!session) {
     return (
       <Link href="/login">
-        <Button variant="outline">Sign In</Button>
+        <Button variant="outline">{t("signIn")}</Button>
       </Link>
     );
   }
@@ -37,7 +39,7 @@ export default function UserMenu() {
       </DropdownMenuTrigger>
       <DropdownMenuContent className="bg-card">
         <DropdownMenuGroup>
-          <DropdownMenuLabel>My Account</DropdownMenuLabel>
+          <DropdownMenuLabel>{t("account")}</DropdownMenuLabel>
           <DropdownMenuSeparator />
           <DropdownMenuItem>{session.user.email}</DropdownMenuItem>
           <DropdownMenuItem
@@ -52,7 +54,7 @@ export default function UserMenu() {
               });
             }}
           >
-            Sign Out
+            {t("signOut")}
           </DropdownMenuItem>
         </DropdownMenuGroup>
       </DropdownMenuContent>

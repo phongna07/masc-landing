@@ -3,6 +3,7 @@
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Image, { type StaticImageData } from "next/image";
+import { useTranslations } from "next-intl";
 import { useEffect, useRef, useState } from "react";
 
 import image1 from "@/assets/image-1.png";
@@ -14,94 +15,68 @@ import mentor1 from "@/assets/mentor-1.png";
 import mentor2 from "@/assets/mentor-2.png";
 import mentor3 from "@/assets/mentor-3.png";
 import mentor4 from "@/assets/mentor-4.png";
+import LanguageSwitcher from "@/components/language-switcher";
 
 const registrationLink =
   "/register";
 
-const rounds = [
-  {
-    marker: "0.5",
-    date: "August 10—27",
-    title: "The First Light",
-    summary: "An open door for incomplete teams and industry newcomers.",
-    detail:
-      "Build your team, prove your potential, and compete for one of two direct passes to Round 2.",
-  },
-  {
-    marker: "01",
-    date: "September 9—17",
-    title: "The Star Gathering",
-    summary: "Choose the field where your strongest marketing instincts live.",
-    detail:
-      "Teams enter Product & Growth, Societal & PR, or Market Research & Trade, with direct one-on-one feedback from industry mentors.",
-  },
-  {
-    marker: "02",
-    date: "September 25—October 9",
-    title: "The Stellar Forge",
-    summary: "The top six teams take on the Diamond Sponsor's challenge.",
-    detail:
-      "Solutions must balance breakthrough creativity, practical application, and meaningful positive impact for the community.",
-  },
-  {
-    marker: "03",
-    date: "Real-world execution",
-    title: "The Cosmic Crash",
-    summary: "Ideas leave the deck and enter the market.",
-    detail:
-      "The top four teams turn proposals into live media campaigns, gather real audience response, and prove what can work beyond the brief.",
-  },
-  {
-    marker: "04",
-    date: "October 16—17",
-    title: "Grand Finale",
-    summary: "Networking Night, final campaign pitches, and one last live test.",
-    detail:
-      "After presenting their executed campaigns, the top two teams solve a surprise mini case on stage under time pressure.",
-    finale: true,
-  },
-] as const;
-
-const mentors: Array<{
-  name: string;
-  image: StaticImageData;
-  description: readonly string[];
-}> = [
+export default function Home() {
+  const t = useTranslations("Home");
+  const pageRef = useRef<HTMLDivElement>(null);
+  const rounds = [
+    { marker: "0.5", key: "round05" },
+    { marker: "01", key: "round1" },
+    { marker: "02", key: "round2" },
+    { marker: "03", key: "round3" },
+    { marker: "04", key: "round4", finale: true },
+  ].map((round) => ({
+    marker: round.marker,
+    date: t(`journey.rounds.${round.key}.date`),
+    title: t(`journey.rounds.${round.key}.title`),
+    summary: t(`journey.rounds.${round.key}.summary`),
+    detail: t(`journey.rounds.${round.key}.detail`),
+    finale: round.finale,
+  }));
+  const mentors: Array<{
+    name: string;
+    image: StaticImageData;
+    description: string[];
+  }> = [
     {
-      name: "Ms. Ngọc Nguyễn",
+      name: t("mentors.mentor1.name"),
       image: mentor1,
       description: [
-        "Head of Brand Marketing Department at Canifa",
-        "Successfully led Canifa’s “Say It Now” and “Yêu Nước Từ Trong Nôi” campaigns, backed by over 15 years of experience",
-        "Judge for Z Marketer Season 5 and Hackathon Season 6",
+        t("mentors.mentor1.description1"),
+        t("mentors.mentor1.description2"),
+        t("mentors.mentor1.description3"),
       ],
     },
     {
-      name: "Mr. Duy Nguyễn",
+      name: t("mentors.mentor2.name"),
       image: mentor2,
       description: [
-        "Brand Business Development Manager at Nestlé",
-        "Former Senior Brand Manager",
+        t("mentors.mentor2.description1"),
+        t("mentors.mentor2.description2"),
       ],
     },
     {
-      name: "Mr. Panos Dimitropoulos",
+      name: t("mentors.mentor3.name"),
       image: mentor3,
-      description: ["Founder of Two Words Agency", "Former Senior Director at Kantar"],
+      description: [
+        t("mentors.mentor3.description1"),
+        t("mentors.mentor3.description2"),
+      ],
     },
     {
-      name: "Ms. Trang Hoàng",
+      name: t("mentors.mentor4.name"),
       image: mentor4,
       description: [
-        "Co-Founder of InnoSight Academy",
-        "Co-Founder of the Insight2Innovation Podcast",
-        "Mentor for the Unilever and Nestlé Vietnam Management Trainee programs",
+        t("mentors.mentor4.description1"),
+        t("mentors.mentor4.description2"),
+        t("mentors.mentor4.description3"),
       ],
     },
   ];
-
-export default function Home() {
-  const pageRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     gsap.registerPlugin(ScrollTrigger);
@@ -286,7 +261,7 @@ export default function Home() {
       </div>
 
       <header className="site-header">
-        <a className="brand" href="#top" aria-label="MASC 2026 — back to top">
+        <a className="brand" href="#top" aria-label={t("header.backToTop")}>
           <span className="brand-mark">M</span>
           <span className="brand-copy">
             MASC
@@ -294,17 +269,18 @@ export default function Home() {
             <small>SUPERNOVA &apos;26</small>
           </span>
         </a>
-        <nav aria-label="Main navigation">
-          <a href="#">Looking back at MASC’24&25</a>
-          <a href="#">Video Challenges</a>
-          <a href="#">News</a>
+        <nav aria-label={t("header.navigationLabel")}>
+          <a href="#">{t("header.lookingBack")}</a>
+          <a href="#">{t("header.videoChallenges")}</a>
+          <a href="#">{t("header.news")}</a>
         </nav>
         <div className="header-actions">
+          <LanguageSwitcher />
           <a className="header-login" href="/login">
-            Log in
+            {t("header.login")}
           </a>
-          <span className="header-cta is-disabled" aria-label="Ticket sales coming soon">
-            Tickets soon
+          <span className="header-cta is-disabled" aria-label={t("header.ticketsLabel")}>
+            {t("header.tickets")}
           </span>
         </div>
       </header>
@@ -320,33 +296,30 @@ export default function Home() {
 
           <div className="hero-content page-shell">
             <p className="eyebrow reveal">
-              Kotler Klub - VinUni House of Marketers <span>2026</span>
+              {t("hero.eyebrow")} <span>2026</span>
             </p>
             <h1 id="hero-title" className="hero-title reveal">
-              <span>Marketing</span>
-              <em>All-Star</em>
-              <strong>Challenge</strong>
+              <span>{t("hero.titleMarketing")}</span>
+              <em>{t("hero.titleAllStar")}</em>
+              <strong>{t("hero.titleChallenge")}</strong>
             </h1>
             <div className="hero-bottom reveal">
-              <p>
-                Rebirth through innovation. Push past personal limits and leave
-                a completely new legacy in marketing.
-              </p>
+              <p>{t("hero.description")}</p>
               <a className="primary-button" href={registrationLink}>
-                <span>Apply now</span>
+                <span>{t("hero.apply")}</span>
                 <span aria-hidden="true">↗</span>
               </a>
             </div>
           </div>
 
           <DeadlineCountdown />
-          <div className="hero-meta" aria-label="Participant details">
-            <span>Vietnam</span>
-            <span>Ages 18—22</span>
-            <span>Applications / Jul 10—23</span>
+          <div className="hero-meta" aria-label={t("hero.participantDetails")}>
+            <span>{t("hero.country")}</span>
+            <span>{t("hero.age")}</span>
+            <span>{t("hero.applications")}</span>
           </div>
           <a className="scroll-cue" href="#about">
-            <span /> Scroll to discover
+            <span /> {t("hero.scroll")}
           </a>
         </section>
 
@@ -354,21 +327,12 @@ export default function Home() {
           <div className="section-glow" aria-hidden="true" />
           <div className="page-shell about-grid">
             <div className="section-heading reveal">
-              <p className="section-index">01 / The competition</p>
-              <h2 id="about-title">
-                A new legacy starts with a <em>collapse.</em>
-              </h2>
+              <p className="section-index">{t("about.index")}</p>
+              <h2 id="about-title">{t.rich("about.title", { em: (chunks) => <em>{chunks}</em> })}</h2>
             </div>
             <div className="about-copy reveal">
-              <p className="lead">
-                MASC 2026 is an exclusive national competition hosted by Kotler
-                Klub—the VinUni House of Marketers.
-              </p>
-              <p>
-                This year&apos;s <strong>Supernova</strong> theme captures the moment
-                talent is reborn: old limits give way, innovation erupts, and a
-                stronger identity takes shape.
-              </p>
+              <p className="lead">{t("about.lead")}</p>
+              <p>{t.rich("about.description", { strong: (chunks) => <strong>{chunks}</strong> })}</p>
             </div>
           </div>
 
@@ -376,7 +340,7 @@ export default function Home() {
             <div className="portal parallax-frame">
               <Image
                 src={image2}
-                alt="Organizer"
+                alt={t("about.organizerAlt")}
                 className="organizer-image"
                 fill
                 sizes="(max-width: 680px) 100vw, 1360px"
@@ -384,14 +348,11 @@ export default function Home() {
               />
               <div className="portal-vignette" aria-hidden="true" />
               <p className="portal-label">
-                <span>Hosted by Kotler Klub</span>
-                <span>VinUni House of Marketers</span>
+                <span>{t("about.hostedBy")}</span>
+                <span>{t("about.organization")}</span>
               </p>
             </div>
-            <p className="portal-caption reveal">
-              Not a search for safe answers. A proving ground for marketers ready
-              to build what comes next.
-            </p>
+            <p className="portal-caption reveal">{t("about.caption")}</p>
           </div>
         </section>
 
@@ -400,22 +361,19 @@ export default function Home() {
           <div className="page-shell">
             <div className="prizes-heading reveal">
               <div>
-                <p className="section-index">02 / Prizes &amp; awards</p>
-                <p className="prize-overline">For the teams that outshine the rest</p>
+                <p className="section-index">{t("prizes.index")}</p>
+                <p className="prize-overline">{t("prizes.overline")}</p>
               </div>
-              <h2 id="prizes-title">
-                Great work deserves a <em>stellar reward.</em>
-              </h2>
+              <h2 id="prizes-title">{t.rich("prizes.title", { em: (chunks) => <em>{chunks}</em> })}</h2>
             </div>
 
-            <div className="prize-pool reveal" aria-label="Illustrative total prize pool">
+            <div className="prize-pool reveal" aria-label={t("prizes.poolLabel")}>
               <div className="prize-pool-copy">
-                <span>Estimated total prize pool</span>
-                <p>Cash prizes, partner benefits, and opportunities designed to
-                  carry winning ideas beyond the competition.</p>
+                <span>{t("prizes.poolTitle")}</span>
+                <p>{t("prizes.poolDescription")}</p>
               </div>
               <p className="prize-pool-amount">
-                <span>Up to</span>
+                <span>{t("prizes.upTo")}</span>
                 100M <small>VND</small>
               </p>
             </div>
@@ -424,10 +382,9 @@ export default function Home() {
               <article className="prize-card grand-prize reveal">
                 <div className="prize-rank" aria-hidden="true">01</div>
                 <div className="prize-card-copy">
-                  <p className="card-kicker">Grand prize / Champion</p>
-                  <h3>Supernova<br />Champion</h3>
-                  <p>For the team that turns a bold strategy into the year&apos;s most
-                    convincing real-world campaign.</p>
+                  <p className="card-kicker">{t("prizes.grandKicker")}</p>
+                  <h3>{t.rich("prizes.grandTitle", { break: () => <br /> })}</h3>
+                  <p>{t("prizes.grandDescription")}</p>
                 </div>
                 <p className="prize-amount">50M <span>VND</span></p>
               </article>
@@ -435,10 +392,9 @@ export default function Home() {
               <article className="prize-card reveal">
                 <div className="prize-rank" aria-hidden="true">02</div>
                 <div className="prize-card-copy">
-                  <p className="card-kicker">Second place / Runner-up</p>
-                  <h3>Rising Star</h3>
-                  <p>Recognizing sharp insight, ambitious creativity, and a pitch
-                    that keeps the pressure on until the final moment.</p>
+                  <p className="card-kicker">{t("prizes.secondKicker")}</p>
+                  <h3>{t("prizes.secondTitle")}</h3>
+                  <p>{t("prizes.secondDescription")}</p>
                 </div>
                 <p className="prize-amount">30M <span>VND</span></p>
               </article>
@@ -446,10 +402,9 @@ export default function Home() {
               <article className="prize-card reveal">
                 <div className="prize-rank" aria-hidden="true">✦</div>
                 <div className="prize-card-copy">
-                  <p className="card-kicker">Special recognition</p>
-                  <h3>Impact Award</h3>
-                  <p>Celebrating the campaign that creates the strongest positive
-                    impact for its audience and community.</p>
+                  <p className="card-kicker">{t("prizes.impactKicker")}</p>
+                  <h3>{t("prizes.impactTitle")}</h3>
+                  <p>{t("prizes.impactDescription")}</p>
                 </div>
                 <p className="prize-amount">20M <span>VND</span></p>
               </article>
@@ -469,28 +424,20 @@ export default function Home() {
           <div className="why-shade" aria-hidden="true" />
           <div className="page-shell why-content">
             <div className="why-heading reveal">
-              <p className="section-index">03 / Who can enter</p>
-              <h2 id="why-title">
-                Built for talent already in <em>motion.</em>
-              </h2>
-              <p>
-                Open to young people aged 18–22 who live and study in Vietnam,
-                with the ambition to build a serious career in marketing.
-              </p>
+              <p className="section-index">{t("eligibility.index")}</p>
+              <h2 id="why-title">{t.rich("eligibility.title", { em: (chunks) => <em>{chunks}</em> })}</h2>
+              <p>{t("eligibility.description")}</p>
             </div>
 
             <div className="feature-list">
-              <Feature number="01" title="Competition Achievers" symbol="✦">
-                You have earned high placements in case competitions and are
-                ready to turn proven potential into a bigger result.
+              <Feature number="01" title={t("eligibility.achieverTitle")} symbol="✦">
+                {t("eligibility.achieverDescription")}
               </Feature>
-              <Feature number="02" title="Student Leaders" symbol="↗">
-                You hold an executive role in a university club and know how to
-                move teams, ideas, and communities forward.
+              <Feature number="02" title={t("eligibility.leaderTitle")} symbol="↗">
+                {t("eligibility.leaderDescription")}
               </Feature>
-              <Feature number="03" title="Future Marketers" symbol="∞">
-                You have reached advanced rounds of Management Trainee programs
-                or can demonstrate equal drive, discipline, and marketing focus.
+              <Feature number="03" title={t("eligibility.marketerTitle")} symbol="∞">
+                {t("eligibility.marketerDescription")}
               </Feature>
             </div>
           </div>
@@ -498,17 +445,18 @@ export default function Home() {
 
         <section className="journey" id="journey" aria-labelledby="journey-title">
           <div className="page-shell journey-intro reveal">
-            <p className="section-index">04 / Interactive timeline</p>
+            <p className="section-index">{t("journey.index")}</p>
             <h2 id="journey-title">
-              From first light
-              <br />
-              to <em>full impact.</em>
+              {t.rich("journey.title", {
+                break: () => <br />,
+                em: (chunks) => <em>{chunks}</em>,
+              })}
             </h2>
-            <p>Select a stage to reveal its challenge, stakes, and progression.</p>
+            <p>{t("journey.description")}</p>
           </div>
 
           <div className="journey-layout page-shell">
-            <div className="timeline" role="list" aria-label="Competition timeline">
+            <div className="timeline" role="list" aria-label={t("journey.timelineLabel")}>
               {rounds.map((round) => (
                 <TimelineItem key={round.marker} {...round} />
               ))}
@@ -522,9 +470,9 @@ export default function Home() {
               <div className="journey-status">
                 <span />
                 <p>
-                  Final trajectory
+                  {t("journey.status")}
                   <br />
-                  <strong>REAL-WORLD IMPACT</strong>
+                  <strong>{t("journey.impact")}</strong>
                 </p>
               </div>
             </div>
@@ -538,24 +486,24 @@ export default function Home() {
           <div className="criteria-shade" aria-hidden="true" />
           <div className="page-shell criteria-layout">
             <div className="criteria-intro reveal">
-              <p className="section-index">05 / Evaluation Criteria</p>
-              <h2 id="criteria-title">What the judges will <em>look for.</em></h2>
+              <p className="section-index">{t("criteria.index")}</p>
+              <h2 id="criteria-title">{t.rich("criteria.title", { em: (chunks) => <em>{chunks}</em> })}</h2>
             </div>
             <div className="criteria-grid">
               <article className="criteria-card reveal">
-                <span>Round 1</span>
-                <h3>Specialist clarity</h3>
-                <p>Commit to one track and sharpen the work through direct mentor feedback.</p>
+                <span>{t("criteria.round1")}</span>
+                <h3>{t("criteria.round1Title")}</h3>
+                <p>{t("criteria.round1Description")}</p>
               </article>
               <article className="criteria-card reveal">
-                <span>Round 2</span>
-                <h3>Creative responsibility</h3>
-                <p>Balance breakthrough thinking with feasibility and positive community impact.</p>
+                <span>{t("criteria.round2")}</span>
+                <h3>{t("criteria.round2Title")}</h3>
+                <p>{t("criteria.round2Description")}</p>
               </article>
               <article className="criteria-card reveal">
-                <span>Finale</span>
-                <h3>Execution under pressure</h3>
-                <p>Defend real campaign results, then solve an unseen mini case live on stage.</p>
+                <span>{t("criteria.finale")}</span>
+                <h3>{t("criteria.finaleTitle")}</h3>
+                <p>{t("criteria.finaleDescription")}</p>
               </article>
             </div>
           </div>
@@ -564,22 +512,19 @@ export default function Home() {
         <section className="partners" id="mentors-sponsors" aria-labelledby="partners-title">
           <div className="page-shell partners-heading reveal">
             <div>
-              <p className="section-index">06 / Mentors</p>
-              <h2 id="partners-title">Guided by people who shape the <em>market.</em></h2>
+              <p className="section-index">{t("mentors.index")}</p>
+              <h2 id="partners-title">{t.rich("mentors.title", { em: (chunks) => <em>{chunks}</em> })}</h2>
             </div>
-            <p>
-              Meet the industry leaders bringing brand, research, and innovation
-              expertise directly to this year&apos;s competitors.
-            </p>
+            <p>{t("mentors.description")}</p>
           </div>
-          <div className="page-shell mentor-grid" aria-label="Featured mentors">
+          <div className="page-shell mentor-grid" aria-label={t("mentors.featuredLabel")}>
             {mentors.map((mentor, index) => (
               <article className="mentor-card reveal" key={mentor.name}>
                 <span className="mentor-index">0{index + 1}</span>
                 <div className="mentor-portrait">
                   <Image
                     src={mentor.image}
-                    alt={`Portrait of ${mentor.name}`}
+                    alt={t("mentors.portraitAlt", { name: mentor.name })}
                     fill
                     sizes="(max-width: 720px) 72vw, (max-width: 1100px) 36vw, 260px"
                     placeholder="blur"
@@ -601,18 +546,16 @@ export default function Home() {
         <section className="final-cta" aria-labelledby="final-title">
           <div className="final-orbit" aria-hidden="true" />
           <div className="page-shell final-content reveal">
-            <p className="section-index">Champion / Runner-up / Second Runner-up</p>
+            <p className="section-index">{t("finalCta.index")}</p>
             <h2 id="final-title">
-              Claim your place
-              <br />
-              among the <em>stars.</em>
+              {t.rich("finalCta.title", {
+                break: () => <br />,
+                em: (chunks) => <em>{chunks}</em>,
+              })}
             </h2>
-            <p>
-              Applications are open July 10–23 for ambitious marketing talent
-              aged 18–22 living and studying in Vietnam.
-            </p>
+            <p>{t("finalCta.description")}</p>
             <a className="primary-button light" href={registrationLink}>
-              <span>Begin your journey</span>
+              <span>{t("finalCta.button")}</span>
               <span aria-hidden="true">↗</span>
             </a>
           </div>
@@ -623,45 +566,41 @@ export default function Home() {
         <div className="page-shell footer-grid">
           <div className="footer-brand">
             <span className="brand-mark">M</span>
-            <p>
-              Marketing All-Star
-              <br />
-              Challenge 2026
-            </p>
+            <p>{t.rich("footer.brand", { break: () => <br /> })}</p>
           </div>
           <div className="footer-contact">
-            <p className="footer-label">Questions &amp; support</p>
+            <p className="footer-label">{t("footer.support")}</p>
             <a href="mailto:masc26.info@gmail.com">masc26.info@gmail.com</a>
             <a href="https://facebook.com/MarketingAllStarChallenge" target="_blank" rel="noreferrer">
-              Official Facebook <span aria-hidden="true">↗</span>
+              {t("footer.facebook")} <span aria-hidden="true">↗</span>
             </a>
           </div>
           <div className="footer-people">
-            <p className="footer-label">Organizing leads</p>
+            <p className="footer-label">{t("footer.leads")}</p>
             <div className="footer-person">
-              <span>Lê Đức Anh — Co-Head</span>
+              <span>{t("footer.lead1")}</span>
               <a href="tel:+84857129878">0857 129 878</a>
             </div>
             <div className="footer-person">
-              <span>Nguyễn Mai Ngọc Nhi — Co-Head</span>
+              <span>{t("footer.lead2")}</span>
               <a href="tel:+84782356586">0782 356 586</a>
             </div>
             <div className="footer-person">
-              <span>Nguyễn Minh Ngọc — External Relations</span>
+              <span>{t("footer.lead3")}</span>
               <a href="tel:+84965350173">0965 350 173</a>
             </div>
           </div>
           <div className="footer-shortcuts">
-            <p className="footer-label">Shortcuts</p>
-            <a href="#about">Competition</a>
-            <a href="#journey">Timeline</a>
-            <a href="#mentors-sponsors">Partners</a>
-            <a href="#news">News</a>
+            <p className="footer-label">{t("footer.shortcuts")}</p>
+            <a href="#about">{t("footer.competition")}</a>
+            <a href="#journey">{t("footer.timeline")}</a>
+            <a href="#mentors-sponsors">{t("footer.partners")}</a>
+            <a href="#news">{t("footer.news")}</a>
           </div>
         </div>
         <div className="page-shell footer-bottom">
-          <span>Hosted by Kotler Klub, VinUniversity</span>
-          <a href="#top">Back to top ↑</a>
+          <span>{t("footer.hosted")}</span>
+          <a href="#top">{t("footer.backToTop")}</a>
         </div>
       </footer>
     </div>
@@ -669,6 +608,7 @@ export default function Home() {
 }
 
 function DeadlineCountdown() {
+  const t = useTranslations("Home.countdown");
   const [now, setNow] = useState<number | null>(null);
 
   useEffect(() => {
@@ -691,15 +631,15 @@ function DeadlineCountdown() {
 
   return (
     <div className="deadline-panel" aria-live="polite">
-      <p>{isClosed ? "Round 0.5 applications" : isOpen ? "Applications close in" : "Round 0.5 opens in"}</p>
+      <p>{isClosed ? t("applications") : isOpen ? t("closesIn") : t("opensIn")}</p>
       {isClosed ? (
-        <strong className="deadline-status">Submissions closed</strong>
+        <strong className="deadline-status">{t("closed")}</strong>
       ) : (
-        <div className="countdown" aria-label={`${days} days, ${hours} hours, ${minutes} minutes, ${seconds} seconds`}>
-          <TimeUnit value={days} label="Days" />
-          <TimeUnit value={hours} label="Hours" />
-          <TimeUnit value={minutes} label="Minutes" />
-          <TimeUnit value={seconds} label="Seconds" />
+        <div className="countdown" aria-label={t("aria", { days, hours, minutes, seconds })}>
+          <TimeUnit value={days} label={t("days")} />
+          <TimeUnit value={hours} label={t("hours")} />
+          <TimeUnit value={minutes} label={t("minutes")} />
+          <TimeUnit value={seconds} label={t("seconds")} />
         </div>
       )}
     </div>
