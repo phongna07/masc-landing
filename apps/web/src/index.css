@@ -909,7 +909,7 @@ img {
 .why {
   position: relative;
   min-height: 1200px;
-  overflow: hidden;
+  overflow: clip;
   background: #090812;
 }
 
