@@ -308,7 +308,7 @@ img {
 .hero-content {
   position: relative;
   z-index: 2;
-  left: clamp(12px, 2.4vw, 36px);
+  left: clamp(36px, 5vw, 60px);
   padding-top: 70px;
 }
 
@@ -344,7 +344,7 @@ img {
   max-width: 1120px;
   font-size: clamp(60px, 8.6vw, 132px);
   line-height: 0.86;
-  /* letter-spacing: -0.015em; */
+  letter-spacing: 0.01em;
 }
 
 .hero-title span,

@@ -295,9 +295,9 @@ export default function Home() {
           </span>
         </a>
         <nav aria-label="Main navigation">
-          <a href="#about">About</a>
-          <a href="#journey">Journey</a>
-          <a href="#mentors-sponsors">Partners</a>
+          <a href="#">Looking back at MASC’24&25</a>
+          <a href="#">Video Challenges</a>
+          <a href="#">News</a>
         </nav>
         <div className="header-actions">
           <a className="header-login" href="/login">
@@ -322,7 +322,7 @@ export default function Home() {
             <p className="eyebrow reveal">
               Kotler Klub - VinUni House of Marketers <span>2026</span>
             </p>
-            <h1 id="hero-title" className="hero-title reveal uppercase">
+            <h1 id="hero-title" className="hero-title reveal">
               <span>Marketing</span>
               <em>All-Star</em>
               <strong>Challenge</strong>
