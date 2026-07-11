@@ -1203,11 +1203,32 @@ img {
 }
 
 .criteria {
+  position: relative;
   padding: 170px 0;
+  overflow: clip;
   background: #0d0c11;
 }
 
+.criteria-media {
+  position: absolute;
+  inset: 0;
+}
+
+.criteria-media img {
+  filter: brightness(0.42) saturate(0.72);
+}
+
+.criteria-shade {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(180deg, #08080b 0%, transparent 17%, transparent 82%, #07070a 100%),
+    linear-gradient(90deg, rgba(5, 4, 10, 0.84), rgba(5, 4, 10, 0.34) 58%, rgba(5, 4, 10, 0.68));
+}
+
 .criteria-layout {
+  position: relative;
+  z-index: 2;
   display: grid;
   grid-template-columns: 0.75fr 1.25fr;
   gap: 8vw;
@@ -1232,7 +1253,8 @@ img {
 .criteria-card {
   min-height: 300px;
   padding: 48px;
-  background: #0d0c11;
+  background: rgba(13, 12, 17, 0.78);
+  backdrop-filter: blur(3px);
 }
 
 .criteria-card h3 {

@@ -9,6 +9,7 @@ import image1 from "@/assets/image-1.png";
 import image2 from "@/assets/image-2.png";
 import image3 from "@/assets/image-3.png";
 import image4 from "@/assets/image-4.png";
+import image5 from "@/assets/image-5.png";
 import mentor1 from "@/assets/mentor-1.png";
 import mentor2 from "@/assets/mentor-2.png";
 import mentor3 from "@/assets/mentor-3.png";
@@ -181,6 +182,27 @@ export default function Home() {
             ease: "none",
             scrollTrigger: {
               trigger: ".why",
+              start: "top bottom",
+              end: "bottom top",
+              scrub: 1.25,
+            },
+          },
+        );
+
+        gsap.fromTo(
+          ".criteria-media img",
+          {
+            yPercent: -8,
+            scale: 1.13,
+            filter: "brightness(0.5) saturate(0.78)",
+          },
+          {
+            yPercent: 9,
+            scale: 1.04,
+            filter: "brightness(0.34) saturate(0.62)",
+            ease: "none",
+            scrollTrigger: {
+              trigger: ".criteria",
               start: "top bottom",
               end: "bottom top",
               scrub: 1.25,
@@ -510,6 +532,10 @@ export default function Home() {
         </section>
 
         <section className="criteria" aria-labelledby="criteria-title">
+          <div className="criteria-media parallax-media" aria-hidden="true">
+            <Image src={image5} alt="" fill sizes="100vw" placeholder="blur" />
+          </div>
+          <div className="criteria-shade" aria-hidden="true" />
           <div className="page-shell criteria-layout">
             <div className="criteria-intro reveal">
               <p className="section-index">05 / Evaluation Criteria</p>
