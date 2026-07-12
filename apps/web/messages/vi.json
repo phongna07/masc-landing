@@ -280,6 +280,7 @@
       "download": "Tải tệp xuống",
       "previewLabel": "Xem trước tệp",
       "previewTitle": "Xem trước {filename}",
+      "feedbackTitle": "Nhận xét từ ban tổ chức",
       "emptyTitle": "Chưa có bài nộp",
       "memberEmpty": "Đội trưởng chưa nộp bài Vòng 1.",
       "errors": {
@@ -312,6 +313,7 @@
       "download": "Tải tệp xuống",
       "previewLabel": "Xem trước tệp",
       "previewTitle": "Xem trước {filename}",
+      "feedbackTitle": "Nhận xét từ ban tổ chức",
       "emptyTitle": "Chưa có bài nộp",
       "memberEmpty": "Đội trưởng chưa nộp bài Vòng 2.",
       "errors": {
@@ -344,6 +346,7 @@
       "download": "Tải tệp xuống",
       "previewLabel": "Xem trước tệp",
       "previewTitle": "Xem trước {filename}",
+      "feedbackTitle": "Nhận xét từ ban tổ chức",
       "emptyTitle": "Chưa có bài nộp",
       "memberEmpty": "Đội trưởng chưa nộp bài Vòng 3.",
       "errors": {
@@ -438,6 +441,20 @@
       "roster": "Thành viên đội",
       "notFoundTitle": "Không tìm thấy đội",
       "notFoundDescription": "Đội này không tồn tại hoặc có thể đã bị xóa."
+    },
+    "feedback": {
+      "title": "Nhận xét bài nộp",
+      "label": "Nhận xét dành cho đội thi",
+      "characters": "{count} / 5000 ký tự",
+      "draftStatus": "Bản nháp — đội thi chưa thể xem",
+      "publishedStatus": "Đã công bố — đội thi có thể xem",
+      "saveDraft": "Lưu bản nháp",
+      "publish": "Công bố nhận xét",
+      "draftSaved": "Đã lưu bản nháp nhận xét.",
+      "published": "Đã công bố nhận xét cho đội thi.",
+      "required": "Hãy nhập nhận xét trước khi lưu.",
+      "tooLong": "Nhận xét không được vượt quá 5.000 ký tự.",
+      "saveError": "Không thể lưu nhận xét. Vui lòng thử lại."
     },
     "fields": {
       "user": "Người dùng", "team": "Đội", "captain": "Đội trưởng", "member": "Thành viên",

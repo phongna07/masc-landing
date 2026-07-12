@@ -20,6 +20,7 @@ import { adminProcedure, router } from "../index";
 const userBatchSize = 100;
 const signedUrlExpirySeconds = 300;
 const submissionInput = z.object({ submissionId: z.string().trim().min(1).max(128) });
+const feedbackInput = submissionInput.extend({ feedback: z.string().trim().min(1).max(5000) });
 
 const s3 = new S3Client({
   region: "auto",
@@ -173,6 +174,8 @@ export const adminRouter = router({
     const [submission] = await db.select({
       id: roundOneSubmissions.id,
       description: roundOneSubmissions.description,
+      feedback: roundOneSubmissions.feedback,
+      feedbackPublished: roundOneSubmissions.feedbackPublished,
       originalFilename: roundOneSubmissions.originalFilename,
       mimeType: roundOneSubmissions.mimeType,
       fileSize: roundOneSubmissions.fileSize,
@@ -200,6 +203,24 @@ export const adminRouter = router({
     }).from(members).where(eq(members.teamId, submission.teamId))
       .orderBy(desc(members.isCaptain), asc(members.fullName));
     return { ...submission, members: roster };
+  }),
+
+  saveRoundOneFeedbackDraft: adminProcedure.input(feedbackInput).mutation(async ({ input }) => {
+    const [submission] = await db.update(roundOneSubmissions).set({
+      feedback: input.feedback,
+      feedbackPublished: false,
+    }).where(eq(roundOneSubmissions.id, input.submissionId)).returning({ id: roundOneSubmissions.id });
+    if (!submission) throw new TRPCError({ code: "NOT_FOUND", message: "Submission not found" });
+    return { success: true };
+  }),
+
+  publishRoundOneFeedback: adminProcedure.input(feedbackInput).mutation(async ({ input }) => {
+    const [submission] = await db.update(roundOneSubmissions).set({
+      feedback: input.feedback,
+      feedbackPublished: true,
+    }).where(eq(roundOneSubmissions.id, input.submissionId)).returning({ id: roundOneSubmissions.id });
+    if (!submission) throw new TRPCError({ code: "NOT_FOUND", message: "Submission not found" });
+    return { success: true };
   }),
 
   createRoundOneDownloadUrl: adminProcedure.input(submissionInput).mutation(async ({ input }) => {
@@ -250,6 +271,8 @@ export const adminRouter = router({
     const [submission] = await db.select({
       id: roundTwoSubmissions.id,
       description: roundTwoSubmissions.description,
+      feedback: roundTwoSubmissions.feedback,
+      feedbackPublished: roundTwoSubmissions.feedbackPublished,
       originalFilename: roundTwoSubmissions.originalFilename,
       mimeType: roundTwoSubmissions.mimeType,
       fileSize: roundTwoSubmissions.fileSize,
@@ -277,6 +300,24 @@ export const adminRouter = router({
     }).from(members).where(eq(members.teamId, submission.teamId))
       .orderBy(desc(members.isCaptain), asc(members.fullName));
     return { ...submission, members: roster };
+  }),
+
+  saveRoundTwoFeedbackDraft: adminProcedure.input(feedbackInput).mutation(async ({ input }) => {
+    const [submission] = await db.update(roundTwoSubmissions).set({
+      feedback: input.feedback,
+      feedbackPublished: false,
+    }).where(eq(roundTwoSubmissions.id, input.submissionId)).returning({ id: roundTwoSubmissions.id });
+    if (!submission) throw new TRPCError({ code: "NOT_FOUND", message: "Submission not found" });
+    return { success: true };
+  }),
+
+  publishRoundTwoFeedback: adminProcedure.input(feedbackInput).mutation(async ({ input }) => {
+    const [submission] = await db.update(roundTwoSubmissions).set({
+      feedback: input.feedback,
+      feedbackPublished: true,
+    }).where(eq(roundTwoSubmissions.id, input.submissionId)).returning({ id: roundTwoSubmissions.id });
+    if (!submission) throw new TRPCError({ code: "NOT_FOUND", message: "Submission not found" });
+    return { success: true };
   }),
 
   createRoundTwoDownloadUrl: adminProcedure.input(submissionInput).mutation(async ({ input }) => {
@@ -328,6 +369,8 @@ export const adminRouter = router({
     const [submission] = await db.select({
       id: roundThreeSubmissions.id,
       description: roundThreeSubmissions.description,
+      feedback: roundThreeSubmissions.feedback,
+      feedbackPublished: roundThreeSubmissions.feedbackPublished,
       originalFilename: roundThreeSubmissions.originalFilename,
       mimeType: roundThreeSubmissions.mimeType,
       fileSize: roundThreeSubmissions.fileSize,
@@ -355,6 +398,24 @@ export const adminRouter = router({
     }).from(members).where(eq(members.teamId, submission.teamId))
       .orderBy(desc(members.isCaptain), asc(members.fullName));
     return { ...submission, members: roster };
+  }),
+
+  saveRoundThreeFeedbackDraft: adminProcedure.input(feedbackInput).mutation(async ({ input }) => {
+    const [submission] = await db.update(roundThreeSubmissions).set({
+      feedback: input.feedback,
+      feedbackPublished: false,
+    }).where(eq(roundThreeSubmissions.id, input.submissionId)).returning({ id: roundThreeSubmissions.id });
+    if (!submission) throw new TRPCError({ code: "NOT_FOUND", message: "Submission not found" });
+    return { success: true };
+  }),
+
+  publishRoundThreeFeedback: adminProcedure.input(feedbackInput).mutation(async ({ input }) => {
+    const [submission] = await db.update(roundThreeSubmissions).set({
+      feedback: input.feedback,
+      feedbackPublished: true,
+    }).where(eq(roundThreeSubmissions.id, input.submissionId)).returning({ id: roundThreeSubmissions.id });
+    if (!submission) throw new TRPCError({ code: "NOT_FOUND", message: "Submission not found" });
+    return { success: true };
   }),
 
   createRoundThreeDownloadUrl: adminProcedure.input(submissionInput).mutation(async ({ input }) => {

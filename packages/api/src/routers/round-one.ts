@@ -79,6 +79,7 @@ export const roundOneRouter = router({
         originalFilename: roundOneSubmissions.originalFilename,
         mimeType: roundOneSubmissions.mimeType,
         fileSize: roundOneSubmissions.fileSize,
+        feedback: sql<string | null>`case when ${roundOneSubmissions.feedbackPublished} then ${roundOneSubmissions.feedback} else null end`,
         createdAt: roundOneSubmissions.createdAt,
         updatedAt: roundOneSubmissions.updatedAt,
       })
@@ -137,6 +138,8 @@ export const roundOneRouter = router({
             originalFilename: input.filename,
             mimeType: input.mimeType,
             fileSize: input.fileSize,
+            feedback: null,
+            feedbackPublished: false,
             updatedAt: new Date(),
           },
         });

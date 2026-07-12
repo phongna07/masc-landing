@@ -280,6 +280,7 @@
       "download": "Download file",
       "previewLabel": "File preview",
       "previewTitle": "Preview of {filename}",
+      "feedbackTitle": "Admin feedback",
       "emptyTitle": "No submission yet",
       "memberEmpty": "Your team captain has not submitted the Round 1 entry yet.",
       "errors": {
@@ -312,6 +313,7 @@
       "download": "Download file",
       "previewLabel": "File preview",
       "previewTitle": "Preview of {filename}",
+      "feedbackTitle": "Admin feedback",
       "emptyTitle": "No submission yet",
       "memberEmpty": "Your team captain has not submitted the Round 2 entry yet.",
       "errors": {
@@ -344,6 +346,7 @@
       "download": "Download file",
       "previewLabel": "File preview",
       "previewTitle": "Preview of {filename}",
+      "feedbackTitle": "Admin feedback",
       "emptyTitle": "No submission yet",
       "memberEmpty": "Your team captain has not submitted the Round 3 entry yet.",
       "errors": {
@@ -438,6 +441,20 @@
       "roster": "Team roster",
       "notFoundTitle": "Team not found",
       "notFoundDescription": "This team does not exist or may have been removed."
+    },
+    "feedback": {
+      "title": "Submission feedback",
+      "label": "Feedback for the team",
+      "characters": "{count} / 5000 characters",
+      "draftStatus": "Draft — not visible to the team",
+      "publishedStatus": "Published — visible to the team",
+      "saveDraft": "Save draft",
+      "publish": "Publish feedback",
+      "draftSaved": "Feedback draft saved.",
+      "published": "Feedback published to the team.",
+      "required": "Enter feedback before saving.",
+      "tooLong": "Feedback must be 5,000 characters or fewer.",
+      "saveError": "Feedback could not be saved. Please try again."
     },
     "fields": {
       "user": "User", "team": "Team", "captain": "Captain", "member": "Member",

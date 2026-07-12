@@ -79,6 +79,7 @@ export const roundTwoRouter = router({
         originalFilename: roundTwoSubmissions.originalFilename,
         mimeType: roundTwoSubmissions.mimeType,
         fileSize: roundTwoSubmissions.fileSize,
+        feedback: sql<string | null>`case when ${roundTwoSubmissions.feedbackPublished} then ${roundTwoSubmissions.feedback} else null end`,
         createdAt: roundTwoSubmissions.createdAt,
         updatedAt: roundTwoSubmissions.updatedAt,
       })
@@ -137,6 +138,8 @@ export const roundTwoRouter = router({
             originalFilename: input.filename,
             mimeType: input.mimeType,
             fileSize: input.fileSize,
+            feedback: null,
+            feedbackPublished: false,
             updatedAt: new Date(),
           },
         });
@@ -184,4 +187,3 @@ export const roundTwoRouter = router({
     return { previewUrl };
   }),
 });
-

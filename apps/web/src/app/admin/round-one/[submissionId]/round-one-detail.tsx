@@ -2,13 +2,16 @@
 
 import { Button } from "@masc-landing/ui/components/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@masc-landing/ui/components/card";
+import { Label } from "@masc-landing/ui/components/label";
+import { Textarea } from "@masc-landing/ui/components/textarea";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { ArrowLeftIcon, DownloadIcon, EyeIcon, FileTextIcon } from "lucide-react";
 import Link from "next/link";
 import { useLocale, useTranslations } from "next-intl";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
 
-import { trpc } from "@/utils/trpc";
+import { queryClient, trpc } from "@/utils/trpc";
 import { AdminEmpty, AdminError, AdminLoading, formatDate } from "../../admin-state";
 
 export default function RoundOneDetail({ submissionId }: { submissionId: string }) {
@@ -16,7 +19,13 @@ export default function RoundOneDetail({ submissionId }: { submissionId: string 
   const locale = useLocale();
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [fileError, setFileError] = useState<string | null>(null);
+  const [feedback, setFeedback] = useState("");
+  const [feedbackError, setFeedbackError] = useState<string | null>(null);
   const submission = useQuery(trpc.admin.getRoundOneSubmission.queryOptions({ submissionId }));
+  useEffect(() => { if (submission.data) setFeedback(submission.data.feedback ?? ""); }, [submission.data]);
+  const feedbackSaved = async (published: boolean) => { setFeedbackError(null); toast.success(t(published ? "feedback.published" : "feedback.draftSaved")); await queryClient.invalidateQueries({ queryKey: trpc.admin.getRoundOneSubmission.queryKey({ submissionId }) }); };
+  const saveDraft = useMutation(trpc.admin.saveRoundOneFeedbackDraft.mutationOptions({ onSuccess: () => feedbackSaved(false), onError: () => setFeedbackError(t("feedback.saveError")) }));
+  const publish = useMutation(trpc.admin.publishRoundOneFeedback.mutationOptions({ onSuccess: () => feedbackSaved(true), onError: () => setFeedbackError(t("feedback.saveError")) }));
   const download = useMutation(trpc.admin.createRoundOneDownloadUrl.mutationOptions({
     onSuccess: ({ downloadUrl }) => { setFileError(null); window.location.assign(downloadUrl); },
     onError: () => setFileError(t("errors.download")),
@@ -32,6 +41,7 @@ export default function RoundOneDetail({ submissionId }: { submissionId: string 
     return <AdminError title={t("errors.loadTitle")} description={t("errors.roundOneDetail")} retry={() => submission.refetch()} retryLabel={t("actions.retry")} />;
   }
   const data = submission.data;
+  const submitFeedback = (published: boolean) => { const cleanFeedback = feedback.trim(); setFeedbackError(null); if (!cleanFeedback) return setFeedbackError(t("feedback.required")); if (cleanFeedback.length > 5000) return setFeedbackError(t("feedback.tooLong")); (published ? publish : saveDraft).mutate({ submissionId, feedback: cleanFeedback }); };
 
   return <>
     <Link className="admin-back-link" href="/admin/round-one"><ArrowLeftIcon aria-hidden="true" />{t("actions.backToRoundOne")}</Link>
@@ -59,6 +69,10 @@ export default function RoundOneDetail({ submissionId }: { submissionId: string 
       </div></div>
       {fileError && <p className="admin-file-error" role="alert">{fileError}</p>}
       {previewUrl && <div className="submission-preview"><iframe src={previewUrl} title={t("roundOne.previewTitle", { filename: data.originalFilename })} /></div>}
+    </CardContent></Card>
+    <Card className="dashboard-card admin-feedback-card"><CardHeader><CardTitle>{t("feedback.title")}</CardTitle><p>{t(data.feedbackPublished ? "feedback.publishedStatus" : "feedback.draftStatus")}</p></CardHeader><CardContent className="admin-feedback-fields">
+      <Label htmlFor="round-one-feedback">{t("feedback.label")}</Label><Textarea id="round-one-feedback" value={feedback} maxLength={5000} rows={8} onChange={(event) => setFeedback(event.target.value)} aria-invalid={!!feedbackError} /><span className="field-hint">{t("feedback.characters", { count: feedback.length })}</span>
+      {feedbackError && <p className="admin-file-error" role="alert">{feedbackError}</p>}<div className="admin-feedback-actions"><Button variant="outline" disabled={saveDraft.isPending || publish.isPending} onClick={() => submitFeedback(false)}>{t("feedback.saveDraft")}</Button><Button disabled={saveDraft.isPending || publish.isPending} onClick={() => submitFeedback(true)}>{t("feedback.publish")}</Button></div>
     </CardContent></Card>
     <Card className="admin-table-card"><CardHeader><CardTitle>{t("detail.roster")}</CardTitle></CardHeader><CardContent className="admin-table-scroll">
       <table className="admin-table"><thead><tr><th scope="col">{t("fields.member")}</th><th scope="col">{t("fields.email")}</th><th scope="col">{t("fields.university")}</th><th scope="col">{t("fields.role")}</th></tr></thead>

@@ -213,6 +213,7 @@ function RoundOne({ membership }: { membership: Extract<Membership, { registered
         <iframe src={preview.data.previewUrl} title={t("round1.previewTitle", { filename: existing.originalFilename })} />
       </div>}
     </CardContent></Card>}
+    {existing?.feedback && !showForm && <Card className="dashboard-card participant-feedback-card"><CardHeader><CardTitle>{t("round1.feedbackTitle")}</CardTitle></CardHeader><CardContent className="submission-description"><p>{existing.feedback}</p></CardContent></Card>}
     {showForm && <form onSubmit={submit} className="round-one-form" noValidate><Card className="dashboard-card"><CardHeader><CardTitle>{existing ? t("round1.replaceTitle") : t("round1.formTitle")}</CardTitle></CardHeader>
       <CardContent className="round-one-fields"><Field label={t("round1.descriptionLabel")} error={undefined} full>
         <Textarea value={description} maxLength={5000} rows={8} onChange={(event) => setDescription(event.target.value)} />
@@ -303,6 +304,7 @@ function RoundTwo({ membership }: { membership: Extract<Membership, { registered
         <iframe src={preview.data.previewUrl} title={t("round2.previewTitle", { filename: existing.originalFilename })} />
       </div>}
     </CardContent></Card>}
+    {existing?.feedback && !showForm && <Card className="dashboard-card participant-feedback-card"><CardHeader><CardTitle>{t("round2.feedbackTitle")}</CardTitle></CardHeader><CardContent className="submission-description"><p>{existing.feedback}</p></CardContent></Card>}
     {showForm && <form onSubmit={submit} className="round-one-form" noValidate><Card className="dashboard-card"><CardHeader><CardTitle>{existing ? t("round2.replaceTitle") : t("round2.formTitle")}</CardTitle></CardHeader>
       <CardContent className="round-one-fields"><Field label={t("round2.descriptionLabel")} error={undefined} full>
         <Textarea value={description} maxLength={5000} rows={8} onChange={(event) => setDescription(event.target.value)} />
@@ -394,6 +396,7 @@ function RoundThree({ membership }: { membership: Extract<Membership, { register
         <iframe src={preview.data.previewUrl} title={t("round3.previewTitle", { filename: existing.originalFilename })} />
       </div>}
     </CardContent></Card>}
+    {existing?.feedback && !showForm && <Card className="dashboard-card participant-feedback-card"><CardHeader><CardTitle>{t("round3.feedbackTitle")}</CardTitle></CardHeader><CardContent className="submission-description"><p>{existing.feedback}</p></CardContent></Card>}
     {showForm && <form onSubmit={submit} className="round-one-form" noValidate><Card className="dashboard-card"><CardHeader><CardTitle>{existing ? t("round3.replaceTitle") : t("round3.formTitle")}</CardTitle></CardHeader>
       <CardContent className="round-one-fields"><Field label={t("round3.descriptionLabel")} error={undefined} full>
         <Textarea value={description} maxLength={5000} rows={8} onChange={(event) => setDescription(event.target.value)} />

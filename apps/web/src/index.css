@@ -667,6 +667,11 @@ button {
 .admin-detail-heading { display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; margin-bottom: 34px; }
 .admin-detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-bottom: 18px; }
 .admin-submission-card { margin-bottom: 18px; }
+.admin-feedback-card,
+.participant-feedback-card { margin-bottom: 18px; }
+.admin-feedback-fields { display: grid; gap: 10px; }
+.admin-feedback-fields [data-slot="textarea"] { min-height: 180px; resize: vertical; line-height: 1.6; }
+.admin-feedback-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 8px; }
 .admin-file-actions { display: flex; gap: 8px; }
 .admin-file-error { margin: 12px 0 0; color: #ff9189; font-size: 12px; }
 .admin-mobile-back { display: none; }
@@ -682,6 +687,7 @@ button {
   .admin-menu-button svg { width: 18px; }
   .admin-detail-grid { grid-template-columns: 1fr; }
   .admin-file-actions { grid-column: 1 / -1; }
+  .admin-feedback-actions { flex-wrap: wrap; }
 }
 
 @media (max-width: 520px) {
@@ -690,6 +696,7 @@ button {
   .admin-back-link { display: none; }
   .admin-mobile-back { display: flex; width: 100%; margin-top: 18px; }
   .admin-file-actions { display: grid; width: 100%; }
+  .admin-feedback-actions { display: grid; }
 }
 
 a {

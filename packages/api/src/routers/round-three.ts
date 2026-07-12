@@ -79,6 +79,7 @@ export const roundThreeRouter = router({
         originalFilename: roundThreeSubmissions.originalFilename,
         mimeType: roundThreeSubmissions.mimeType,
         fileSize: roundThreeSubmissions.fileSize,
+        feedback: sql<string | null>`case when ${roundThreeSubmissions.feedbackPublished} then ${roundThreeSubmissions.feedback} else null end`,
         createdAt: roundThreeSubmissions.createdAt,
         updatedAt: roundThreeSubmissions.updatedAt,
       })
@@ -137,6 +138,8 @@ export const roundThreeRouter = router({
             originalFilename: input.filename,
             mimeType: input.mimeType,
             fileSize: input.fileSize,
+            feedback: null,
+            feedbackPublished: false,
             updatedAt: new Date(),
           },
         });
@@ -184,4 +187,3 @@ export const roundThreeRouter = router({
     return { previewUrl };
   }),
 });
-
