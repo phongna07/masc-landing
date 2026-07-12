@@ -2479,8 +2479,9 @@ img {
   display: grid;
   grid-template-columns: 46px 1fr 32px;
   gap: 20px;
+  min-height: 260px;
   align-content: center;
-  padding: 32px 4px;
+  padding: 48px 4px;
   border-bottom: 1px solid var(--line);
   backdrop-filter: blur(2px);
 }
@@ -3409,6 +3410,7 @@ footer {
 
   .feature {
     grid-template-columns: 34px 1fr;
+    min-height: 200px;
   }
 
   .feature-symbol {
