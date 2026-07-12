@@ -1,6 +1,7 @@
 "use client";
 
 import { Button } from "@masc-landing/ui/components/button";
+import { roundIds } from "@masc-landing/api/rounds";
 import { Card, CardContent, CardHeader, CardTitle } from "@masc-landing/ui/components/card";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
@@ -9,8 +10,6 @@ import { toast } from "sonner";
 import { trpc } from "@/utils/trpc";
 
 import { AdminError, AdminHeading, AdminLoading } from "./admin-state";
-
-const rounds = ["roundOne", "roundTwo", "roundThree"] as const;
 
 export default function AdminPage() {
 	const t = useTranslations("Admin");
@@ -29,12 +28,11 @@ export default function AdminPage() {
 		{settings.isPending ? <AdminLoading /> : settings.isError ? (
 			<AdminError title={t("errors.loadTitle")} description={t("overview.loadError")} retry={() => settings.refetch()} retryLabel={t("actions.retry")} />
 		) : <div className="admin-round-settings">
-			{rounds.map((round) => {
-				const field = `${round}SubmissionOpen` as const;
-				const isOpen = settings.data[field];
+			{roundIds.map((round) => {
+				const isOpen = settings.data[round];
 				const isUpdating = update.isPending && update.variables?.round === round;
 				return <Card className="admin-round-setting" key={round}>
-					<CardHeader><div><CardTitle>{t(`overview.rounds.${round}.title`)}</CardTitle><p>{t(`overview.rounds.${round}.description`)}</p></div>
+					<CardHeader><div><CardTitle>{t("overview.roundTitle", { round })}</CardTitle><p>{t("overview.roundDescription", { round })}</p></div>
 						<span className={isOpen ? "is-open" : "is-closed"}>{t(isOpen ? "overview.open" : "overview.closed")}</span>
 					</CardHeader>
 					<CardContent><Button

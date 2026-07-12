@@ -112,7 +112,7 @@ button {
 .registration-form,
 .team-overview,
 .round-panel,
-.round-one-form {
+.round-submission-form {
   display: grid;
   gap: 18px;
 }
@@ -176,12 +176,12 @@ button {
   background: linear-gradient(115deg, rgba(210, 166, 108, 0.1), rgba(123, 102, 255, 0.09));
 }
 
-.round-one-fields {
+.round-submission-fields {
   display: grid;
   gap: 22px;
 }
 
-.round-one-fields [data-slot="textarea"] {
+.round-submission-fields [data-slot="textarea"] {
   min-height: 180px;
   resize: vertical;
   border-color: rgba(255, 255, 255, 0.17);
@@ -190,7 +190,7 @@ button {
   line-height: 1.6;
 }
 
-.round-one-fields input[type="file"] {
+.round-submission-fields input[type="file"] {
   height: auto;
   padding-block: 11px;
 }

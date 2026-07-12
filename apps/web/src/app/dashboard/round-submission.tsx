@@ -1,0 +1,89 @@
+"use client";
+
+import type { RoundId } from "@masc-landing/api/rounds";
+import { Button } from "@masc-landing/ui/components/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@masc-landing/ui/components/card";
+import { Input } from "@masc-landing/ui/components/input";
+import { Label } from "@masc-landing/ui/components/label";
+import { Textarea } from "@masc-landing/ui/components/textarea";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { DownloadIcon, FileTextIcon, RefreshCwIcon, UploadIcon } from "lucide-react";
+import { useFormatter, useTranslations } from "next-intl";
+import { useEffect, useState, type FormEvent } from "react";
+import { toast } from "sonner";
+
+import { queryClient, trpc } from "@/utils/trpc";
+
+const MAX_FILE_SIZE = 20 * 1024 * 1024;
+const mimeTypes: Record<string, string> = { pdf: "application/pdf", doc: "application/msword",
+  docx: "application/vnd.openxmlformats-officedocument.wordprocessingml.document", ppt: "application/vnd.ms-powerpoint",
+  pptx: "application/vnd.openxmlformats-officedocument.presentationml.presentation" };
+
+export default function RoundSubmission({ round, role }: { round: RoundId; role: "captain" | "member" }) {
+  const t = useTranslations("Dashboard"); const format = useFormatter();
+  const input = { round };
+  const submission = useQuery(trpc.roundSubmission.current.queryOptions(input));
+  const [description, setDescription] = useState(""); const [file, setFile] = useState<File | null>(null);
+  const [editing, setEditing] = useState(false); const [error, setError] = useState<string | null>(null);
+  const createUploadUrl = useMutation(trpc.roundSubmission.createUploadUrl.mutationOptions());
+  const finalize = useMutation(trpc.roundSubmission.finalize.mutationOptions({ onSuccess: async () => {
+    toast.success(t("round.success", { round })); setEditing(false); setFile(null);
+    await queryClient.invalidateQueries({ queryKey: trpc.roundSubmission.current.queryKey(input) });
+  }}));
+  const download = useMutation(trpc.roundSubmission.createDownloadUrl.mutationOptions({
+    onSuccess: ({ downloadUrl }) => window.location.assign(downloadUrl), onError: () => toast.error(t("round.errors.download")),
+  }));
+  const preview = useMutation(trpc.roundSubmission.createPreviewUrl.mutationOptions());
+  const existing = submission.data?.submission ?? null;
+  const isOpen = submission.data?.isSubmissionOpen ?? false;
+  const showForm = isOpen && role === "captain" && (!existing || editing);
+
+  useEffect(() => { if (existing && !showForm) preview.mutate(input); }, [existing?.updatedAt, showForm, round]); // eslint-disable-line react-hooks/exhaustive-deps
+  if (submission.isPending) return <StateCard loading />;
+  if (submission.isError) return <StateCard title={t("round.errors.loadTitle", { round })} description={t("round.errors.load")} retry={() => submission.refetch()} />;
+
+  const submit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault(); setError(null); const cleanDescription = description.trim();
+    if (!cleanDescription) return setError(t("validation.required"));
+    if (cleanDescription.length > 5000) return setError(t("round.errors.descriptionLength"));
+    if (!file) return setError(t("round.errors.fileRequired"));
+    const mimeType = mimeTypes[file.name.split(".").pop()?.toLowerCase() ?? ""];
+    if (!mimeType) return setError(t("round.errors.fileType"));
+    if (file.size === 0 || file.size > MAX_FILE_SIZE) return setError(t("round.errors.fileSize"));
+    const metadata = { round, filename: file.name, mimeType, fileSize: file.size };
+    try {
+      const upload = await createUploadUrl.mutateAsync(metadata);
+      const response = await fetch(upload.uploadUrl, { method: "PUT", body: file, headers: { "Content-Type": mimeType } });
+      if (!response.ok) throw new Error("UPLOAD_FAILED");
+      await finalize.mutateAsync({ ...metadata, uploadId: upload.uploadId, description: cleanDescription });
+    } catch { setError(t("round.errors.submit")); }
+  };
+
+  return <div className="round-panel">
+    <Card className="dashboard-card round-hero-card"><CardHeader><p className="dashboard-card-index">01 / {t("tabs.round", { round })}</p>
+      <CardTitle>{t("round.title", { round })}</CardTitle><p>{t("round.description")}</p></CardHeader></Card>
+    {existing && !showForm && <Card className="dashboard-card"><CardHeader className="submission-header"><div><CardTitle>{t("round.submittedTitle")}</CardTitle>
+      <p>{t("round.submittedAt", { date: format.dateTime(new Date(existing.updatedAt), { dateStyle: "medium", timeStyle: "short" }) })}</p></div>
+      {isOpen && role === "captain" && <Button variant="outline" onClick={() => { setDescription(existing.description); setEditing(true); }}>{t("round.replace")}</Button>}
+    </CardHeader><CardContent className="submission-details"><div className="submission-description"><Label>{t("round.descriptionLabel")}</Label><p>{existing.description}</p></div>
+      <div className="submission-file"><FileTextIcon aria-hidden="true" /><div><strong>{existing.originalFilename}</strong><span>{formatBytes(existing.fileSize)}</span></div>
+        <Button variant="outline" disabled={download.isPending} onClick={() => download.mutate(input)}><DownloadIcon aria-hidden="true" />{t("round.download")}</Button></div>
+      {preview.data?.previewUrl && <div className="submission-preview"><Label>{t("round.previewLabel")}</Label><iframe src={preview.data.previewUrl} title={t("round.previewTitle", { filename: existing.originalFilename })} /></div>}
+    </CardContent></Card>}
+    {existing?.feedback && !showForm && <Card className="dashboard-card participant-feedback-card"><CardHeader><CardTitle>{t("round.feedbackTitle")}</CardTitle></CardHeader><CardContent className="submission-description"><p>{existing.feedback}</p></CardContent></Card>}
+    {showForm && <form onSubmit={submit} className="round-submission-form" noValidate><Card className="dashboard-card"><CardHeader><CardTitle>{t(existing ? "round.replaceTitle" : "round.formTitle")}</CardTitle></CardHeader>
+      <CardContent className="round-submission-fields"><Field label={t("round.descriptionLabel")}><Textarea value={description} maxLength={5000} rows={8} onChange={(event) => setDescription(event.target.value)} /><span className="field-hint">{t("round.characters", { count: description.length })}</span></Field>
+      <Field label={t("round.fileLabel")}><Input type="file" accept=".pdf,.doc,.docx,.ppt,.pptx" onChange={(event) => setFile(event.target.files?.[0] ?? null)} /><span className="field-hint">{t("round.fileHint")}</span></Field></CardContent></Card>
+      {error && <p className="form-error" role="alert">{error}</p>}<div className="registration-submit">{editing ? <Button type="button" variant="ghost" onClick={() => { setEditing(false); setError(null); }}>{t("round.cancel")}</Button> : <span />}
+      <Button type="submit" size="lg" disabled={createUploadUrl.isPending || finalize.isPending}><UploadIcon aria-hidden="true" />{finalize.isPending || createUploadUrl.isPending ? t("round.uploading") : t("round.submit", { round })}</Button></div></form>}
+    {!existing && !isOpen && <Card className="dashboard-card round-unavailable"><CardHeader><CardTitle>{t("round.unavailableTitle", { round })}</CardTitle><p>{t("round.unavailableDescription")}</p></CardHeader></Card>}
+    {!existing && isOpen && role === "member" && <Card className="dashboard-card"><CardHeader><CardTitle>{t("round.emptyTitle")}</CardTitle><p>{t("round.memberEmpty", { round })}</p></CardHeader></Card>}
+  </div>;
+}
+
+function Field({ label, children }: { label: string; children: React.ReactNode }) { return <div className="dashboard-field field-full"><Label>{label}</Label>{children}</div>; }
+function formatBytes(bytes: number) { return bytes < 1024 * 1024 ? `${Math.ceil(bytes / 1024)} KB` : `${(bytes / 1024 / 1024).toFixed(1)} MB`; }
+function StateCard({ loading, title, description, retry }: { loading?: boolean; title?: string; description?: string; retry?: () => void }) {
+  const t = useTranslations("Dashboard");
+  return <Card className="dashboard-state-card"><CardHeader><CardTitle>{loading ? t("actions.loading") : title}</CardTitle></CardHeader>{description && <CardContent><p>{description}</p>{retry && <Button onClick={retry}><RefreshCwIcon aria-hidden="true" />{t("actions.retry")}</Button>}</CardContent>}</Card>;
+}

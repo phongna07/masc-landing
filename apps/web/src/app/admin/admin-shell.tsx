@@ -1,7 +1,9 @@
 "use client";
 
 import { FileTextIcon, LayoutDashboardIcon, MegaphoneIcon, MenuIcon, UsersIcon, XIcon } from "lucide-react";
+import { rounds } from "@masc-landing/api/rounds";
 import Link from "next/link";
+import type { Route } from "next";
 import { useTranslations } from "next-intl";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
@@ -15,9 +17,7 @@ const items = [
   { href: "/admin/announcements", key: "announcements", icon: MegaphoneIcon },
   { href: "/admin/users", key: "users", icon: UsersIcon },
   { href: "/admin/teams", key: "teams", icon: UsersIcon },
-  { href: "/admin/round-one", key: "roundOne", icon: FileTextIcon },
-  { href: "/admin/round-two", key: "roundTwo", icon: FileTextIcon },
-  { href: "/admin/round-three", key: "roundThree", icon: FileTextIcon },
+  ...rounds.map((round) => ({ href: `/admin/${round.slug}`, round: round.id, icon: FileTextIcon })),
 ] as const;
 
 export default function AdminShell({ children }: { children: React.ReactNode }) {
@@ -54,17 +54,18 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
             <strong>{t("title")}</strong>
           </div>
           <nav>
-            {items.map(({ href, key, icon: Icon }) => {
+            {items.map((item) => {
+              const { href, icon: Icon } = item;
               const active = href === "/admin" ? pathname === href : pathname === href || pathname.startsWith(`${href}/`);
               return (
                 <Link
                   key={href}
-                  href={href}
+                  href={href as Route}
                   className={active ? "is-active" : undefined}
                   aria-current={active ? "page" : undefined}
                   onClick={() => setOpen(false)}
                 >
-                  <Icon aria-hidden="true" /> {t(`tabs.${key}`)}
+                  <Icon aria-hidden="true" /> {"round" in item ? t("tabs.round", { round: item.round }) : t(`tabs.${item.key}`)}
                 </Link>
               );
             })}

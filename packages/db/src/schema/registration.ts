@@ -61,11 +61,12 @@ export const members = pgTable(
   ],
 );
 
-export const roundOneSubmissions = pgTable(
-  "round_one_submissions",
+export const roundSubmissions = pgTable(
+  "round_submissions",
   {
     id: text("id").$defaultFn(() => crypto.randomUUID()).primaryKey(),
     teamId: text("team_id").notNull().references(() => teams.id, { onDelete: "cascade" }),
+    round: text("round").notNull(),
     description: text("description").notNull(),
     objectKey: text("object_key").notNull(),
     originalFilename: text("original_filename").notNull(),
@@ -76,43 +77,10 @@ export const roundOneSubmissions = pgTable(
     createdAt: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at").defaultNow().notNull(),
   },
-  (table) => [uniqueIndex("round_one_submissions_team_id_unique_idx").on(table.teamId)],
-);
-
-export const roundTwoSubmissions = pgTable(
-  "round_two_submissions",
-  {
-    id: text("id").$defaultFn(() => crypto.randomUUID()).primaryKey(),
-    teamId: text("team_id").notNull().references(() => teams.id, { onDelete: "cascade" }),
-    description: text("description").notNull(),
-    objectKey: text("object_key").notNull(),
-    originalFilename: text("original_filename").notNull(),
-    mimeType: text("mime_type").notNull(),
-    fileSize: bigint("file_size", { mode: "number" }).notNull(),
-    feedback: text("feedback"),
-    feedbackPublished: boolean("feedback_published").default(false).notNull(),
-    createdAt: timestamp("created_at").defaultNow().notNull(),
-    updatedAt: timestamp("updated_at").defaultNow().notNull(),
-  },
-  (table) => [uniqueIndex("round_two_submissions_team_id_unique_idx").on(table.teamId)],
-);
-
-export const roundThreeSubmissions = pgTable(
-  "round_three_submissions",
-  {
-    id: text("id").$defaultFn(() => crypto.randomUUID()).primaryKey(),
-    teamId: text("team_id").notNull().references(() => teams.id, { onDelete: "cascade" }),
-    description: text("description").notNull(),
-    objectKey: text("object_key").notNull(),
-    originalFilename: text("original_filename").notNull(),
-    mimeType: text("mime_type").notNull(),
-    fileSize: bigint("file_size", { mode: "number" }).notNull(),
-    feedback: text("feedback"),
-    feedbackPublished: boolean("feedback_published").default(false).notNull(),
-    createdAt: timestamp("created_at").defaultNow().notNull(),
-    updatedAt: timestamp("updated_at").defaultNow().notNull(),
-  },
-  (table) => [uniqueIndex("round_three_submissions_team_id_unique_idx").on(table.teamId)],
+  (table) => [
+    uniqueIndex("round_submissions_team_id_round_unique_idx").on(table.teamId, table.round),
+    index("round_submissions_round_updated_at_idx").on(table.round, table.updatedAt),
+  ],
 );
 
 export const teamsRelations = relations(teams, ({ one, many }) => ({
@@ -121,9 +89,7 @@ export const teamsRelations = relations(teams, ({ one, many }) => ({
     references: [user.id],
   }),
   members: many(members),
-  roundOneSubmission: one(roundOneSubmissions),
-  roundTwoSubmission: one(roundTwoSubmissions),
-  roundThreeSubmission: one(roundThreeSubmissions),
+  roundSubmissions: many(roundSubmissions),
 }));
 
 export const membersRelations = relations(members, ({ one }) => ({
@@ -133,23 +99,9 @@ export const membersRelations = relations(members, ({ one }) => ({
   }),
 }));
 
-export const roundOneSubmissionsRelations = relations(roundOneSubmissions, ({ one }) => ({
+export const roundSubmissionsRelations = relations(roundSubmissions, ({ one }) => ({
   team: one(teams, {
-    fields: [roundOneSubmissions.teamId],
-    references: [teams.id],
-  }),
-}));
-
-export const roundTwoSubmissionsRelations = relations(roundTwoSubmissions, ({ one }) => ({
-  team: one(teams, {
-    fields: [roundTwoSubmissions.teamId],
-    references: [teams.id],
-  }),
-}));
-
-export const roundThreeSubmissionsRelations = relations(roundThreeSubmissions, ({ one }) => ({
-  team: one(teams, {
-    fields: [roundThreeSubmissions.teamId],
+    fields: [roundSubmissions.teamId],
     references: [teams.id],
   }),
 }));
