@@ -2295,18 +2295,17 @@ img {
   min-height: 95vh;
   place-items: center;
   overflow: hidden;
-  color: #111014;
-  background: #e8ded0;
+  color: var(--ink);
+  background: #171126;
 }
 
 .final-cta::before {
   position: absolute;
   inset: 0;
   content: "";
-  opacity: 0.28;
   background:
-    radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.9), transparent 52%),
-    repeating-radial-gradient(circle at center, transparent 0 80px, rgba(20, 15, 20, 0.08) 81px 82px);
+    radial-gradient(circle at 50% 48%, rgba(123, 102, 255, 0.2), transparent 52%),
+    repeating-radial-gradient(circle at center, transparent 0 80px, rgba(244, 240, 232, 0.055) 81px 82px);
 }
 
 .final-orbit {
@@ -2315,12 +2314,12 @@ img {
   width: min(84vw, 1100px);
   aspect-ratio: 1;
   transform: translate(-50%, -50%) scaleY(0.34) rotate(-10deg);
-  border-color: rgba(28, 23, 27, 0.2);
+  border-color: rgba(244, 240, 232, 0.16);
 }
 
 .final-orbit::after {
-  background: #765ee6;
-  box-shadow: 0 0 18px #765ee6;
+  background: #f3d282;
+  box-shadow: 0 0 18px rgba(243, 210, 130, 0.85);
 }
 
 .final-content {
@@ -2330,7 +2329,7 @@ img {
 }
 
 .final-content .section-index {
-  color: #68636b;
+  color: #b8b0c7;
 }
 
 .final-content h2 {
@@ -2338,20 +2337,20 @@ img {
 }
 
 .final-content h2 em {
-  color: #6a54df;
+  color: #9b8cff;
 }
 
 .final-content>p:not(.section-index) {
   max-width: 540px;
   margin: 38px auto 30px;
-  color: #635e65;
+  color: #bbb5c3;
   font-size: 15px;
   line-height: 1.65;
 }
 
 .primary-button.light {
-  color: #fff;
-  background: #121116;
+  color: #171126;
+  background: var(--ink);
 }
 
 footer {
