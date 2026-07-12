@@ -37,6 +37,28 @@ This project uses PostgreSQL with Drizzle ORM.
 pnpm db:push
 ```
 
+## Cloudflare R2 Setup
+
+Round 1 files are stored in a private R2 bucket. Configure `R2_ACCOUNT_ID`,
+`R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`, and `R2_BUCKET` in
+`apps/web/.env`. Keep the bucket private and add a CORS policy for each web
+application origin that uploads files:
+
+```json
+[
+  {
+    "AllowedOrigins": ["http://localhost:3000", "https://your-production-origin.example"],
+    "AllowedMethods": ["PUT"],
+    "AllowedHeaders": ["Content-Type"],
+    "MaxAgeSeconds": 300
+  }
+]
+```
+
+Replace the example production origin with the deployed application origin.
+Downloads use short-lived server-authorized URLs and do not require a public
+bucket domain.
+
 Then, run the development server:
 
 ```bash

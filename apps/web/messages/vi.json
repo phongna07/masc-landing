@@ -254,6 +254,49 @@
       "approved": "Đã duyệt",
       "waitlisted": "Danh sách chờ"
     },
+    "tabs": {
+      "label": "Các mục trong bảng điều khiển đội thi",
+      "overview": "Tổng quan",
+      "round1": "Vòng 1",
+      "round2": "Vòng 2",
+      "round3": "Vòng 3"
+    },
+    "round1": {
+      "title": "Bài nộp Vòng 1",
+      "description": "Gửi phần mô tả và tài liệu của đội. Chỉ đội trưởng có thể tạo hoặc thay thế bài nộp.",
+      "formTitle": "Chuẩn bị bài nộp",
+      "replaceTitle": "Thay thế bài nộp",
+      "descriptionLabel": "Mô tả",
+      "fileLabel": "Tệp bài nộp",
+      "fileHint": "PDF, DOC, DOCX, PPT hoặc PPTX — tối đa 20 MB.",
+      "characters": "{count} / 5000 ký tự",
+      "submit": "Nộp bài Vòng 1",
+      "uploading": "Đang tải lên…",
+      "cancel": "Hủy",
+      "success": "Bài nộp Vòng 1 đã được lưu.",
+      "submittedTitle": "Bài đã nộp",
+      "submittedAt": "Cập nhật lần cuối {date}",
+      "replace": "Thay thế bài nộp",
+      "download": "Tải tệp xuống",
+      "previewLabel": "Xem trước tệp",
+      "previewTitle": "Xem trước {filename}",
+      "emptyTitle": "Chưa có bài nộp",
+      "memberEmpty": "Đội trưởng chưa nộp bài Vòng 1.",
+      "errors": {
+        "loadTitle": "Không thể tải bài nộp Vòng 1",
+        "load": "Vui lòng kiểm tra kết nối và thử lại.",
+        "descriptionLength": "Phần mô tả không được vượt quá 5.000 ký tự.",
+        "fileRequired": "Vui lòng chọn tệp bài nộp.",
+        "fileType": "Vui lòng chọn tệp PDF, DOC, DOCX, PPT hoặc PPTX.",
+        "fileSize": "Kích thước tệp không được vượt quá 20 MB.",
+        "submit": "Không thể tải bài nộp lên. Vui lòng kiểm tra tệp và thử lại.",
+        "download": "Không thể tải tệp xuống. Vui lòng thử lại."
+      }
+    },
+    "placeholder": {
+      "title": "Sắp ra mắt",
+      "description": "Thông tin nộp bài cho vòng này sẽ được cập nhật sau."
+    },
     "overview": {
       "registration": "Đơn đăng ký của bạn",
       "captainMessage": "Bạn đang dẫn dắt đội thi này. Đội hình đã đăng ký được hiển thị bên dưới.",

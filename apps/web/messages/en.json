@@ -254,6 +254,49 @@
       "approved": "Approved",
       "waitlisted": "Waitlisted"
     },
+    "tabs": {
+      "label": "Team dashboard sections",
+      "overview": "Overview",
+      "round1": "Round 1",
+      "round2": "Round 2",
+      "round3": "Round 3"
+    },
+    "round1": {
+      "title": "Round 1 submission",
+      "description": "Submit your team's written description and supporting document. Only the team captain can create or replace a submission.",
+      "formTitle": "Prepare your submission",
+      "replaceTitle": "Replace your submission",
+      "descriptionLabel": "Description",
+      "fileLabel": "Submission file",
+      "fileHint": "PDF, DOC, DOCX, PPT, or PPTX — maximum 20 MB.",
+      "characters": "{count} / 5000 characters",
+      "submit": "Submit Round 1",
+      "uploading": "Uploading…",
+      "cancel": "Cancel",
+      "success": "Your Round 1 submission has been saved.",
+      "submittedTitle": "Submitted work",
+      "submittedAt": "Last updated {date}",
+      "replace": "Replace submission",
+      "download": "Download file",
+      "previewLabel": "File preview",
+      "previewTitle": "Preview of {filename}",
+      "emptyTitle": "No submission yet",
+      "memberEmpty": "Your team captain has not submitted the Round 1 entry yet.",
+      "errors": {
+        "loadTitle": "We could not load the Round 1 submission",
+        "load": "Check your connection and try again.",
+        "descriptionLength": "The description must be 5,000 characters or fewer.",
+        "fileRequired": "Choose a submission file.",
+        "fileType": "Choose a PDF, DOC, DOCX, PPT, or PPTX file.",
+        "fileSize": "The file must be no larger than 20 MB.",
+        "submit": "The submission could not be uploaded. Check the file and try again.",
+        "download": "The file could not be downloaded. Please try again."
+      }
+    },
+    "placeholder": {
+      "title": "Coming soon",
+      "description": "Submission details for this round will be available here later."
+    },
     "overview": {
       "registration": "Your registration",
       "captainMessage": "You are leading this team. Your submitted roster is shown below.",

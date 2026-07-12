@@ -1,10 +1,12 @@
 import { protectedProcedure, publicProcedure, router } from "../index";
 import { adminRouter } from "./admin";
 import { registrationRouter } from "./registration";
+import { roundOneRouter } from "./round-one";
 
 export const appRouter = router({
   admin: adminRouter,
   registration: registrationRouter,
+  roundOne: roundOneRouter,
   healthCheck: publicProcedure.query(() => {
     return "OK";
   }),
