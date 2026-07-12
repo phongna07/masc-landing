@@ -17,6 +17,7 @@ const signedUrlExpirySeconds = 300;
 const roundInput = z.object({ round: roundSchema });
 const submissionInput = roundInput.extend({ submissionId: z.string().trim().min(1).max(128) });
 const feedbackInput = submissionInput.extend({ feedback: z.string().trim().min(1).max(5000) });
+const registrationStatusSchema = z.enum(["pending", "approved", "rejected"]);
 
 const s3 = new S3Client({ region: "auto", endpoint: `https://${env.R2_ACCOUNT_ID}.r2.cloudflarestorage.com`,
   credentials: { accessKeyId: env.R2_ACCESS_KEY_ID, secretAccessKey: env.R2_SECRET_ACCESS_KEY } });
@@ -63,6 +64,14 @@ export const adminRouter = router({
       universityName: members.universityName, isCaptain: members.isCaptain }).from(members)
       .where(eq(members.teamId, team.id)).orderBy(desc(members.isCaptain), asc(members.fullName));
     return { ...team, members: roster };
+  }),
+  updateTeamStatus: adminProcedure.input(z.object({
+    teamId: z.string().trim().min(1).max(128), status: registrationStatusSchema,
+  })).mutation(async ({ input }) => {
+    const [team] = await db.update(teams).set({ registrationStatus: input.status })
+      .where(eq(teams.id, input.teamId)).returning({ id: teams.id, status: teams.registrationStatus });
+    if (!team) throw new TRPCError({ code: "NOT_FOUND", message: "Team not found" });
+    return team;
   }),
   listRoundSubmissions: adminProcedure.input(roundInput).query(async ({ input }) => db.select({
     id: roundSubmissions.id, teamId: teams.id, teamName: teams.teamName, teamStatus: teams.registrationStatus,

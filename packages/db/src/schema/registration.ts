@@ -15,7 +15,7 @@ import { user } from "./auth";
 export const registrationStatus = pgEnum("registration_status", [
   "pending",
   "approved",
-  "waitlisted",
+  "rejected",
 ]);
 
 export const teams = pgTable(

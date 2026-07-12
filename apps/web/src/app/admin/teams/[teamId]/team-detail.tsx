@@ -2,10 +2,11 @@
 
 import { Button } from "@masc-landing/ui/components/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@masc-landing/ui/components/card";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { ArrowLeftIcon } from "lucide-react";
 import Link from "next/link";
 import { useLocale, useTranslations } from "next-intl";
+import { toast } from "sonner";
 
 import { trpc } from "@/utils/trpc";
 import { AdminEmpty, AdminError, AdminLoading, formatDate } from "../../admin-state";
@@ -13,7 +14,18 @@ import { AdminEmpty, AdminError, AdminLoading, formatDate } from "../../admin-st
 export default function TeamDetail({ teamId }: { teamId: string }) {
   const t = useTranslations("Admin");
   const locale = useLocale();
+  const queryClient = useQueryClient();
   const team = useQuery(trpc.admin.getTeam.queryOptions({ teamId }));
+  const updateStatus = useMutation(trpc.admin.updateTeamStatus.mutationOptions({
+    onSuccess: async () => {
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: trpc.admin.getTeam.queryKey({ teamId }) }),
+        queryClient.invalidateQueries({ queryKey: trpc.admin.listTeams.queryKey() }),
+      ]);
+      toast.success(t("teams.statusUpdateSuccess"));
+    },
+    onError: () => toast.error(t("teams.statusUpdateError")),
+  }));
 
   if (team.isPending) return <AdminLoading />;
   if (team.isError) {
@@ -31,7 +43,17 @@ export default function TeamDetail({ teamId }: { teamId: string }) {
       <Card className="dashboard-card"><CardHeader><CardTitle>{t("detail.registration")}</CardTitle></CardHeader><CardContent className="detail-list">
         <Detail label={t("fields.created")} value={formatDate(team.data.createdAt, locale)} />
         <Detail label={t("fields.members")} value={String(team.data.members.length)} />
-        <Detail label={t("fields.status")} value={t(`values.status.${team.data.status}`)} />
+        <div className="admin-status-editor">
+          <label htmlFor="team-registration-status">{t("fields.status")}</label>
+          <div>
+            <select id="team-registration-status" value={team.data.status} disabled={updateStatus.isPending}
+              onChange={(event) => updateStatus.mutate({ teamId, status: event.target.value as "pending" | "approved" | "rejected" })}>
+              {(["pending", "approved", "rejected"] as const).map((status) =>
+                <option key={status} value={status}>{t(`values.status.${status}`)}</option>)}
+            </select>
+            {updateStatus.isPending && <span>{t("teams.statusUpdating")}</span>}
+          </div>
+        </div>
       </CardContent></Card>
       <Card className="dashboard-card"><CardHeader><CardTitle>{t("detail.captainContact")}</CardTitle></CardHeader><CardContent className="detail-list">
         <Detail label={t("fields.name")} value={team.data.captainName} />

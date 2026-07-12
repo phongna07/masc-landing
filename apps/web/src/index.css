@@ -458,7 +458,7 @@ button {
   background: rgba(242, 213, 132, 0.07);
 }
 
-.status-waitlisted {
+.status-rejected {
   color: #c2b8ff;
   border-color: rgba(123, 102, 255, 0.38);
 }
@@ -625,6 +625,13 @@ button {
   .submission-file [data-slot="button"] { grid-column: 1 / -1; width: 100%; }
 
 }
+
+.admin-status-editor label { color: var(--muted); font-size: 12px; }
+.admin-status-editor>div { display: flex; align-items: center; justify-content: flex-end; gap: 10px; }
+.admin-status-editor select { min-width: 160px; border: 1px solid rgba(210,166,108,.5); border-radius: 8px; color-scheme: dark; background: rgba(255,255,255,.045); padding: 9px 34px 9px 11px; color: var(--ink); font: inherit; text-align: right; }
+.admin-status-editor select option { color: var(--ink); background: #111014; }
+.admin-status-editor select:focus-visible { outline: 2px solid #b56b2b; outline-offset: 2px; }
+.admin-status-editor span { color: var(--muted); font-size: 12px; }
 
 .announcement-feed { display: grid; gap: 18px; }
 .announcement-post { overflow: hidden; border-color: rgba(255,255,255,.14); background: rgba(17,16,20,.82); }

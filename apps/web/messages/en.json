@@ -253,7 +253,7 @@
     "status": {
       "pending": "Pending review",
       "approved": "Approved",
-      "waitlisted": "Waitlisted"
+      "rejected": "Rejected"
     },
     "tabs": {
       "label": "Team dashboard sections",
@@ -333,7 +333,10 @@
       "title": "Teams",
       "description": "Review submitted teams, captains, and registration status.",
       "emptyTitle": "No teams found",
-      "emptyDescription": "Submitted team registrations will appear here."
+      "emptyDescription": "Submitted team registrations will appear here.",
+      "statusUpdating": "Updating…",
+      "statusUpdateSuccess": "Team registration status updated.",
+      "statusUpdateError": "Unable to update the team status. Please try again."
     },
     "round": { "title": "Round {round}", "description": "Review Round {round} submissions and their related teams.", "emptyTitle": "No Round {round} submissions", "emptyDescription": "Team submissions will appear here after they are uploaded.", "detailEyebrow": "Round {round} submission", "submission": "Submission details", "content": "Submitted work", "notFoundTitle": "Submission not found", "notFoundDescription": "This submission does not exist or may have been removed.", "previewTitle": "Preview of {filename}" },
     "detail": {
@@ -367,7 +370,7 @@
     },
     "values": {
       "verified": "Verified", "unverified": "Unverified", "active": "Active", "banned": "Banned", "captain": "Captain",
-      "status": { "pending": "Pending review", "approved": "Approved", "waitlisted": "Waitlisted" }
+      "status": { "pending": "Pending review", "approved": "Approved", "rejected": "Rejected" }
     },
     "actions": { "view": "View", "viewTeam": "View {name}", "viewSubmission": "View {team}'s submission", "backToTeams": "Back to teams", "backToRound": "Back to Round {round}", "preview": "Preview", "download": "Download", "retry": "Try again" },
     "errors": {

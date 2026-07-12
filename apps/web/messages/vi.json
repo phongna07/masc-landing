@@ -253,7 +253,7 @@
     "status": {
       "pending": "Đang chờ duyệt",
       "approved": "Đã duyệt",
-      "waitlisted": "Danh sách chờ"
+      "rejected": "Bị từ chối"
     },
     "tabs": {
       "label": "Các mục trong bảng điều khiển đội thi",
@@ -333,7 +333,10 @@
       "title": "Đội thi",
       "description": "Xem các đội đã đăng ký, đội trưởng và trạng thái đăng ký.",
       "emptyTitle": "Chưa có đội thi",
-      "emptyDescription": "Các đội đã đăng ký sẽ xuất hiện tại đây."
+      "emptyDescription": "Các đội đã đăng ký sẽ xuất hiện tại đây.",
+      "statusUpdating": "Đang cập nhật…",
+      "statusUpdateSuccess": "Đã cập nhật trạng thái đăng ký của đội.",
+      "statusUpdateError": "Không thể cập nhật trạng thái đội. Vui lòng thử lại."
     },
     "round": { "title": "Vòng {round}", "description": "Xem bài nộp Vòng {round} và thông tin các đội liên quan.", "emptyTitle": "Chưa có bài nộp Vòng {round}", "emptyDescription": "Bài nộp của các đội sẽ xuất hiện tại đây sau khi được tải lên.", "detailEyebrow": "Bài nộp Vòng {round}", "submission": "Thông tin bài nộp", "content": "Nội dung đã nộp", "notFoundTitle": "Không tìm thấy bài nộp", "notFoundDescription": "Bài nộp này không tồn tại hoặc có thể đã bị xóa.", "previewTitle": "Xem trước {filename}" },
     "detail": {
@@ -367,7 +370,7 @@
     },
     "values": {
       "verified": "Đã xác minh", "unverified": "Chưa xác minh", "active": "Hoạt động", "banned": "Đã cấm", "captain": "Đội trưởng",
-      "status": { "pending": "Chờ xét duyệt", "approved": "Đã duyệt", "waitlisted": "Danh sách chờ" }
+      "status": { "pending": "Chờ xét duyệt", "approved": "Đã duyệt", "rejected": "Bị từ chối" }
     },
     "actions": { "view": "Xem", "viewTeam": "Xem {name}", "viewSubmission": "Xem bài nộp của {team}", "backToTeams": "Quay lại danh sách đội", "backToRound": "Quay lại Vòng {round}", "preview": "Xem trước", "download": "Tải xuống", "retry": "Thử lại" },
     "errors": {
