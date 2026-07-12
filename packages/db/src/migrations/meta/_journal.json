@@ -15,6 +15,13 @@
       "when": 1783846671938,
       "tag": "0001_purple_may_parker",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1783847723063,
+      "tag": "0002_curved_mother_askani",
+      "breakpoints": true
     }
   ]
 }

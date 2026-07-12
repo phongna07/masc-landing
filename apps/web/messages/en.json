@@ -257,6 +257,7 @@
     "tabs": {
       "label": "Team dashboard sections",
       "overview": "Overview",
+      "announcements": "Announcements",
       "round1": "Round 1",
       "round2": "Round 2",
       "round3": "Round 3"
@@ -364,6 +365,12 @@
       "title": "Coming soon",
       "description": "Submission details for this round will be available here later."
     },
+    "announcements": {
+      "organizer": "MASC organizers",
+      "emptyTitle": "No announcements yet",
+      "emptyDescription": "Updates from the organizers will appear here.",
+      "errors": { "loadTitle": "Could not load announcements", "load": "Check your connection and try again." }
+    },
     "overview": {
       "registration": "Your registration",
       "captainMessage": "You are leading this team. Your submitted roster is shown below.",
@@ -385,7 +392,16 @@
       "open": "Open admin navigation",
       "close": "Close admin navigation"
     },
-    "tabs": { "users": "Users", "teams": "Teams", "roundOne": "Round 1", "roundTwo": "Round 2", "roundThree": "Round 3" },
+    "tabs": { "announcements": "Announcements", "users": "Users", "teams": "Teams", "roundOne": "Round 1", "roundTwo": "Round 2", "roundThree": "Round 3" },
+    "announcements": {
+      "title": "Announcements", "description": "Publish updates for every registered team.", "composeTitle": "Create an announcement",
+      "contentLabel": "Announcement text", "placeholder": "Share an update with participants…", "characters": "{count} / 5000 characters",
+      "addImage": "Add image", "removeImage": "Remove image", "imageHint": "Optional JPG, PNG, or WebP — maximum 10 MB.",
+      "publish": "Publish announcement", "publishing": "Publishing…", "organizer": "MASC organizers", "delete": "Delete announcement",
+      "deleteConfirm": "Delete this announcement? This cannot be undone.", "emptyTitle": "No announcements yet", "emptyDescription": "Publish the first update for participants above.",
+      "success": { "created": "Announcement published.", "deleted": "Announcement deleted." },
+      "errors": { "required": "Enter announcement text before publishing.", "tooLong": "Announcement text cannot exceed 5,000 characters.", "imageType": "Choose a JPG, PNG, or WebP image.", "imageSize": "The image cannot exceed 10 MB.", "create": "Could not publish the announcement. Please try again.", "delete": "Could not delete the announcement. Please try again." }
+    },
     "users": {
       "title": "Users",
       "description": "Review every account registered with MASC.",
@@ -479,6 +495,7 @@
       "roundTwoDetail": "This submission could not be loaded. Check your connection and try again.",
       "roundThree": "Round 3 submissions could not be loaded. Check your connection and try again.",
       "roundThreeDetail": "This submission could not be loaded. Check your connection and try again.",
+      "announcements": "Announcements could not be loaded. Check your connection and try again.",
       "preview": "The file preview could not be created. Please try again.",
       "download": "The file download could not be created. Please try again."
     }

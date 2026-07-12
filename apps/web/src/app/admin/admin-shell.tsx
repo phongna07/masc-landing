@@ -1,6 +1,6 @@
 "use client";
 
-import { FileTextIcon, MenuIcon, UsersIcon, XIcon } from "lucide-react";
+import { FileTextIcon, MegaphoneIcon, MenuIcon, UsersIcon, XIcon } from "lucide-react";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { usePathname } from "next/navigation";
@@ -11,6 +11,7 @@ import LanguageSwitcher from "@/components/language-switcher";
 import UserMenu from "@/components/user-menu";
 
 const items = [
+  { href: "/admin/announcements", key: "announcements", icon: MegaphoneIcon },
   { href: "/admin/users", key: "users", icon: UsersIcon },
   { href: "/admin/teams", key: "teams", icon: UsersIcon },
   { href: "/admin/round-one", key: "roundOne", icon: FileTextIcon },

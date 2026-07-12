@@ -9,7 +9,7 @@ import { Skeleton } from "@masc-landing/ui/components/skeleton";
 import { Textarea } from "@masc-landing/ui/components/textarea";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import type { inferRouterOutputs } from "@trpc/server";
-import { DownloadIcon, FileTextIcon, PlusIcon, RefreshCwIcon, Trash2Icon, UploadIcon } from "lucide-react";
+import { DownloadIcon, FileTextIcon, MegaphoneIcon, PlusIcon, RefreshCwIcon, Trash2Icon, UploadIcon } from "lucide-react";
 import Link from "next/link";
 import { useFormatter, useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
@@ -86,7 +86,7 @@ export default function Dashboard({ session }: { session: Session }) {
   );
 }
 
-const dashboardTabs = ["overview", "round1", "round2", "round3"] as const;
+const dashboardTabs = ["overview", "announcements", "round1", "round2", "round3"] as const;
 type DashboardTab = (typeof dashboardTabs)[number];
 
 function TeamDashboard({ membership }: { membership: Extract<Membership, { registered: true }> }) {
@@ -123,11 +123,27 @@ function TeamDashboard({ membership }: { membership: Extract<Membership, { regis
     </div>
     <section id={`dashboard-panel-${activeTab}`} role="tabpanel" aria-labelledby={`dashboard-tab-${activeTab}`} tabIndex={0}>
       {activeTab === "overview" && <TeamOverview membership={membership} />}
+      {activeTab === "announcements" && <Announcements />}
       {activeTab === "round1" && <RoundOne membership={membership} />}
       {activeTab === "round2" && <RoundTwo membership={membership} />}
       {activeTab === "round3" && <RoundThree membership={membership} />}
     </section>
   </div>;
+}
+
+function Announcements() {
+  const t = useTranslations("Dashboard");
+  const format = useFormatter();
+  const announcements = useQuery(trpc.announcements.list.queryOptions());
+
+  if (announcements.isPending) return <div className="announcement-feed"><Skeleton className="h-64 w-full" /><Skeleton className="h-64 w-full" /></div>;
+  if (announcements.isError) return <StateCard title={t("announcements.errors.loadTitle")} description={t("announcements.errors.load")} retry={() => announcements.refetch()} />;
+  if (announcements.data.length === 0) return <Card className="announcement-empty"><MegaphoneIcon aria-hidden="true" /><h2>{t("announcements.emptyTitle")}</h2><p>{t("announcements.emptyDescription")}</p></Card>;
+
+  return <div className="announcement-feed">{announcements.data.map((announcement) => <Card className="announcement-post" key={announcement.id}>
+    <CardHeader className="announcement-post-header"><div className="announcement-avatar"><MegaphoneIcon aria-hidden="true" /></div><div><CardTitle>{t("announcements.organizer")}</CardTitle><time dateTime={new Date(announcement.createdAt).toISOString()}>{format.dateTime(new Date(announcement.createdAt), { dateStyle: "medium", timeStyle: "short" })}</time></div></CardHeader>
+    <CardContent><p className="announcement-content">{announcement.content}</p>{announcement.imageUrl && <img className="announcement-image" src={announcement.imageUrl} alt="" />}</CardContent>
+  </Card>)}</div>;
 }
 
 const MAX_ROUND_FILE_SIZE = 20 * 1024 * 1024;

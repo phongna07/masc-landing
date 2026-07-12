@@ -626,6 +626,22 @@ button {
 
 }
 
+.announcement-feed { display: grid; gap: 18px; }
+.announcement-post { overflow: hidden; border-color: rgba(255,255,255,.14); background: rgba(17,16,20,.82); }
+.announcement-post-header { display: grid !important; grid-template-columns: 44px minmax(0,1fr) auto; align-items: center !important; gap: 13px; padding: 20px 24px 12px !important; }
+.announcement-avatar { display: grid; width: 44px; height: 44px; place-items: center; border: 1px solid rgba(210,166,108,.35); border-radius: 50%; color: #f2d584; background: rgba(210,166,108,.09); }
+.announcement-avatar svg { width: 20px; }
+.announcement-post-header [data-slot="card-title"] { font-family: inherit; font-size: 13px; font-weight: 700; }
+.announcement-post-header time { display: block; margin-top: 4px; color: var(--muted); font-size: 10px; }
+.announcement-post [data-slot="card-content"] { padding: 8px 24px 24px; }
+.announcement-content { margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; font-size: 14px; line-height: 1.7; }
+.announcement-image { max-height: 720px; margin-top: 18px; border: 1px solid rgba(255,255,255,.1); object-fit: contain; background: rgba(0,0,0,.25); }
+.announcement-empty { display: grid; min-height: 230px; place-items: center; align-content: center; gap: 10px; padding: 34px; text-align: center; border-color: rgba(255,255,255,.14); background: rgba(17,16,20,.76); }
+.announcement-empty svg { color: #d2a66c; }
+.announcement-empty h2, .announcement-empty p { margin: 0; }
+.announcement-empty h2 { font-family: var(--font-castela), Georgia, serif; font-size: 30px; font-weight: 400; }
+.announcement-empty p { color: var(--muted); font-size: 12px; }
+
 /* Admin */
 .admin-page { min-height: 100svh; background: radial-gradient(circle at 80% 8%, rgba(123, 102, 255, .12), transparent 30rem), var(--night); }
 .admin-layout { display: grid; min-height: calc(100svh - 76px); grid-template-columns: 250px minmax(0, 1fr); }
@@ -675,6 +691,19 @@ button {
 .admin-file-actions { display: flex; gap: 8px; }
 .admin-file-error { margin: 12px 0 0; color: #ff9189; font-size: 12px; }
 .admin-mobile-back { display: none; }
+.announcement-composer { margin-bottom: 24px; border-color: rgba(210,166,108,.25); background: rgba(17,16,20,.82); }
+.announcement-composer [data-slot="card-title"] { font-family: var(--font-castela), Georgia, serif; font-size: 32px; font-weight: 400; }
+.announcement-form { display: grid; gap: 10px; }
+.announcement-form [data-slot="textarea"] { min-height: 150px; resize: vertical; line-height: 1.6; }
+.announcement-form-actions { display: flex; align-items: center; gap: 10px; margin-top: 6px; }
+.announcement-form-actions input[type="file"] { position: absolute; width: 1px; height: 1px; padding: 0; opacity: 0; }
+.announcement-form-actions [data-slot="button"] { margin-left: auto; }
+.announcement-file-button { display: inline-flex; max-width: min(100%, 360px); align-items: center; gap: 8px; overflow: hidden; padding: 10px 14px; border: 1px solid var(--line); font-size: 11px; text-overflow: ellipsis; white-space: nowrap; }
+.announcement-file-button svg { width: 17px; flex: 0 0 auto; }
+.announcement-image-preview { position: relative; width: fit-content; max-width: 100%; margin-top: 8px; }
+.announcement-image-preview img { width: auto; max-width: 100%; max-height: 420px; object-fit: contain; }
+.announcement-image-preview [data-slot="button"] { position: absolute; top: 10px; right: 10px; background: rgba(7,7,10,.8); }
+.admin-announcement-feed { margin-top: 24px; }
 .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
 
 @media (max-width: 850px) {
@@ -697,6 +726,9 @@ button {
   .admin-mobile-back { display: flex; width: 100%; margin-top: 18px; }
   .admin-file-actions { display: grid; width: 100%; }
   .admin-feedback-actions { display: grid; }
+  .announcement-form-actions { align-items: stretch; flex-direction: column; }
+  .announcement-file-button { max-width: 100%; }
+  .announcement-form-actions [data-slot="button"] { width: 100%; margin-left: 0; }
 }
 
 a {

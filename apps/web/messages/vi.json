@@ -257,6 +257,7 @@
     "tabs": {
       "label": "Các mục trong bảng điều khiển đội thi",
       "overview": "Tổng quan",
+      "announcements": "Thông báo",
       "round1": "Vòng 1",
       "round2": "Vòng 2",
       "round3": "Vòng 3"
@@ -364,6 +365,12 @@
       "title": "Sắp ra mắt",
       "description": "Thông tin nộp bài cho vòng này sẽ được cập nhật sau."
     },
+    "announcements": {
+      "organizer": "Ban tổ chức MASC",
+      "emptyTitle": "Chưa có thông báo",
+      "emptyDescription": "Các cập nhật từ ban tổ chức sẽ xuất hiện tại đây.",
+      "errors": { "loadTitle": "Không thể tải thông báo", "load": "Vui lòng kiểm tra kết nối và thử lại." }
+    },
     "overview": {
       "registration": "Đơn đăng ký của bạn",
       "captainMessage": "Bạn đang dẫn dắt đội thi này. Đội hình đã đăng ký được hiển thị bên dưới.",
@@ -385,7 +392,16 @@
       "open": "Mở điều hướng quản trị",
       "close": "Đóng điều hướng quản trị"
     },
-    "tabs": { "users": "Người dùng", "teams": "Đội thi", "roundOne": "Vòng 1", "roundTwo": "Vòng 2", "roundThree": "Vòng 3" },
+    "tabs": { "announcements": "Thông báo", "users": "Người dùng", "teams": "Đội thi", "roundOne": "Vòng 1", "roundTwo": "Vòng 2", "roundThree": "Vòng 3" },
+    "announcements": {
+      "title": "Thông báo", "description": "Đăng cập nhật cho tất cả đội thi đã đăng ký.", "composeTitle": "Tạo thông báo",
+      "contentLabel": "Nội dung thông báo", "placeholder": "Chia sẻ cập nhật với các thí sinh…", "characters": "{count} / 5000 ký tự",
+      "addImage": "Thêm hình ảnh", "removeImage": "Xóa hình ảnh", "imageHint": "JPG, PNG hoặc WebP không bắt buộc — tối đa 10 MB.",
+      "publish": "Đăng thông báo", "publishing": "Đang đăng…", "organizer": "Ban tổ chức MASC", "delete": "Xóa thông báo",
+      "deleteConfirm": "Xóa thông báo này? Thao tác này không thể hoàn tác.", "emptyTitle": "Chưa có thông báo", "emptyDescription": "Hãy đăng cập nhật đầu tiên cho các thí sinh ở phía trên.",
+      "success": { "created": "Đã đăng thông báo.", "deleted": "Đã xóa thông báo." },
+      "errors": { "required": "Vui lòng nhập nội dung trước khi đăng.", "tooLong": "Nội dung thông báo không được vượt quá 5.000 ký tự.", "imageType": "Vui lòng chọn hình JPG, PNG hoặc WebP.", "imageSize": "Hình ảnh không được vượt quá 10 MB.", "create": "Không thể đăng thông báo. Vui lòng thử lại.", "delete": "Không thể xóa thông báo. Vui lòng thử lại." }
+    },
     "users": {
       "title": "Người dùng",
       "description": "Xem tất cả tài khoản đã đăng ký với MASC.",
@@ -479,6 +495,7 @@
       "roundTwoDetail": "Không thể tải bài nộp này. Hãy kiểm tra kết nối và thử lại.",
       "roundThree": "Không thể tải bài nộp Vòng 3. Hãy kiểm tra kết nối và thử lại.",
       "roundThreeDetail": "Không thể tải bài nộp này. Hãy kiểm tra kết nối và thử lại.",
+      "announcements": "Không thể tải thông báo. Hãy kiểm tra kết nối và thử lại.",
       "preview": "Không thể tạo bản xem trước. Vui lòng thử lại.",
       "download": "Không thể tạo liên kết tải xuống. Vui lòng thử lại."
     }
