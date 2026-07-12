@@ -8,6 +8,7 @@ import { eq, sql } from "drizzle-orm";
 import { z } from "zod";
 
 import { protectedProcedure, router } from "../index";
+import { getSubmissionSettings, requireSubmissionOpen } from "../submission-settings";
 
 const MAX_FILE_SIZE = 20 * 1024 * 1024;
 const URL_EXPIRY_SECONDS = 300;
@@ -73,6 +74,7 @@ async function bestEffortDelete(key: string) {
 export const roundTwoRouter = router({
   current: protectedProcedure.query(async ({ ctx }) => {
     const membership = await membershipFor(ctx.session.user.email);
+    const settings = await getSubmissionSettings();
     const [submission] = await db
       .select({
         description: roundTwoSubmissions.description,
@@ -86,12 +88,13 @@ export const roundTwoRouter = router({
       .from(roundTwoSubmissions)
       .where(eq(roundTwoSubmissions.teamId, membership.teamId))
       .limit(1);
-    return { submission: submission ?? null };
+    return { submission: submission ?? null, isSubmissionOpen: settings.roundTwoSubmissionOpen };
   }),
 
   createUploadUrl: protectedProcedure.input(fileInput).mutation(async ({ ctx, input }) => {
     const membership = await membershipFor(ctx.session.user.email);
     requireCaptain(membership);
+    await requireSubmissionOpen("roundTwo");
     const extension = validateFile(input);
     const uploadId = crypto.randomUUID();
     const uploadUrl = await getSignedUrl(s3, new PutObjectCommand({
@@ -109,6 +112,14 @@ export const roundTwoRouter = router({
       const membership = await membershipFor(ctx.session.user.email);
       requireCaptain(membership);
       const key = objectKey(membership.teamId, input.uploadId, validateFile(input));
+	  try {
+		await requireSubmissionOpen("roundTwo");
+	  } catch (error) {
+		const [current] = await db.select({ objectKey: roundTwoSubmissions.objectKey })
+		  .from(roundTwoSubmissions).where(eq(roundTwoSubmissions.teamId, membership.teamId)).limit(1);
+		if (current?.objectKey !== key) await bestEffortDelete(key);
+		throw error;
+	  }
       let object;
       try {
         object = await s3.send(new HeadObjectCommand({ Bucket: env.R2_BUCKET, Key: key }));

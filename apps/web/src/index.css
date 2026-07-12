@@ -657,6 +657,15 @@ button {
 .admin-heading { margin-bottom: 34px; }
 .admin-heading h1, .admin-detail-heading h1 { margin: 0 0 12px; font-family: var(--font-castela), Georgia, serif; font-size: clamp(48px, 6vw, 76px); font-weight: 400; line-height: .95; letter-spacing: -.03em; }
 .admin-heading span { color: var(--muted); font-size: 13px; }
+.admin-round-settings { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; }
+.admin-round-setting { border-color: rgba(255,255,255,.14); background: rgba(17,16,20,.76); }
+.admin-round-setting [data-slot="card-header"] { display: flex; align-items: flex-start; justify-content: space-between; gap: 18px; }
+.admin-round-setting [data-slot="card-title"] { font-family: var(--font-castela), Georgia, serif; font-size: 28px; font-weight: 400; }
+.admin-round-setting [data-slot="card-header"] p { margin: 8px 0 0; color: var(--muted); font-size: 12px; line-height: 1.6; }
+.admin-round-setting [data-slot="card-header"] span { flex: 0 0 auto; padding: 6px 9px; border: 1px solid; font-size: 8px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; }
+.admin-round-setting .is-open { color: #bde7ad; border-color: rgba(137,210,110,.3); }
+.admin-round-setting .is-closed { color: #ffb1aa; border-color: rgba(255,107,98,.35); }
+.admin-round-setting [data-slot="button"] { width: 100%; }
 .admin-table-card, .admin-empty { border-color: rgba(255,255,255,.14); background: rgba(17,16,20,.76); }
 .admin-table-scroll { overflow-x: auto; padding: 0 !important; }
 .admin-table { width: 100%; min-width: 780px; border-collapse: collapse; text-align: left; }
@@ -715,6 +724,7 @@ button {
   .admin-menu-button { display: grid; width: 36px; height: 36px; place-items: center; color: var(--ink); border: 1px solid var(--line); background: rgba(255,255,255,.04); }
   .admin-menu-button svg { width: 18px; }
   .admin-detail-grid { grid-template-columns: 1fr; }
+  .admin-round-settings { grid-template-columns: 1fr; }
   .admin-file-actions { grid-column: 1 / -1; }
   .admin-feedback-actions { flex-wrap: wrap; }
 }

@@ -284,6 +284,8 @@
       "feedbackTitle": "Admin feedback",
       "emptyTitle": "No submission yet",
       "memberEmpty": "Your team captain has not submitted the Round 1 entry yet.",
+      "unavailableTitle": "Round 1 submissions are not available yet",
+      "unavailableDescription": "The organizers will open this round when submissions can begin.",
       "errors": {
         "loadTitle": "We could not load the Round 1 submission",
         "load": "Check your connection and try again.",
@@ -317,6 +319,8 @@
       "feedbackTitle": "Admin feedback",
       "emptyTitle": "No submission yet",
       "memberEmpty": "Your team captain has not submitted the Round 2 entry yet.",
+      "unavailableTitle": "Round 2 submissions are not available yet",
+      "unavailableDescription": "The organizers will open this round when submissions can begin.",
       "errors": {
         "loadTitle": "We could not load the Round 2 submission",
         "load": "Check your connection and try again.",
@@ -350,6 +354,8 @@
       "feedbackTitle": "Admin feedback",
       "emptyTitle": "No submission yet",
       "memberEmpty": "Your team captain has not submitted the Round 3 entry yet.",
+      "unavailableTitle": "Round 3 submissions are not available yet",
+      "unavailableDescription": "The organizers will open this round when submissions can begin.",
       "errors": {
         "loadTitle": "We could not load the Round 3 submission",
         "load": "Check your connection and try again.",
@@ -392,7 +398,24 @@
       "open": "Open admin navigation",
       "close": "Close admin navigation"
     },
-    "tabs": { "announcements": "Announcements", "users": "Users", "teams": "Teams", "roundOne": "Round 1", "roundTwo": "Round 2", "roundThree": "Round 3" },
+    "tabs": { "overview": "Overview", "announcements": "Announcements", "users": "Users", "teams": "Teams", "roundOne": "Round 1", "roundTwo": "Round 2", "roundThree": "Round 3" },
+    "overview": {
+      "title": "Overview",
+      "description": "Control when team captains can create or replace round submissions.",
+      "open": "Open",
+      "closed": "Closed",
+      "openAction": "Open submissions",
+      "closeAction": "Close submissions",
+      "updating": "Updating…",
+      "success": "Submission availability updated.",
+      "error": "Could not update submission availability. Please try again.",
+      "loadError": "Could not load submission availability. Check your connection and try again.",
+      "rounds": {
+        "roundOne": { "title": "Round 1 submissions", "description": "Allow captains to submit or replace their Round 1 work." },
+        "roundTwo": { "title": "Round 2 submissions", "description": "Allow captains to submit or replace their Round 2 work." },
+        "roundThree": { "title": "Round 3 submissions", "description": "Allow captains to submit or replace their Round 3 work." }
+      }
+    },
     "announcements": {
       "title": "Announcements", "description": "Publish updates for every registered team.", "composeTitle": "Create an announcement",
       "contentLabel": "Announcement text", "placeholder": "Share an update with participants…", "characters": "{count} / 5000 characters",

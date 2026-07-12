@@ -284,6 +284,8 @@
       "feedbackTitle": "Nhận xét từ ban tổ chức",
       "emptyTitle": "Chưa có bài nộp",
       "memberEmpty": "Đội trưởng chưa nộp bài Vòng 1.",
+      "unavailableTitle": "Chưa mở nộp bài Vòng 1",
+      "unavailableDescription": "Ban tổ chức sẽ mở vòng này khi bắt đầu nhận bài.",
       "errors": {
         "loadTitle": "Không thể tải bài nộp Vòng 1",
         "load": "Vui lòng kiểm tra kết nối và thử lại.",
@@ -317,6 +319,8 @@
       "feedbackTitle": "Nhận xét từ ban tổ chức",
       "emptyTitle": "Chưa có bài nộp",
       "memberEmpty": "Đội trưởng chưa nộp bài Vòng 2.",
+      "unavailableTitle": "Chưa mở nộp bài Vòng 2",
+      "unavailableDescription": "Ban tổ chức sẽ mở vòng này khi bắt đầu nhận bài.",
       "errors": {
         "loadTitle": "Không thể tải bài nộp Vòng 2",
         "load": "Vui lòng kiểm tra kết nối và thử lại.",
@@ -350,6 +354,8 @@
       "feedbackTitle": "Nhận xét từ ban tổ chức",
       "emptyTitle": "Chưa có bài nộp",
       "memberEmpty": "Đội trưởng chưa nộp bài Vòng 3.",
+      "unavailableTitle": "Chưa mở nộp bài Vòng 3",
+      "unavailableDescription": "Ban tổ chức sẽ mở vòng này khi bắt đầu nhận bài.",
       "errors": {
         "loadTitle": "Không thể tải bài nộp Vòng 3",
         "load": "Vui lòng kiểm tra kết nối và thử lại.",
@@ -392,7 +398,24 @@
       "open": "Mở điều hướng quản trị",
       "close": "Đóng điều hướng quản trị"
     },
-    "tabs": { "announcements": "Thông báo", "users": "Người dùng", "teams": "Đội thi", "roundOne": "Vòng 1", "roundTwo": "Vòng 2", "roundThree": "Vòng 3" },
+    "tabs": { "overview": "Tổng quan", "announcements": "Thông báo", "users": "Người dùng", "teams": "Đội thi", "roundOne": "Vòng 1", "roundTwo": "Vòng 2", "roundThree": "Vòng 3" },
+    "overview": {
+      "title": "Tổng quan",
+      "description": "Kiểm soát thời điểm đội trưởng có thể tạo hoặc thay thế bài nộp theo từng vòng.",
+      "open": "Đang mở",
+      "closed": "Đã đóng",
+      "openAction": "Mở nộp bài",
+      "closeAction": "Đóng nộp bài",
+      "updating": "Đang cập nhật…",
+      "success": "Đã cập nhật trạng thái nộp bài.",
+      "error": "Không thể cập nhật trạng thái nộp bài. Vui lòng thử lại.",
+      "loadError": "Không thể tải trạng thái nộp bài. Hãy kiểm tra kết nối và thử lại.",
+      "rounds": {
+        "roundOne": { "title": "Bài nộp Vòng 1", "description": "Cho phép đội trưởng nộp hoặc thay thế bài Vòng 1." },
+        "roundTwo": { "title": "Bài nộp Vòng 2", "description": "Cho phép đội trưởng nộp hoặc thay thế bài Vòng 2." },
+        "roundThree": { "title": "Bài nộp Vòng 3", "description": "Cho phép đội trưởng nộp hoặc thay thế bài Vòng 3." }
+      }
+    },
     "announcements": {
       "title": "Thông báo", "description": "Đăng cập nhật cho tất cả đội thi đã đăng ký.", "composeTitle": "Tạo thông báo",
       "contentLabel": "Nội dung thông báo", "placeholder": "Chia sẻ cập nhật với các thí sinh…", "characters": "{count} / 5000 ký tự",

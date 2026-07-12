@@ -1,6 +1,6 @@
 "use client";
 
-import { FileTextIcon, MegaphoneIcon, MenuIcon, UsersIcon, XIcon } from "lucide-react";
+import { FileTextIcon, LayoutDashboardIcon, MegaphoneIcon, MenuIcon, UsersIcon, XIcon } from "lucide-react";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { usePathname } from "next/navigation";
@@ -11,6 +11,7 @@ import LanguageSwitcher from "@/components/language-switcher";
 import UserMenu from "@/components/user-menu";
 
 const items = [
+  { href: "/admin", key: "overview", icon: LayoutDashboardIcon },
   { href: "/admin/announcements", key: "announcements", icon: MegaphoneIcon },
   { href: "/admin/users", key: "users", icon: UsersIcon },
   { href: "/admin/teams", key: "teams", icon: UsersIcon },
@@ -54,7 +55,7 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
           </div>
           <nav>
             {items.map(({ href, key, icon: Icon }) => {
-              const active = pathname === href || pathname.startsWith(`${href}/`);
+              const active = href === "/admin" ? pathname === href : pathname === href || pathname.startsWith(`${href}/`);
               return (
                 <Link
                   key={href}

@@ -178,7 +178,8 @@ function RoundOne({ membership }: { membership: Extract<Membership, { registered
   }));
   const preview = useMutation(trpc.roundOne.createPreviewUrl.mutationOptions());
   const existing = submission.data?.submission ?? null;
-  const showForm = membership.role === "captain" && (!existing || editing);
+  const isSubmissionOpen = submission.data?.isSubmissionOpen ?? false;
+  const showForm = isSubmissionOpen && membership.role === "captain" && (!existing || editing);
 
   useEffect(() => {
     if (existing && !showForm) preview.mutate();
@@ -218,7 +219,7 @@ function RoundOne({ membership }: { membership: Extract<Membership, { registered
     </CardHeader></Card>
     {existing && !showForm && <Card className="dashboard-card"><CardHeader className="submission-header">
       <div><CardTitle>{t("round1.submittedTitle")}</CardTitle><p>{t("round1.submittedAt", { date: format.dateTime(new Date(existing.updatedAt), { dateStyle: "medium", timeStyle: "short" }) })}</p></div>
-      {membership.role === "captain" && <Button variant="outline" onClick={() => { setDescription(existing.description); setEditing(true); }}>{t("round1.replace")}</Button>}
+      {isSubmissionOpen && membership.role === "captain" && <Button variant="outline" onClick={() => { setDescription(existing.description); setEditing(true); }}>{t("round1.replace")}</Button>}
     </CardHeader><CardContent className="submission-details">
       <div className="submission-description"><Label>{t("round1.descriptionLabel")}</Label><p>{existing.description}</p></div>
       <div className="submission-file"><FileTextIcon aria-hidden="true" /><div><strong>{existing.originalFilename}</strong><span>{formatBytes(existing.fileSize)}</span></div>
@@ -242,7 +243,8 @@ function RoundOne({ membership }: { membership: Extract<Membership, { registered
       <div className="registration-submit">{editing ? <Button type="button" variant="ghost" onClick={() => { setEditing(false); setError(null); }}>{t("round1.cancel")}</Button> : <span />}
         <Button type="submit" size="lg" disabled={createUploadUrl.isPending || finalize.isPending}><UploadIcon aria-hidden="true" />{finalize.isPending || createUploadUrl.isPending ? t("round1.uploading") : t("round1.submit")}</Button>
       </div></form>}
-    {!existing && membership.role === "member" && <Card className="dashboard-card"><CardHeader><CardTitle>{t("round1.emptyTitle")}</CardTitle><p>{t("round1.memberEmpty")}</p></CardHeader></Card>}
+    {!existing && !isSubmissionOpen && <Card className="dashboard-card round-unavailable"><CardHeader><CardTitle>{t("round1.unavailableTitle")}</CardTitle><p>{t("round1.unavailableDescription")}</p></CardHeader></Card>}
+    {!existing && isSubmissionOpen && membership.role === "member" && <Card className="dashboard-card"><CardHeader><CardTitle>{t("round1.emptyTitle")}</CardTitle><p>{t("round1.memberEmpty")}</p></CardHeader></Card>}
   </div>;
 }
 
@@ -269,7 +271,8 @@ function RoundTwo({ membership }: { membership: Extract<Membership, { registered
   }));
   const preview = useMutation(trpc.roundTwo.createPreviewUrl.mutationOptions());
   const existing = submission.data?.submission ?? null;
-  const showForm = membership.role === "captain" && (!existing || editing);
+  const isSubmissionOpen = submission.data?.isSubmissionOpen ?? false;
+  const showForm = isSubmissionOpen && membership.role === "captain" && (!existing || editing);
 
   useEffect(() => {
     if (existing && !showForm) preview.mutate();
@@ -309,7 +312,7 @@ function RoundTwo({ membership }: { membership: Extract<Membership, { registered
     </CardHeader></Card>
     {existing && !showForm && <Card className="dashboard-card"><CardHeader className="submission-header">
       <div><CardTitle>{t("round2.submittedTitle")}</CardTitle><p>{t("round2.submittedAt", { date: format.dateTime(new Date(existing.updatedAt), { dateStyle: "medium", timeStyle: "short" }) })}</p></div>
-      {membership.role === "captain" && <Button variant="outline" onClick={() => { setDescription(existing.description); setEditing(true); }}>{t("round2.replace")}</Button>}
+      {isSubmissionOpen && membership.role === "captain" && <Button variant="outline" onClick={() => { setDescription(existing.description); setEditing(true); }}>{t("round2.replace")}</Button>}
     </CardHeader><CardContent className="submission-details">
       <div className="submission-description"><Label>{t("round2.descriptionLabel")}</Label><p>{existing.description}</p></div>
       <div className="submission-file"><FileTextIcon aria-hidden="true" /><div><strong>{existing.originalFilename}</strong><span>{formatBytes(existing.fileSize)}</span></div>
@@ -333,7 +336,8 @@ function RoundTwo({ membership }: { membership: Extract<Membership, { registered
       <div className="registration-submit">{editing ? <Button type="button" variant="ghost" onClick={() => { setEditing(false); setError(null); }}>{t("round2.cancel")}</Button> : <span />}
         <Button type="submit" size="lg" disabled={createUploadUrl.isPending || finalize.isPending}><UploadIcon aria-hidden="true" />{finalize.isPending || createUploadUrl.isPending ? t("round2.uploading") : t("round2.submit")}</Button>
       </div></form>}
-    {!existing && membership.role === "member" && <Card className="dashboard-card"><CardHeader><CardTitle>{t("round2.emptyTitle")}</CardTitle><p>{t("round2.memberEmpty")}</p></CardHeader></Card>}
+    {!existing && !isSubmissionOpen && <Card className="dashboard-card round-unavailable"><CardHeader><CardTitle>{t("round2.unavailableTitle")}</CardTitle><p>{t("round2.unavailableDescription")}</p></CardHeader></Card>}
+    {!existing && isSubmissionOpen && membership.role === "member" && <Card className="dashboard-card"><CardHeader><CardTitle>{t("round2.emptyTitle")}</CardTitle><p>{t("round2.memberEmpty")}</p></CardHeader></Card>}
   </div>;
 }
 
@@ -361,7 +365,8 @@ function RoundThree({ membership }: { membership: Extract<Membership, { register
   }));
   const preview = useMutation(trpc.roundThree.createPreviewUrl.mutationOptions());
   const existing = submission.data?.submission ?? null;
-  const showForm = membership.role === "captain" && (!existing || editing);
+  const isSubmissionOpen = submission.data?.isSubmissionOpen ?? false;
+  const showForm = isSubmissionOpen && membership.role === "captain" && (!existing || editing);
 
   useEffect(() => {
     if (existing && !showForm) preview.mutate();
@@ -401,7 +406,7 @@ function RoundThree({ membership }: { membership: Extract<Membership, { register
     </CardHeader></Card>
     {existing && !showForm && <Card className="dashboard-card"><CardHeader className="submission-header">
       <div><CardTitle>{t("round3.submittedTitle")}</CardTitle><p>{t("round3.submittedAt", { date: format.dateTime(new Date(existing.updatedAt), { dateStyle: "medium", timeStyle: "short" }) })}</p></div>
-      {membership.role === "captain" && <Button variant="outline" onClick={() => { setDescription(existing.description); setEditing(true); }}>{t("round3.replace")}</Button>}
+      {isSubmissionOpen && membership.role === "captain" && <Button variant="outline" onClick={() => { setDescription(existing.description); setEditing(true); }}>{t("round3.replace")}</Button>}
     </CardHeader><CardContent className="submission-details">
       <div className="submission-description"><Label>{t("round3.descriptionLabel")}</Label><p>{existing.description}</p></div>
       <div className="submission-file"><FileTextIcon aria-hidden="true" /><div><strong>{existing.originalFilename}</strong><span>{formatBytes(existing.fileSize)}</span></div>
@@ -425,7 +430,8 @@ function RoundThree({ membership }: { membership: Extract<Membership, { register
       <div className="registration-submit">{editing ? <Button type="button" variant="ghost" onClick={() => { setEditing(false); setError(null); }}>{t("round3.cancel")}</Button> : <span />}
         <Button type="submit" size="lg" disabled={createUploadUrl.isPending || finalize.isPending}><UploadIcon aria-hidden="true" />{finalize.isPending || createUploadUrl.isPending ? t("round3.uploading") : t("round3.submit")}</Button>
       </div></form>}
-    {!existing && membership.role === "member" && <Card className="dashboard-card"><CardHeader><CardTitle>{t("round3.emptyTitle")}</CardTitle><p>{t("round3.memberEmpty")}</p></CardHeader></Card>}
+    {!existing && !isSubmissionOpen && <Card className="dashboard-card round-unavailable"><CardHeader><CardTitle>{t("round3.unavailableTitle")}</CardTitle><p>{t("round3.unavailableDescription")}</p></CardHeader></Card>}
+    {!existing && isSubmissionOpen && membership.role === "member" && <Card className="dashboard-card"><CardHeader><CardTitle>{t("round3.emptyTitle")}</CardTitle><p>{t("round3.memberEmpty")}</p></CardHeader></Card>}
   </div>;
 }
 

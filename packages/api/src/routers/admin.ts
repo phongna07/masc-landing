@@ -7,6 +7,7 @@ import {
   roundOneSubmissions,
   roundThreeSubmissions,
   roundTwoSubmissions,
+  submissionSettings,
   teams,
   user,
 } from "@masc-landing/db/schema/index";
@@ -16,11 +17,16 @@ import { asc, count, desc, eq } from "drizzle-orm";
 import { z } from "zod";
 
 import { adminProcedure, router } from "../index";
+import { defaultSubmissionSettings, getSubmissionSettings, submissionSettingsId } from "../submission-settings";
 
 const userBatchSize = 100;
 const signedUrlExpirySeconds = 300;
 const submissionInput = z.object({ submissionId: z.string().trim().min(1).max(128) });
 const feedbackInput = submissionInput.extend({ feedback: z.string().trim().min(1).max(5000) });
+const submissionRoundInput = z.object({
+	round: z.enum(["roundOne", "roundTwo", "roundThree"]),
+	isOpen: z.boolean(),
+});
 
 const s3 = new S3Client({
   region: "auto",
@@ -59,6 +65,27 @@ async function findRoundThreeSubmissionFile(submissionId: string) {
 }
 
 export const adminRouter = router({
+  getSubmissionSettings: adminProcedure.query(async () => getSubmissionSettings()),
+
+  setRoundSubmissionOpen: adminProcedure.input(submissionRoundInput).mutation(async ({ input }) => {
+	const field = `${input.round}SubmissionOpen` as
+		| "roundOneSubmissionOpen"
+		| "roundTwoSubmissionOpen"
+		| "roundThreeSubmissionOpen";
+	const values = {
+		id: submissionSettingsId,
+		...defaultSubmissionSettings,
+		[field]: input.isOpen,
+		updatedAt: new Date(),
+	};
+
+	await db.insert(submissionSettings).values(values).onConflictDoUpdate({
+		target: submissionSettings.id,
+		set: { [field]: input.isOpen, updatedAt: new Date() },
+	});
+	return getSubmissionSettings();
+  }),
+
   listUsers: adminProcedure.query(async ({ ctx }) => {
     const allUsers = [];
     let offset = 0;
