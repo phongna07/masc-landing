@@ -266,6 +266,53 @@
       "roster": "Team roster"
     }
   },
+  "Admin": {
+    "eyebrow": "Administration",
+    "title": "Admin dashboard",
+    "nav": {
+      "homeLabel": "MASC 2026 — return home",
+      "label": "Admin navigation",
+      "open": "Open admin navigation",
+      "close": "Close admin navigation"
+    },
+    "tabs": { "users": "Users", "teams": "Teams" },
+    "users": {
+      "title": "Users",
+      "description": "Review every account registered with MASC.",
+      "emptyTitle": "No users found",
+      "emptyDescription": "User accounts will appear here after registration."
+    },
+    "teams": {
+      "title": "Teams",
+      "description": "Review submitted teams, captains, and registration status.",
+      "emptyTitle": "No teams found",
+      "emptyDescription": "Submitted team registrations will appear here."
+    },
+    "detail": {
+      "eyebrow": "Team details",
+      "registration": "Registration",
+      "captainContact": "Captain contact",
+      "roster": "Team roster",
+      "notFoundTitle": "Team not found",
+      "notFoundDescription": "This team does not exist or may have been removed."
+    },
+    "fields": {
+      "user": "User", "team": "Team", "captain": "Captain", "member": "Member",
+      "name": "Name", "email": "Email", "phone": "Phone", "university": "University",
+      "role": "Role", "verification": "Email", "status": "Status", "created": "Created", "members": "Members"
+    },
+    "values": {
+      "verified": "Verified", "unverified": "Unverified", "active": "Active", "banned": "Banned", "captain": "Captain",
+      "status": { "pending": "Pending review", "approved": "Approved", "waitlisted": "Waitlisted" }
+    },
+    "actions": { "view": "View", "viewTeam": "View {name}", "backToTeams": "Back to teams", "retry": "Try again" },
+    "errors": {
+      "loadTitle": "We could not load this data",
+      "users": "User accounts could not be loaded. Check your connection and try again.",
+      "teams": "Team registrations could not be loaded. Check your connection and try again.",
+      "detail": "Team details could not be loaded. Check your connection and try again."
+    }
+  },
   "UserMenu": {
     "signIn": "Sign In",
     "account": "My Account",

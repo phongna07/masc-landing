@@ -2,6 +2,8 @@ import { auth } from "@masc-landing/auth";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 
+import AdminShell from "./admin-shell";
+
 export default async function AdminLayout({
   children,
 }: Readonly<{
@@ -19,5 +21,5 @@ export default async function AdminLayout({
     redirect("/");
   }
 
-  return children;
+  return <AdminShell>{children}</AdminShell>;
 }

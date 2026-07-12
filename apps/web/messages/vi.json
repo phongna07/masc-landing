@@ -266,6 +266,53 @@
       "roster": "Danh sách đội"
     }
   },
+  "Admin": {
+    "eyebrow": "Quản trị",
+    "title": "Bảng điều khiển quản trị",
+    "nav": {
+      "homeLabel": "MASC 2026 — về trang chủ",
+      "label": "Điều hướng quản trị",
+      "open": "Mở điều hướng quản trị",
+      "close": "Đóng điều hướng quản trị"
+    },
+    "tabs": { "users": "Người dùng", "teams": "Đội thi" },
+    "users": {
+      "title": "Người dùng",
+      "description": "Xem tất cả tài khoản đã đăng ký với MASC.",
+      "emptyTitle": "Chưa có người dùng",
+      "emptyDescription": "Tài khoản người dùng sẽ xuất hiện tại đây sau khi đăng ký."
+    },
+    "teams": {
+      "title": "Đội thi",
+      "description": "Xem các đội đã đăng ký, đội trưởng và trạng thái đăng ký.",
+      "emptyTitle": "Chưa có đội thi",
+      "emptyDescription": "Các đội đã đăng ký sẽ xuất hiện tại đây."
+    },
+    "detail": {
+      "eyebrow": "Chi tiết đội thi",
+      "registration": "Đăng ký",
+      "captainContact": "Liên hệ đội trưởng",
+      "roster": "Thành viên đội",
+      "notFoundTitle": "Không tìm thấy đội",
+      "notFoundDescription": "Đội này không tồn tại hoặc có thể đã bị xóa."
+    },
+    "fields": {
+      "user": "Người dùng", "team": "Đội", "captain": "Đội trưởng", "member": "Thành viên",
+      "name": "Họ tên", "email": "Email", "phone": "Điện thoại", "university": "Trường",
+      "role": "Vai trò", "verification": "Email", "status": "Trạng thái", "created": "Ngày tạo", "members": "Thành viên"
+    },
+    "values": {
+      "verified": "Đã xác minh", "unverified": "Chưa xác minh", "active": "Hoạt động", "banned": "Đã cấm", "captain": "Đội trưởng",
+      "status": { "pending": "Chờ xét duyệt", "approved": "Đã duyệt", "waitlisted": "Danh sách chờ" }
+    },
+    "actions": { "view": "Xem", "viewTeam": "Xem {name}", "backToTeams": "Quay lại danh sách đội", "retry": "Thử lại" },
+    "errors": {
+      "loadTitle": "Không thể tải dữ liệu",
+      "users": "Không thể tải tài khoản người dùng. Hãy kiểm tra kết nối và thử lại.",
+      "teams": "Không thể tải đăng ký đội. Hãy kiểm tra kết nối và thử lại.",
+      "detail": "Không thể tải chi tiết đội. Hãy kiểm tra kết nối và thử lại."
+    }
+  },
   "UserMenu": {
     "signIn": "Đăng nhập",
     "account": "Tài khoản của tôi",
