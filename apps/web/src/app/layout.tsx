@@ -5,6 +5,7 @@ import { getLocale, getTranslations } from "next-intl/server";
 import NextTopLoader from "nextjs-toploader";
 
 import "../index.css";
+import logo from "../assets/logo.png";
 import Providers from "@/components/providers";
 
 const castela = localFont({
@@ -20,6 +21,9 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     title: t("title"),
     description: t("description"),
+    icons: {
+      icon: logo.src,
+    },
   };
 }
 
