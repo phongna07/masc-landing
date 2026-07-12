@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 
+import brandLogo from "@/assets/brand.svg";
 import { authClient } from "@/lib/auth-client";
 import LanguageSwitcher from "@/components/language-switcher";
 
@@ -19,7 +20,7 @@ export default function SiteHeader({ landingPage = false }: SiteHeaderProps) {
   return (
     <header className="site-header">
       <a className="brand" href={homeHref} aria-label={t("backToTop")}>
-        <span className="brand-mark">M</span>
+        <img className="brand-logo" src={brandLogo.src} alt="" />
         <span className="brand-copy">
           MASC
           <br />

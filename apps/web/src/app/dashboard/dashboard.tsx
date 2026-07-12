@@ -17,6 +17,7 @@ import { toast } from "sonner";
 
 import LanguageSwitcher from "@/components/language-switcher";
 import UserMenu from "@/components/user-menu";
+import brandLogo from "@/assets/brand.svg";
 import { authClient } from "@/lib/auth-client";
 import { queryClient, trpc } from "@/utils/trpc";
 
@@ -40,7 +41,7 @@ export default function Dashboard({ session }: { session: Session }) {
     <div className="dashboard-page">
       <header className="dashboard-navbar">
         <Link className="brand" href="/" aria-label={t("nav.homeLabel")}>
-          <span className="brand-mark">M</span>
+          <img className="brand-logo" src={brandLogo.src} alt="" />
           <span className="brand-copy">
             MASC
             <br />

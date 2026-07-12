@@ -700,6 +700,12 @@ img {
   justify-self: start;
 }
 
+.brand-logo {
+  display: block;
+  width: 38px;
+  height: 38px;
+}
+
 .brand-mark {
   display: grid;
   width: 38px;
