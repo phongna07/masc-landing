@@ -334,7 +334,7 @@ export default function Home() {
           </div>
         </section>
 
-        <section className="prizes" id="prizes" aria-labelledby="prizes-title">
+        {/* <section className="prizes" id="prizes" aria-labelledby="prizes-title">
           <div className="prize-glow" aria-hidden="true" />
           <div className="page-shell">
             <div className="prizes-heading reveal">
@@ -387,13 +387,8 @@ export default function Home() {
                 <p className="prize-amount">20M <span>VND</span></p>
               </article>
             </div>
-
-            {/* <p className="prize-disclaimer reveal">
-              <span>Note</span> Prize values and benefits shown are illustrative.
-              The official award structure will be announced soon.
-            </p> */}
           </div>
-        </section>
+        </section> */}
 
         <section className="why" id="why" aria-labelledby="why-title">
           <div className="why-media parallax-media" aria-hidden="true">
