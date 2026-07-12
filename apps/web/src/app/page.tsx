@@ -269,10 +269,10 @@ export default function Home() {
             <Image src={image1} alt="" fill priority sizes="100vw" placeholder="blur" />
           </div>
           <div className="hero-shade" aria-hidden="true" />
-          <div className="hero-orbit orbit-one" aria-hidden="true" />
-          <div className="hero-orbit orbit-two" aria-hidden="true" />
 
           <div className="hero-content page-shell">
+            <div className="hero-orbit orbit-one" aria-hidden="true" />
+            <div className="hero-orbit orbit-two" aria-hidden="true" />
             <p className="eyebrow reveal">
               {t("hero.eyebrow")} <span>2026</span>
             </p>
