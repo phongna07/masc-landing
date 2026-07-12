@@ -1,6 +1,9 @@
+import { GetObjectCommand, S3Client } from "@aws-sdk/client-s3";
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { auth } from "@masc-landing/auth";
 import { db } from "@masc-landing/db";
-import { members, teams, user } from "@masc-landing/db/schema/index";
+import { members, roundOneSubmissions, teams, user } from "@masc-landing/db/schema/index";
+import { env } from "@masc-landing/env/server";
 import { TRPCError } from "@trpc/server";
 import { asc, count, desc, eq } from "drizzle-orm";
 import { z } from "zod";
@@ -8,6 +11,24 @@ import { z } from "zod";
 import { adminProcedure, router } from "../index";
 
 const userBatchSize = 100;
+const signedUrlExpirySeconds = 300;
+const submissionInput = z.object({ submissionId: z.string().trim().min(1).max(128) });
+
+const s3 = new S3Client({
+  region: "auto",
+  endpoint: `https://${env.R2_ACCOUNT_ID}.r2.cloudflarestorage.com`,
+  credentials: { accessKeyId: env.R2_ACCESS_KEY_ID, secretAccessKey: env.R2_SECRET_ACCESS_KEY },
+});
+
+async function findSubmissionFile(submissionId: string) {
+  const [submission] = await db.select({
+    objectKey: roundOneSubmissions.objectKey,
+    filename: roundOneSubmissions.originalFilename,
+    mimeType: roundOneSubmissions.mimeType,
+  }).from(roundOneSubmissions).where(eq(roundOneSubmissions.id, submissionId)).limit(1);
+  if (!submission) throw new TRPCError({ code: "NOT_FOUND", message: "Submission not found" });
+  return submission;
+}
 
 export const adminRouter = router({
   listUsers: adminProcedure.query(async ({ ctx }) => {
@@ -101,4 +122,82 @@ export const adminRouter = router({
 
       return { ...team, members: roster };
     }),
+
+  listRoundOneSubmissions: adminProcedure.query(async () => {
+    return db.select({
+      id: roundOneSubmissions.id,
+      teamId: teams.id,
+      teamName: teams.teamName,
+      teamStatus: teams.registrationStatus,
+      captainName: user.name,
+      captainEmail: user.email,
+      originalFilename: roundOneSubmissions.originalFilename,
+      mimeType: roundOneSubmissions.mimeType,
+      fileSize: roundOneSubmissions.fileSize,
+      createdAt: roundOneSubmissions.createdAt,
+      updatedAt: roundOneSubmissions.updatedAt,
+    }).from(roundOneSubmissions)
+      .innerJoin(teams, eq(roundOneSubmissions.teamId, teams.id))
+      .innerJoin(user, eq(teams.captainId, user.id))
+      .orderBy(desc(roundOneSubmissions.updatedAt), asc(teams.teamName));
+  }),
+
+  getRoundOneSubmission: adminProcedure.input(submissionInput).query(async ({ input }) => {
+    const [submission] = await db.select({
+      id: roundOneSubmissions.id,
+      description: roundOneSubmissions.description,
+      originalFilename: roundOneSubmissions.originalFilename,
+      mimeType: roundOneSubmissions.mimeType,
+      fileSize: roundOneSubmissions.fileSize,
+      createdAt: roundOneSubmissions.createdAt,
+      updatedAt: roundOneSubmissions.updatedAt,
+      teamId: teams.id,
+      teamName: teams.teamName,
+      teamStatus: teams.registrationStatus,
+      teamCreatedAt: teams.createdAt,
+      captainName: user.name,
+      captainEmail: user.email,
+      captainPhone: teams.captainPhone,
+    }).from(roundOneSubmissions)
+      .innerJoin(teams, eq(roundOneSubmissions.teamId, teams.id))
+      .innerJoin(user, eq(teams.captainId, user.id))
+      .where(eq(roundOneSubmissions.id, input.submissionId)).limit(1);
+    if (!submission) throw new TRPCError({ code: "NOT_FOUND", message: "Submission not found" });
+
+    const roster = await db.select({
+      id: members.id,
+      fullName: members.fullName,
+      email: members.email,
+      universityName: members.universityName,
+      isCaptain: members.isCaptain,
+    }).from(members).where(eq(members.teamId, submission.teamId))
+      .orderBy(desc(members.isCaptain), asc(members.fullName));
+    return { ...submission, members: roster };
+  }),
+
+  createRoundOneDownloadUrl: adminProcedure.input(submissionInput).mutation(async ({ input }) => {
+    const submission = await findSubmissionFile(input.submissionId);
+    const safeFilename = submission.filename.replace(/[^a-zA-Z0-9._ -]/g, "_");
+    const downloadUrl = await getSignedUrl(s3, new GetObjectCommand({
+      Bucket: env.R2_BUCKET,
+      Key: submission.objectKey,
+      ResponseContentDisposition: `attachment; filename="${safeFilename}"`,
+    }), { expiresIn: signedUrlExpirySeconds });
+    return { downloadUrl };
+  }),
+
+  createRoundOnePreviewUrl: adminProcedure.input(submissionInput).mutation(async ({ input }) => {
+    const submission = await findSubmissionFile(input.submissionId);
+    const sourceUrl = await getSignedUrl(s3, new GetObjectCommand({
+      Bucket: env.R2_BUCKET,
+      Key: submission.objectKey,
+      ResponseContentType: submission.mimeType,
+      ResponseContentDisposition: "inline",
+    }), { expiresIn: signedUrlExpirySeconds });
+    return {
+      previewUrl: submission.mimeType === "application/pdf"
+        ? sourceUrl
+        : `https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(sourceUrl)}`,
+    };
+  }),
 });

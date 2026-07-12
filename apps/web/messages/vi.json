@@ -318,7 +318,7 @@
       "open": "Mở điều hướng quản trị",
       "close": "Đóng điều hướng quản trị"
     },
-    "tabs": { "users": "Người dùng", "teams": "Đội thi" },
+    "tabs": { "users": "Người dùng", "teams": "Đội thi", "roundOne": "Vòng 1" },
     "users": {
       "title": "Người dùng",
       "description": "Xem tất cả tài khoản đã đăng ký với MASC.",
@@ -331,6 +331,18 @@
       "emptyTitle": "Chưa có đội thi",
       "emptyDescription": "Các đội đã đăng ký sẽ xuất hiện tại đây."
     },
+    "roundOne": {
+      "title": "Vòng 1",
+      "description": "Xem bài nộp Vòng 1 và thông tin các đội liên quan.",
+      "emptyTitle": "Chưa có bài nộp Vòng 1",
+      "emptyDescription": "Bài nộp của các đội sẽ xuất hiện tại đây sau khi được tải lên.",
+      "detailEyebrow": "Bài nộp Vòng 1",
+      "submission": "Thông tin bài nộp",
+      "content": "Nội dung đã nộp",
+      "notFoundTitle": "Không tìm thấy bài nộp",
+      "notFoundDescription": "Bài nộp này không tồn tại hoặc có thể đã bị xóa.",
+      "previewTitle": "Xem trước {filename}"
+    },
     "detail": {
       "eyebrow": "Chi tiết đội thi",
       "registration": "Đăng ký",
@@ -342,18 +354,24 @@
     "fields": {
       "user": "Người dùng", "team": "Đội", "captain": "Đội trưởng", "member": "Thành viên",
       "name": "Họ tên", "email": "Email", "phone": "Điện thoại", "university": "Trường",
-      "role": "Vai trò", "verification": "Email", "status": "Trạng thái", "created": "Ngày tạo", "members": "Thành viên"
+      "role": "Vai trò", "verification": "Email", "status": "Trạng thái", "created": "Ngày tạo", "members": "Thành viên",
+      "file": "Tệp", "size": "Kích thước", "submitted": "Nộp gần nhất", "originalSubmission": "Nộp lần đầu",
+      "fileType": "Loại tệp", "description": "Mô tả"
     },
     "values": {
       "verified": "Đã xác minh", "unverified": "Chưa xác minh", "active": "Hoạt động", "banned": "Đã cấm", "captain": "Đội trưởng",
       "status": { "pending": "Chờ xét duyệt", "approved": "Đã duyệt", "waitlisted": "Danh sách chờ" }
     },
-    "actions": { "view": "Xem", "viewTeam": "Xem {name}", "backToTeams": "Quay lại danh sách đội", "retry": "Thử lại" },
+    "actions": { "view": "Xem", "viewTeam": "Xem {name}", "viewSubmission": "Xem bài nộp của {team}", "backToTeams": "Quay lại danh sách đội", "backToRoundOne": "Quay lại Vòng 1", "preview": "Xem trước", "download": "Tải xuống", "retry": "Thử lại" },
     "errors": {
       "loadTitle": "Không thể tải dữ liệu",
       "users": "Không thể tải tài khoản người dùng. Hãy kiểm tra kết nối và thử lại.",
       "teams": "Không thể tải đăng ký đội. Hãy kiểm tra kết nối và thử lại.",
-      "detail": "Không thể tải chi tiết đội. Hãy kiểm tra kết nối và thử lại."
+      "detail": "Không thể tải chi tiết đội. Hãy kiểm tra kết nối và thử lại.",
+      "roundOne": "Không thể tải bài nộp Vòng 1. Hãy kiểm tra kết nối và thử lại.",
+      "roundOneDetail": "Không thể tải bài nộp này. Hãy kiểm tra kết nối và thử lại.",
+      "preview": "Không thể tạo bản xem trước. Vui lòng thử lại.",
+      "download": "Không thể tạo liên kết tải xuống. Vui lòng thử lại."
     }
   },
   "UserMenu": {

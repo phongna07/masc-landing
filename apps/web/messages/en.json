@@ -318,7 +318,7 @@
       "open": "Open admin navigation",
       "close": "Close admin navigation"
     },
-    "tabs": { "users": "Users", "teams": "Teams" },
+    "tabs": { "users": "Users", "teams": "Teams", "roundOne": "Round 1" },
     "users": {
       "title": "Users",
       "description": "Review every account registered with MASC.",
@@ -331,6 +331,18 @@
       "emptyTitle": "No teams found",
       "emptyDescription": "Submitted team registrations will appear here."
     },
+    "roundOne": {
+      "title": "Round 1",
+      "description": "Review Round 1 submissions and their related teams.",
+      "emptyTitle": "No Round 1 submissions",
+      "emptyDescription": "Team submissions will appear here after they are uploaded.",
+      "detailEyebrow": "Round 1 submission",
+      "submission": "Submission details",
+      "content": "Submitted work",
+      "notFoundTitle": "Submission not found",
+      "notFoundDescription": "This submission does not exist or may have been removed.",
+      "previewTitle": "Preview of {filename}"
+    },
     "detail": {
       "eyebrow": "Team details",
       "registration": "Registration",
@@ -342,18 +354,24 @@
     "fields": {
       "user": "User", "team": "Team", "captain": "Captain", "member": "Member",
       "name": "Name", "email": "Email", "phone": "Phone", "university": "University",
-      "role": "Role", "verification": "Email", "status": "Status", "created": "Created", "members": "Members"
+      "role": "Role", "verification": "Email", "status": "Status", "created": "Created", "members": "Members",
+      "file": "File", "size": "Size", "submitted": "Last submitted", "originalSubmission": "First submitted",
+      "fileType": "File type", "description": "Description"
     },
     "values": {
       "verified": "Verified", "unverified": "Unverified", "active": "Active", "banned": "Banned", "captain": "Captain",
       "status": { "pending": "Pending review", "approved": "Approved", "waitlisted": "Waitlisted" }
     },
-    "actions": { "view": "View", "viewTeam": "View {name}", "backToTeams": "Back to teams", "retry": "Try again" },
+    "actions": { "view": "View", "viewTeam": "View {name}", "viewSubmission": "View {team}'s submission", "backToTeams": "Back to teams", "backToRoundOne": "Back to Round 1", "preview": "Preview", "download": "Download", "retry": "Try again" },
     "errors": {
       "loadTitle": "We could not load this data",
       "users": "User accounts could not be loaded. Check your connection and try again.",
       "teams": "Team registrations could not be loaded. Check your connection and try again.",
-      "detail": "Team details could not be loaded. Check your connection and try again."
+      "detail": "Team details could not be loaded. Check your connection and try again.",
+      "roundOne": "Round 1 submissions could not be loaded. Check your connection and try again.",
+      "roundOneDetail": "This submission could not be loaded. Check your connection and try again.",
+      "preview": "The file preview could not be created. Please try again.",
+      "download": "The file download could not be created. Please try again."
     }
   },
   "UserMenu": {
