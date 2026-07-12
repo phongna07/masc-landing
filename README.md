@@ -18,8 +18,11 @@ This project was created with [Better-T-Stack](https://github.com/AmanVarshney01
 First, install the dependencies:
 
 ```bash
-bun install
+pnpm install
 ```
+
+This repository is a pnpm workspace: install dependencies from the repository
+root so that `apps/*` and `packages/*` are linked correctly.
 
 ## Database Setup
 
@@ -31,16 +34,16 @@ This project uses PostgreSQL with Drizzle ORM.
 3. Apply the schema to your database:
 
 ```bash
-bun run db:push
+pnpm db:push
 ```
 
 Then, run the development server:
 
 ```bash
-bun run dev
+pnpm dev
 ```
 
-Open [http://localhost:3001](http://localhost:3001) in your browser to see the fullstack application.
+Open [http://localhost:3000](http://localhost:3000) in your browser to see the fullstack application.
 
 ## UI Customization
 
@@ -83,11 +86,11 @@ masc-landing/
 
 ## Available Scripts
 
-- `bun run dev`: Start all applications in development mode
-- `bun run build`: Build all applications
-- `bun run dev:web`: Start only the web application
-- `bun run check-types`: Check TypeScript types across all apps
-- `bun run db:push`: Push schema changes to database
-- `bun run db:generate`: Generate database client/types
-- `bun run db:migrate`: Run database migrations
-- `bun run db:studio`: Open database studio UI
+- `pnpm dev`: Start all applications in development mode
+- `pnpm build`: Build all applications
+- `pnpm dev:web`: Start only the web application
+- `pnpm check-types`: Check TypeScript types across all apps
+- `pnpm db:push`: Push schema changes to database
+- `pnpm db:generate`: Generate database client/types
+- `pnpm db:migrate`: Run database migrations
+- `pnpm db:studio`: Open database studio UI

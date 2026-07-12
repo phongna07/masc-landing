@@ -100,9 +100,9 @@ button {
   letter-spacing: -0.04em;
 }
 
-.dashboard-heading > p:last-child,
-.dashboard-card [data-slot="card-header"] > p:last-child,
-.registration-submit > p,
+.dashboard-heading>p:last-child,
+.dashboard-card [data-slot="card-header"]>p:last-child,
+.registration-submit>p,
 .dashboard-state-card p {
   color: var(--muted);
   font-size: 13px;
@@ -316,7 +316,7 @@ button {
   gap: 0;
 }
 
-.detail-list > div {
+.detail-list>div {
   display: grid;
   grid-template-columns: 0.8fr 1.2fr;
   gap: 20px;
@@ -379,7 +379,7 @@ button {
 }
 
 .roster-table tbody tr:last-child td,
-.detail-list > div:last-child {
+.detail-list>div:last-child {
   border-bottom: 0;
 }
 
@@ -417,7 +417,7 @@ button {
   gap: 18px;
 }
 
-.dashboard-skeleton > div:nth-child(2) {
+.dashboard-skeleton>div:nth-child(2) {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 18px;
@@ -441,7 +441,7 @@ button {
 
   .dashboard-fields,
   .overview-grid,
-  .dashboard-skeleton > div:nth-child(2) {
+  .dashboard-skeleton>div:nth-child(2) {
     grid-template-columns: 1fr;
   }
 
