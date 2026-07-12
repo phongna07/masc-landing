@@ -77,6 +77,38 @@ export const roundOneSubmissions = pgTable(
   (table) => [uniqueIndex("round_one_submissions_team_id_unique_idx").on(table.teamId)],
 );
 
+export const roundTwoSubmissions = pgTable(
+  "round_two_submissions",
+  {
+    id: text("id").$defaultFn(() => crypto.randomUUID()).primaryKey(),
+    teamId: text("team_id").notNull().references(() => teams.id, { onDelete: "cascade" }),
+    description: text("description").notNull(),
+    objectKey: text("object_key").notNull(),
+    originalFilename: text("original_filename").notNull(),
+    mimeType: text("mime_type").notNull(),
+    fileSize: bigint("file_size", { mode: "number" }).notNull(),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at").defaultNow().notNull(),
+  },
+  (table) => [uniqueIndex("round_two_submissions_team_id_unique_idx").on(table.teamId)],
+);
+
+export const roundThreeSubmissions = pgTable(
+  "round_three_submissions",
+  {
+    id: text("id").$defaultFn(() => crypto.randomUUID()).primaryKey(),
+    teamId: text("team_id").notNull().references(() => teams.id, { onDelete: "cascade" }),
+    description: text("description").notNull(),
+    objectKey: text("object_key").notNull(),
+    originalFilename: text("original_filename").notNull(),
+    mimeType: text("mime_type").notNull(),
+    fileSize: bigint("file_size", { mode: "number" }).notNull(),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at").defaultNow().notNull(),
+  },
+  (table) => [uniqueIndex("round_three_submissions_team_id_unique_idx").on(table.teamId)],
+);
+
 export const teamsRelations = relations(teams, ({ one, many }) => ({
   captain: one(user, {
     fields: [teams.captainId],
@@ -84,6 +116,8 @@ export const teamsRelations = relations(teams, ({ one, many }) => ({
   }),
   members: many(members),
   roundOneSubmission: one(roundOneSubmissions),
+  roundTwoSubmission: one(roundTwoSubmissions),
+  roundThreeSubmission: one(roundThreeSubmissions),
 }));
 
 export const membersRelations = relations(members, ({ one }) => ({
@@ -96,6 +130,20 @@ export const membersRelations = relations(members, ({ one }) => ({
 export const roundOneSubmissionsRelations = relations(roundOneSubmissions, ({ one }) => ({
   team: one(teams, {
     fields: [roundOneSubmissions.teamId],
+    references: [teams.id],
+  }),
+}));
+
+export const roundTwoSubmissionsRelations = relations(roundTwoSubmissions, ({ one }) => ({
+  team: one(teams, {
+    fields: [roundTwoSubmissions.teamId],
+    references: [teams.id],
+  }),
+}));
+
+export const roundThreeSubmissionsRelations = relations(roundThreeSubmissions, ({ one }) => ({
+  team: one(teams, {
+    fields: [roundThreeSubmissions.teamId],
     references: [teams.id],
   }),
 }));

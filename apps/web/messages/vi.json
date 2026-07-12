@@ -293,6 +293,70 @@
         "download": "Không thể tải tệp xuống. Vui lòng thử lại."
       }
     },
+    "round2": {
+      "title": "Bài nộp Vòng 2",
+      "description": "Gửi phần mô tả và tài liệu của đội. Chỉ đội trưởng có thể tạo hoặc thay thế bài nộp.",
+      "formTitle": "Chuẩn bị bài nộp",
+      "replaceTitle": "Thay thế bài nộp",
+      "descriptionLabel": "Mô tả",
+      "fileLabel": "Tệp bài nộp",
+      "fileHint": "PDF, DOC, DOCX, PPT hoặc PPTX — tối đa 20 MB.",
+      "characters": "{count} / 5000 ký tự",
+      "submit": "Nộp bài Vòng 2",
+      "uploading": "Đang tải lên…",
+      "cancel": "Hủy",
+      "success": "Bài nộp Vòng 2 đã được lưu.",
+      "submittedTitle": "Bài đã nộp",
+      "submittedAt": "Cập nhật lần cuối {date}",
+      "replace": "Thay thế bài nộp",
+      "download": "Tải tệp xuống",
+      "previewLabel": "Xem trước tệp",
+      "previewTitle": "Xem trước {filename}",
+      "emptyTitle": "Chưa có bài nộp",
+      "memberEmpty": "Đội trưởng chưa nộp bài Vòng 2.",
+      "errors": {
+        "loadTitle": "Không thể tải bài nộp Vòng 2",
+        "load": "Vui lòng kiểm tra kết nối và thử lại.",
+        "descriptionLength": "Phần mô tả không được vượt quá 5.000 ký tự.",
+        "fileRequired": "Vui lòng chọn tệp bài nộp.",
+        "fileType": "Vui lòng chọn tệp PDF, DOC, DOCX, PPT hoặc PPTX.",
+        "fileSize": "Kích thước tệp không được vượt quá 20 MB.",
+        "submit": "Không thể tải bài nộp lên. Vui lòng kiểm tra tệp và thử lại.",
+        "download": "Không thể tải tệp xuống. Vui lòng thử lại."
+      }
+    },
+    "round3": {
+      "title": "Bài nộp Vòng 3",
+      "description": "Gửi phần mô tả và tài liệu của đội. Chỉ đội trưởng có thể tạo hoặc thay thế bài nộp.",
+      "formTitle": "Chuẩn bị bài nộp",
+      "replaceTitle": "Thay thế bài nộp",
+      "descriptionLabel": "Mô tả",
+      "fileLabel": "Tệp bài nộp",
+      "fileHint": "PDF, DOC, DOCX, PPT hoặc PPTX — tối đa 20 MB.",
+      "characters": "{count} / 5000 ký tự",
+      "submit": "Nộp bài Vòng 3",
+      "uploading": "Đang tải lên…",
+      "cancel": "Hủy",
+      "success": "Bài nộp Vòng 3 đã được lưu.",
+      "submittedTitle": "Bài đã nộp",
+      "submittedAt": "Cập nhật lần cuối {date}",
+      "replace": "Thay thế bài nộp",
+      "download": "Tải tệp xuống",
+      "previewLabel": "Xem trước tệp",
+      "previewTitle": "Xem trước {filename}",
+      "emptyTitle": "Chưa có bài nộp",
+      "memberEmpty": "Đội trưởng chưa nộp bài Vòng 3.",
+      "errors": {
+        "loadTitle": "Không thể tải bài nộp Vòng 3",
+        "load": "Vui lòng kiểm tra kết nối và thử lại.",
+        "descriptionLength": "Phần mô tả không được vượt quá 5.000 ký tự.",
+        "fileRequired": "Vui lòng chọn tệp bài nộp.",
+        "fileType": "Vui lòng chọn tệp PDF, DOC, DOCX, PPT hoặc PPTX.",
+        "fileSize": "Kích thước tệp không được vượt quá 20 MB.",
+        "submit": "Không thể tải bài nộp lên. Vui lòng kiểm tra tệp và thử lại.",
+        "download": "Không thể tải tệp xuống. Vui lòng thử lại."
+      }
+    },
     "placeholder": {
       "title": "Sắp ra mắt",
       "description": "Thông tin nộp bài cho vòng này sẽ được cập nhật sau."
@@ -318,7 +382,7 @@
       "open": "Mở điều hướng quản trị",
       "close": "Đóng điều hướng quản trị"
     },
-    "tabs": { "users": "Người dùng", "teams": "Đội thi", "roundOne": "Vòng 1" },
+    "tabs": { "users": "Người dùng", "teams": "Đội thi", "roundOne": "Vòng 1", "roundTwo": "Vòng 2", "roundThree": "Vòng 3" },
     "users": {
       "title": "Người dùng",
       "description": "Xem tất cả tài khoản đã đăng ký với MASC.",
@@ -337,6 +401,30 @@
       "emptyTitle": "Chưa có bài nộp Vòng 1",
       "emptyDescription": "Bài nộp của các đội sẽ xuất hiện tại đây sau khi được tải lên.",
       "detailEyebrow": "Bài nộp Vòng 1",
+      "submission": "Thông tin bài nộp",
+      "content": "Nội dung đã nộp",
+      "notFoundTitle": "Không tìm thấy bài nộp",
+      "notFoundDescription": "Bài nộp này không tồn tại hoặc có thể đã bị xóa.",
+      "previewTitle": "Xem trước {filename}"
+    },
+    "roundTwo": {
+      "title": "Vòng 2",
+      "description": "Xem bài nộp Vòng 2 và thông tin các đội liên quan.",
+      "emptyTitle": "Chưa có bài nộp Vòng 2",
+      "emptyDescription": "Bài nộp của các đội sẽ xuất hiện tại đây sau khi được tải lên.",
+      "detailEyebrow": "Bài nộp Vòng 2",
+      "submission": "Thông tin bài nộp",
+      "content": "Nội dung đã nộp",
+      "notFoundTitle": "Không tìm thấy bài nộp",
+      "notFoundDescription": "Bài nộp này không tồn tại hoặc có thể đã bị xóa.",
+      "previewTitle": "Xem trước {filename}"
+    },
+    "roundThree": {
+      "title": "Vòng 3",
+      "description": "Xem bài nộp Vòng 3 và thông tin các đội liên quan.",
+      "emptyTitle": "Chưa có bài nộp Vòng 3",
+      "emptyDescription": "Bài nộp của các đội sẽ xuất hiện tại đây sau khi được tải lên.",
+      "detailEyebrow": "Bài nộp Vòng 3",
       "submission": "Thông tin bài nộp",
       "content": "Nội dung đã nộp",
       "notFoundTitle": "Không tìm thấy bài nộp",
@@ -362,7 +450,7 @@
       "verified": "Đã xác minh", "unverified": "Chưa xác minh", "active": "Hoạt động", "banned": "Đã cấm", "captain": "Đội trưởng",
       "status": { "pending": "Chờ xét duyệt", "approved": "Đã duyệt", "waitlisted": "Danh sách chờ" }
     },
-    "actions": { "view": "Xem", "viewTeam": "Xem {name}", "viewSubmission": "Xem bài nộp của {team}", "backToTeams": "Quay lại danh sách đội", "backToRoundOne": "Quay lại Vòng 1", "preview": "Xem trước", "download": "Tải xuống", "retry": "Thử lại" },
+    "actions": { "view": "Xem", "viewTeam": "Xem {name}", "viewSubmission": "Xem bài nộp của {team}", "backToTeams": "Quay lại danh sách đội", "backToRoundOne": "Quay lại Vòng 1", "backToRoundTwo": "Quay lại Vòng 2", "backToRoundThree": "Quay lại Vòng 3", "preview": "Xem trước", "download": "Tải xuống", "retry": "Thử lại" },
     "errors": {
       "loadTitle": "Không thể tải dữ liệu",
       "users": "Không thể tải tài khoản người dùng. Hãy kiểm tra kết nối và thử lại.",
@@ -370,6 +458,10 @@
       "detail": "Không thể tải chi tiết đội. Hãy kiểm tra kết nối và thử lại.",
       "roundOne": "Không thể tải bài nộp Vòng 1. Hãy kiểm tra kết nối và thử lại.",
       "roundOneDetail": "Không thể tải bài nộp này. Hãy kiểm tra kết nối và thử lại.",
+      "roundTwo": "Không thể tải bài nộp Vòng 2. Hãy kiểm tra kết nối và thử lại.",
+      "roundTwoDetail": "Không thể tải bài nộp này. Hãy kiểm tra kết nối và thử lại.",
+      "roundThree": "Không thể tải bài nộp Vòng 3. Hãy kiểm tra kết nối và thử lại.",
+      "roundThreeDetail": "Không thể tải bài nộp này. Hãy kiểm tra kết nối và thử lại.",
       "preview": "Không thể tạo bản xem trước. Vui lòng thử lại.",
       "download": "Không thể tạo liên kết tải xuống. Vui lòng thử lại."
     }

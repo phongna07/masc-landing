@@ -124,13 +124,14 @@ function TeamDashboard({ membership }: { membership: Extract<Membership, { regis
     <section id={`dashboard-panel-${activeTab}`} role="tabpanel" aria-labelledby={`dashboard-tab-${activeTab}`} tabIndex={0}>
       {activeTab === "overview" && <TeamOverview membership={membership} />}
       {activeTab === "round1" && <RoundOne membership={membership} />}
-      {(activeTab === "round2" || activeTab === "round3") && <RoundPlaceholder round={activeTab === "round2" ? 2 : 3} />}
+      {activeTab === "round2" && <RoundTwo membership={membership} />}
+      {activeTab === "round3" && <RoundThree membership={membership} />}
     </section>
   </div>;
 }
 
-const MAX_ROUND_ONE_FILE_SIZE = 20 * 1024 * 1024;
-const roundOneMimeTypes: Record<string, string> = {
+const MAX_ROUND_FILE_SIZE = 20 * 1024 * 1024;
+const roundMimeTypes: Record<string, string> = {
   pdf: "application/pdf",
   doc: "application/msword",
   docx: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
@@ -180,9 +181,9 @@ function RoundOne({ membership }: { membership: Extract<Membership, { registered
     if (cleanDescription.length > 5000) return setError(t("round1.errors.descriptionLength"));
     if (!file) return setError(t("round1.errors.fileRequired"));
     const extension = file.name.split(".").pop()?.toLowerCase() ?? "";
-    const mimeType = roundOneMimeTypes[extension];
+    const mimeType = roundMimeTypes[extension];
     if (!mimeType) return setError(t("round1.errors.fileType"));
-    if (file.size === 0 || file.size > MAX_ROUND_ONE_FILE_SIZE) return setError(t("round1.errors.fileSize"));
+    if (file.size === 0 || file.size > MAX_ROUND_FILE_SIZE) return setError(t("round1.errors.fileSize"));
     const metadata = { filename: file.name, mimeType, fileSize: file.size };
     try {
       const upload = await createUploadUrl.mutateAsync(metadata);
@@ -228,10 +229,188 @@ function RoundOne({ membership }: { membership: Extract<Membership, { registered
   </div>;
 }
 
-function RoundPlaceholder({ round }: { round: 2 | 3 }) {
+function RoundTwo({ membership }: { membership: Extract<Membership, { registered: true }> }) {
   const t = useTranslations("Dashboard");
-  return <Card className="dashboard-card placeholder-card"><CardHeader><p className="dashboard-card-index">0{round} / {t(`tabs.round${round}`)}</p><CardTitle>{t("placeholder.title")}</CardTitle><p>{t("placeholder.description")}</p></CardHeader></Card>;
+  const format = useFormatter();
+  const submission = useQuery(trpc.roundTwo.current.queryOptions());
+  const [description, setDescription] = useState("");
+  const [file, setFile] = useState<File | null>(null);
+  const [editing, setEditing] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const createUploadUrl = useMutation(trpc.roundTwo.createUploadUrl.mutationOptions());
+  const finalize = useMutation(trpc.roundTwo.finalize.mutationOptions({
+    onSuccess: async () => {
+      toast.success(t("round2.success"));
+      setEditing(false);
+      setFile(null);
+      await queryClient.invalidateQueries({ queryKey: trpc.roundTwo.current.queryKey() });
+    },
+  }));
+  const download = useMutation(trpc.roundTwo.createDownloadUrl.mutationOptions({
+    onSuccess: ({ downloadUrl }) => window.location.assign(downloadUrl),
+    onError: () => toast.error(t("round2.errors.download")),
+  }));
+  const preview = useMutation(trpc.roundTwo.createPreviewUrl.mutationOptions());
+  const existing = submission.data?.submission ?? null;
+  const showForm = membership.role === "captain" && (!existing || editing);
+
+  useEffect(() => {
+    if (existing && !showForm) preview.mutate();
+    // A preview URL is short-lived, so request it only while the submitted-work view is open.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [existing?.updatedAt, showForm]);
+
+  if (submission.isPending) return <DashboardSkeleton />;
+  if (submission.isError) return <StateCard title={t("round2.errors.loadTitle")} description={t("round2.errors.load")} retry={() => submission.refetch()} />;
+
+  const submit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setError(null);
+    const cleanDescription = description.trim();
+    if (!cleanDescription) return setError(t("validation.required"));
+    if (cleanDescription.length > 5000) return setError(t("round2.errors.descriptionLength"));
+    if (!file) return setError(t("round2.errors.fileRequired"));
+    const extension = file.name.split(".").pop()?.toLowerCase() ?? "";
+    const mimeType = roundMimeTypes[extension];
+    if (!mimeType) return setError(t("round2.errors.fileType"));
+    if (file.size === 0 || file.size > MAX_ROUND_FILE_SIZE) return setError(t("round2.errors.fileSize"));
+    const metadata = { filename: file.name, mimeType, fileSize: file.size };
+    try {
+      const upload = await createUploadUrl.mutateAsync(metadata);
+      const response = await fetch(upload.uploadUrl, { method: "PUT", body: file, headers: { "Content-Type": mimeType } });
+      if (!response.ok) throw new Error("UPLOAD_FAILED");
+      await finalize.mutateAsync({ ...metadata, uploadId: upload.uploadId, description: cleanDescription });
+    } catch {
+      setError(t("round2.errors.submit"));
+    }
+  };
+
+  return <div className="round-panel">
+    <Card className="dashboard-card round-hero-card"><CardHeader>
+      <p className="dashboard-card-index">01 / {t("tabs.round2")}</p>
+      <CardTitle>{t("round2.title")}</CardTitle><p>{t("round2.description")}</p>
+    </CardHeader></Card>
+    {existing && !showForm && <Card className="dashboard-card"><CardHeader className="submission-header">
+      <div><CardTitle>{t("round2.submittedTitle")}</CardTitle><p>{t("round2.submittedAt", { date: format.dateTime(new Date(existing.updatedAt), { dateStyle: "medium", timeStyle: "short" }) })}</p></div>
+      {membership.role === "captain" && <Button variant="outline" onClick={() => { setDescription(existing.description); setEditing(true); }}>{t("round2.replace")}</Button>}
+    </CardHeader><CardContent className="submission-details">
+      <div className="submission-description"><Label>{t("round2.descriptionLabel")}</Label><p>{existing.description}</p></div>
+      <div className="submission-file"><FileTextIcon aria-hidden="true" /><div><strong>{existing.originalFilename}</strong><span>{formatBytes(existing.fileSize)}</span></div>
+        <Button variant="outline" disabled={download.isPending} onClick={() => download.mutate()}><DownloadIcon aria-hidden="true" />{t("round2.download")}</Button>
+      </div>
+      {preview.data?.previewUrl && <div className="submission-preview">
+        <Label>{t("round2.previewLabel")}</Label>
+        <iframe src={preview.data.previewUrl} title={t("round2.previewTitle", { filename: existing.originalFilename })} />
+      </div>}
+    </CardContent></Card>}
+    {showForm && <form onSubmit={submit} className="round-one-form" noValidate><Card className="dashboard-card"><CardHeader><CardTitle>{existing ? t("round2.replaceTitle") : t("round2.formTitle")}</CardTitle></CardHeader>
+      <CardContent className="round-one-fields"><Field label={t("round2.descriptionLabel")} error={undefined} full>
+        <Textarea value={description} maxLength={5000} rows={8} onChange={(event) => setDescription(event.target.value)} />
+        <span className="field-hint">{t("round2.characters", { count: description.length })}</span>
+      </Field><Field label={t("round2.fileLabel")} full>
+        <Input type="file" accept=".pdf,.doc,.docx,.ppt,.pptx" onChange={(event) => setFile(event.target.files?.[0] ?? null)} />
+        <span className="field-hint">{t("round2.fileHint")}</span>
+      </Field></CardContent></Card>
+      {error && <p className="form-error" role="alert">{error}</p>}
+      <div className="registration-submit">{editing ? <Button type="button" variant="ghost" onClick={() => { setEditing(false); setError(null); }}>{t("round2.cancel")}</Button> : <span />}
+        <Button type="submit" size="lg" disabled={createUploadUrl.isPending || finalize.isPending}><UploadIcon aria-hidden="true" />{finalize.isPending || createUploadUrl.isPending ? t("round2.uploading") : t("round2.submit")}</Button>
+      </div></form>}
+    {!existing && membership.role === "member" && <Card className="dashboard-card"><CardHeader><CardTitle>{t("round2.emptyTitle")}</CardTitle><p>{t("round2.memberEmpty")}</p></CardHeader></Card>}
+  </div>;
 }
+
+
+function RoundThree({ membership }: { membership: Extract<Membership, { registered: true }> }) {
+  const t = useTranslations("Dashboard");
+  const format = useFormatter();
+  const submission = useQuery(trpc.roundThree.current.queryOptions());
+  const [description, setDescription] = useState("");
+  const [file, setFile] = useState<File | null>(null);
+  const [editing, setEditing] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const createUploadUrl = useMutation(trpc.roundThree.createUploadUrl.mutationOptions());
+  const finalize = useMutation(trpc.roundThree.finalize.mutationOptions({
+    onSuccess: async () => {
+      toast.success(t("round3.success"));
+      setEditing(false);
+      setFile(null);
+      await queryClient.invalidateQueries({ queryKey: trpc.roundThree.current.queryKey() });
+    },
+  }));
+  const download = useMutation(trpc.roundThree.createDownloadUrl.mutationOptions({
+    onSuccess: ({ downloadUrl }) => window.location.assign(downloadUrl),
+    onError: () => toast.error(t("round3.errors.download")),
+  }));
+  const preview = useMutation(trpc.roundThree.createPreviewUrl.mutationOptions());
+  const existing = submission.data?.submission ?? null;
+  const showForm = membership.role === "captain" && (!existing || editing);
+
+  useEffect(() => {
+    if (existing && !showForm) preview.mutate();
+    // A preview URL is short-lived, so request it only while the submitted-work view is open.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [existing?.updatedAt, showForm]);
+
+  if (submission.isPending) return <DashboardSkeleton />;
+  if (submission.isError) return <StateCard title={t("round3.errors.loadTitle")} description={t("round3.errors.load")} retry={() => submission.refetch()} />;
+
+  const submit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setError(null);
+    const cleanDescription = description.trim();
+    if (!cleanDescription) return setError(t("validation.required"));
+    if (cleanDescription.length > 5000) return setError(t("round3.errors.descriptionLength"));
+    if (!file) return setError(t("round3.errors.fileRequired"));
+    const extension = file.name.split(".").pop()?.toLowerCase() ?? "";
+    const mimeType = roundMimeTypes[extension];
+    if (!mimeType) return setError(t("round3.errors.fileType"));
+    if (file.size === 0 || file.size > MAX_ROUND_FILE_SIZE) return setError(t("round3.errors.fileSize"));
+    const metadata = { filename: file.name, mimeType, fileSize: file.size };
+    try {
+      const upload = await createUploadUrl.mutateAsync(metadata);
+      const response = await fetch(upload.uploadUrl, { method: "PUT", body: file, headers: { "Content-Type": mimeType } });
+      if (!response.ok) throw new Error("UPLOAD_FAILED");
+      await finalize.mutateAsync({ ...metadata, uploadId: upload.uploadId, description: cleanDescription });
+    } catch {
+      setError(t("round3.errors.submit"));
+    }
+  };
+
+  return <div className="round-panel">
+    <Card className="dashboard-card round-hero-card"><CardHeader>
+      <p className="dashboard-card-index">01 / {t("tabs.round3")}</p>
+      <CardTitle>{t("round3.title")}</CardTitle><p>{t("round3.description")}</p>
+    </CardHeader></Card>
+    {existing && !showForm && <Card className="dashboard-card"><CardHeader className="submission-header">
+      <div><CardTitle>{t("round3.submittedTitle")}</CardTitle><p>{t("round3.submittedAt", { date: format.dateTime(new Date(existing.updatedAt), { dateStyle: "medium", timeStyle: "short" }) })}</p></div>
+      {membership.role === "captain" && <Button variant="outline" onClick={() => { setDescription(existing.description); setEditing(true); }}>{t("round3.replace")}</Button>}
+    </CardHeader><CardContent className="submission-details">
+      <div className="submission-description"><Label>{t("round3.descriptionLabel")}</Label><p>{existing.description}</p></div>
+      <div className="submission-file"><FileTextIcon aria-hidden="true" /><div><strong>{existing.originalFilename}</strong><span>{formatBytes(existing.fileSize)}</span></div>
+        <Button variant="outline" disabled={download.isPending} onClick={() => download.mutate()}><DownloadIcon aria-hidden="true" />{t("round3.download")}</Button>
+      </div>
+      {preview.data?.previewUrl && <div className="submission-preview">
+        <Label>{t("round3.previewLabel")}</Label>
+        <iframe src={preview.data.previewUrl} title={t("round3.previewTitle", { filename: existing.originalFilename })} />
+      </div>}
+    </CardContent></Card>}
+    {showForm && <form onSubmit={submit} className="round-one-form" noValidate><Card className="dashboard-card"><CardHeader><CardTitle>{existing ? t("round3.replaceTitle") : t("round3.formTitle")}</CardTitle></CardHeader>
+      <CardContent className="round-one-fields"><Field label={t("round3.descriptionLabel")} error={undefined} full>
+        <Textarea value={description} maxLength={5000} rows={8} onChange={(event) => setDescription(event.target.value)} />
+        <span className="field-hint">{t("round3.characters", { count: description.length })}</span>
+      </Field><Field label={t("round3.fileLabel")} full>
+        <Input type="file" accept=".pdf,.doc,.docx,.ppt,.pptx" onChange={(event) => setFile(event.target.files?.[0] ?? null)} />
+        <span className="field-hint">{t("round3.fileHint")}</span>
+      </Field></CardContent></Card>
+      {error && <p className="form-error" role="alert">{error}</p>}
+      <div className="registration-submit">{editing ? <Button type="button" variant="ghost" onClick={() => { setEditing(false); setError(null); }}>{t("round3.cancel")}</Button> : <span />}
+        <Button type="submit" size="lg" disabled={createUploadUrl.isPending || finalize.isPending}><UploadIcon aria-hidden="true" />{finalize.isPending || createUploadUrl.isPending ? t("round3.uploading") : t("round3.submit")}</Button>
+      </div></form>}
+    {!existing && membership.role === "member" && <Card className="dashboard-card"><CardHeader><CardTitle>{t("round3.emptyTitle")}</CardTitle><p>{t("round3.memberEmpty")}</p></CardHeader></Card>}
+  </div>;
+}
+
+
 
 function StateCard({ title, description, retry }: { title: string; description: string; retry: () => void }) {
   const t = useTranslations("Dashboard");

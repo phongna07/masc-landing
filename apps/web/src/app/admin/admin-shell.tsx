@@ -14,6 +14,8 @@ const items = [
   { href: "/admin/users", key: "users", icon: UsersIcon },
   { href: "/admin/teams", key: "teams", icon: UsersIcon },
   { href: "/admin/round-one", key: "roundOne", icon: FileTextIcon },
+  { href: "/admin/round-two", key: "roundTwo", icon: FileTextIcon },
+  { href: "/admin/round-three", key: "roundThree", icon: FileTextIcon },
 ] as const;
 
 export default function AdminShell({ children }: { children: React.ReactNode }) {

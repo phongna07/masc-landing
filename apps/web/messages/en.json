@@ -293,6 +293,70 @@
         "download": "The file could not be downloaded. Please try again."
       }
     },
+    "round2": {
+      "title": "Round 2 submission",
+      "description": "Submit your team's written description and supporting document. Only the team captain can create or replace a submission.",
+      "formTitle": "Prepare your submission",
+      "replaceTitle": "Replace your submission",
+      "descriptionLabel": "Description",
+      "fileLabel": "Submission file",
+      "fileHint": "PDF, DOC, DOCX, PPT, or PPTX — maximum 20 MB.",
+      "characters": "{count} / 5000 characters",
+      "submit": "Submit Round 2",
+      "uploading": "Uploading…",
+      "cancel": "Cancel",
+      "success": "Your Round 2 submission has been saved.",
+      "submittedTitle": "Submitted work",
+      "submittedAt": "Last updated {date}",
+      "replace": "Replace submission",
+      "download": "Download file",
+      "previewLabel": "File preview",
+      "previewTitle": "Preview of {filename}",
+      "emptyTitle": "No submission yet",
+      "memberEmpty": "Your team captain has not submitted the Round 2 entry yet.",
+      "errors": {
+        "loadTitle": "We could not load the Round 2 submission",
+        "load": "Check your connection and try again.",
+        "descriptionLength": "The description must be 5,000 characters or fewer.",
+        "fileRequired": "Choose a submission file.",
+        "fileType": "Choose a PDF, DOC, DOCX, PPT, or PPTX file.",
+        "fileSize": "The file must be no larger than 20 MB.",
+        "submit": "The submission could not be uploaded. Check the file and try again.",
+        "download": "The file could not be downloaded. Please try again."
+      }
+    },
+    "round3": {
+      "title": "Round 3 submission",
+      "description": "Submit your team's written description and supporting document. Only the team captain can create or replace a submission.",
+      "formTitle": "Prepare your submission",
+      "replaceTitle": "Replace your submission",
+      "descriptionLabel": "Description",
+      "fileLabel": "Submission file",
+      "fileHint": "PDF, DOC, DOCX, PPT, or PPTX — maximum 20 MB.",
+      "characters": "{count} / 5000 characters",
+      "submit": "Submit Round 3",
+      "uploading": "Uploading…",
+      "cancel": "Cancel",
+      "success": "Your Round 3 submission has been saved.",
+      "submittedTitle": "Submitted work",
+      "submittedAt": "Last updated {date}",
+      "replace": "Replace submission",
+      "download": "Download file",
+      "previewLabel": "File preview",
+      "previewTitle": "Preview of {filename}",
+      "emptyTitle": "No submission yet",
+      "memberEmpty": "Your team captain has not submitted the Round 3 entry yet.",
+      "errors": {
+        "loadTitle": "We could not load the Round 3 submission",
+        "load": "Check your connection and try again.",
+        "descriptionLength": "The description must be 5,000 characters or fewer.",
+        "fileRequired": "Choose a submission file.",
+        "fileType": "Choose a PDF, DOC, DOCX, PPT, or PPTX file.",
+        "fileSize": "The file must be no larger than 20 MB.",
+        "submit": "The submission could not be uploaded. Check the file and try again.",
+        "download": "The file could not be downloaded. Please try again."
+      }
+    },
     "placeholder": {
       "title": "Coming soon",
       "description": "Submission details for this round will be available here later."
@@ -318,7 +382,7 @@
       "open": "Open admin navigation",
       "close": "Close admin navigation"
     },
-    "tabs": { "users": "Users", "teams": "Teams", "roundOne": "Round 1" },
+    "tabs": { "users": "Users", "teams": "Teams", "roundOne": "Round 1", "roundTwo": "Round 2", "roundThree": "Round 3" },
     "users": {
       "title": "Users",
       "description": "Review every account registered with MASC.",
@@ -337,6 +401,30 @@
       "emptyTitle": "No Round 1 submissions",
       "emptyDescription": "Team submissions will appear here after they are uploaded.",
       "detailEyebrow": "Round 1 submission",
+      "submission": "Submission details",
+      "content": "Submitted work",
+      "notFoundTitle": "Submission not found",
+      "notFoundDescription": "This submission does not exist or may have been removed.",
+      "previewTitle": "Preview of {filename}"
+    },
+    "roundTwo": {
+      "title": "Round 2",
+      "description": "Review Round 2 submissions and their related teams.",
+      "emptyTitle": "No Round 2 submissions",
+      "emptyDescription": "Team submissions will appear here after they are uploaded.",
+      "detailEyebrow": "Round 2 submission",
+      "submission": "Submission details",
+      "content": "Submitted work",
+      "notFoundTitle": "Submission not found",
+      "notFoundDescription": "This submission does not exist or may have been removed.",
+      "previewTitle": "Preview of {filename}"
+    },
+    "roundThree": {
+      "title": "Round 3",
+      "description": "Review Round 3 submissions and their related teams.",
+      "emptyTitle": "No Round 3 submissions",
+      "emptyDescription": "Team submissions will appear here after they are uploaded.",
+      "detailEyebrow": "Round 3 submission",
       "submission": "Submission details",
       "content": "Submitted work",
       "notFoundTitle": "Submission not found",
@@ -362,7 +450,7 @@
       "verified": "Verified", "unverified": "Unverified", "active": "Active", "banned": "Banned", "captain": "Captain",
       "status": { "pending": "Pending review", "approved": "Approved", "waitlisted": "Waitlisted" }
     },
-    "actions": { "view": "View", "viewTeam": "View {name}", "viewSubmission": "View {team}'s submission", "backToTeams": "Back to teams", "backToRoundOne": "Back to Round 1", "preview": "Preview", "download": "Download", "retry": "Try again" },
+    "actions": { "view": "View", "viewTeam": "View {name}", "viewSubmission": "View {team}'s submission", "backToTeams": "Back to teams", "backToRoundOne": "Back to Round 1", "backToRoundTwo": "Back to Round 2", "backToRoundThree": "Back to Round 3", "preview": "Preview", "download": "Download", "retry": "Try again" },
     "errors": {
       "loadTitle": "We could not load this data",
       "users": "User accounts could not be loaded. Check your connection and try again.",
@@ -370,6 +458,10 @@
       "detail": "Team details could not be loaded. Check your connection and try again.",
       "roundOne": "Round 1 submissions could not be loaded. Check your connection and try again.",
       "roundOneDetail": "This submission could not be loaded. Check your connection and try again.",
+      "roundTwo": "Round 2 submissions could not be loaded. Check your connection and try again.",
+      "roundTwoDetail": "This submission could not be loaded. Check your connection and try again.",
+      "roundThree": "Round 3 submissions could not be loaded. Check your connection and try again.",
+      "roundThreeDetail": "This submission could not be loaded. Check your connection and try again.",
       "preview": "The file preview could not be created. Please try again.",
       "download": "The file download could not be created. Please try again."
     }
