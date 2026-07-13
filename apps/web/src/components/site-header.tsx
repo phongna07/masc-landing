@@ -3,8 +3,8 @@
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 
-import brandLogo from "@/assets/brand.svg";
 import { authClient } from "@/lib/auth-client";
+import { BrandLogo } from "@/components/hero-brand-logo";
 import LanguageSwitcher from "@/components/language-switcher";
 
 type SiteHeaderProps = {
@@ -20,7 +20,7 @@ export default function SiteHeader({ landingPage = false }: SiteHeaderProps) {
   return (
     <header className="site-header">
       <a className="brand" href={homeHref} aria-label={t("backToTop")}>
-        <img className="brand-logo" src={brandLogo.src} alt="" />
+        <BrandLogo className="brand-logo" />
         <span className="brand-copy">
           Marketing All-Star Challenge
           <br />

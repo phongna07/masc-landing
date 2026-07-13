@@ -8,7 +8,7 @@ import { useTranslations } from "next-intl";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 
-import brandLogo from "@/assets/brand.svg";
+import { BrandLogo } from "@/components/hero-brand-logo";
 import LanguageSwitcher from "@/components/language-switcher";
 import UserMenu from "@/components/user-menu";
 
@@ -29,7 +29,7 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
     <div className="admin-page">
       <header className="dashboard-navbar admin-navbar">
         <Link className="brand" href="/" aria-label={t("nav.homeLabel")}>
-          <img className="brand-logo" src={brandLogo.src} alt="" />
+          <BrandLogo className="brand-logo" />
           <span className="brand-copy">Marketing All-Star Challenge<br /><small>HYPERNOVA &apos;26</small></span>
         </Link>
         <div className="dashboard-nav-actions">

@@ -15,7 +15,7 @@ import mentor1 from "@/assets/mentor-1.png";
 import mentor2 from "@/assets/mentor-2.png";
 import mentor3 from "@/assets/mentor-3.png";
 import mentor4 from "@/assets/mentor-4.png";
-import { HeroBrandLogo } from "@/components/hero-brand-logo";
+import { BrandLogo, HeroBrandLogo } from "@/components/hero-brand-logo";
 import SiteHeader from "@/components/site-header";
 
 const registrationLink =
@@ -545,7 +545,7 @@ export default function Home() {
       <footer id="contact">
         <div className="page-shell footer-grid">
           <div className="footer-brand">
-            <span className="brand-mark">M</span>
+            <BrandLogo className="brand-mark" />
             <p>{t.rich("footer.brand", { break: () => <br /> })}</p>
           </div>
           <div className="footer-contact">

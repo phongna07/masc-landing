@@ -1576,14 +1576,9 @@ img {
 }
 
 .brand-mark {
-  display: grid;
+  display: block;
   width: 38px;
   height: 38px;
-  place-items: center;
-  border: 1px solid rgba(255, 255, 255, 0.68);
-  border-radius: 50%;
-  font-family: var(--font-castela), Georgia, serif;
-  font-size: 21px;
 }
 
 .brand-copy {

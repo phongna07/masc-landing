@@ -1,6 +1,6 @@
 import type { SVGProps } from "react";
 
-export function HeroBrandLogo(props: SVGProps<SVGSVGElement>) {
+export function BrandLogo(props: SVGProps<SVGSVGElement>) {
 	return (
 		<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 541 547" fill="currentColor" aria-hidden="true" focusable="false" {...props}>
 		<g id="Layer 6">
@@ -24,3 +24,4 @@ export function HeroBrandLogo(props: SVGProps<SVGSVGElement>) {
 	);
 }
 
+export const HeroBrandLogo = BrandLogo;

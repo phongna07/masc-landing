@@ -18,7 +18,7 @@ import { toast } from "sonner";
 
 import LanguageSwitcher from "@/components/language-switcher";
 import UserMenu from "@/components/user-menu";
-import brandLogo from "@/assets/brand.svg";
+import { BrandLogo } from "@/components/hero-brand-logo";
 import { authClient } from "@/lib/auth-client";
 import { queryClient, trpc } from "@/utils/trpc";
 import RoundSubmission from "./round-submission";
@@ -43,7 +43,7 @@ export default function Dashboard({ session }: { session: Session }) {
     <div className="dashboard-page">
       <header className="dashboard-navbar">
         <Link className="brand" href="/" aria-label={t("nav.homeLabel")}>
-          <img className="brand-logo" src={brandLogo.src} alt="" />
+          <BrandLogo className="brand-logo" />
           <span className="brand-copy">
             Marketing All-Star Challenge
             <br />
