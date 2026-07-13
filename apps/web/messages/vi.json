@@ -1,7 +1,7 @@
 {
   "Metadata": {
-    "title": "MASC 2026 — SUPERNOVA",
-    "description": "Marketing All-Star Challenge 2026: SUPERNOVA — đấu trường dành cho thế hệ tài năng marketing tiếp theo tại Việt Nam."
+    "title": "MASC 2026 — HYPERNOVA",
+    "description": "Marketing All-Star Challenge 2026: HYPERNOVA — đấu trường dành cho thế hệ tài năng marketing tiếp theo tại Việt Nam."
   },
   "LanguageSwitcher": {
     "label": "Thay đổi ngôn ngữ",
@@ -47,7 +47,7 @@
       "index": "01 / Cuộc thi",
       "title": "Kiến tạo di sản từ sự <em>bứt phá.</em>",
       "lead": "Marketing All-Star Challenge (MASC) là cuộc thi Marketing độc quyền quy mô toàn quốc do Câu lạc bộ Kotler Klub — VinUni House of Marketers tổ chức.",
-      "description": "Chủ đề <strong>Supernova</strong> khơi nguồn từ hiện tượng siêu tân tinh — biểu tượng nguyên bản của sự tái sinh và đổi mới mang tính đột phá. Đây là nơi những cá nhân xuất sắc bứt phá giới hạn để kiến tạo nên một di sản hoàn toàn mới.",
+      "description": "Chủ đề <strong>Hypernova</strong> khơi nguồn từ hiện tượng siêu tân tinh — biểu tượng nguyên bản của sự tái sinh và đổi mới mang tính đột phá. Đây là nơi những cá nhân xuất sắc bứt phá giới hạn để kiến tạo nên một di sản hoàn toàn mới.",
       "organizerAlt": "Đơn vị tổ chức",
       "hostedBy": "Tổ chức bởi Kotler Klub",
       "organization": "VinUni House of Marketers",
@@ -62,7 +62,7 @@
       "poolDescription": "Giải thưởng tiền mặt, quyền lợi từ đối tác và cơ hội nghề nghiệp giúp các ý tưởng chiến thắng vươn xa.",
       "upTo": "Lên đến",
       "grandKicker": "Giải Nhất / Quán quân",
-      "grandTitle": "Supernova<break></break>Champion",
+      "grandTitle": "Hypernova<break></break>Champion",
       "grandDescription": "Vinh danh Quán quân MASC 2026 — đội thi xuất sắc vượt qua thử thách kép và chứng minh bản lĩnh thực chiến vượt trội.",
       "secondKicker": "Giải Nhì / Á quân",
       "secondTitle": "Rising Star",
@@ -84,7 +84,7 @@
     },
     "journey": {
       "index": "04 / Lộ trình cuộc thi",
-      "title": "Hành trình đến <em>Supernova</em>",
+      "title": "Hành trình đến <em>Hypernova</em>",
       "description": "Khám phá lộ trình chi tiết các vòng thi của Marketing All-Star Challenge 2026.",
       "timelineLabel": "Lộ trình cuộc thi",
       "status": "Điểm đến cuối cùng",
@@ -166,7 +166,7 @@
     },
     "finalCta": {
       "index": "Quán quân / Á quân / Quý quân",
-      "title": "Bứt phá giới hạn,<break></break>trở thành <em>Supernova.</em>",
+      "title": "Bứt phá giới hạn,<break></break>trở thành <em>Hypernova.</em>",
       "description": "Đơn đăng ký mở từ ngày 10–23 tháng 7 dành cho các tài năng marketing tham vọng từ 18–22 tuổi trên toàn quốc.",
       "button": "Đăng ký ngay"
     },

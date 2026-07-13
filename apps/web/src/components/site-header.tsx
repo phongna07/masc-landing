@@ -24,7 +24,7 @@ export default function SiteHeader({ landingPage = false }: SiteHeaderProps) {
         <span className="brand-copy">
           Marketing All-Star Challenge
           <br />
-          <small>SUPERNOVA &apos;26</small>
+          <small>HYPERNOVA &apos;26</small>
         </span>
       </a>
       <nav aria-label={t("navigationLabel")}>
