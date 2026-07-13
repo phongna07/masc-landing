@@ -30,7 +30,7 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
       <header className="dashboard-navbar admin-navbar">
         <Link className="brand" href="/" aria-label={t("nav.homeLabel")}>
           <img className="brand-logo" src={brandLogo.src} alt="" />
-          <span className="brand-copy">MASC<br /><small>SUPERNOVA &apos;26</small></span>
+          <span className="brand-copy">Marketing All-Star Challenge<br /><small>SUPERNOVA &apos;26</small></span>
         </Link>
         <div className="dashboard-nav-actions">
           <LanguageSwitcher />

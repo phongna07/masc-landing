@@ -22,7 +22,7 @@ export default function SiteHeader({ landingPage = false }: SiteHeaderProps) {
       <a className="brand" href={homeHref} aria-label={t("backToTop")}>
         <img className="brand-logo" src={brandLogo.src} alt="" />
         <span className="brand-copy">
-          MASC
+          Marketing All-Star Challenge
           <br />
           <small>SUPERNOVA &apos;26</small>
         </span>

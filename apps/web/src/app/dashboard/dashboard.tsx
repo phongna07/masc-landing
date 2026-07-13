@@ -45,7 +45,7 @@ export default function Dashboard({ session }: { session: Session }) {
         <Link className="brand" href="/" aria-label={t("nav.homeLabel")}>
           <img className="brand-logo" src={brandLogo.src} alt="" />
           <span className="brand-copy">
-            MASC
+            Marketing All-Star Challenge
             <br />
             <small>SUPERNOVA &apos;26</small>
           </span>

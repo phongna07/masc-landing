@@ -1591,6 +1591,7 @@ img {
   font-weight: 700;
   line-height: 0.95;
   letter-spacing: 0.14em;
+  text-transform: uppercase;
 }
 
 .brand-copy small {
