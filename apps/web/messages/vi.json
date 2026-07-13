@@ -175,8 +175,8 @@
       "support": "Câu hỏi & hỗ trợ",
       "facebook": "Facebook chính thức",
       "leads": "Ban tổ chức",
-      "lead1": "Lê Đức Anh — Đồng Trưởng ban",
-      "lead2": "Nguyễn Mai Ngọc Nhi — Đồng Trưởng ban",
+      "lead1": "Lê Đức Anh — Đồng Trưởng ban tổ chức",
+      "lead2": "Nguyễn Mai Ngọc Nhi — Đồng Trưởng ban tổ chức",
       "lead3": "Nguyễn Minh Ngọc — Trưởng ban Đối ngoại",
       "shortcuts": "Lối tắt",
       "competition": "Cuộc thi",
@@ -265,8 +265,39 @@
       "round3": "Vòng 3"
     },
     "round": {
-      "title": "Bài nộp Vòng {round}", "description": "Nộp phần mô tả và tài liệu của đội. Chỉ đội trưởng có thể tạo hoặc thay thế bài nộp.", "formTitle": "Chuẩn bị bài nộp", "replaceTitle": "Thay thế bài nộp", "descriptionLabel": "Mô tả", "fileLabel": "Tệp bài nộp", "fileHint": "PDF, DOC, DOCX, PPT hoặc PPTX — tối đa 20 MB.", "characters": "{count} / 5000 ký tự", "submit": "Nộp bài Vòng {round}", "uploading": "Đang tải lên…", "cancel": "Hủy", "success": "Bài nộp Vòng {round} đã được lưu.", "submittedTitle": "Bài đã nộp", "submittedAt": "Cập nhật gần nhất {date}", "replace": "Thay thế bài nộp", "download": "Tải tệp", "previewLabel": "Xem trước tệp", "previewTitle": "Xem trước {filename}", "feedbackTitle": "Nhận xét từ ban tổ chức", "emptyTitle": "Chưa có bài nộp", "memberEmpty": "Đội trưởng chưa nộp bài Vòng {round}.", "unavailableTitle": "Chưa mở nộp bài Vòng {round}", "unavailableDescription": "Ban tổ chức sẽ mở vòng này khi bắt đầu nhận bài.",
-      "errors": { "loadTitle": "Không thể tải bài nộp Vòng {round}", "load": "Vui lòng kiểm tra kết nối và thử lại.", "descriptionLength": "Mô tả không được vượt quá 5.000 ký tự.", "fileRequired": "Hãy chọn tệp bài nộp.", "fileType": "Hãy chọn tệp PDF, DOC, DOCX, PPT hoặc PPTX.", "fileSize": "Tệp không được lớn hơn 20 MB.", "submit": "Không thể tải bài nộp lên. Hãy kiểm tra tệp và thử lại.", "download": "Không thể tải tệp xuống. Vui lòng thử lại." }
+      "title": "Bài nộp Vòng {round}",
+      "description": "Nộp phần mô tả và tài liệu của đội. Chỉ đội trưởng có thể tạo hoặc thay thế bài nộp.",
+      "formTitle": "Chuẩn bị bài nộp",
+      "replaceTitle": "Thay thế bài nộp",
+      "descriptionLabel": "Mô tả",
+      "fileLabel": "Tệp bài nộp",
+      "fileHint": "PDF, DOC, DOCX, PPT hoặc PPTX — tối đa 20 MB.",
+      "characters": "{count} / 5000 ký tự",
+      "submit": "Nộp bài Vòng {round}",
+      "uploading": "Đang tải lên…",
+      "cancel": "Hủy",
+      "success": "Bài nộp Vòng {round} đã được lưu.",
+      "submittedTitle": "Bài đã nộp",
+      "submittedAt": "Cập nhật gần nhất {date}",
+      "replace": "Thay thế bài nộp",
+      "download": "Tải tệp",
+      "previewLabel": "Xem trước tệp",
+      "previewTitle": "Xem trước {filename}",
+      "feedbackTitle": "Nhận xét từ ban tổ chức",
+      "emptyTitle": "Chưa có bài nộp",
+      "memberEmpty": "Đội trưởng chưa nộp bài Vòng {round}.",
+      "unavailableTitle": "Chưa mở nộp bài Vòng {round}",
+      "unavailableDescription": "Ban tổ chức sẽ mở vòng này khi bắt đầu nhận bài.",
+      "errors": {
+        "loadTitle": "Không thể tải bài nộp Vòng {round}",
+        "load": "Vui lòng kiểm tra kết nối và thử lại.",
+        "descriptionLength": "Mô tả không được vượt quá 5.000 ký tự.",
+        "fileRequired": "Hãy chọn tệp bài nộp.",
+        "fileType": "Hãy chọn tệp PDF, DOC, DOCX, PPT hoặc PPTX.",
+        "fileSize": "Tệp không được lớn hơn 20 MB.",
+        "submit": "Không thể tải bài nộp lên. Hãy kiểm tra tệp và thử lại.",
+        "download": "Không thể tải tệp xuống. Vui lòng thử lại."
+      }
     },
     "placeholder": {
       "title": "Sắp ra mắt",
@@ -276,7 +307,10 @@
       "organizer": "Ban tổ chức MASC",
       "emptyTitle": "Chưa có thông báo",
       "emptyDescription": "Các cập nhật từ ban tổ chức sẽ xuất hiện tại đây.",
-      "errors": { "loadTitle": "Không thể tải thông báo", "load": "Vui lòng kiểm tra kết nối và thử lại." }
+      "errors": {
+        "loadTitle": "Không thể tải thông báo",
+        "load": "Vui lòng kiểm tra kết nối và thử lại."
+      }
     },
     "overview": {
       "registration": "Đơn đăng ký của bạn",
@@ -299,7 +333,13 @@
       "open": "Mở điều hướng quản trị",
       "close": "Đóng điều hướng quản trị"
     },
-    "tabs": { "overview": "Tổng quan", "announcements": "Thông báo", "users": "Người dùng", "teams": "Đội thi", "round": "Vòng {round}" },
+    "tabs": {
+      "overview": "Tổng quan",
+      "announcements": "Thông báo",
+      "users": "Người dùng",
+      "teams": "Đội thi",
+      "round": "Vòng {round}"
+    },
     "overview": {
       "title": "Tổng quan",
       "description": "Kiểm soát thời điểm đội trưởng có thể tạo hoặc thay thế bài nộp theo từng vòng.",
@@ -315,13 +355,34 @@
       "roundDescription": "Cho phép đội trưởng nộp hoặc thay thế bài Vòng {round}."
     },
     "announcements": {
-      "title": "Thông báo", "description": "Đăng cập nhật cho tất cả đội thi đã đăng ký.", "composeTitle": "Tạo thông báo",
-      "contentLabel": "Nội dung thông báo", "placeholder": "Chia sẻ cập nhật với các thí sinh…", "characters": "{count} / 5000 ký tự",
-      "addImage": "Thêm hình ảnh", "removeImage": "Xóa hình ảnh", "imageHint": "JPG, PNG hoặc WebP không bắt buộc — tối đa 10 MB.",
-      "publish": "Đăng thông báo", "publishing": "Đang đăng…", "organizer": "Ban tổ chức MASC", "delete": "Xóa thông báo",
-      "deleteConfirm": "Xóa thông báo này? Thao tác này không thể hoàn tác.", "emptyTitle": "Chưa có thông báo", "emptyDescription": "Hãy đăng cập nhật đầu tiên cho các thí sinh ở phía trên.",
-      "success": { "created": "Đã đăng thông báo.", "deleted": "Đã xóa thông báo." },
-      "errors": { "required": "Vui lòng nhập nội dung trước khi đăng.", "tooLong": "Nội dung thông báo không được vượt quá 5.000 ký tự.", "imageType": "Vui lòng chọn hình JPG, PNG hoặc WebP.", "imageSize": "Hình ảnh không được vượt quá 10 MB.", "create": "Không thể đăng thông báo. Vui lòng thử lại.", "delete": "Không thể xóa thông báo. Vui lòng thử lại." }
+      "title": "Thông báo",
+      "description": "Đăng cập nhật cho tất cả đội thi đã đăng ký.",
+      "composeTitle": "Tạo thông báo",
+      "contentLabel": "Nội dung thông báo",
+      "placeholder": "Chia sẻ cập nhật với các thí sinh…",
+      "characters": "{count} / 5000 ký tự",
+      "addImage": "Thêm hình ảnh",
+      "removeImage": "Xóa hình ảnh",
+      "imageHint": "JPG, PNG hoặc WebP không bắt buộc — tối đa 10 MB.",
+      "publish": "Đăng thông báo",
+      "publishing": "Đang đăng…",
+      "organizer": "Ban tổ chức MASC",
+      "delete": "Xóa thông báo",
+      "deleteConfirm": "Xóa thông báo này? Thao tác này không thể hoàn tác.",
+      "emptyTitle": "Chưa có thông báo",
+      "emptyDescription": "Hãy đăng cập nhật đầu tiên cho các thí sinh ở phía trên.",
+      "success": {
+        "created": "Đã đăng thông báo.",
+        "deleted": "Đã xóa thông báo."
+      },
+      "errors": {
+        "required": "Vui lòng nhập nội dung trước khi đăng.",
+        "tooLong": "Nội dung thông báo không được vượt quá 5.000 ký tự.",
+        "imageType": "Vui lòng chọn hình JPG, PNG hoặc WebP.",
+        "imageSize": "Hình ảnh không được vượt quá 10 MB.",
+        "create": "Không thể đăng thông báo. Vui lòng thử lại.",
+        "delete": "Không thể xóa thông báo. Vui lòng thử lại."
+      }
     },
     "users": {
       "title": "Người dùng",
@@ -338,7 +399,18 @@
       "statusUpdateSuccess": "Đã cập nhật trạng thái đăng ký của đội.",
       "statusUpdateError": "Không thể cập nhật trạng thái đội. Vui lòng thử lại."
     },
-    "round": { "title": "Vòng {round}", "description": "Xem bài nộp Vòng {round} và thông tin các đội liên quan.", "emptyTitle": "Chưa có bài nộp Vòng {round}", "emptyDescription": "Bài nộp của các đội sẽ xuất hiện tại đây sau khi được tải lên.", "detailEyebrow": "Bài nộp Vòng {round}", "submission": "Thông tin bài nộp", "content": "Nội dung đã nộp", "notFoundTitle": "Không tìm thấy bài nộp", "notFoundDescription": "Bài nộp này không tồn tại hoặc có thể đã bị xóa.", "previewTitle": "Xem trước {filename}" },
+    "round": {
+      "title": "Vòng {round}",
+      "description": "Xem bài nộp Vòng {round} và thông tin các đội liên quan.",
+      "emptyTitle": "Chưa có bài nộp Vòng {round}",
+      "emptyDescription": "Bài nộp của các đội sẽ xuất hiện tại đây sau khi được tải lên.",
+      "detailEyebrow": "Bài nộp Vòng {round}",
+      "submission": "Thông tin bài nộp",
+      "content": "Nội dung đã nộp",
+      "notFoundTitle": "Không tìm thấy bài nộp",
+      "notFoundDescription": "Bài nộp này không tồn tại hoặc có thể đã bị xóa.",
+      "previewTitle": "Xem trước {filename}"
+    },
     "detail": {
       "eyebrow": "Chi tiết đội thi",
       "registration": "Đăng ký",
@@ -362,17 +434,48 @@
       "saveError": "Không thể lưu nhận xét. Vui lòng thử lại."
     },
     "fields": {
-      "user": "Người dùng", "team": "Đội", "captain": "Đội trưởng", "member": "Thành viên",
-      "name": "Họ tên", "email": "Email", "phone": "Điện thoại", "university": "Trường",
-      "role": "Vai trò", "verification": "Email", "status": "Trạng thái", "created": "Ngày tạo", "members": "Thành viên",
-      "file": "Tệp", "size": "Kích thước", "submitted": "Nộp gần nhất", "originalSubmission": "Nộp lần đầu",
-      "fileType": "Loại tệp", "description": "Mô tả"
+      "user": "Người dùng",
+      "team": "Đội",
+      "captain": "Đội trưởng",
+      "member": "Thành viên",
+      "name": "Họ tên",
+      "email": "Email",
+      "phone": "Điện thoại",
+      "university": "Trường",
+      "role": "Vai trò",
+      "verification": "Email",
+      "status": "Trạng thái",
+      "created": "Ngày tạo",
+      "members": "Thành viên",
+      "file": "Tệp",
+      "size": "Kích thước",
+      "submitted": "Nộp gần nhất",
+      "originalSubmission": "Nộp lần đầu",
+      "fileType": "Loại tệp",
+      "description": "Mô tả"
     },
     "values": {
-      "verified": "Đã xác minh", "unverified": "Chưa xác minh", "active": "Hoạt động", "banned": "Đã cấm", "captain": "Đội trưởng",
-      "status": { "pending": "Chờ xét duyệt", "approved": "Đã duyệt", "rejected": "Bị từ chối" }
+      "verified": "Đã xác minh",
+      "unverified": "Chưa xác minh",
+      "active": "Hoạt động",
+      "banned": "Đã cấm",
+      "captain": "Đội trưởng",
+      "status": {
+        "pending": "Chờ xét duyệt",
+        "approved": "Đã duyệt",
+        "rejected": "Bị từ chối"
+      }
     },
-    "actions": { "view": "Xem", "viewTeam": "Xem {name}", "viewSubmission": "Xem bài nộp của {team}", "backToTeams": "Quay lại danh sách đội", "backToRound": "Quay lại Vòng {round}", "preview": "Xem trước", "download": "Tải xuống", "retry": "Thử lại" },
+    "actions": {
+      "view": "Xem",
+      "viewTeam": "Xem {name}",
+      "viewSubmission": "Xem bài nộp của {team}",
+      "backToTeams": "Quay lại danh sách đội",
+      "backToRound": "Quay lại Vòng {round}",
+      "preview": "Xem trước",
+      "download": "Tải xuống",
+      "retry": "Thử lại"
+    },
     "errors": {
       "loadTitle": "Không thể tải dữ liệu",
       "users": "Không thể tải tài khoản người dùng. Hãy kiểm tra kết nối và thử lại.",
