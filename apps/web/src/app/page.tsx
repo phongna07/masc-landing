@@ -7,7 +7,6 @@ import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { useEffect, useRef, useState } from "react";
 
-import image1 from "@/assets/image-1.png";
 import image2 from "@/assets/image-2.png";
 import image3 from "@/assets/image-3.png";
 import image4 from "@/assets/image-4.png";
@@ -16,6 +15,7 @@ import mentor1 from "@/assets/mentor-1.png";
 import mentor2 from "@/assets/mentor-2.png";
 import mentor3 from "@/assets/mentor-3.png";
 import mentor4 from "@/assets/mentor-4.png";
+import { HeroBrandLogo } from "@/components/hero-brand-logo";
 import SiteHeader from "@/components/site-header";
 
 const registrationLink =
@@ -102,18 +102,6 @@ export default function Home() {
               ease: "power3.out",
               overwrite: true,
             }),
-        });
-
-        gsap.to(".hero-media img", {
-          yPercent: 12,
-          scale: 1.08,
-          ease: "none",
-          scrollTrigger: {
-            trigger: ".hero",
-            start: "top top",
-            end: "bottom top",
-            scrub: 1.2,
-          },
         });
 
         gsap.to(".hero-content", {
@@ -265,28 +253,47 @@ export default function Home() {
 
       <main id="top">
         <section className="hero" aria-labelledby="hero-title">
-          <div className="hero-media parallax-media" aria-hidden="true">
-            <Image src={image1} alt="" fill priority sizes="100vw" placeholder="blur" />
+          <div className="hero-cosmos" aria-hidden="true">
+            <div className="hero-nebula hero-nebula-one" />
+            <div className="hero-nebula hero-nebula-two" />
+            <div className="hero-starfield hero-starfield-near" />
+            <div className="hero-starfield hero-starfield-far" />
+            <span className="shooting-star shooting-star-one" />
+            <span className="shooting-star shooting-star-two" />
+            <span className="shooting-star shooting-star-three" />
           </div>
           <div className="hero-shade" aria-hidden="true" />
 
           <div className="hero-content page-shell">
-            <div className="hero-orbit orbit-one" aria-hidden="true" />
-            <div className="hero-orbit orbit-two" aria-hidden="true" />
-            <p className="eyebrow reveal">
-              {t("hero.eyebrow")} <span>2026</span>
-            </p>
-            <h1 id="hero-title" className="hero-title reveal">
-              <span>{t("hero.titleMarketing")}</span>
-              <em>{t("hero.titleAllStar")}</em>
-              <strong>{t("hero.titleChallenge")}</strong>
-            </h1>
-            <div className="hero-bottom reveal">
-              <p>{t("hero.description")}</p>
-              <Link className="primary-button" href={registrationLink}>
-                <span>{t("hero.apply")}</span>
-                <span aria-hidden="true">↗</span>
-              </Link>
+            <div className="hero-copy">
+              <p className="eyebrow reveal">
+                <span className="eyebrow-star" aria-hidden="true">✦</span>
+                {t("hero.eyebrow")} <b>2026</b>
+              </p>
+              <h1 id="hero-title" className="hero-title reveal">
+                <span>{t("hero.titleMarketing")}</span>
+                <em>{t("hero.titleAllStar")}</em>
+                <strong>{t("hero.titleChallenge")}</strong>
+              </h1>
+              <div className="hero-bottom reveal">
+                <p>{t("hero.description")}</p>
+                <Link className="primary-button" href={registrationLink}>
+                  <span>{t("hero.apply")}</span>
+                  <span aria-hidden="true">↗</span>
+                </Link>
+              </div>
+            </div>
+
+            <div className="hero-brand-stage" aria-hidden="true">
+              <div className="hero-brand-glow" />
+              <div className="hero-brand-orbit hero-brand-orbit-outer"><span /></div>
+              <div className="hero-brand-orbit hero-brand-orbit-inner"><span /></div>
+              <div className="hero-brand-image">
+                <HeroBrandLogo />
+              </div>
+              <span className="brand-spark brand-spark-one">✦</span>
+              <span className="brand-spark brand-spark-two">✦</span>
+              <span className="brand-spark brand-spark-three">✦</span>
             </div>
           </div>
 
