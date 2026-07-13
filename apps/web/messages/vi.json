@@ -45,7 +45,7 @@
     },
     "about": {
       "index": "01 / Cuộc thi",
-      "title": "Kiến tạo di sản từ sự <em>bứt phá.</em>",
+      "title": "Kiến tạo di sản từ sự <em>bứt phá</em>",
       "lead": "Marketing All-Star Challenge (MASC) là cuộc thi Marketing độc quyền quy mô toàn quốc do Câu lạc bộ Kotler Klub — VinUni House of Marketers tổ chức.",
       "description": "Chủ đề <strong>Hypernova</strong> khơi nguồn từ hiện tượng siêu tân tinh — biểu tượng nguyên bản của sự tái sinh và đổi mới mang tính đột phá. Đây là nơi những cá nhân xuất sắc bứt phá giới hạn để kiến tạo nên một di sản hoàn toàn mới.",
       "organizerAlt": "Đơn vị tổ chức",
@@ -73,7 +73,7 @@
     },
     "eligibility": {
       "index": "03 / Đối tượng dự thi",
-      "title": "Đấu trường dành cho <em>tài năng Marketing.</em>",
+      "title": "Đấu trường dành cho <em>tài năng Marketing</em>",
       "description": "Dành cho các bạn trẻ từ 18 đến 22 tuổi đang sinh sống và học tập tại Việt Nam, có niềm yêu thích và định hướng phát triển sự nghiệp Marketing.",
       "achieverTitle": "Thành tích cuộc thi uy tín",
       "achieverDescription": "Đã đạt thành tích cao tại các cuộc thi học thuật về Marketing và Business uy tín (Quán quân, Á quân, Top 20-50...).",
@@ -124,7 +124,7 @@
     },
     "criteria": {
       "index": "05 / Tiêu chí đánh giá",
-      "title": "Tiêu chí đánh giá từ <em>Ban Giám Khảo.</em>",
+      "title": "Tiêu chí đánh giá từ <em>Ban Giám Khảo</em>",
       "round1": "Vòng 1 — The Star Gathering",
       "round1Title": "Tư duy chuyên môn sâu theo Track",
       "round1Description": "Lựa chọn 1 trong 3 track chuyên môn (Product & Growth, Societal + PR/MarCom, Market Research + Trade), hoàn thiện bài làm qua phản hồi 1-1 từ mentor.",
@@ -137,7 +137,7 @@
     },
     "mentors": {
       "index": "06 / Mentor",
-      "title": "Đồng hành cùng các <em>chuyên gia đầu ngành.</em>",
+      "title": "Đồng hành cùng các <em>chuyên gia đầu ngành</em>",
       "description": "Gặp gỡ các chuyên gia đầu ngành đến từ các thương hiệu, agency, tập đoàn hàng đầu, mang kinh nghiệm thực chiến trực tiếp đến thí sinh.",
       "featuredLabel": "Các mentor nổi bật",
       "portraitAlt": "Chân dung {name}",
@@ -166,7 +166,7 @@
     },
     "finalCta": {
       "index": "Quán quân / Á quân / Quý quân",
-      "title": "Bứt phá giới hạn,<break></break>trở thành <em>Hypernova.</em>",
+      "title": "Bứt phá giới hạn,<break></break>trở thành <em>Hypernova</em>",
       "description": "Đơn đăng ký mở từ ngày 10–23 tháng 7 dành cho các tài năng marketing tham vọng từ 18–22 tuổi trên toàn quốc.",
       "button": "Đăng ký ngay"
     },
@@ -266,9 +266,9 @@
     },
     "round": {
       "title": "Bài nộp Vòng {round}",
-      "description": "Nộp phần mô tả và tài liệu của đội. Chỉ đội trưởng có thể tạo hoặc thay thế bài nộp.",
+      "description": "Nộp phần mô tả và tài liệu của đội. Chỉ đội trưởng có thể tạo hoặc nộp lại bài.",
       "formTitle": "Chuẩn bị bài nộp",
-      "replaceTitle": "Thay thế bài nộp",
+      "replaceTitle": "Nộp lại bài",
       "descriptionLabel": "Mô tả",
       "fileLabel": "Tệp bài nộp",
       "fileHint": "PDF, DOC, DOCX, PPT hoặc PPTX — tối đa 20 MB.",
@@ -279,7 +279,7 @@
       "success": "Bài nộp Vòng {round} đã được lưu.",
       "submittedTitle": "Bài đã nộp",
       "submittedAt": "Cập nhật gần nhất {date}",
-      "replace": "Thay thế bài nộp",
+      "replace": "Nộp lại bài",
       "download": "Tải tệp",
       "previewLabel": "Xem trước tệp",
       "previewTitle": "Xem trước {filename}",
@@ -342,7 +342,7 @@
     },
     "overview": {
       "title": "Tổng quan",
-      "description": "Kiểm soát thời điểm đội trưởng có thể tạo hoặc thay thế bài nộp theo từng vòng.",
+      "description": "Kiểm soát thời điểm đội trưởng có thể tạo hoặc nộp lại bài theo từng vòng.",
       "open": "Đang mở",
       "closed": "Đã đóng",
       "openAction": "Mở nộp bài",

@@ -45,7 +45,7 @@
     },
     "about": {
       "index": "01 / The competition",
-      "title": "A new legacy forged through <em>breakthrough.</em>",
+      "title": "A new legacy forged through <em>breakthrough</em>",
       "lead": "Marketing All-Star Challenge (MASC) is an exclusive national marketing competition hosted by Kotler Klub — VinUni House of Marketers.",
       "description": "Inspired by the hypernova phenomenon, this year's <strong>Hypernova</strong> theme symbolizes rebirth and breakthrough innovation. It is where top talent pushes past existing limits to create a completely new legacy.",
       "organizerAlt": "Organizer",
@@ -73,7 +73,7 @@
     },
     "eligibility": {
       "index": "03 / Who can enter",
-      "title": "The arena for top <em>marketing talent.</em>",
+      "title": "The arena for top <em>marketing talent</em>",
       "description": "Open to young adults aged 18–22 living and studying in Vietnam who are passionate about marketing and aspiring to pursue a marketing career.",
       "achieverTitle": "Competition Achievers",
       "achieverDescription": "High achievers in prestigious academic Marketing and Business case competitions (Champion, Runner-up, Top 20-50...).",
@@ -124,7 +124,7 @@
     },
     "criteria": {
       "index": "05 / Evaluation Criteria",
-      "title": "What the judges will <em>look for.</em>",
+      "title": "What the judges will <em>look for</em>",
       "round1": "Round 1 — The Star Gathering",
       "round1Title": "Specialized track depth",
       "round1Description": "Choose one of three specialized tracks (Product & Growth, Societal + PR/MarCom, Market Research + Trade) and refine your solution through 1-on-1 mentor feedback.",
@@ -137,7 +137,7 @@
     },
     "mentors": {
       "index": "06 / Mentors",
-      "title": "Guided by leading <em>industry experts.</em>",
+      "title": "Guided by leading <em>industry experts</em>",
       "description": "Meet distinguished leaders and experts from top brands, agencies, and corporations bringing real-world expertise directly to this year's contestants.",
       "featuredLabel": "Featured mentors",
       "portraitAlt": "Portrait of {name}",
@@ -166,7 +166,7 @@
     },
     "finalCta": {
       "index": "Champion / Runner-up / Second Runner-up",
-      "title": "Push your boundaries,<break></break>become a <em>Hypernova.</em>",
+      "title": "Push your boundaries,<break></break>become a <em>Hypernova</em>",
       "description": "Applications are open July 10–23 for ambitious marketing talent aged 18–22 nationwide.",
       "button": "Apply now"
     },
@@ -279,7 +279,7 @@
       "success": "Your Round {round} submission has been saved.",
       "submittedTitle": "Submitted work",
       "submittedAt": "Last updated {date}",
-      "replace": "Replace submission",
+      "replace": "Resubmit",
       "download": "Download file",
       "previewLabel": "File preview",
       "previewTitle": "Preview of {filename}",
