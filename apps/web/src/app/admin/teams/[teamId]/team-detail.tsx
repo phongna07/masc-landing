@@ -75,7 +75,7 @@ export default function TeamDetail({ teamId }: { teamId: string }) {
         <tbody>{team.data.members.map((member) => <tr key={member.id}><td><strong>{member.fullName}</strong></td><td>{member.email}</td><td>{member.universityName}</td><td>{member.isCaptain && <span className="captain-tag">{t("values.captain")}</span>}</td></tr>)}</tbody>
       </table>
     </CardContent></Card>
-    <Button className="admin-mobile-back" variant="outline" render={<Link href="/admin/teams" />}><ArrowLeftIcon aria-hidden="true" />{t("actions.backToTeams")}</Button>
+    <Button className="admin-mobile-back" variant="outline" nativeButton={false} render={<Link href="/admin/teams" />}><ArrowLeftIcon aria-hidden="true" />{t("actions.backToTeams")}</Button>
   </>;
 }
 
