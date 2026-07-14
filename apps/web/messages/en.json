@@ -204,14 +204,14 @@
     "registration": {
       "section": "Registration",
       "title": "Create your team",
-      "description": "Assemble a team of 2–5 members, including you as captain. Registration details cannot be edited after submission.",
+      "description": "Assemble a team of exactly 3 members, including you as captain. Registration details cannot be edited after submission.",
       "teamSection": "Team",
       "teamDetails": "Team details",
       "captainSection": "Captain",
       "captainDetails": "Your information",
       "membersSection": "Roster",
       "membersTitle": "Team members",
-      "memberCount": "{count} of 5 team members",
+      "memberCount": "{count} of 3 team members",
       "memberNumber": "Member {number}",
       "submitNote": "Review all names and email addresses carefully before submitting.",
       "sectionLabel": "Team registration form"
@@ -224,8 +224,6 @@
       "university": "University"
     },
     "actions": {
-      "addMember": "Add member",
-      "removeMember": "Remove member {number}",
       "submit": "Submit registration",
       "submitting": "Submitting…",
       "loading": "Loading…",
@@ -338,6 +336,7 @@
       "announcements": "Announcements",
       "users": "Users",
       "teams": "Teams",
+      "mail": "Mail",
       "round": "Round {round}"
     },
     "overview": {
@@ -397,7 +396,36 @@
       "emptyDescription": "Submitted team registrations will appear here.",
       "statusUpdating": "Updating…",
       "statusUpdateSuccess": "Team registration status updated.",
-      "statusUpdateError": "Unable to update the team status. Please try again."
+      "statusUpdateError": "Unable to update the team status. Please try again.",
+      "mailQueued": "{count, plural, one {# email is queued.} other {# emails are queued.}} Check the Mail tab before sending.",
+      "openMail": "Open Mail"
+    },
+    "mail": {
+      "title": "Mail",
+      "description": "Preview and manually deliver queued participant emails.",
+      "filterLabel": "Filter mail by delivery status",
+      "filters": { "pending": "Pending", "failed": "Failed", "sent": "Sent", "all": "All" },
+      "status": { "pending": "Pending", "failed": "Failed", "sent": "Sent" },
+      "emptyTitle": "No mail found",
+      "emptyDescription": "Mail matching this status will appear here.",
+      "send": "Send",
+      "retry": "Retry",
+      "sending": "Sending…",
+      "sendSuccess": "Email sent successfully.",
+      "sendError": "The email could not be sent. Its failure details have been saved.",
+      "actions": "Mail actions",
+      "previewFor": "Preview email to {recipient}",
+      "back": "Back to mail",
+      "detailEyebrow": "Queued email",
+      "notFoundTitle": "Email not found",
+      "notFoundDescription": "This queued email does not exist or may have been removed.",
+      "attempts": "Delivery attempts",
+      "lastAttempt": "Last attempted",
+      "sentAt": "Sent",
+      "failure": "Last failure",
+      "htmlPreview": "HTML preview",
+      "textPreview": "Plain-text fallback",
+      "previewTitle": "Email preview for {recipient}"
     },
     "round": {
       "title": "Round {round}",
@@ -440,6 +468,9 @@
       "member": "Member",
       "name": "Name",
       "email": "Email",
+      "recipient": "Recipient",
+      "from": "From",
+      "subject": "Subject",
       "phone": "Phone",
       "university": "University",
       "role": "Role",
@@ -460,6 +491,7 @@
       "active": "Active",
       "banned": "Banned",
       "captain": "Captain",
+      "memberCount": "{count} / {required}",
       "status": {
         "pending": "Pending review",
         "approved": "Approved",
@@ -484,6 +516,8 @@
       "round": "Round submissions could not be loaded. Check your connection and try again.",
       "roundDetail": "This submission could not be loaded. Check your connection and try again.",
       "announcements": "Announcements could not be loaded. Check your connection and try again.",
+      "mail": "Queued mail could not be loaded. Check your connection and try again.",
+      "mailDetail": "This queued email could not be loaded. Check your connection and try again.",
       "preview": "The file preview could not be created. Please try again.",
       "download": "The file download could not be created. Please try again."
     }

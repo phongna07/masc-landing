@@ -1,6 +1,6 @@
 "use client";
 
-import { FileTextIcon, LayoutDashboardIcon, MegaphoneIcon, MenuIcon, UsersIcon, XIcon } from "lucide-react";
+import { FileTextIcon, LayoutDashboardIcon, MailIcon, MegaphoneIcon, MenuIcon, UsersIcon, XIcon } from "lucide-react";
 import { rounds } from "@masc-landing/api/rounds";
 import Link from "next/link";
 import type { Route } from "next";
@@ -17,6 +17,7 @@ const items = [
   { href: "/admin/announcements", key: "announcements", icon: MegaphoneIcon },
   { href: "/admin/users", key: "users", icon: UsersIcon },
   { href: "/admin/teams", key: "teams", icon: UsersIcon },
+  { href: "/admin/mail", key: "mail", icon: MailIcon },
   ...rounds.map((round) => ({ href: `/admin/${round.slug}`, round: round.id, icon: FileTextIcon })),
 ] as const;
 

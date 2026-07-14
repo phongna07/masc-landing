@@ -204,14 +204,14 @@
     "registration": {
       "section": "Đăng ký",
       "title": "Tạo đội thi",
-      "description": "Thành lập đội gồm 2–5 thành viên, bao gồm bạn với vai trò đội trưởng. Thông tin không thể chỉnh sửa sau khi gửi.",
+      "description": "Thành lập đội gồm đúng 3 thành viên, bao gồm bạn với vai trò đội trưởng. Thông tin không thể chỉnh sửa sau khi gửi.",
       "teamSection": "Đội thi",
       "teamDetails": "Thông tin đội thi",
       "captainSection": "Đội trưởng",
       "captainDetails": "Thông tin của bạn",
       "membersSection": "Đội hình",
       "membersTitle": "Thành viên đội",
-      "memberCount": "{count} trên 5 thành viên",
+      "memberCount": "{count} trên 3 thành viên",
       "memberNumber": "Thành viên {number}",
       "submitNote": "Vui lòng kiểm tra kỹ họ tên và địa chỉ email trước khi gửi.",
       "sectionLabel": "Biểu mẫu đăng ký đội thi"
@@ -224,8 +224,6 @@
       "university": "Trường đại học"
     },
     "actions": {
-      "addMember": "Thêm thành viên",
-      "removeMember": "Xóa thành viên {number}",
       "submit": "Gửi đăng ký",
       "submitting": "Đang gửi…",
       "loading": "Đang tải…",
@@ -338,6 +336,7 @@
       "announcements": "Thông báo",
       "users": "Người dùng",
       "teams": "Đội thi",
+      "mail": "Thư",
       "round": "Vòng {round}"
     },
     "overview": {
@@ -397,7 +396,36 @@
       "emptyDescription": "Các đội đã đăng ký sẽ xuất hiện tại đây.",
       "statusUpdating": "Đang cập nhật…",
       "statusUpdateSuccess": "Đã cập nhật trạng thái đăng ký của đội.",
-      "statusUpdateError": "Không thể cập nhật trạng thái đội. Vui lòng thử lại."
+      "statusUpdateError": "Không thể cập nhật trạng thái đội. Vui lòng thử lại.",
+      "mailQueued": "Đã đưa {count} email vào hàng chờ. Hãy kiểm tra tab Thư trước khi gửi.",
+      "openMail": "Mở Thư"
+    },
+    "mail": {
+      "title": "Thư",
+      "description": "Xem trước và gửi thủ công email đang chờ đến thí sinh.",
+      "filterLabel": "Lọc thư theo trạng thái gửi",
+      "filters": { "pending": "Đang chờ", "failed": "Thất bại", "sent": "Đã gửi", "all": "Tất cả" },
+      "status": { "pending": "Đang chờ", "failed": "Thất bại", "sent": "Đã gửi" },
+      "emptyTitle": "Không có thư",
+      "emptyDescription": "Thư có trạng thái này sẽ xuất hiện tại đây.",
+      "send": "Gửi",
+      "retry": "Thử lại",
+      "sending": "Đang gửi…",
+      "sendSuccess": "Đã gửi email thành công.",
+      "sendError": "Không thể gửi email. Chi tiết lỗi đã được lưu.",
+      "actions": "Thao tác thư",
+      "previewFor": "Xem trước email gửi đến {recipient}",
+      "back": "Quay lại danh sách thư",
+      "detailEyebrow": "Email trong hàng chờ",
+      "notFoundTitle": "Không tìm thấy email",
+      "notFoundDescription": "Email này không tồn tại hoặc đã bị xóa.",
+      "attempts": "Số lần gửi",
+      "lastAttempt": "Lần gửi gần nhất",
+      "sentAt": "Đã gửi lúc",
+      "failure": "Lỗi gần nhất",
+      "htmlPreview": "Bản xem trước HTML",
+      "textPreview": "Nội dung văn bản dự phòng",
+      "previewTitle": "Xem trước email gửi đến {recipient}"
     },
     "round": {
       "title": "Vòng {round}",
@@ -440,6 +468,9 @@
       "member": "Thành viên",
       "name": "Họ tên",
       "email": "Email",
+      "recipient": "Người nhận",
+      "from": "Người gửi",
+      "subject": "Tiêu đề",
       "phone": "Điện thoại",
       "university": "Trường",
       "role": "Vai trò",
@@ -460,6 +491,7 @@
       "active": "Hoạt động",
       "banned": "Đã cấm",
       "captain": "Đội trưởng",
+      "memberCount": "{count} / {required}",
       "status": {
         "pending": "Chờ xét duyệt",
         "approved": "Đã duyệt",
@@ -484,6 +516,8 @@
       "round": "Không thể tải bài nộp. Hãy kiểm tra kết nối và thử lại.",
       "roundDetail": "Không thể tải bài nộp này. Hãy kiểm tra kết nối và thử lại.",
       "announcements": "Không thể tải thông báo. Hãy kiểm tra kết nối và thử lại.",
+      "mail": "Không thể tải hàng chờ thư. Hãy kiểm tra kết nối và thử lại.",
+      "mailDetail": "Không thể tải email này. Hãy kiểm tra kết nối và thử lại.",
       "preview": "Không thể tạo bản xem trước. Vui lòng thử lại.",
       "download": "Không thể tạo liên kết tải xuống. Vui lòng thử lại."
     }

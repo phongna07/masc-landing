@@ -1,5 +1,6 @@
 "use client";
 
+import { TEAM_SIZE } from "@masc-landing/api/registration";
 import { Card, CardContent } from "@masc-landing/ui/components/card";
 import { useQuery } from "@tanstack/react-query";
 import { ChevronRightIcon } from "lucide-react";
@@ -27,7 +28,7 @@ export default function AdminTeamsPage() {
           <tbody>{teams.data.map((team) => <tr key={team.id}>
             <td><Link className="admin-row-link" href={`/admin/teams/${team.id}`}><strong>{team.name}</strong></Link></td>
             <td><strong>{team.captainName}</strong><span>{team.captainEmail}</span></td>
-            <td>{team.memberCount}</td>
+            <td>{t("values.memberCount", { count: team.memberCount, required: TEAM_SIZE })}</td>
             <td><span className={`status-badge status-${team.status}`}>{t(`values.status.${team.status}`)}</span></td>
             <td>{formatDate(team.createdAt, locale)}</td>
             <td><Link className="admin-view-link" href={`/admin/teams/${team.id}`} aria-label={t("actions.viewTeam", { name: team.name })}><ChevronRightIcon aria-hidden="true" /></Link></td>

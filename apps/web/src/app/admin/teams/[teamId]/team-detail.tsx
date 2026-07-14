@@ -1,11 +1,13 @@
 "use client";
 
+import { TEAM_SIZE } from "@masc-landing/api/registration";
 import { Button } from "@masc-landing/ui/components/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@masc-landing/ui/components/card";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { ArrowLeftIcon } from "lucide-react";
 import Link from "next/link";
 import { useLocale, useTranslations } from "next-intl";
+import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
 import { trpc } from "@/utils/trpc";
@@ -15,14 +17,21 @@ export default function TeamDetail({ teamId }: { teamId: string }) {
   const t = useTranslations("Admin");
   const locale = useLocale();
   const queryClient = useQueryClient();
+  const router = useRouter();
   const team = useQuery(trpc.admin.getTeam.queryOptions({ teamId }));
   const updateStatus = useMutation(trpc.admin.updateTeamStatus.mutationOptions({
-    onSuccess: async () => {
+    onSuccess: async (result) => {
       await Promise.all([
         queryClient.invalidateQueries({ queryKey: trpc.admin.getTeam.queryKey({ teamId }) }),
         queryClient.invalidateQueries({ queryKey: trpc.admin.listTeams.queryKey() }),
       ]);
-      toast.success(t("teams.statusUpdateSuccess"));
+      if (result.queuedMailCount > 0) {
+        toast.success(t("teams.mailQueued", { count: result.queuedMailCount }), {
+          action: { label: t("teams.openMail"), onClick: () => router.push("/admin/mail") },
+        });
+      } else {
+        toast.success(t("teams.statusUpdateSuccess"));
+      }
     },
     onError: () => toast.error(t("teams.statusUpdateError")),
   }));
@@ -42,7 +51,7 @@ export default function TeamDetail({ teamId }: { teamId: string }) {
     <div className="admin-detail-grid">
       <Card className="dashboard-card"><CardHeader><CardTitle>{t("detail.registration")}</CardTitle></CardHeader><CardContent className="detail-list">
         <Detail label={t("fields.created")} value={formatDate(team.data.createdAt, locale)} />
-        <Detail label={t("fields.members")} value={String(team.data.members.length)} />
+        <Detail label={t("fields.members")} value={t("values.memberCount", { count: team.data.members.length, required: TEAM_SIZE })} />
         <div className="admin-status-editor">
           <label htmlFor="team-registration-status">{t("fields.status")}</label>
           <div>

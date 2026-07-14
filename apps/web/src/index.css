@@ -1128,6 +1128,96 @@ button {
   display: none;
 }
 
+.mail-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 18px;
+}
+
+.admin-mail-table {
+  min-width: 980px;
+}
+
+.mail-row-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.mail-status {
+  display: inline-flex !important;
+  width: fit-content;
+  padding: 6px 9px;
+  border: 1px solid var(--line);
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+}
+
+.mail-status-pending {
+  color: #f2d584;
+  border-color: rgba(242, 213, 132, .32);
+}
+
+.mail-status-sent {
+  color: #bde7ad;
+  border-color: rgba(137, 210, 110, .3);
+}
+
+.mail-status-failed {
+  color: #ff9189;
+  border-color: rgba(255, 107, 98, .35);
+}
+
+.mail-detail-heading>div>span {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.mail-metadata,
+.mail-preview-card,
+.mail-text-card {
+  margin-bottom: 18px;
+  border-color: rgba(255, 255, 255, .14);
+  background: rgba(17, 16, 20, .76);
+}
+
+.mail-metadata .detail-list {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  column-gap: 32px;
+}
+
+.mail-metadata dd {
+  overflow-wrap: anywhere;
+}
+
+.mail-preview-card [data-slot="card-title"],
+.mail-text-card [data-slot="card-title"] {
+  font-family: var(--font-castela), Georgia, serif;
+  font-size: 28px;
+  font-weight: 400;
+}
+
+.mail-preview-card iframe {
+  width: 100%;
+  min-height: 720px;
+  border: 0;
+  background: #f9f9f9;
+}
+
+.mail-text-card pre {
+  margin: 0;
+  overflow-x: auto;
+  color: rgba(244, 240, 232, .82);
+  font: inherit;
+  font-size: 12px;
+  line-height: 1.7;
+  white-space: pre-wrap;
+}
+
 .announcement-composer {
   margin-bottom: 24px;
   border-color: rgba(210, 166, 108, .25);
@@ -1285,6 +1375,10 @@ button {
 
   .admin-feedback-actions {
     flex-wrap: wrap;
+  }
+
+  .mail-metadata .detail-list {
+    grid-template-columns: 1fr;
   }
 }
 

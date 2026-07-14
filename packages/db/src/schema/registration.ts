@@ -3,6 +3,7 @@ import {
   bigint,
   boolean,
   index,
+  integer,
   pgEnum,
   pgTable,
   text,
@@ -28,6 +29,7 @@ export const teams = pgTable(
     registrationStatus: registrationStatus("registration_status")
       .default("pending")
       .notNull(),
+    approvalSequence: integer("approval_sequence").default(0).notNull(),
     createdAt: timestamp("created_at").defaultNow().notNull(),
     captainId: text("captain_id")
       .notNull()

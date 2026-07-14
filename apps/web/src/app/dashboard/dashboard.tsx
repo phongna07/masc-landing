@@ -2,6 +2,7 @@
 
 import type { AppRouter } from "@masc-landing/api/routers/index";
 import { roundIds, type RoundId } from "@masc-landing/api/rounds";
+import { TEAM_SIZE, TEAMMATE_COUNT } from "@masc-landing/api/registration";
 import { Button } from "@masc-landing/ui/components/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@masc-landing/ui/components/card";
 import { Input } from "@masc-landing/ui/components/input";
@@ -9,7 +10,7 @@ import { Label } from "@masc-landing/ui/components/label";
 import { Skeleton } from "@masc-landing/ui/components/skeleton";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import type { inferRouterOutputs } from "@trpc/server";
-import { MegaphoneIcon, PlusIcon, RefreshCwIcon, Trash2Icon } from "lucide-react";
+import { MegaphoneIcon, RefreshCwIcon } from "lucide-react";
 import Link from "next/link";
 import { useFormatter, useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
@@ -159,7 +160,9 @@ function RegistrationForm({ session }: { session: Session }) {
   const [teamName, setTeamName] = useState("");
   const [captainPhone, setCaptainPhone] = useState("");
   const [captainUniversityName, setCaptainUniversityName] = useState("");
-  const [teammates, setTeammates] = useState<Teammate[]>([emptyTeammate("member-1")]);
+  const [teammates, setTeammates] = useState<Teammate[]>(
+    Array.from({ length: TEAMMATE_COUNT }, (_, index) => emptyTeammate(`member-${index + 1}`)),
+  );
   const [errors, setErrors] = useState<FormErrors>({});
 
   const createTeam = useMutation(
@@ -279,27 +282,14 @@ function RegistrationForm({ session }: { session: Session }) {
           <div>
             <p className="dashboard-card-index">04 / {t("registration.membersSection")}</p>
             <CardTitle>{t("registration.membersTitle")}</CardTitle>
-            <p>{t("registration.memberCount", { count: teammates.length + 1 })}</p>
+            <p>{t("registration.memberCount", { count: TEAM_SIZE })}</p>
           </div>
-          <Button
-            type="button"
-            variant="outline"
-            disabled={teammates.length >= 4}
-            onClick={() => setTeammates((current) => [...current, emptyTeammate(`member-${Date.now()}`)])}
-          >
-            <PlusIcon aria-hidden="true" /> {t("actions.addMember")}
-          </Button>
         </CardHeader>
         <CardContent className="teammate-list">
           {teammates.map((member, index) => (
             <section className="teammate-card" key={member.id} aria-labelledby={`${member.id}-title`}>
               <div className="teammate-heading">
                 <h3 id={`${member.id}-title`}>{t("registration.memberNumber", { number: index + 2 })}</h3>
-                {teammates.length > 1 && (
-                  <Button type="button" variant="ghost" size="icon" aria-label={t("actions.removeMember", { number: index + 2 })} onClick={() => setTeammates((current) => current.filter((item) => item.id !== member.id))}>
-                    <Trash2Icon aria-hidden="true" />
-                  </Button>
-                )}
               </div>
               <div className="dashboard-fields">
                 <Field label={t("fields.fullName")} error={errors[`teammates.${index}.fullName`]}>

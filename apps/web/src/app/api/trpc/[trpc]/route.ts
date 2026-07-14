@@ -3,6 +3,8 @@ import { appRouter } from "@masc-landing/api/routers/index";
 import { fetchRequestHandler } from "@trpc/server/adapters/fetch";
 import { NextRequest } from "next/server";
 
+export const runtime = "nodejs";
+
 function handler(req: NextRequest) {
   return fetchRequestHandler({
     endpoint: "/api/trpc",
