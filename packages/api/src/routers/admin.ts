@@ -1,3 +1,4 @@
+import { SendEmailCommand, SESClient } from "@aws-sdk/client-ses";
 import { GetObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { auth } from "@masc-landing/auth";
@@ -6,7 +7,6 @@ import { emailQueue, members, roundSubmissions, submissionSettings, teams, user 
 import { env } from "@masc-landing/env/server";
 import { TRPCError } from "@trpc/server";
 import { and, asc, count, desc, eq, sql } from "drizzle-orm";
-import nodemailer from "nodemailer";
 import { z } from "zod";
 
 import {
@@ -30,13 +30,15 @@ const mailSender = `Ban Tổ chức MASC <${env.MAIL_USERNAME}>`;
 
 const s3 = new S3Client({ region: "auto", endpoint: `https://${env.R2_ACCOUNT_ID}.r2.cloudflarestorage.com`,
   credentials: { accessKeyId: env.R2_ACCESS_KEY_ID, secretAccessKey: env.R2_SECRET_ACCESS_KEY } });
-const mailTransport = nodemailer.createTransport({
-  host: env.MAIL_SERVER_URL,
-  port: env.MAIL_SERVER_PORT,
-  secure: env.MAIL_SERVER_PORT === 465,
-  requireTLS: env.MAIL_SERVER_PORT === 587,
-  auth: { user: env.MAIL_USERNAME, pass: env.MAIL_PASSWORD },
-});
+const ses = new SESClient({ region: env.AWS_REGION, credentials: {
+  accessKeyId: env.AWS_ACCESS_KEY_ID, secretAccessKey: env.AWS_SECRET_ACCESS_KEY,
+} });
+
+function encodeSesAddress(address: string) {
+  const match = address.match(/^\s*(.*?)\s*<([^<>]+)>\s*$/);
+  if (!match || /^[\x00-\x7F]*$/.test(match[1]!)) return address;
+  return `=?UTF-8?B?${Buffer.from(match[1]!).toString("base64")}?= <${match[2]}>`;
+}
 
 function identifiedSubmission(input: z.infer<typeof submissionInput>) {
   return and(eq(roundSubmissions.id, input.submissionId), eq(roundSubmissions.round, input.round));
@@ -163,10 +165,14 @@ export const adminRouter = router({
 
     const attemptedAt = new Date();
     try {
-      await mailTransport.sendMail({ from: mail.fromAddress, to: mail.toAddress, subject: mail.subject,
-        text: mail.text, html: mail.html });
+      await ses.send(new SendEmailCommand({ Source: encodeSesAddress(mail.fromAddress),
+        Destination: { ToAddresses: [mail.toAddress] }, Message: {
+          Subject: { Data: mail.subject, Charset: "UTF-8" }, Body: {
+            Text: { Data: mail.text, Charset: "UTF-8" }, Html: { Data: mail.html, Charset: "UTF-8" },
+          },
+        } }));
     } catch (error) {
-      const message = error instanceof Error ? error.message.slice(0, 2000) : "Unknown SMTP error";
+      const message = error instanceof Error ? error.message.slice(0, 2000) : "Unknown SES error";
       await db.update(emailQueue).set({ status: "failed", lastAttemptedAt: attemptedAt, errorMessage: message,
         updatedAt: new Date(), attemptCount: sql`${emailQueue.attemptCount} + 1` })
         .where(eq(emailQueue.id, mail.id));
