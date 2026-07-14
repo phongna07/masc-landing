@@ -48,7 +48,7 @@ export default function Dashboard({ session }: { session: Session }) {
           <span className="brand-copy">
             Marketing All-Star Challenge
             <br />
-            <small>HYPERNOVA &apos;26</small>
+            <small>HYPERNOVA</small>
           </span>
         </Link>
         <div className="dashboard-nav-actions">

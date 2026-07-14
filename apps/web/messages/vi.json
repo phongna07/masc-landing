@@ -44,7 +44,7 @@
       "seconds": "Giây"
     },
     "about": {
-      "index": "01 / Cuộc thi",
+      "index": "Cuộc thi",
       "title": "Kiến tạo di sản từ sự <em>bứt phá</em>",
       "lead": "Marketing All-Star Challenge (MASC) là cuộc thi Marketing độc quyền quy mô toàn quốc do Câu lạc bộ Kotler Klub — VinUni House of Marketers tổ chức.",
       "description": "Chủ đề <strong>Hypernova</strong> khơi nguồn từ hiện tượng siêu tân tinh — biểu tượng nguyên bản của sự tái sinh và đổi mới mang tính đột phá. Đây là nơi những cá nhân xuất sắc bứt phá giới hạn để kiến tạo nên một di sản hoàn toàn mới.",
@@ -54,7 +54,7 @@
       "caption": "Không dừng lại ở những hào quang đã có. MASC 2026 là đấu trường cho những marketer sẵn sàng bứt phá đỉnh cao và kiến tạo tương lai."
     },
     "prizes": {
-      "index": "02 / Giải thưởng",
+      "index": "Giải thưởng",
       "overline": "Dành cho những đội thi tỏa sáng vượt trội",
       "title": "Bứt phá đỉnh cao, nhận <em>giải thưởng xứng tầm.</em>",
       "poolLabel": "Tổng giá trị giải thưởng dự kiến",
@@ -72,7 +72,7 @@
       "impactDescription": "Tôn vinh chiến dịch tạo ra tác động tích cực mạnh mẽ nhất cho xã hội và cộng đồng."
     },
     "eligibility": {
-      "index": "03 / Đối tượng dự thi",
+      "index": "Đối tượng dự thi",
       "title": "Đấu trường dành cho <em>tài năng Marketing</em>",
       "description": "Dành cho các bạn trẻ từ 18 đến 22 tuổi đang sinh sống và học tập tại Việt Nam, có niềm yêu thích và định hướng phát triển sự nghiệp Marketing.",
       "achieverTitle": "Thành tích cuộc thi uy tín",
@@ -83,7 +83,7 @@
       "marketerDescription": "Đã lọt vào vòng trong các chương trình Management Trainee / Key Talent của tập đoàn lớn, hoặc Top 50 Vòng 0.5 MASC'26."
     },
     "journey": {
-      "index": "04 / Lộ trình cuộc thi",
+      "index": "Lộ trình cuộc thi",
       "title": "Hành trình đến <em>Hypernova</em>",
       "description": "Khám phá lộ trình chi tiết các vòng thi của Marketing All-Star Challenge 2026.",
       "timelineLabel": "Lộ trình cuộc thi",
@@ -123,7 +123,7 @@
       }
     },
     "criteria": {
-      "index": "05 / Tiêu chí đánh giá",
+      "index": "Tiêu chí đánh giá",
       "title": "Tiêu chí đánh giá từ <em>Ban Giám Khảo</em>",
       "round1": "Vòng 1 — The Star Gathering",
       "round1Title": "Tư duy chuyên môn sâu theo Track",
@@ -136,7 +136,7 @@
       "finaleDescription": "Bảo vệ chiến dịch thực chiến đã triển khai trên thị trường, sau đó Top 2 giải quyết Mini Case dưới áp lực thời gian thực ngay trên sân khấu."
     },
     "mentors": {
-      "index": "06 / Mentor",
+      "index": "Mentor",
       "title": "Đồng hành cùng các <em>chuyên gia đầu ngành</em>",
       "description": "Gặp gỡ các chuyên gia đầu ngành đến từ các thương hiệu, agency, tập đoàn hàng đầu, mang kinh nghiệm thực chiến trực tiếp đến thí sinh.",
       "featuredLabel": "Các mentor nổi bật",
@@ -165,7 +165,7 @@
       }
     },
     "finalCta": {
-      "index": "Quán quân / Á quân / Quý quân",
+      "index": "Sẵn sàng bứt phá",
       "title": "Bứt phá giới hạn,<break></break>trở thành <em>Hypernova</em>",
       "description": "Đơn đăng ký mở từ ngày 10–23 tháng 7 dành cho các tài năng marketing tham vọng từ 18–22 tuổi trên toàn quốc.",
       "button": "Đăng ký ngay"
@@ -173,7 +173,7 @@
     "footer": {
       "brand": "Marketing All-Star<break></break>Challenge 2026",
       "support": "Câu hỏi & hỗ trợ",
-      "facebook": "Facebook chính thức",
+      "facebook": "Facebook",
       "leads": "Ban tổ chức",
       "lead1": "Lê Đức Anh — Đồng Trưởng ban tổ chức",
       "lead2": "Nguyễn Mai Ngọc Nhi — Đồng Trưởng ban tổ chức",
@@ -404,8 +404,17 @@
       "title": "Thư",
       "description": "Xem trước và gửi thủ công email đang chờ đến thí sinh.",
       "filterLabel": "Lọc thư theo trạng thái gửi",
-      "filters": { "pending": "Đang chờ", "failed": "Thất bại", "sent": "Đã gửi", "all": "Tất cả" },
-      "status": { "pending": "Đang chờ", "failed": "Thất bại", "sent": "Đã gửi" },
+      "filters": {
+        "pending": "Đang chờ",
+        "failed": "Thất bại",
+        "sent": "Đã gửi",
+        "all": "Tất cả"
+      },
+      "status": {
+        "pending": "Đang chờ",
+        "failed": "Thất bại",
+        "sent": "Đã gửi"
+      },
       "emptyTitle": "Không có thư",
       "emptyDescription": "Thư có trạng thái này sẽ xuất hiện tại đây.",
       "send": "Gửi",

@@ -24,7 +24,7 @@ export default function SiteHeader({ landingPage = false }: SiteHeaderProps) {
         <span className="brand-copy">
           Marketing All-Star Challenge
           <br />
-          <small>HYPERNOVA &apos;26</small>
+          <small>HYPERNOVA</small>
         </span>
       </a>
       <nav aria-label={t("navigationLabel")}>
@@ -39,9 +39,6 @@ export default function SiteHeader({ landingPage = false }: SiteHeaderProps) {
           </Link>
         )}
         <LanguageSwitcher />
-        <span className="header-cta is-disabled" aria-label={t("ticketsLabel")}>
-          {t("tickets")}
-        </span>
       </div>
     </header>
   );

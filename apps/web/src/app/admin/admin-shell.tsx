@@ -31,7 +31,7 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
       <header className="dashboard-navbar admin-navbar">
         <Link className="brand" href="/" aria-label={t("nav.homeLabel")}>
           <BrandLogo className="brand-logo" />
-          <span className="brand-copy">Marketing All-Star Challenge<br /><small>HYPERNOVA &apos;26</small></span>
+          <span className="brand-copy">Marketing All-Star Challenge<br /><small>HYPERNOVA</small></span>
         </Link>
         <div className="dashboard-nav-actions">
           <LanguageSwitcher />

@@ -410,13 +410,13 @@ export default function Home() {
             </div>
 
             <div className="feature-list">
-              <Feature number="01" title={t("eligibility.achieverTitle")} symbol="✦">
+              <Feature number="01" title={t("eligibility.achieverTitle")}>
                 {t("eligibility.achieverDescription")}
               </Feature>
-              <Feature number="02" title={t("eligibility.leaderTitle")} symbol="↗">
+              <Feature number="02" title={t("eligibility.leaderTitle")}>
                 {t("eligibility.leaderDescription")}
               </Feature>
-              <Feature number="03" title={t("eligibility.marketerTitle")} symbol="∞">
+              <Feature number="03" title={t("eligibility.marketerTitle")}>
                 {t("eligibility.marketerDescription")}
               </Feature>
             </div>
@@ -638,12 +638,10 @@ function TimeUnit({ value, label }: { value: number; label: string }) {
 function Feature({
   number,
   title,
-  symbol,
   children,
 }: {
   number: string;
   title: string;
-  symbol: string;
   children: React.ReactNode;
 }) {
   return (
@@ -653,7 +651,6 @@ function Feature({
         <h3>{title}</h3>
         <p>{children}</p>
       </div>
-      <span className="feature-symbol" aria-hidden="true">{symbol}</span>
     </article>
   );
 }

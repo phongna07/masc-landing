@@ -1932,6 +1932,10 @@ img {
   border-radius: 99px;
 }
 
+.landing-page main {
+  counter-reset: section;
+}
+
 .hero-title,
 .section-heading h2,
 .why-heading h2,
@@ -2000,7 +2004,7 @@ img {
   align-items: center;
   justify-content: center;
   gap: 10px;
-  padding: 17px 19px;
+  padding: 17px 6px 17px 19px;
   border-radius: 99px;
   color: #09090c;
   background: var(--ink);
@@ -2167,6 +2171,11 @@ img {
 
 .section-index {
   color: #8d8992;
+}
+
+.section-index::before {
+  counter-increment: section;
+  content: counter(section, decimal-leading-zero) " / ";
 }
 
 .section-heading h2,
@@ -2659,6 +2668,18 @@ img {
       rgba(255, 154, 82, 0.85));
 }
 
+.timeline::after {
+  content: "";
+  border-bottom: 2px solid #ff9a52d9;
+  border-right: 2px solid #ff9a52d9;
+  width: 12px;
+  height: 12px;
+  position: absolute;
+  bottom: 32px;
+  left: 25px;
+  transform: rotate(45deg);
+}
+
 .timeline-item {
   position: relative;
   display: grid;
@@ -2680,7 +2701,12 @@ img {
   background: #08080b;
 }
 
-.timeline-marker span,
+.timeline-marker span {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 14px;
+  letter-spacing: 0.12em;
+}
+
 .timeline-date {
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
   font-size: 10px;

@@ -44,7 +44,7 @@
       "seconds": "Seconds"
     },
     "about": {
-      "index": "01 / The competition",
+      "index": "The competition",
       "title": "A new legacy forged through <em>breakthrough</em>",
       "lead": "Marketing All-Star Challenge (MASC) is an exclusive national marketing competition hosted by Kotler Klub — VinUni House of Marketers.",
       "description": "Inspired by the hypernova phenomenon, this year's <strong>Hypernova</strong> theme symbolizes rebirth and breakthrough innovation. It is where top talent pushes past existing limits to create a completely new legacy.",
@@ -54,7 +54,7 @@
       "caption": "Not resting on past laurels. MASC 2026 is the arena for marketers ready to push their boundaries and shape the future."
     },
     "prizes": {
-      "index": "02 / Prizes & awards",
+      "index": "Prizes & awards",
       "overline": "For the teams that outshine the rest",
       "title": "Breakthrough effort deserves a <em>stellar reward.</em>",
       "poolLabel": "Estimated total prize pool",
@@ -72,7 +72,7 @@
       "impactDescription": "Celebrating the campaign that creates the strongest positive impact for society and the community."
     },
     "eligibility": {
-      "index": "03 / Who can enter",
+      "index": "Who can enter",
       "title": "The arena for top <em>marketing talent</em>",
       "description": "Open to young adults aged 18–22 living and studying in Vietnam who are passionate about marketing and aspiring to pursue a marketing career.",
       "achieverTitle": "Competition Achievers",
@@ -83,7 +83,7 @@
       "marketerDescription": "Finalists/advanced candidates in corporate Management Trainee or Key Talent programs, or Top 50 in MASC'26 Round 0.5."
     },
     "journey": {
-      "index": "04 / Competition timeline",
+      "index": "Competition timeline",
       "title": "The Journey to <em>Hypernova</em>",
       "description": "Explore the comprehensive stages and rounds of Marketing All-Star Challenge 2026.",
       "timelineLabel": "Competition timeline",
@@ -123,7 +123,7 @@
       }
     },
     "criteria": {
-      "index": "05 / Evaluation Criteria",
+      "index": "Evaluation Criteria",
       "title": "What the judges will <em>look for</em>",
       "round1": "Round 1 — The Star Gathering",
       "round1Title": "Specialized track depth",
@@ -136,7 +136,7 @@
       "finaleDescription": "Defend live executed campaign results before the judges, then Top 2 solve an unseen Mini Case live on stage under real-time pressure."
     },
     "mentors": {
-      "index": "06 / Mentors",
+      "index": "Mentors",
       "title": "Guided by leading <em>industry experts</em>",
       "description": "Meet distinguished leaders and experts from top brands, agencies, and corporations bringing real-world expertise directly to this year's contestants.",
       "featuredLabel": "Featured mentors",
@@ -165,7 +165,7 @@
       }
     },
     "finalCta": {
-      "index": "Champion / Runner-up / Second Runner-up",
+      "index": "Ready to rise",
       "title": "Push your boundaries,<break></break>become a <em>Hypernova</em>",
       "description": "Applications are open July 10–23 for ambitious marketing talent aged 18–22 nationwide.",
       "button": "Apply now"
@@ -173,7 +173,7 @@
     "footer": {
       "brand": "Marketing All-Star<break></break>Challenge 2026",
       "support": "Questions & support",
-      "facebook": "Official Facebook",
+      "facebook": "Facebook",
       "leads": "Organizing leads",
       "lead1": "Lê Đức Anh — Co-Head",
       "lead2": "Nguyễn Mai Ngọc Nhi — Co-Head",
@@ -404,8 +404,17 @@
       "title": "Mail",
       "description": "Preview and manually deliver queued participant emails.",
       "filterLabel": "Filter mail by delivery status",
-      "filters": { "pending": "Pending", "failed": "Failed", "sent": "Sent", "all": "All" },
-      "status": { "pending": "Pending", "failed": "Failed", "sent": "Sent" },
+      "filters": {
+        "pending": "Pending",
+        "failed": "Failed",
+        "sent": "Sent",
+        "all": "All"
+      },
+      "status": {
+        "pending": "Pending",
+        "failed": "Failed",
+        "sent": "Sent"
+      },
       "emptyTitle": "No mail found",
       "emptyDescription": "Mail matching this status will appear here.",
       "send": "Send",
