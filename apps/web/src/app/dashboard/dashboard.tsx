@@ -143,7 +143,7 @@ function Announcements() {
   if (announcements.data.length === 0) return <Card className="announcement-empty"><MegaphoneIcon aria-hidden="true" /><h2>{t("announcements.emptyTitle")}</h2><p>{t("announcements.emptyDescription")}</p></Card>;
 
   return <div className="announcement-feed">{announcements.data.map((announcement) => <Card className="announcement-post" key={announcement.id}>
-    <CardHeader className="announcement-post-header"><div className="announcement-avatar"><MegaphoneIcon aria-hidden="true" /></div><div><CardTitle>{t("announcements.organizer")}</CardTitle><time dateTime={new Date(announcement.createdAt).toISOString()}>{format.dateTime(new Date(announcement.createdAt), { dateStyle: "medium", timeStyle: "short" })}</time></div></CardHeader>
+    <CardHeader className="announcement-post-header"><div className="announcement-avatar"><BrandLogo /></div><div><CardTitle>{t("announcements.organizer")}</CardTitle><time dateTime={new Date(announcement.createdAt).toISOString()}>{format.dateTime(new Date(announcement.createdAt), { dateStyle: "medium", timeStyle: "short" })}</time></div></CardHeader>
     <CardContent><p className="announcement-content">{announcement.content}</p>{announcement.imageUrl && <img className="announcement-image" src={announcement.imageUrl} alt="" />}</CardContent>
   </Card>)}</div>;
 }

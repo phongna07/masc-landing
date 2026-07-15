@@ -11,6 +11,7 @@ import { useLocale, useTranslations } from "next-intl";
 import { useEffect, useState, type FormEvent } from "react";
 import { toast } from "sonner";
 
+import { BrandLogo } from "@/components/hero-brand-logo";
 import { queryClient, trpc } from "@/utils/trpc";
 import { AdminError, AdminHeading, AdminLoading } from "../admin-state";
 
@@ -111,7 +112,7 @@ export default function AdminAnnouncementsPage() {
 
 function AnnouncementCard({ item, locale, organizer, deleteLabel, deleting, onDelete }: { item: { id: string; content: string; imageUrl: string | null; createdAt: string }; locale: string; organizer: string; deleteLabel: string; deleting: boolean; onDelete: () => void }) {
   return <Card className="announcement-post">
-    <CardHeader className="announcement-post-header"><div className="announcement-avatar"><MegaphoneIcon aria-hidden="true" /></div><div><CardTitle>{organizer}</CardTitle><time dateTime={new Date(item.createdAt).toISOString()}>{new Intl.DateTimeFormat(locale, { dateStyle: "medium", timeStyle: "short" }).format(new Date(item.createdAt))}</time></div><Button type="button" variant="ghost" size="icon" disabled={deleting} onClick={onDelete} aria-label={deleteLabel}><Trash2Icon aria-hidden="true" /></Button></CardHeader>
+    <CardHeader className="announcement-post-header"><div className="announcement-avatar"><BrandLogo /></div><div><CardTitle>{organizer}</CardTitle><time dateTime={new Date(item.createdAt).toISOString()}>{new Intl.DateTimeFormat(locale, { dateStyle: "medium", timeStyle: "short" }).format(new Date(item.createdAt))}</time></div><Button type="button" variant="ghost" size="icon" disabled={deleting} onClick={onDelete} aria-label={deleteLabel}><Trash2Icon aria-hidden="true" /></Button></CardHeader>
     <CardContent><p className="announcement-content">{item.content}</p>{item.imageUrl && <img className="announcement-image" src={item.imageUrl} alt="" />}</CardContent>
   </Card>;
 }

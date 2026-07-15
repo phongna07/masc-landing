@@ -302,7 +302,7 @@
       "description": "Thông tin nộp bài cho vòng này sẽ được cập nhật sau."
     },
     "announcements": {
-      "organizer": "Ban tổ chức MASC",
+      "organizer": "Ban tổ chức Marketing All-Star Challenge",
       "emptyTitle": "Chưa có thông báo",
       "emptyDescription": "Các cập nhật từ ban tổ chức sẽ xuất hiện tại đây.",
       "errors": {
@@ -365,7 +365,7 @@
       "imageHint": "JPG, PNG hoặc WebP không bắt buộc — tối đa 10 MB.",
       "publish": "Đăng thông báo",
       "publishing": "Đang đăng…",
-      "organizer": "Ban tổ chức MASC",
+      "organizer": "Ban tổ chức Marketing All-Star Challenge",
       "delete": "Xóa thông báo",
       "deleteConfirm": "Xóa thông báo này? Thao tác này không thể hoàn tác.",
       "emptyTitle": "Chưa có thông báo",

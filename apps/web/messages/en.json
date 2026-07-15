@@ -302,7 +302,7 @@
       "description": "Submission details for this round will be available here later."
     },
     "announcements": {
-      "organizer": "MASC organizers",
+      "organizer": "Marketing All-Star Challenge organizers",
       "emptyTitle": "No announcements yet",
       "emptyDescription": "Updates from the organizers will appear here.",
       "errors": {
@@ -365,7 +365,7 @@
       "imageHint": "Optional JPG, PNG, or WebP — maximum 10 MB.",
       "publish": "Publish announcement",
       "publishing": "Publishing…",
-      "organizer": "MASC organizers",
+      "organizer": "Marketing All-Star Challenge organizers",
       "delete": "Delete announcement",
       "deleteConfirm": "Delete this announcement? This cannot be undone.",
       "emptyTitle": "No announcements yet",

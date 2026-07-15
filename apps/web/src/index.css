@@ -715,7 +715,8 @@ button {
 }
 
 .announcement-avatar svg {
-  width: 20px;
+  width: 26px;
+  height: 26px;
 }
 
 .announcement-post-header [data-slot="card-title"] {
