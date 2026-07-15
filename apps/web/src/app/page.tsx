@@ -17,13 +17,14 @@ import mentor3 from "@/assets/mentor-3.png";
 import mentor4 from "@/assets/mentor-4.png";
 import { BrandLogo, HeroBrandLogo } from "@/components/hero-brand-logo";
 import SiteHeader from "@/components/site-header";
-
-const registrationLink =
-  "/login";
+import { authClient } from "@/lib/auth-client";
 
 export default function Home() {
   const t = useTranslations("Home");
   const pageRef = useRef<HTMLDivElement>(null);
+  const { data: session, isPending } = authClient.useSession();
+  const isSignedIn = !isPending && Boolean(session?.user);
+  const registrationLink = isSignedIn ? "/dashboard" : "/login";
   const rounds = [
     { marker: "0.5", key: "round05" },
     { marker: "01", key: "round1" },
@@ -278,7 +279,7 @@ export default function Home() {
               <div className="hero-bottom reveal">
                 <p>{t("hero.description")}</p>
                 <Link className="primary-button" href={registrationLink}>
-                  <span>{t("hero.apply")}</span>
+                  <span>{isSignedIn ? t("hero.portal") : t("hero.apply")}</span>
                   <span aria-hidden="true">↗</span>
                 </Link>
               </div>
@@ -535,7 +536,7 @@ export default function Home() {
             </h2>
             <p>{t("finalCta.description")}</p>
             <Link className="primary-button light" href={registrationLink}>
-              <span>{t("finalCta.button")}</span>
+              <span>{isSignedIn ? t("finalCta.portal") : t("finalCta.button")}</span>
               <span aria-hidden="true">↗</span>
             </Link>
           </div>

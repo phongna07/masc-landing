@@ -26,6 +26,7 @@
       "titleChallenge": "Challenge",
       "description": "Bứt phá giới hạn của chính mình và kiến tạo nên một di sản hoàn toàn mới trong marketing.",
       "apply": "Đăng ký ngay",
+      "portal": "Cổng thông tin",
       "participantDetails": "Thông tin thí sinh",
       "country": "Việt Nam",
       "age": "Độ tuổi 18—22",
@@ -168,7 +169,8 @@
       "index": "Sẵn sàng bứt phá",
       "title": "Bứt phá giới hạn,<break></break>trở thành <em>Hypernova</em>",
       "description": "Đơn đăng ký mở từ ngày 10–23 tháng 7 dành cho các tài năng marketing tham vọng từ 18–22 tuổi trên toàn quốc.",
-      "button": "Đăng ký ngay"
+      "button": "Đăng ký ngay",
+      "portal": "Cổng thông tin"
     },
     "footer": {
       "brand": "Marketing All-Star<break></break>Challenge 2026",

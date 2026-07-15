@@ -26,6 +26,7 @@
       "titleChallenge": "Challenge",
       "description": "Push past your personal limits and create a completely new legacy in marketing.",
       "apply": "Apply now",
+      "portal": "Open Dashboard",
       "participantDetails": "Participant details",
       "country": "Vietnam",
       "age": "Ages 18—22",
@@ -168,7 +169,8 @@
       "index": "Ready to rise",
       "title": "Push your boundaries,<break></break>become a <em>Hypernova</em>",
       "description": "Applications are open July 10–23 for ambitious marketing talent aged 18–22 nationwide.",
-      "button": "Apply now"
+      "button": "Apply now",
+      "portal": "Open Dashboard"
     },
     "footer": {
       "brand": "Marketing All-Star<break></break>Challenge 2026",
