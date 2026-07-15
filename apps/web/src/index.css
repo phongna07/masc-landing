@@ -2365,6 +2365,8 @@ img {
 
 .portal {
   position: relative;
+  max-width: 1160px;
+  margin-inline: auto;
   height: min(54vw, 600px);
   min-height: 380px;
   overflow: hidden;
