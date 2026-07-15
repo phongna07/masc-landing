@@ -58,11 +58,13 @@ export default function Dashboard({ session }: { session: Session }) {
       </header>
 
       <main className="dashboard-main">
-        <div className="dashboard-heading">
-          <p className="dashboard-eyebrow">{t("eyebrow")}</p>
-          <h1>{t("title")}</h1>
-          <p>{t("welcome", { name: session.user.name })}</p>
-        </div>
+        {membership.data?.registered && (
+          <div className="dashboard-heading">
+            <p className="dashboard-eyebrow">{t("eyebrow")}</p>
+            <h1>{t("title")}</h1>
+            <p>{t("welcome", { name: session.user.name })}</p>
+          </div>
+        )}
 
         {membership.isPending ? (
           <DashboardSkeleton />

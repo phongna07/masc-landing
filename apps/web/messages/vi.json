@@ -195,7 +195,7 @@
     }
   },
   "Dashboard": {
-    "eyebrow": "Đăng ký cuộc thi",
+    "eyebrow": "Cổng thông tin cuộc thi",
     "title": "Dashboard",
     "welcome": "Chào mừng {name}",
     "nav": {
