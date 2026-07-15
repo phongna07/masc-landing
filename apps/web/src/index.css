@@ -151,9 +151,12 @@ button {
   scrollbar-width: thin;
 }
 
-.dashboard-tabs button {
+.dashboard-tabs [role="tab"] {
   position: relative;
+  display: flex;
   flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
   min-width: 132px;
   padding: 15px 20px;
   border: 0;
@@ -162,10 +165,11 @@ button {
   font-size: 12px;
   font-weight: 700;
   letter-spacing: 0.13em;
+  text-decoration: none;
   text-transform: uppercase;
 }
 
-.dashboard-tabs button::after {
+.dashboard-tabs [role="tab"]::after {
   position: absolute;
   right: 0;
   bottom: -1px;
@@ -175,16 +179,16 @@ button {
   background: transparent;
 }
 
-.dashboard-tabs button[aria-selected="true"] {
+.dashboard-tabs [role="tab"][aria-selected="true"] {
   color: #f2d584;
   background: rgba(210, 166, 108, 0.06);
 }
 
-.dashboard-tabs button[aria-selected="true"]::after {
+.dashboard-tabs [role="tab"][aria-selected="true"]::after {
   background: #d2a66c;
 }
 
-.dashboard-tabs button:focus-visible {
+.dashboard-tabs [role="tab"]:focus-visible {
   outline: 2px solid #7b66ff;
   outline-offset: -3px;
 }
@@ -741,7 +745,7 @@ button {
     margin-bottom: 28px;
   }
 
-  .dashboard-tabs button {
+  .dashboard-tabs [role="tab"] {
     min-width: 112px;
     padding-inline: 15px;
   }

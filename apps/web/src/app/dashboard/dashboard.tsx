@@ -11,7 +11,9 @@ import { Skeleton } from "@masc-landing/ui/components/skeleton";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import type { inferRouterOutputs } from "@trpc/server";
 import { MegaphoneIcon, RefreshCwIcon } from "lucide-react";
+import type { Route } from "next";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useFormatter, useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import type { FormEvent } from "react";
@@ -36,7 +38,9 @@ const emptyTeammate = (id: string): Teammate => ({
   universityName: "",
 });
 
-export default function Dashboard({ session }: { session: Session }) {
+export type DashboardTab = "overview" | "announcements" | `round-${RoundId}`;
+
+export default function Dashboard({ session, activeTab }: { session: Session; activeTab: DashboardTab }) {
   const t = useTranslations("Dashboard");
   const membership = useQuery(trpc.registration.current.queryOptions());
 
@@ -81,7 +85,7 @@ export default function Dashboard({ session }: { session: Session }) {
             </CardContent>
           </Card>
         ) : membership.data?.registered ? (
-          <TeamDashboard membership={membership.data} />
+          <TeamDashboard membership={membership.data} activeTab={activeTab} />
         ) : (
           <RegistrationForm session={session} />
         )}
@@ -91,13 +95,16 @@ export default function Dashboard({ session }: { session: Session }) {
 }
 
 const dashboardTabs = ["overview", "announcements", ...roundIds.map((round) => `round-${round}` as const)] as const;
-type DashboardTab = "overview" | "announcements" | `round-${RoundId}`;
 
-function TeamDashboard({ membership }: { membership: Extract<Membership, { registered: true }> }) {
+function dashboardTabHref(tab: DashboardTab): Route {
+  return tab === "overview" ? "/dashboard" : `/dashboard/${tab}` as Route;
+}
+
+function TeamDashboard({ membership, activeTab }: { membership: Extract<Membership, { registered: true }>; activeTab: DashboardTab }) {
   const t = useTranslations("Dashboard");
-  const [activeTab, setActiveTab] = useState<DashboardTab>("overview");
+  const router = useRouter();
   const selectTab = (tab: DashboardTab) => {
-    setActiveTab(tab);
+    router.push(dashboardTabHref(tab));
     requestAnimationFrame(() => document.getElementById(`dashboard-tab-${tab}`)?.focus());
   };
   const onTabKeyDown = (event: React.KeyboardEvent, index: number) => {
@@ -113,17 +120,16 @@ function TeamDashboard({ membership }: { membership: Extract<Membership, { regis
 
   return <div className="team-dashboard">
     <div className="dashboard-tabs" role="tablist" aria-label={t("tabs.label")}>
-      {dashboardTabs.map((tab, index) => <button
+      {dashboardTabs.map((tab, index) => <Link
         id={`dashboard-tab-${tab}`}
         key={tab}
-        type="button"
+        href={dashboardTabHref(tab)}
         role="tab"
         aria-selected={activeTab === tab}
         aria-controls={`dashboard-panel-${tab}`}
         tabIndex={activeTab === tab ? 0 : -1}
-        onClick={() => setActiveTab(tab)}
         onKeyDown={(event) => onTabKeyDown(event, index)}
-      >{tab.startsWith("round-") ? t("tabs.round", { round: tab.slice(6) }) : t(`tabs.${tab}`)}</button>)}
+      >{tab.startsWith("round-") ? t("tabs.round", { round: tab.slice(6) }) : t(`tabs.${tab}`)}</Link>)}
     </div>
     <section id={`dashboard-panel-${activeTab}`} role="tabpanel" aria-labelledby={`dashboard-tab-${activeTab}`} tabIndex={0}>
       {activeTab === "overview" && <TeamOverview membership={membership} />}
