@@ -6,6 +6,7 @@ import { useTranslations } from "next-intl";
 import { authClient } from "@/lib/auth-client";
 import { BrandLogo } from "@/components/hero-brand-logo";
 import LanguageSwitcher from "@/components/language-switcher";
+import UserMenu from "@/components/user-menu";
 
 type SiteHeaderProps = {
   landingPage?: boolean;
@@ -33,11 +34,7 @@ export default function SiteHeader({ landingPage = false }: SiteHeaderProps) {
         <a href={sectionHref("#news")}>{t("news")}</a>
       </nav>
       <div className="header-actions">
-        {!isPending && (
-          <Link className="header-login" href={session?.user ? "/dashboard" : "/login"}>
-            {session?.user ? "Dashboard" : t("login")}
-          </Link>
-        )}
+        {!isPending && (session?.user ? <UserMenu /> : <Link className="header-login" href="/login">{t("login")}</Link>)}
         <LanguageSwitcher />
       </div>
     </header>

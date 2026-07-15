@@ -73,6 +73,25 @@ button {
   background: rgba(255, 255, 255, 0.04);
 }
 
+.user-menu-avatar {
+  display: inline-block;
+  width: 24px;
+  height: 24px;
+  flex: 0 0 24px;
+  border-radius: 999px;
+  object-fit: cover;
+}
+
+.user-menu-avatar-fallback {
+  display: inline-grid;
+  place-items: center;
+  color: var(--night);
+  background: #f5d078;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
 .dashboard-main {
   width: min(100% - 48px, 1180px);
   margin-inline: auto;
@@ -253,16 +272,16 @@ button {
   height: 19px;
 }
 
-.round-status-card > [data-slot="card-content"],
-.round-status-card > form {
+.round-status-card>[data-slot="card-content"],
+.round-status-card>form {
   border-top: 1px solid rgba(255, 255, 255, 0.11);
 }
 
-.round-status-card > form .registration-submit {
+.round-status-card>form .registration-submit {
   padding: 0 clamp(22px, 4vw, 42px) 28px;
 }
 
-.round-status-card > form .form-error {
+.round-status-card>form .form-error {
   margin-inline: clamp(22px, 4vw, 42px);
 }
 
@@ -744,7 +763,7 @@ button {
     grid-column: auto;
   }
 
-  .round-status-header > [data-slot="button"] {
+  .round-status-header>[data-slot="button"] {
     width: 100%;
   }
 
