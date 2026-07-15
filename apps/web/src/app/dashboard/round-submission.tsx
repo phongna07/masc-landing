@@ -7,7 +7,7 @@ import { Input } from "@masc-landing/ui/components/input";
 import { Label } from "@masc-landing/ui/components/label";
 import { Textarea } from "@masc-landing/ui/components/textarea";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { DownloadIcon, FileTextIcon, RefreshCwIcon, UploadIcon } from "lucide-react";
+import { CheckCircle2Icon, Clock3Icon, DownloadIcon, FileTextIcon, RefreshCwIcon, UploadIcon } from "lucide-react";
 import { useFormatter, useTranslations } from "next-intl";
 import { useEffect, useState, type FormEvent } from "react";
 import { toast } from "sonner";
@@ -37,6 +37,21 @@ export default function RoundSubmission({ round, role }: { round: RoundId; role:
   const existing = submission.data?.submission ?? null;
   const isOpen = submission.data?.isSubmissionOpen ?? false;
   const showForm = isOpen && role === "captain" && (!existing || editing);
+  const status = existing && !showForm ? "submitted" : !isOpen ? "unavailable" : role === "member" ? "waiting" : "open";
+  const statusTitle = status === "submitted"
+    ? t("round.submittedTitle", { round })
+    : status === "unavailable"
+      ? t("round.unavailableTitle", { round })
+      : status === "waiting"
+        ? t("round.memberEmpty", { round })
+        : t(existing ? "round.replaceTitle" : "round.openTitle", { round });
+  const statusDescription = status === "submitted"
+    ? t("round.submittedAt", { date: format.dateTime(new Date(existing!.updatedAt), { dateStyle: "medium", timeStyle: "short" }) })
+    : status === "unavailable"
+      ? t("round.unavailableDescription")
+      : status === "waiting"
+        ? t("round.memberEmptyDescription")
+        : t(existing ? "round.replaceDescription" : "round.openDescription");
 
   useEffect(() => { if (existing && !showForm) preview.mutate(input); }, [existing?.updatedAt, showForm, round]); // eslint-disable-line react-hooks/exhaustive-deps
   if (submission.isPending) return <StateCard loading />;
@@ -60,24 +75,24 @@ export default function RoundSubmission({ round, role }: { round: RoundId; role:
   };
 
   return <div className="round-panel">
-    <Card className="dashboard-card round-hero-card"><CardHeader><p className="dashboard-card-index">01 / {t("tabs.round", { round })}</p>
-      <CardTitle>{t("round.title", { round })}</CardTitle><p>{t("round.description")}</p></CardHeader></Card>
-    {existing && !showForm && <Card className="dashboard-card"><CardHeader className="submission-header"><div><CardTitle>{t("round.submittedTitle")}</CardTitle>
-      <p>{t("round.submittedAt", { date: format.dateTime(new Date(existing.updatedAt), { dateStyle: "medium", timeStyle: "short" }) })}</p></div>
-      {isOpen && role === "captain" && <Button variant="outline" onClick={() => { setDescription(existing.description); setEditing(true); }}>{t("round.replace")}</Button>}
-    </CardHeader><CardContent className="submission-details"><div className="submission-description"><Label>{t("round.descriptionLabel")}</Label><p>{existing.description}</p></div>
+    <Card className={`dashboard-card round-status-card round-status-${status}`}>
+      <CardHeader className="round-status-header"><p className="dashboard-card-index">01 / {t("tabs.round", { round })}</p>
+        <div className="round-status-heading"><span className="round-status-icon" aria-hidden="true">{status === "submitted" ? <CheckCircle2Icon /> : <Clock3Icon />}</span>
+          <div><CardTitle>{statusTitle}</CardTitle><p>{statusDescription}</p></div></div>
+        {status === "submitted" && isOpen && role === "captain" && <Button variant="outline" onClick={() => { setDescription(existing!.description); setEditing(true); }}>{t("round.replace")}</Button>}
+      </CardHeader>
+    {existing && !showForm && <CardContent className="submission-details"><div className="submission-description"><Label>{t("round.descriptionLabel")}</Label><p>{existing.description}</p></div>
       <div className="submission-file"><FileTextIcon aria-hidden="true" /><div><strong>{existing.originalFilename}</strong><span>{formatBytes(existing.fileSize)}</span></div>
         <Button variant="outline" disabled={download.isPending} onClick={() => download.mutate(input)}><DownloadIcon aria-hidden="true" />{t("round.download")}</Button></div>
       {preview.data?.previewUrl && <div className="submission-preview"><Label>{t("round.previewLabel")}</Label><iframe src={preview.data.previewUrl} title={t("round.previewTitle", { filename: existing.originalFilename })} /></div>}
-    </CardContent></Card>}
-    {existing?.feedback && !showForm && <Card className="dashboard-card participant-feedback-card"><CardHeader><CardTitle>{t("round.feedbackTitle")}</CardTitle></CardHeader><CardContent className="submission-description"><p>{existing.feedback}</p></CardContent></Card>}
-    {showForm && <form onSubmit={submit} className="round-submission-form" noValidate><Card className="dashboard-card"><CardHeader><CardTitle>{t(existing ? "round.replaceTitle" : "round.formTitle")}</CardTitle></CardHeader>
+    </CardContent>}
+    {existing?.feedback && !showForm && <CardContent className="participant-feedback"><div className="submission-description"><Label>{t("round.feedbackTitle")}</Label><p>{existing.feedback}</p></div></CardContent>}
+    {showForm && <form onSubmit={submit} className="round-submission-form" noValidate>
       <CardContent className="round-submission-fields"><Field label={t("round.descriptionLabel")}><Textarea value={description} maxLength={5000} rows={8} onChange={(event) => setDescription(event.target.value)} /><span className="field-hint">{t("round.characters", { count: description.length })}</span></Field>
-      <Field label={t("round.fileLabel")}><Input type="file" accept=".pdf,.doc,.docx,.ppt,.pptx" onChange={(event) => setFile(event.target.files?.[0] ?? null)} /><span className="field-hint">{t("round.fileHint")}</span></Field></CardContent></Card>
+      <Field label={t("round.fileLabel")}><Input type="file" accept=".pdf,.doc,.docx,.ppt,.pptx" onChange={(event) => setFile(event.target.files?.[0] ?? null)} /><span className="field-hint">{t("round.fileHint")}</span></Field></CardContent>
       {error && <p className="form-error" role="alert">{error}</p>}<div className="registration-submit">{editing ? <Button type="button" variant="ghost" onClick={() => { setEditing(false); setError(null); }}>{t("round.cancel")}</Button> : <span />}
       <Button type="submit" size="lg" disabled={createUploadUrl.isPending || finalize.isPending}><UploadIcon aria-hidden="true" />{finalize.isPending || createUploadUrl.isPending ? t("round.uploading") : t("round.submit", { round })}</Button></div></form>}
-    {!existing && !isOpen && <Card className="dashboard-card round-unavailable"><CardHeader><CardTitle>{t("round.unavailableTitle", { round })}</CardTitle><p>{t("round.unavailableDescription")}</p></CardHeader></Card>}
-    {!existing && isOpen && role === "member" && <Card className="dashboard-card"><CardHeader><CardTitle>{t("round.emptyTitle")}</CardTitle><p>{t("round.memberEmpty", { round })}</p></CardHeader></Card>}
+    </Card>
   </div>;
 }
 

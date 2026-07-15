@@ -170,12 +170,105 @@ button {
   outline-offset: -3px;
 }
 
-.round-hero-card,
 .placeholder-card {
   min-height: 210px;
   justify-content: flex-end;
   border-color: rgba(210, 166, 108, 0.26);
   background: linear-gradient(115deg, rgba(210, 166, 108, 0.1), rgba(123, 102, 255, 0.09));
+}
+
+.round-status-card {
+  position: relative;
+  min-height: 260px;
+  border-color: rgba(210, 166, 108, 0.3);
+  background: linear-gradient(115deg, rgba(210, 166, 108, 0.1), rgba(123, 102, 255, 0.07) 58%, rgba(17, 16, 20, 0.9));
+}
+
+.round-status-card::before {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 3px;
+  content: "";
+  background: #d2a66c;
+}
+
+.round-status-submitted::before {
+  background: #8fd3a8;
+}
+
+.round-status-header {
+  position: relative;
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end !important;
+  gap: 18px 28px !important;
+  padding-block: clamp(30px, 5vw, 56px) 24px !important;
+}
+
+.round-status-header .dashboard-card-index {
+  grid-column: 1 / -1;
+}
+
+.round-status-heading {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.round-status-heading [data-slot="card-title"] {
+  font-size: clamp(34px, 4.6vw, 56px);
+  letter-spacing: -0.02em;
+}
+
+.round-status-heading p {
+  max-width: 720px;
+  margin: 10px 0 0;
+  color: var(--muted);
+  font-size: 15px;
+  line-height: 1.7;
+}
+
+.round-status-icon {
+  display: grid;
+  width: 38px;
+  height: 38px;
+  flex: 0 0 38px;
+  place-items: center;
+  margin-top: 5px;
+  border: 1px solid rgba(210, 166, 108, 0.45);
+  color: #f2d584;
+  background: rgba(210, 166, 108, 0.09);
+}
+
+.round-status-submitted .round-status-icon {
+  border-color: rgba(143, 211, 168, 0.45);
+  color: #8fd3a8;
+  background: rgba(143, 211, 168, 0.08);
+}
+
+.round-status-icon svg {
+  width: 19px;
+  height: 19px;
+}
+
+.round-status-card > [data-slot="card-content"],
+.round-status-card > form {
+  border-top: 1px solid rgba(255, 255, 255, 0.11);
+}
+
+.round-status-card > form .registration-submit {
+  padding: 0 clamp(22px, 4vw, 42px) 28px;
+}
+
+.round-status-card > form .form-error {
+  margin-inline: clamp(22px, 4vw, 42px);
+}
+
+.participant-feedback {
+  margin-top: 0 !important;
+  background: rgba(210, 166, 108, 0.045);
 }
 
 .round-submission-fields {
@@ -643,6 +736,28 @@ button {
     width: 100%;
   }
 
+  .round-status-header {
+    grid-template-columns: 1fr;
+  }
+
+  .round-status-header .dashboard-card-index {
+    grid-column: auto;
+  }
+
+  .round-status-header > [data-slot="button"] {
+    width: 100%;
+  }
+
+  .round-status-heading {
+    gap: 12px;
+  }
+
+  .round-status-icon {
+    width: 32px;
+    height: 32px;
+    flex-basis: 32px;
+  }
+
 }
 
 .admin-status-editor label {
@@ -1096,8 +1211,7 @@ button {
   margin-bottom: 18px;
 }
 
-.admin-feedback-card,
-.participant-feedback-card {
+.admin-feedback-card {
   margin-bottom: 18px;
 }
 
