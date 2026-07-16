@@ -26,7 +26,7 @@ export default function Home() {
   const isSignedIn = !isPending && Boolean(session?.user);
   const registrationLink = isSignedIn ? "/dashboard" : "/login";
   const rounds = [
-    { marker: "0.5", key: "round05" },
+    { marker: "00", key: "round05" },
     { marker: "01", key: "round1" },
     { marker: "02", key: "round2" },
     { marker: "03", key: "round3" },
@@ -550,7 +550,7 @@ export default function Home() {
           </div>
           <div className="footer-contact">
             <p className="footer-label">{t("footer.support")}</p>
-            <a href="mailto:masc26.info@gmail.com">masc26.info@gmail.com</a>
+            <a href="mailto:masc26.work@gmail.com">masc26.work@gmail.com</a>
             <a href="https://facebook.com/MarketingAllStarChallenge" target="_blank" rel="noreferrer">
               {t("footer.facebook")} <span aria-hidden="true">↗</span>
             </a>
