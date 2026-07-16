@@ -2667,7 +2667,7 @@ img {
 }
 
 .why-media img {
-  filter: brightness(0.48) saturate(0.78);
+  filter: brightness(0.7) saturate(0.96);
 }
 
 .why-shade {
@@ -2675,7 +2675,7 @@ img {
   inset: 0;
   background:
     linear-gradient(180deg, #07070a 0%, transparent 17%, transparent 82%, #08080b 100%),
-    linear-gradient(90deg, rgba(5, 4, 10, 0.82), rgba(5, 4, 10, 0.22) 60%, rgba(5, 4, 10, 0.52));
+    linear-gradient(90deg, rgba(5, 4, 10, 0.66), rgba(5, 4, 10, 0.14) 60%, rgba(5, 4, 10, 0.34));
 }
 
 .why-content {
@@ -2945,7 +2945,7 @@ img {
 }
 
 .criteria-media img {
-  filter: brightness(0.42) saturate(0.72);
+  filter: brightness(0.68) saturate(0.92);
 }
 
 .criteria-shade {
@@ -2953,7 +2953,7 @@ img {
   inset: 0;
   background:
     linear-gradient(180deg, #08080b 0%, transparent 17%, transparent 82%, #07070a 100%),
-    linear-gradient(90deg, rgba(5, 4, 10, 0.84), rgba(5, 4, 10, 0.34) 58%, rgba(5, 4, 10, 0.68));
+    linear-gradient(90deg, rgba(5, 4, 10, 0.68), rgba(5, 4, 10, 0.16) 58%, rgba(5, 4, 10, 0.32));
 }
 
 .criteria-layout {

@@ -139,12 +139,12 @@ export default function Home() {
           {
             yPercent: -8,
             scale: 1.13,
-            filter: "brightness(0.48) saturate(0.82)",
+            filter: "brightness(0.7) saturate(0.96)",
           },
           {
             yPercent: 9,
             scale: 1.04,
-            filter: "brightness(0.32) saturate(0.65)",
+            filter: "brightness(0.56) saturate(0.82)",
             ease: "none",
             scrollTrigger: {
               trigger: ".why",
@@ -160,12 +160,12 @@ export default function Home() {
           {
             yPercent: -8,
             scale: 1.13,
-            filter: "brightness(0.5) saturate(0.78)",
+            filter: "brightness(0.68) saturate(0.92)",
           },
           {
             yPercent: 9,
             scale: 1.04,
-            filter: "brightness(0.34) saturate(0.62)",
+            filter: "brightness(0.54) saturate(0.8)",
             ease: "none",
             scrollTrigger: {
               trigger: ".criteria",
