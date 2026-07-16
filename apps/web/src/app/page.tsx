@@ -52,7 +52,6 @@ export default function Home() {
         description: [
           t("mentors.mentor1.description1"),
           t("mentors.mentor1.description2"),
-          t("mentors.mentor1.description3"),
         ],
       },
       {
