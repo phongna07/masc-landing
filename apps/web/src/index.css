@@ -2383,17 +2383,6 @@ img {
   will-change: transform;
 }
 
-.portal-vignette {
-  position: absolute;
-  inset: 0;
-  background:
-    radial-gradient(circle at center,
-      transparent 10%,
-      rgba(0, 0, 0, 0.05) 34%,
-      rgba(2, 2, 5, 0.68) 100%),
-    linear-gradient(180deg, rgba(0, 0, 0, 0.34), transparent 30%, rgba(0, 0, 0, 0.4));
-}
-
 .portal-label {
   position: absolute;
   right: 0;

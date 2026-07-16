@@ -332,7 +332,6 @@ export default function Home() {
                 sizes="(max-width: 680px) 100vw, 1360px"
                 placeholder="blur"
               />
-              <div className="portal-vignette" aria-hidden="true" />
               <p className="portal-label">
                 <span>{t("about.hostedBy")}</span>
                 <span>{t("about.organization")}</span>
