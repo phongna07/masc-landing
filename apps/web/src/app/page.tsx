@@ -298,7 +298,7 @@ export default function Home() {
             </div>
           </div>
 
-          <DeadlineCountdown />
+          {/* <DeadlineCountdown /> */}
           <div className="hero-meta" aria-label={t("hero.participantDetails")}>
             <span>{t("hero.country")}</span>
             <span>{t("hero.age")}</span>
@@ -546,20 +546,26 @@ export default function Home() {
             <a href="https://facebook.com/MarketingAllStarChallenge" target="_blank" rel="noreferrer">
               {t("footer.facebook")} <span aria-hidden="true">↗</span>
             </a>
+            <a href="https://www.facebook.com/share/g/1CfwmYmFPi/" target="_blank" rel="noreferrer">
+              {t("footer.facebookGroupCommunity")} <span aria-hidden="true">↗</span>
+            </a>
           </div>
           <div className="footer-people">
             <p className="footer-label">{t("footer.leads")}</p>
             <div className="footer-person">
-              <span>{t("footer.lead1")}</span>
-              <a href="tel:+84857129878">0857 129 878</a>
+              <span>{t("footer.lead1Name")}</span>
+              <span className="footer-person-role">{t("footer.lead1Role")}</span>
+              <a href="tel:+84857129878">+84 857 129 878</a>
             </div>
             <div className="footer-person">
-              <span>{t("footer.lead2")}</span>
-              <a href="tel:+84782356586">0782 356 586</a>
+              <span>{t("footer.lead2Name")}</span>
+              <span className="footer-person-role">{t("footer.lead2Role")}</span>
+              <a href="tel:+84782356586">+84 782 356 586</a>
             </div>
             <div className="footer-person">
-              <span>{t("footer.lead3")}</span>
-              <a href="tel:+84965350173">0965 350 173</a>
+              <span>{t("footer.lead3Name")}</span>
+              <span className="footer-person-role">{t("footer.lead3Role")}</span>
+              <a href="tel:+84965350173">+84 965 350 173</a>
             </div>
           </div>
           <div className="footer-shortcuts">
@@ -567,7 +573,7 @@ export default function Home() {
             <a href="#about">{t("footer.competition")}</a>
             <a href="#journey">{t("footer.timeline")}</a>
             <a href="#mentors-sponsors">{t("footer.partners")}</a>
-            <a href="#news">{t("footer.news")}</a>
+            <a href="https://www.facebook.com/MarketingAllStarChallenge" target="_blank">{t("footer.news")}</a>
           </div>
         </div>
         <div className="page-shell footer-bottom">

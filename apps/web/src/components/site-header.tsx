@@ -23,15 +23,15 @@ export default function SiteHeader({ landingPage = false }: SiteHeaderProps) {
       <a className="brand" href={homeHref} aria-label={t("backToTop")}>
         <BrandLogo className="brand-logo" />
         <span className="brand-copy">
-          Marketing All-Star Challenge
+          Marketing All-Star Challenge 2026
           <br />
           <small>HYPERNOVA</small>
         </span>
       </a>
       <nav aria-label={t("navigationLabel")}>
         <a href={sectionHref("#about")}>{t("lookingBack")}</a>
-        <a href={sectionHref("#journey")}>{t("videoChallenges")}</a>
-        <a href={sectionHref("#news")}>{t("news")}</a>
+        <a href={sectionHref("#journey")}>{t("competitionTimeline")}</a>
+        <a href="https://www.facebook.com/MarketingAllStarChallenge" target="_blank">{t("news")}</a>
       </nav>
       <div className="header-actions">
         {/* {!isPending && (session?.user ? <UserMenu /> : <Link className="header-login" href="/login">{t("login")}</Link>)} */}

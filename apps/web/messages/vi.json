@@ -1,7 +1,7 @@
 {
   "Metadata": {
     "title": "Marketing All-Star Challenge 2026 - Hypernova",
-    "description": "Marketing All-Star Challenge 2026: HYPERNOVA - đấu trường dành cho thế hệ tài năng marketing tiếp theo tại Việt Nam."
+    "description": "Marketing All-Star Challenge 2026: Hypernova - đấu trường dành cho thế hệ tài năng marketing tiếp theo tại Việt Nam."
   },
   "LanguageSwitcher": {
     "label": "Thay đổi ngôn ngữ",
@@ -12,8 +12,8 @@
     "header": {
       "backToTop": "MASC 2026 - về đầu trang",
       "navigationLabel": "Điều hướng chính",
-      "lookingBack": "Nhìn lại MASC’24&25",
-      "videoChallenges": "Thử thách video",
+      "lookingBack": "Về MASC 2026",
+      "competitionTimeline": "Timeline cuộc thi",
       "news": "Tin tức",
       "login": "Đăng nhập",
       "ticketsLabel": "Vé sắp được mở bán",
@@ -176,10 +176,14 @@
       "brand": "Marketing All-Star<break></break>Challenge 2026",
       "support": "Câu hỏi & hỗ trợ",
       "facebook": "Facebook",
+      "facebookGroupCommunity": "Facebook Group Community",
       "leads": "Ban tổ chức",
-      "lead1": "Lê Đức Anh - Đồng Trưởng ban tổ chức",
-      "lead2": "Nguyễn Mai Ngọc Nhi - Đồng Trưởng ban tổ chức",
-      "lead3": "Nguyễn Minh Ngọc - Trưởng ban Đối ngoại",
+      "lead1Name": "Lê Đức Anh",
+      "lead1Role": "Đồng Trưởng ban Tổ chức",
+      "lead2Name": "Nguyễn Mai Ngọc Nhi",
+      "lead2Role": "Đồng Trưởng ban Tổ chức",
+      "lead3Name": "Nguyễn Minh Ngọc",
+      "lead3Role": "Trưởng ban Đối ngoại",
       "shortcuts": "Lối tắt",
       "competition": "Cuộc thi",
       "timeline": "Lộ trình",

@@ -1,7 +1,7 @@
 {
   "Metadata": {
     "title": "Marketing All-Star Challenge 2026 - Hypernova",
-    "description": "Marketing All-Star Challenge 2026: HYPERNOVA - Vietnam’s arena for the next generation of marketing talent."
+    "description": "Marketing All-Star Challenge 2026: Hypernova - Vietnam’s arena for the next generation of marketing talent."
   },
   "LanguageSwitcher": {
     "label": "Change language",
@@ -12,8 +12,8 @@
     "header": {
       "backToTop": "MASC 2026 - back to top",
       "navigationLabel": "Main navigation",
-      "lookingBack": "Looking back at MASC’24&25",
-      "videoChallenges": "Video Challenges",
+      "lookingBack": "About MASC 2026",
+      "competitionTimeline": "Competition Timeline",
       "news": "News",
       "login": "Log in",
       "ticketsLabel": "Ticket sales coming soon",
@@ -176,10 +176,14 @@
       "brand": "Marketing All-Star<break></break>Challenge 2026",
       "support": "Questions & support",
       "facebook": "Facebook",
+      "facebookGroupCommunity": "Facebook Group Community",
       "leads": "Organizing leads",
-      "lead1": "Lê Đức Anh - Co-Head",
-      "lead2": "Nguyễn Mai Ngọc Nhi - Co-Head",
-      "lead3": "Nguyễn Minh Ngọc - Head of External Relations",
+      "lead1Name": "Lê Đức Anh",
+      "lead1Role": "Co-Head",
+      "lead2Name": "Nguyễn Mai Ngọc Nhi",
+      "lead2Role": "Co-Head",
+      "lead3Name": "Nguyễn Minh Ngọc",
+      "lead3Role": "Head of External Relations",
       "shortcuts": "Shortcuts",
       "competition": "Competition",
       "timeline": "Timeline",

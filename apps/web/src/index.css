@@ -3215,6 +3215,12 @@ footer {
   flex-direction: column;
 }
 
+.footer-person-role {
+  color: #c8c4cc;
+  font-size: 11px;
+  line-height: 1.75;
+}
+
 .footer-person a {
   font-size: 11px;
 }

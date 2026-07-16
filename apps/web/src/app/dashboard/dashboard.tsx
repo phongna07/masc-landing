@@ -50,7 +50,7 @@ export default function Dashboard({ session, activeTab }: { session: Session; ac
         <Link className="brand" href="/" aria-label={t("nav.homeLabel")}>
           <BrandLogo className="brand-logo" />
           <span className="brand-copy">
-            Marketing All-Star Challenge
+            Marketing All-Star Challenge 2026
             <br />
             <small>HYPERNOVA</small>
           </span>
