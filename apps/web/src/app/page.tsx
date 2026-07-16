@@ -11,7 +11,6 @@ import image1 from "@/assets/image-1.png";
 import image2 from "@/assets/image-2.png";
 import image3 from "@/assets/image-3.png";
 import image4 from "@/assets/image-4.png";
-import image5 from "@/assets/image-5.png";
 import footerLogo from "@/assets/footer-logo.png";
 import mentor1 from "@/assets/mentor-1.png";
 import mentor2 from "@/assets/mentor-2.png";
@@ -463,7 +462,7 @@ export default function Home() {
 
         <section className="criteria" aria-labelledby="criteria-title">
           <div className="criteria-media parallax-media" aria-hidden="true">
-            <Image src={image5} alt="" fill sizes="100vw" placeholder="blur" />
+            <Image src={image3} alt="" fill sizes="100vw" placeholder="blur" />
           </div>
           <div className="criteria-shade" aria-hidden="true" />
           <div className="page-shell criteria-layout">
