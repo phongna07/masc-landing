@@ -1,7 +1,7 @@
 {
   "Metadata": {
-    "title": "MASC 2026 — HYPERNOVA",
-    "description": "Marketing All-Star Challenge 2026: HYPERNOVA — Vietnam’s arena for the next generation of marketing talent."
+    "title": "MASC 2026 - HYPERNOVA",
+    "description": "Marketing All-Star Challenge 2026: HYPERNOVA - Vietnam’s arena for the next generation of marketing talent."
   },
   "LanguageSwitcher": {
     "label": "Change language",
@@ -10,7 +10,7 @@
   },
   "Home": {
     "header": {
-      "backToTop": "MASC 2026 — back to top",
+      "backToTop": "MASC 2026 - back to top",
       "navigationLabel": "Main navigation",
       "lookingBack": "Looking back at MASC’24&25",
       "videoChallenges": "Video Challenges",
@@ -29,8 +29,8 @@
       "portal": "Open Dashboard",
       "participantDetails": "Participant details",
       "country": "Vietnam",
-      "age": "Ages 18—22",
-      "applications": "Applications / Jul 20 — Aug 10",
+      "age": "Ages 18-22",
+      "applications": "Applications / Jul 20 - Aug 10",
       "scroll": "Scroll to discover"
     },
     "countdown": {
@@ -47,12 +47,12 @@
     "about": {
       "index": "The competition",
       "title": "A new legacy forged through <em>breakthrough</em>",
-      "lead": "Marketing All-Star Challenge (MASC) is an exclusive national marketing competition hosted by Kotler Klub — VinUni House of Marketers.",
-      "description": "Inspired by the hypernova phenomenon, this year's <strong>Hypernova</strong> theme symbolizes rebirth and breakthrough innovation. It is where top talent pushes past existing limits to create a completely new legacy.",
+      "lead": "Marketing All-Star Challenge (MASC) is an exclusive national marketing competition hosted by Kotler Klub - VinUni House of Marketers.",
+      "description": "Marketing All-Star Challenge 2026 draws inspiration from the <strong>Hypernova</strong> phenomenon - one of the most powerful and rare stellar explosions in the universe. Hypernova represents young marketers who dare to immerse themselves in a challenging real-world environment, push beyond their limits, and achieve breakthroughs in both thinking and expertise, thereby inspiring the next generation of marketers.",
       "organizerAlt": "Organizer",
       "hostedBy": "Hosted by Kotler Klub",
       "organization": "VinUni House of Marketers",
-      "caption": "Not resting on past laurels. MASC 2026 is the arena for marketers ready to push their boundaries and shape the future."
+      "caption": "Marketing All-Star Challenge 2026 goes beyond an ordinary competition, opening up a space for young marketers to challenge their creativity and uncover the sharpest solutions to real-world brand problems."
     },
     "prizes": {
       "index": "Prizes & awards",
@@ -64,7 +64,7 @@
       "upTo": "Up to",
       "grandKicker": "Grand prize / Champion",
       "grandTitle": "Hypernova<break></break>Champion",
-      "grandDescription": "Awarded to the MASC 2026 Champion — the team that conquers the dual challenge and demonstrates outstanding real-world execution.",
+      "grandDescription": "Awarded to the MASC 2026 Champion - the team that conquers the dual challenge and demonstrates outstanding real-world execution.",
       "secondKicker": "Second place / Runner-up",
       "secondTitle": "Rising Star",
       "secondDescription": "Recognizing sharp strategic insight, breakthrough creativity, and exceptional execution capabilities.",
@@ -126,13 +126,13 @@
     "criteria": {
       "index": "Evaluation Criteria",
       "title": "What the judges will <em>look for</em>",
-      "round1": "Round 1 — The Star Gathering",
+      "round1": "Round 1 - The Star Gathering",
       "round1Title": "Specialized track depth",
       "round1Description": "Choose one of three specialized tracks (Product & Growth, Societal + PR/MarCom, Market Research + Trade) and refine your solution through 1-on-1 mentor feedback.",
-      "round2": "Round 2 — The Stellar Forge",
+      "round2": "Round 2 - The Stellar Forge",
       "round2Title": "Practical creativity & social impact",
       "round2Description": "Solve the Diamond Sponsor's challenge by balancing breakthrough creativity, practical application, and meaningful positive community impact.",
-      "finale": "Finale — The Infinite Glow",
+      "finale": "Finale - The Infinite Glow",
       "finaleTitle": "Live execution & Mini Case challenge",
       "finaleDescription": "Defend live executed campaign results before the judges, then Top 2 solve an unseen Mini Case live on stage under real-time pressure."
     },
@@ -177,9 +177,9 @@
       "support": "Questions & support",
       "facebook": "Facebook",
       "leads": "Organizing leads",
-      "lead1": "Lê Đức Anh — Co-Head",
-      "lead2": "Nguyễn Mai Ngọc Nhi — Co-Head",
-      "lead3": "Nguyễn Minh Ngọc — Head of External Relations",
+      "lead1": "Lê Đức Anh - Co-Head",
+      "lead2": "Nguyễn Mai Ngọc Nhi - Co-Head",
+      "lead3": "Nguyễn Minh Ngọc - Head of External Relations",
       "shortcuts": "Shortcuts",
       "competition": "Competition",
       "timeline": "Timeline",
@@ -201,7 +201,7 @@
     "title": "Dashboard",
     "welcome": "Welcome {name}",
     "nav": {
-      "homeLabel": "MASC 2026 — return home"
+      "homeLabel": "MASC 2026 - return home"
     },
     "registration": {
       "section": "Registration",
@@ -274,7 +274,7 @@
       "openDescription": "Prepare your team's description and supporting document below.",
       "descriptionLabel": "Description",
       "fileLabel": "Submission file",
-      "fileHint": "PDF, DOC, DOCX, PPT, or PPTX — maximum 20 MB.",
+      "fileHint": "PDF, DOC, DOCX, PPT, or PPTX - maximum 20 MB.",
       "characters": "{count} / 5000 characters",
       "submit": "Submit Round {round}",
       "uploading": "Uploading…",
@@ -332,7 +332,7 @@
     "eyebrow": "Administration",
     "title": "Admin dashboard",
     "nav": {
-      "homeLabel": "MASC 2026 — return home",
+      "homeLabel": "MASC 2026 - return home",
       "label": "Admin navigation",
       "open": "Open admin navigation",
       "close": "Close admin navigation"
@@ -368,7 +368,7 @@
       "characters": "{count} / 5000 characters",
       "addImage": "Add image",
       "removeImage": "Remove image",
-      "imageHint": "Optional JPG, PNG, or WebP — maximum 10 MB.",
+      "imageHint": "Optional JPG, PNG, or WebP - maximum 10 MB.",
       "publish": "Publish announcement",
       "publishing": "Publishing…",
       "organizer": "Marketing All-Star Challenge organizers",
@@ -466,8 +466,8 @@
       "title": "Submission feedback",
       "label": "Feedback for the team",
       "characters": "{count} / 5000 characters",
-      "draftStatus": "Draft — not visible to the team",
-      "publishedStatus": "Published — visible to the team",
+      "draftStatus": "Draft - not visible to the team",
+      "publishedStatus": "Published - visible to the team",
       "saveDraft": "Save draft",
       "publish": "Publish feedback",
       "draftSaved": "Feedback draft saved.",

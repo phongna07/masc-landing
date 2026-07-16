@@ -1,7 +1,7 @@
 {
   "Metadata": {
-    "title": "MASC 2026 — HYPERNOVA",
-    "description": "Marketing All-Star Challenge 2026: HYPERNOVA — đấu trường dành cho thế hệ tài năng marketing tiếp theo tại Việt Nam."
+    "title": "MASC 2026 - HYPERNOVA",
+    "description": "Marketing All-Star Challenge 2026: HYPERNOVA - đấu trường dành cho thế hệ tài năng marketing tiếp theo tại Việt Nam."
   },
   "LanguageSwitcher": {
     "label": "Thay đổi ngôn ngữ",
@@ -10,7 +10,7 @@
   },
   "Home": {
     "header": {
-      "backToTop": "MASC 2026 — về đầu trang",
+      "backToTop": "MASC 2026 - về đầu trang",
       "navigationLabel": "Điều hướng chính",
       "lookingBack": "Nhìn lại MASC’24&25",
       "videoChallenges": "Thử thách video",
@@ -29,7 +29,7 @@
       "portal": "Cổng thông tin",
       "participantDetails": "Thông tin thí sinh",
       "country": "Việt Nam",
-      "age": "Độ tuổi 18—22",
+      "age": "Độ tuổi 18-22",
       "applications": "Mở đơn 20/7 - 10/8",
       "scroll": "Cuộn để khám phá"
     },
@@ -47,12 +47,12 @@
     "about": {
       "index": "Cuộc thi",
       "title": "Kiến tạo di sản từ sự <em>bứt phá</em>",
-      "lead": "Marketing All-Star Challenge (MASC) là cuộc thi Marketing độc quyền quy mô toàn quốc do Câu lạc bộ Kotler Klub — VinUni House of Marketers tổ chức.",
-      "description": "Chủ đề <strong>Hypernova</strong> khơi nguồn từ hiện tượng siêu tân tinh — biểu tượng nguyên bản của sự tái sinh và đổi mới mang tính đột phá. Đây là nơi những cá nhân xuất sắc bứt phá giới hạn để kiến tạo nên một di sản hoàn toàn mới.",
+      "lead": "Marketing All-Star Challenge (MASC) là cuộc thi Marketing độc quyền quy mô toàn quốc do Câu lạc bộ Kotler Klub - VinUni House of Marketers tổ chức.",
+      "description": "Marketing All-Star Challenge 2026 lấy cảm hứng từ hiện tượng <strong>Hypernova</strong> - một trong những vụ nổ sao dữ dội và hiếm gặp nhất vũ trụ. Hypernova chính là hình tượng đại diện cho những marketer trẻ dám dấn thân vào môi trường thực chiến đầy thử thách để bứt phá giới hạn của bản thân, tạo ra bước đột phá về tư duy và chuyên môn, từ đó truyền cảm hứng cho các thế hệ marketer tiếp theo.",
       "organizerAlt": "Đơn vị tổ chức",
       "hostedBy": "Tổ chức bởi Kotler Klub",
       "organization": "VinUni House of Marketers",
-      "caption": "Không dừng lại ở những hào quang đã có. MASC 2026 là đấu trường cho những marketer sẵn sàng bứt phá đỉnh cao và kiến tạo tương lai."
+      "caption": "Marketing All-Star Challenge 2026 không chỉ dừng lại ở một cuộc thi thông thường mà còn mở ra không gian để các marketer trẻ thử thách khả năng sáng tạo và tìm ra lời giải sắc bén nhất cho những bài toán thương hiệu thực tế."
     },
     "prizes": {
       "index": "Giải thưởng",
@@ -64,7 +64,7 @@
       "upTo": "Lên đến",
       "grandKicker": "Giải Nhất / Quán quân",
       "grandTitle": "Hypernova<break></break>Champion",
-      "grandDescription": "Vinh danh Quán quân MASC 2026 — đội thi xuất sắc vượt qua thử thách kép và chứng minh bản lĩnh thực chiến vượt trội.",
+      "grandDescription": "Vinh danh Quán quân MASC 2026 - đội thi xuất sắc vượt qua thử thách kép và chứng minh bản lĩnh thực chiến vượt trội.",
       "secondKicker": "Giải Nhì / Á quân",
       "secondTitle": "Rising Star",
       "secondDescription": "Vinh danh Á quân với tư duy chiến lược sắc bén, sức sáng tạo đột phá và khả năng thực thi ấn tượng.",
@@ -126,13 +126,13 @@
     "criteria": {
       "index": "Tiêu chí đánh giá",
       "title": "Tiêu chí đánh giá từ <em>Ban Giám Khảo</em>",
-      "round1": "Vòng 1 — The Star Gathering",
+      "round1": "Vòng 1 - The Star Gathering",
       "round1Title": "Tư duy chuyên môn sâu theo Track",
       "round1Description": "Lựa chọn 1 trong 3 track chuyên môn (Product & Growth, Societal + PR/MarCom, Market Research + Trade), hoàn thiện bài làm qua phản hồi 1-1 từ mentor.",
-      "round2": "Vòng 2 — The Stellar Forge",
+      "round2": "Vòng 2 - The Stellar Forge",
       "round2Title": "Sáng tạo thực tiễn & Tác động xã hội",
       "round2Description": "Giải quyết bài toán từ Nhà tài trợ Kim Cương, cân bằng giữa tính sáng tạo đột phá, tính thực tiễn cao và tác động tích cực cho cộng đồng.",
-      "finale": "Chung kết — The Infinite Glow",
+      "finale": "Chung kết - The Infinite Glow",
       "finaleTitle": "Thực chiến & Giải Mini Case trực tiếp",
       "finaleDescription": "Bảo vệ chiến dịch thực chiến đã triển khai trên thị trường, sau đó Top 2 giải quyết Mini Case dưới áp lực thời gian thực ngay trên sân khấu."
     },
@@ -177,9 +177,9 @@
       "support": "Câu hỏi & hỗ trợ",
       "facebook": "Facebook",
       "leads": "Ban tổ chức",
-      "lead1": "Lê Đức Anh — Đồng Trưởng ban tổ chức",
-      "lead2": "Nguyễn Mai Ngọc Nhi — Đồng Trưởng ban tổ chức",
-      "lead3": "Nguyễn Minh Ngọc — Trưởng ban Đối ngoại",
+      "lead1": "Lê Đức Anh - Đồng Trưởng ban tổ chức",
+      "lead2": "Nguyễn Mai Ngọc Nhi - Đồng Trưởng ban tổ chức",
+      "lead3": "Nguyễn Minh Ngọc - Trưởng ban Đối ngoại",
       "shortcuts": "Lối tắt",
       "competition": "Cuộc thi",
       "timeline": "Lộ trình",
@@ -201,7 +201,7 @@
     "title": "Dashboard",
     "welcome": "Chào mừng {name}",
     "nav": {
-      "homeLabel": "MASC 2026 — trở về trang chủ"
+      "homeLabel": "MASC 2026 - trở về trang chủ"
     },
     "registration": {
       "section": "Đăng ký",
@@ -274,7 +274,7 @@
       "openDescription": "Chuẩn bị phần mô tả và tài liệu của đội ở bên dưới.",
       "descriptionLabel": "Mô tả",
       "fileLabel": "Tệp bài nộp",
-      "fileHint": "PDF, DOC, DOCX, PPT hoặc PPTX — tối đa 20 MB.",
+      "fileHint": "PDF, DOC, DOCX, PPT hoặc PPTX - tối đa 20 MB.",
       "characters": "{count} / 5000 ký tự",
       "submit": "Nộp bài Vòng {round}",
       "uploading": "Đang tải lên…",
@@ -332,7 +332,7 @@
     "eyebrow": "Quản trị",
     "title": "Bảng điều khiển quản trị",
     "nav": {
-      "homeLabel": "MASC 2026 — về trang chủ",
+      "homeLabel": "MASC 2026 - về trang chủ",
       "label": "Điều hướng quản trị",
       "open": "Mở điều hướng quản trị",
       "close": "Đóng điều hướng quản trị"
@@ -368,7 +368,7 @@
       "characters": "{count} / 5000 ký tự",
       "addImage": "Thêm hình ảnh",
       "removeImage": "Xóa hình ảnh",
-      "imageHint": "JPG, PNG hoặc WebP không bắt buộc — tối đa 10 MB.",
+      "imageHint": "JPG, PNG hoặc WebP không bắt buộc - tối đa 10 MB.",
       "publish": "Đăng thông báo",
       "publishing": "Đang đăng…",
       "organizer": "Ban tổ chức Marketing All-Star Challenge",
@@ -466,8 +466,8 @@
       "title": "Nhận xét bài nộp",
       "label": "Nhận xét dành cho đội thi",
       "characters": "{count} / 5000 ký tự",
-      "draftStatus": "Bản nháp — đội thi chưa thể xem",
-      "publishedStatus": "Đã công bố — đội thi có thể xem",
+      "draftStatus": "Bản nháp - đội thi chưa thể xem",
+      "publishedStatus": "Đã công bố - đội thi có thể xem",
       "saveDraft": "Lưu bản nháp",
       "publish": "Công bố nhận xét",
       "draftSaved": "Đã lưu bản nháp nhận xét.",

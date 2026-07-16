@@ -354,8 +354,8 @@ function TeamOverview({ membership }: { membership: Extract<Membership, { regist
         <Card className="dashboard-card">
           <CardHeader><CardTitle>{t("overview.captainContact")}</CardTitle></CardHeader>
           <CardContent className="detail-list">
-            <Detail label={t("fields.fullName")} value={captain?.fullName ?? "—"} />
-            <Detail label={t("fields.email")} value={captain?.email ?? "—"} />
+            <Detail label={t("fields.fullName")} value={captain?.fullName ?? "-"} />
+            <Detail label={t("fields.email")} value={captain?.email ?? "-"} />
             <Detail label={t("fields.captainPhone")} value={membership.team.captainPhone} />
           </CardContent>
         </Card>

@@ -447,14 +447,6 @@ export default function Home() {
                 <Image src={image4} alt="" fill sizes="(max-width: 680px) 100vw, 50vw" placeholder="blur" />
                 <div className="journey-vignette" />
               </div>
-              <div className="journey-status">
-                <span />
-                <p>
-                  {t("journey.status")}
-                  <br />
-                  <strong>{t("journey.impact")}</strong>
-                </p>
-              </div>
             </div>
           </div>
         </section>
