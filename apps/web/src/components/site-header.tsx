@@ -34,7 +34,7 @@ export default function SiteHeader({ landingPage = false }: SiteHeaderProps) {
         <a href={sectionHref("#news")}>{t("news")}</a>
       </nav>
       <div className="header-actions">
-        {!isPending && (session?.user ? <UserMenu /> : <Link className="header-login" href="/login">{t("login")}</Link>)}
+        {/* {!isPending && (session?.user ? <UserMenu /> : <Link className="header-login" href="/login">{t("login")}</Link>)} */}
         <LanguageSwitcher />
       </div>
     </header>

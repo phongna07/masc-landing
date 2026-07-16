@@ -2142,7 +2142,8 @@ img {
 }
 
 .primary-button {
-  display: inline-flex;
+  /* display: inline-flex; */
+  display: none;
   min-width: 188px;
   align-items: center;
   justify-content: center;
