@@ -3158,7 +3158,7 @@ img {
 }
 
 footer {
-  padding: 90px 0 30px;
+  padding: 90px 60px 30px;
   background: #07070a;
 }
 
@@ -3707,6 +3707,10 @@ footer {
     align-items: flex-start;
     flex-direction: column;
     gap: 18px;
+  }
+
+  footer {
+    padding: 90px 30px 30px;
   }
 }
 
