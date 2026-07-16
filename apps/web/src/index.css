@@ -2926,7 +2926,7 @@ img {
   background:
     radial-gradient(circle at 50% 48%,
       transparent 13%,
-      rgba(4, 4, 10, 0.05) 31%,
+      rgba(4, 4, 10, 0.05) 90%,
       rgba(4, 4, 10, 0.72) 100%),
     linear-gradient(180deg, rgba(0, 0, 0, 0.25), transparent, rgba(0, 0, 0, 0.4));
 }
@@ -3164,8 +3164,8 @@ footer {
 
 .footer-grid {
   display: grid;
-  grid-template-columns: 1.25fr 1fr 1.15fr 0.55fr;
-  gap: 6vw;
+  grid-template-columns: 0.65fr 1fr 1.15fr 0.55fr;
+  gap: 5vw;
   padding-bottom: 80px;
 }
 
@@ -3173,14 +3173,10 @@ footer {
   align-self: start;
 }
 
-.footer-brand p {
-  margin: 0;
-  color: #cbc7cf;
-  font-size: 12px;
-  font-weight: 600;
-  line-height: 1.4;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+.footer-logo {
+  width: clamp(80px, 7vw, 100px);
+  height: auto;
+  object-fit: contain;
 }
 
 .footer-contact,

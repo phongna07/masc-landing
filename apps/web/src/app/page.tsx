@@ -11,11 +11,12 @@ import image2 from "@/assets/image-2.png";
 import image3 from "@/assets/image-3.png";
 import image4 from "@/assets/image-4.png";
 import image5 from "@/assets/image-5.png";
+import footerLogo from "@/assets/footer-logo.png";
 import mentor1 from "@/assets/mentor-1.png";
 import mentor2 from "@/assets/mentor-2.png";
 import mentor3 from "@/assets/mentor-3.png";
 import mentor4 from "@/assets/mentor-4.png";
-import { BrandLogo, HeroBrandLogo } from "@/components/hero-brand-logo";
+import { HeroBrandLogo } from "@/components/hero-brand-logo";
 import SiteHeader from "@/components/site-header";
 import { authClient } from "@/lib/auth-client";
 
@@ -537,8 +538,12 @@ export default function Home() {
       <footer id="contact">
         <div className="page-shell footer-grid">
           <div className="footer-brand">
-            <BrandLogo className="brand-mark" />
-            <p>{t.rich("footer.brand", { break: () => <br /> })}</p>
+            <Image
+              src={footerLogo}
+              alt="Marketing All-Star Challenge 2026"
+              className="footer-logo"
+              sizes="(max-width: 680px) 80px, 100px"
+            />
           </div>
           <div className="footer-contact">
             <p className="footer-label">{t("footer.support")}</p>
