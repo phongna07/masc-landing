@@ -24,13 +24,13 @@
       "titleMarketing": "Marketing",
       "titleAllStar": "All-Star",
       "titleChallenge": "Challenge",
-      "description": "Bứt phá giới hạn của chính mình và kiến tạo nên một di sản hoàn toàn mới trong marketing.",
+      "description": "Muốn chạm tới hào quang rực rỡ, trước hết phải dám bước qua giới hạn của chính mình.",
       "apply": "Đăng ký ngay",
       "portal": "Cổng thông tin",
       "participantDetails": "Thông tin thí sinh",
       "country": "Việt Nam",
       "age": "Độ tuổi 18—22",
-      "applications": "Mở đơn / 10—23 tháng 7",
+      "applications": "Mở đơn 20/7 - 10/8",
       "scroll": "Cuộn để khám phá"
     },
     "countdown": {
@@ -92,34 +92,34 @@
       "impact": "TÁC ĐỘNG THỰC TẾ",
       "rounds": {
         "round05": {
-          "date": "10—27 tháng 8",
+          "date": "20/7 - 10/08",
           "title": "Vòng Sơ loại: The Ignition (Industry Exposure)",
-          "summary": "Cơ hội mở cho newbie và các đội chưa đủ đội hình 'full all-star'.",
-          "detail": "Top 2 đội xuất sắc nhất tiến thẳng vào Vòng 2. Top 50 bước tiếp vào Vòng 1 không qua xét duyệt CV, cùng đặc quyền tham gia session chữa đề và Industry sharing session từ các chuyên gia."
+          "summary": "Đề bài từ Brand Partner là mồi lửa để các marketer trẻ khai phá tiềm năng và chứng minh năng lực.",
+          "detail": "Top 20% đội thi được chọn vào Vòng 1; trong đó, Top 2 đội xuất sắc nhất tiến thẳng vào Vòng 2."
         },
         "round1": {
-          "date": "9—17 tháng 9",
-          "title": "Vòng 1: The Star Gathering",
-          "summary": "Phân hóa 3 track chuyên sâu: Product & Growth, Societal + PR, Market Research + Trade.",
-          "detail": "Mỗi track giải đề bài chuyên biệt từ Mentor/Partner theo nguyên tắc 'first come, first serve'. Các đội nhận phản hồi 1-1 từ mentor. Top 2 đội xuất sắc nhất mỗi track (tổng 6 đội) tiến vào Vòng 2."
+          "date": "01/09 - 20/09",
+          "title": "Vòng 1: The Star Gathering (Mentoring Round)",
+          "summary": "Top 20% từ Vòng Sơ loại cùng các hồ sơ All-Star hội tụ, cọ xát và đấu loại trực tiếp.",
+          "detail": "Mỗi đội chọn 1 trong 3 track do 3 mentor ra đề để phát triển ý tưởng thành proposal sắc bén. Top 2 đội mỗi track cùng Top 2 từ Vòng Sơ loại tiến vào Vòng 2."
         },
         "round2": {
-          "date": "25 tháng 9—9 tháng 10",
-          "title": "Vòng 2: The Stellar Forge",
-          "summary": "Top 6 đội thi giải bài toán xã hội & văn hóa từ Nhà tài trợ Kim Cương.",
-          "detail": "Đòi hỏi sự cân bằng khắt khe giữa tính sáng tạo đột phá, tính thực tiễn cao và tác động tích cực cho cộng đồng. Top 4 đội xuất sắc nhất bước tiếp vào Vòng Thực Chiến."
+          "date": "27/09 - 04/10",
+          "title": "Vòng 2: The Stellar Forge (Social & Cultural Impact Challenge)",
+          "summary": "Tại “lò rèn” ý tưởng, các đội đối mặt thử thách về bản lĩnh, sáng tạo và tác động xã hội – văn hóa.",
+          "detail": "Dưới sự đồng hành của mentor, các đội gọt giũa chiến lược để giải bài toán truyền thông từ đối tác. Top 4 chiến lược tốt nhất bước vào Vòng Thực Chiến."
         },
         "round3": {
-          "date": "Vòng Thực Chiến",
-          "title": "The Cosmic Crash",
-          "summary": "Top 4 triển khai chiến dịch truyền thông thực tế trên thị trường.",
-          "detail": "Trực tiếp phát triển proposal thành chiến dịch thực tế dưới sự đồng hành định hướng của Mentor và Brand Partner. Toàn bộ Top 4 chắc suất bước vào Đêm Chung kết."
+          "date": "9/10 - 3/11",
+          "title": "Vòng Thực Chiến: The Cosmic Blast (Real Campaign Execution)",
+          "summary": "Top 4 đội biến ý tưởng thành chiến dịch hoàn chỉnh và tạo nên cú bùng nổ thực tế trên thị trường.",
+          "detail": "Với sự định hướng của mentor, các đội bước ra khỏi giả định để triển khai, thử nghiệm và đo lường hiệu quả thật sự từ thị trường và khách hàng."
         },
         "round4": {
-          "date": "16—17 tháng 10",
-          "title": "Grand Finale: The Infinite Glow",
-          "summary": "Networking Night (16/10), Pitching Chung kết & Thử thách kép Mini Case (17/10).",
-          "detail": "Top 4 trình bày campaign thực chiến trước BGK. Top 2 đội điểm cao nhất bước vào phần giải Mini Case trực tiếp dưới áp lực thời gian để quyết định Quán quân MASC'26."
+          "date": "7/11",
+          "title": "Vòng Chung Kết: The Infinite Legacy (Grand Finale)",
+          "summary": "Top 4 bảo vệ chiến dịch thực chiến trước Hội đồng Giám khảo, kết tinh hành trình thành một di sản vượt thời gian.",
+          "detail": "Top 2 chiến dịch xuất sắc nhất tiếp tục giải Mini Case ngay trong đêm Chung kết để tìm ra Quán quân MASC'26 và truyền cảm hứng cho thế hệ marketer tiếp theo."
         }
       }
     },
@@ -168,7 +168,7 @@
     "finalCta": {
       "index": "Sẵn sàng bứt phá",
       "title": "Bứt phá giới hạn,<break></break>trở thành <em>Hypernova</em>",
-      "description": "Đơn đăng ký mở từ ngày 10–23 tháng 7 dành cho các tài năng marketing tham vọng từ 18–22 tuổi trên toàn quốc.",
+      "description": "Đơn đăng ký mở từ ngày 20/7 đến 10/8 dành cho các tài năng marketing tham vọng từ 18–22 tuổi trên toàn quốc.",
       "button": "Đăng ký ngay",
       "portal": "Cổng thông tin"
     },

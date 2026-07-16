@@ -24,13 +24,13 @@
       "titleMarketing": "Marketing",
       "titleAllStar": "All-Star",
       "titleChallenge": "Challenge",
-      "description": "Push past your personal limits and create a completely new legacy in marketing.",
+      "description": "To reach the brightest glory, you must first dare to step beyond your own limits.",
       "apply": "Apply now",
       "portal": "Open Dashboard",
       "participantDetails": "Participant details",
       "country": "Vietnam",
       "age": "Ages 18—22",
-      "applications": "Applications / Jul 10—23",
+      "applications": "Applications / Jul 20 — Aug 10",
       "scroll": "Scroll to discover"
     },
     "countdown": {
@@ -92,34 +92,34 @@
       "impact": "REAL-WORLD IMPACT",
       "rounds": {
         "round05": {
-          "date": "August 10—27",
-          "title": "Vòng Sơ loại: The Ignition (Industry Exposure)",
-          "summary": "An open track for newcomers and teams without a full all-star lineup.",
-          "detail": "The top 2 teams advance directly to Round 2. The top 50 bypass CV screening into Round 1 and receive exclusive access to case-review sessions and industry sharing sessions."
+          "date": "20/7 - 10/08",
+          "title": "Preliminary Round: The Ignition (Industry Exposure)",
+          "summary": "A Brand Partner brief becomes the spark for young marketers to unlock their potential and prove their abilities.",
+          "detail": "The top 20% of teams advance to Round 1, while the 2 best-performing teams earn direct entry to Round 2."
         },
         "round1": {
-          "date": "September 9—17",
-          "title": "Round 1: The Star Gathering",
-          "summary": "Three specialized tracks: Product & Growth, Societal + PR, Market Research + Trade.",
-          "detail": "Teams tackle specialized challenges from Mentor partners allocated on a first-come, first-served basis, with 1-on-1 mentor feedback. The top 2 teams from each track (6 teams total) advance to Round 2."
+          "date": "01/09 - 20/09",
+          "title": "Round 1: The Star Gathering (Mentoring Round)",
+          "summary": "The top 20% from the Qualifying Round and All-Star applicants gather for a head-to-head challenge.",
+          "detail": "Each team chooses 1 of 3 mentor-led tracks to sharpen an initial idea into a compelling proposal. The top 2 teams from each track join the top 2 Qualifying Round teams in Round 2."
         },
         "round2": {
-          "date": "Sept 25—Oct 9",
-          "title": "Round 2: The Stellar Forge",
-          "summary": "The top 6 teams tackle the Diamond Sponsor's societal & cultural challenge.",
-          "detail": "Solutions must strictly balance breakthrough creativity, real-world feasibility, and positive community impact. The top 4 teams advance to the Real-World Execution Round."
+          "date": "27/09 - 04/10",
+          "title": "Round 2: The Stellar Forge (Social & Cultural Impact Challenge)",
+          "summary": "In this forge of ideas, teams face a true test of courage, creativity, and social and cultural impact.",
+          "detail": "Guided by mentors, teams refine their strategies to solve a partner's communications challenge. The 4 strongest strategies advance to the Real-World Execution Round."
         },
         "round3": {
-          "date": "Execution Round",
-          "title": "The Cosmic Crash",
-          "summary": "The top 4 execute live marketing campaigns in the real market.",
-          "detail": "Teams develop proposals into actual live media campaigns with guidance from Mentors and Brand Partners. All 4 teams secure their place in the Grand Finale Pitching Night."
+          "date": "9/10 - 3/11",
+          "title": "Practical Round: The Cosmic Blast (Real Campaign Execution)",
+          "summary": "The top 4 teams transform their ideas into complete campaigns and create a real-world impact in the market.",
+          "detail": "With mentor guidance, teams move beyond assumptions to launch, test, and measure genuine results from the market and its customers."
         },
         "round4": {
-          "date": "October 16—17",
-          "title": "Grand Finale: The Infinite Glow",
-          "summary": "Networking Night (Oct 16), Final Pitching & Dual-Challenge Mini Case (Oct 17).",
-          "detail": "Top 4 defend their live campaign results before judges. The top 2 teams solve a surprise Mini Case live on stage under time pressure to determine the MASC'26 Champion."
+          "date": "7/11",
+          "title": "Final Round: The Infinite Legacy (Grand Finale)",
+          "summary": "The top 4 defend their live campaigns before the Jury, turning their journey into a legacy that lasts beyond the competition.",
+          "detail": "The 2 teams with the strongest campaigns face a live Mini Case at the Grand Finale to crown the MASC'26 Champion and inspire the next generation of marketers."
         }
       }
     },
@@ -168,7 +168,7 @@
     "finalCta": {
       "index": "Ready to rise",
       "title": "Push your boundaries,<break></break>become a <em>Hypernova</em>",
-      "description": "Applications are open July 10–23 for ambitious marketing talent aged 18–22 nationwide.",
+      "description": "Applications are open July 20 – Aug 10 for ambitious marketing talent aged 18–22 nationwide.",
       "button": "Apply now",
       "portal": "Open Dashboard"
     },
