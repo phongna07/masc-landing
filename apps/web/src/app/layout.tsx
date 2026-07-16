@@ -17,13 +17,42 @@ const castela = localFont({
 });
 
 export async function generateMetadata(): Promise<Metadata> {
-  const t = await getTranslations("Metadata");
+  const [locale, t] = await Promise.all([
+    getLocale(),
+    getTranslations("Metadata"),
+  ]);
+  const title = t("title");
+  const description = t("description");
 
   return {
-    title: t("title"),
-    description: t("description"),
+    metadataBase: new URL("https://marketingallstarchallenge.com"),
+    title,
+    description,
     icons: {
       icon: logo.src,
+    },
+    openGraph: {
+      type: "website",
+      url: "/",
+      siteName: "Marketing All-Star Challenge",
+      locale: locale === "vi" ? "vi_VN" : "en_US",
+      title,
+      description,
+      images: [
+        {
+          url: "/preview.png",
+          width: 1077,
+          height: 722,
+          alt: title,
+          type: "image/png",
+        },
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: ["/preview.png"],
     },
   };
 }
