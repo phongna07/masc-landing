@@ -2917,7 +2917,7 @@ img {
 
 .journey-image img {
   object-position: center;
-  filter: brightness(0.72) saturate(0.78);
+  /* filter: brightness(0.72) saturate(0.78); */
 }
 
 .journey-vignette {
@@ -3733,12 +3733,10 @@ footer {
   position: absolute;
   inset: 0;
   content: "";
-  background: radial-gradient(
-    circle at 50% 42%,
-    rgba(4, 2, 16, 0.08) 0%,
-    rgba(4, 2, 16, 0.28) 52%,
-    rgba(4, 2, 16, 0.72) 100%
-  );
+  background: radial-gradient(circle at 50% 42%,
+      rgba(4, 2, 16, 0.08) 0%,
+      rgba(4, 2, 16, 0.28) 52%,
+      rgba(4, 2, 16, 0.72) 100%);
   pointer-events: none;
 }
 
