@@ -3122,8 +3122,8 @@ img {
 }
 
 .final-orbit::after {
-  background: #f3d282;
-  box-shadow: 0 0 18px rgba(243, 210, 130, 0.85);
+  background: #9b8cff;
+  box-shadow: 0 0 18px rgba(155, 140, 255, 0.85);
 }
 
 .final-content {
