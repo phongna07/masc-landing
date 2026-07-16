@@ -7,6 +7,7 @@ import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { useEffect, useRef, useState } from "react";
 
+import image1 from "@/assets/image-1.png";
 import image2 from "@/assets/image-2.png";
 import image3 from "@/assets/image-3.png";
 import image4 from "@/assets/image-4.png";
@@ -255,7 +256,16 @@ export default function Home() {
 
       <main id="top">
         <section className="hero" aria-labelledby="hero-title">
-          <div className="hero-cosmos" aria-hidden="true">
+          <div className="hero-background" aria-hidden="true">
+            <Image
+              src={image1}
+              alt=""
+              fill
+              priority
+              sizes="100vw"
+            />
+          </div>
+          {/* <div className="hero-cosmos" aria-hidden="true">
             <div className="hero-nebula hero-nebula-one" />
             <div className="hero-nebula hero-nebula-two" />
             <div className="hero-starfield hero-starfield-near" />
@@ -263,7 +273,7 @@ export default function Home() {
             <span className="shooting-star shooting-star-one" />
             <span className="shooting-star shooting-star-two" />
             <span className="shooting-star shooting-star-three" />
-          </div>
+          </div> */}
           <div className="hero-shade" aria-hidden="true" />
 
           <div className="hero-content page-shell">

@@ -3717,6 +3717,31 @@ footer {
   background: #10072d;
 }
 
+.hero-background {
+  position: absolute;
+  z-index: -3;
+  inset: 0;
+  overflow: hidden;
+}
+
+.hero-background img {
+  object-fit: cover;
+  object-position: center;
+}
+
+.hero-background::after {
+  position: absolute;
+  inset: 0;
+  content: "";
+  background: radial-gradient(
+    circle at 50% 42%,
+    rgba(4, 2, 16, 0.08) 0%,
+    rgba(4, 2, 16, 0.28) 52%,
+    rgba(4, 2, 16, 0.72) 100%
+  );
+  pointer-events: none;
+}
+
 .hero-cosmos {
   position: absolute;
   z-index: -3;
