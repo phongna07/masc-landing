@@ -1,9 +1,14 @@
 import { z } from "zod";
 
-import { TEAMMATE_COUNT } from "./registration";
+import { isEligibleBirthdate, isValidBirthdate, TEAMMATE_COUNT } from "./registration";
 
 const requiredText = (maximum: number) => z.string().trim().min(1).max(maximum);
 const normalizedEmail = z.string().trim().toLowerCase().email().max(254);
+const birthdate = z
+  .string()
+  .trim()
+  .refine(isValidBirthdate, { message: "INVALID_BIRTHDATE" })
+  .refine(isEligibleBirthdate, { message: "INELIGIBLE_BIRTHDATE" });
 const phone = z
   .string()
   .trim()
@@ -15,6 +20,8 @@ const phone = z
 
 export const createTeamInputSchema = z.object({
   teamName: requiredText(100),
+  captainFullName: requiredText(120),
+  captainBirthdate: birthdate,
   captainPhone: phone,
   captainUniversityName: requiredText(160),
   teammates: z
@@ -22,6 +29,7 @@ export const createTeamInputSchema = z.object({
       z.object({
         fullName: requiredText(120),
         email: normalizedEmail,
+        birthdate,
         universityName: requiredText(160),
       }),
     )

@@ -2,7 +2,7 @@
 
 import type { AppRouter } from "@masc-landing/api/routers/index";
 import { roundIds, type RoundId } from "@masc-landing/api/rounds";
-import { TEAM_SIZE, TEAMMATE_COUNT } from "@masc-landing/api/registration";
+import { getEligibleBirthdateRange, isEligibleBirthdate, TEAM_SIZE, TEAMMATE_COUNT } from "@masc-landing/api/registration";
 import { Button } from "@masc-landing/ui/components/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@masc-landing/ui/components/card";
 import { Input } from "@masc-landing/ui/components/input";
@@ -28,13 +28,14 @@ import RoundSubmission from "./round-submission";
 
 type Session = typeof authClient.$Infer.Session;
 type Membership = inferRouterOutputs<AppRouter>["registration"]["current"];
-type Teammate = { id: string; fullName: string; email: string; universityName: string };
+type Teammate = { id: string; fullName: string; email: string; birthdate: string; universityName: string };
 type FormErrors = Record<string, string>;
 
 const emptyTeammate = (id: string): Teammate => ({
   id,
   fullName: "",
   email: "",
+  birthdate: "",
   universityName: "",
 });
 
@@ -166,12 +167,16 @@ function formatBytes(bytes: number) {
 function RegistrationForm({ session }: { session: Session }) {
   const t = useTranslations("Dashboard");
   const [teamName, setTeamName] = useState("");
+  const [captainFullName, setCaptainFullName] = useState(session.user.name);
+  const captainEmail = session.user.email;
+  const [captainBirthdate, setCaptainBirthdate] = useState("");
   const [captainPhone, setCaptainPhone] = useState("");
   const [captainUniversityName, setCaptainUniversityName] = useState("");
   const [teammates, setTeammates] = useState<Teammate[]>(
     Array.from({ length: TEAMMATE_COUNT }, (_, index) => emptyTeammate(`member-${index + 1}`)),
   );
   const [errors, setErrors] = useState<FormErrors>({});
+  const birthdateRange = getEligibleBirthdateRange();
 
   const createTeam = useMutation(
     trpc.registration.createTeam.mutationOptions({
@@ -195,6 +200,9 @@ function RegistrationForm({ session }: { session: Session }) {
     };
 
     required("teamName", teamName);
+    required("captainFullName", captainFullName);
+    required("captainEmail", captainEmail);
+    required("captainBirthdate", captainBirthdate);
     required("captainPhone", captainPhone);
     required("captainUniversityName", captainUniversityName);
     const digits = captainPhone.replace(/\D/g, "");
@@ -202,15 +210,26 @@ function RegistrationForm({ session }: { session: Session }) {
       next.captainPhone = t("validation.phone");
     }
 
-    const emails = [session.user.email.trim().toLowerCase()];
+    const normalizedCaptainEmail = captainEmail.trim().toLowerCase();
+    if (captainEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedCaptainEmail)) {
+      next.captainEmail = t("validation.email");
+    }
+    if (captainBirthdate && !isEligibleBirthdate(captainBirthdate)) {
+      next.captainBirthdate = t("validation.birthdate");
+    }
+    const emails = [normalizedCaptainEmail];
     teammates.forEach((member, index) => {
       const prefix = `teammates.${index}`;
       required(`${prefix}.fullName`, member.fullName);
       required(`${prefix}.email`, member.email);
+      required(`${prefix}.birthdate`, member.birthdate);
       required(`${prefix}.universityName`, member.universityName);
       const email = member.email.trim().toLowerCase();
       if (member.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
         next[`${prefix}.email`] = t("validation.email");
+      }
+      if (member.birthdate && !isEligibleBirthdate(member.birthdate)) {
+        next[`${prefix}.birthdate`] = t("validation.birthdate");
       }
       emails.push(email);
     });
@@ -228,6 +247,8 @@ function RegistrationForm({ session }: { session: Session }) {
     if (!validate()) return;
     createTeam.mutate({
       teamName,
+      captainFullName,
+      captainBirthdate,
       captainPhone,
       captainUniversityName,
       teammates: teammates.map(({ id: _id, ...member }) => member),
@@ -273,13 +294,16 @@ function RegistrationForm({ session }: { session: Session }) {
           <CardTitle>{t("registration.captainDetails")}</CardTitle>
         </CardHeader>
         <CardContent className="dashboard-fields">
-          <Field label={t("fields.fullName")}>
-            <Input value={session.user.name} disabled />
+          <Field label={t("fields.fullName")} error={errors.captainFullName}>
+            <Input value={captainFullName} onChange={(event) => setCaptainFullName(event.target.value)} aria-invalid={!!errors.captainFullName} />
           </Field>
-          <Field label={t("fields.email")}>
-            <Input type="email" value={session.user.email} disabled />
+          <Field label={t("fields.email")} error={errors.captainEmail}>
+            <Input type="email" value={captainEmail} readOnly aria-readonly="true" aria-invalid={!!errors.captainEmail} />
           </Field>
-          <Field label={t("fields.university")} error={errors.captainUniversityName} full>
+          <Field label={t("fields.birthdate")} error={errors.captainBirthdate}>
+            <Input type="date" min={birthdateRange.min} max={birthdateRange.max} value={captainBirthdate} onChange={(event) => setCaptainBirthdate(event.target.value)} aria-invalid={!!errors.captainBirthdate} />
+          </Field>
+          <Field label={t("fields.university")} error={errors.captainUniversityName}>
             <Input value={captainUniversityName} onChange={(event) => setCaptainUniversityName(event.target.value)} aria-invalid={!!errors.captainUniversityName} />
           </Field>
         </CardContent>
@@ -306,7 +330,10 @@ function RegistrationForm({ session }: { session: Session }) {
                 <Field label={t("fields.email")} error={errors[`teammates.${index}.email`]}>
                   <Input type="email" value={member.email} onChange={(event) => updateTeammate(member.id, "email", event.target.value)} aria-invalid={!!errors[`teammates.${index}.email`]} />
                 </Field>
-                <Field label={t("fields.university")} error={errors[`teammates.${index}.universityName`]} full>
+                <Field label={t("fields.birthdate")} error={errors[`teammates.${index}.birthdate`]}>
+                  <Input type="date" min={birthdateRange.min} max={birthdateRange.max} value={member.birthdate} onChange={(event) => updateTeammate(member.id, "birthdate", event.target.value)} aria-invalid={!!errors[`teammates.${index}.birthdate`]} />
+                </Field>
+                <Field label={t("fields.university")} error={errors[`teammates.${index}.universityName`]}>
                   <Input value={member.universityName} onChange={(event) => updateTeammate(member.id, "universityName", event.target.value)} aria-invalid={!!errors[`teammates.${index}.universityName`]} />
                 </Field>
               </div>
@@ -328,6 +355,7 @@ function RegistrationForm({ session }: { session: Session }) {
 
 function TeamOverview({ membership }: { membership: Extract<Membership, { registered: true }> }) {
   const t = useTranslations("Dashboard");
+  const format = useFormatter();
   const captain = membership.team.members.find((member) => member.isCaptain);
   return (
     <div className="team-overview">
@@ -368,6 +396,7 @@ function TeamOverview({ membership }: { membership: Extract<Membership, { regist
               <tr>
                 <th scope="col" aria-label="Number">#</th>
                 <th scope="col">{t("fields.fullName")}</th>
+                <th scope="col">{t("fields.birthdate")}</th>
                 <th scope="col">{t("fields.university")}</th>
                 <th scope="col" aria-label={t("roles.captain")} />
               </tr>
@@ -377,6 +406,7 @@ function TeamOverview({ membership }: { membership: Extract<Membership, { regist
                 <tr key={member.id}>
                   <td className="roster-index">{String(index + 1).padStart(2, "0")}</td>
                   <td><h3>{member.fullName}</h3><p>{member.email}</p></td>
+                  <td><p>{format.dateTime(new Date(`${member.birthdate}T00:00:00Z`), { dateStyle: "medium", timeZone: "UTC" })}</p></td>
                   <td><p>{member.universityName}</p></td>
                   <td>{member.isCaptain && <span className="captain-tag">{t("roles.captain")}</span>}</td>
                 </tr>

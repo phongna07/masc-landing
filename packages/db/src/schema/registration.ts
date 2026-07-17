@@ -2,6 +2,7 @@ import { relations, sql } from "drizzle-orm";
 import {
   bigint,
   boolean,
+  date,
   index,
   integer,
   pgEnum,
@@ -46,6 +47,7 @@ export const members = pgTable(
     id: text("id")
       .$defaultFn(() => crypto.randomUUID())
       .primaryKey(),
+    birthdate: date("birth_date", { mode: "string" }).notNull(),
     universityName: text("university_name").notNull(),
     teamId: text("team_id")
       .notNull()

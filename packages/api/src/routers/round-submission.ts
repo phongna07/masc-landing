@@ -1,10 +1,10 @@
 import { DeleteObjectCommand, GetObjectCommand, HeadObjectCommand, PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { db } from "@masc-landing/db";
-import { members, roundSubmissions } from "@masc-landing/db/schema/index";
+import { members, roundSubmissions, teams } from "@masc-landing/db/schema/index";
 import { env } from "@masc-landing/env/server";
 import { TRPCError } from "@trpc/server";
-import { and, eq, sql } from "drizzle-orm";
+import { and, eq, or, sql } from "drizzle-orm";
 import { z } from "zod";
 
 import { protectedProcedure, router } from "../index";
@@ -39,9 +39,13 @@ function validateFile(file: z.infer<typeof fileInput>) {
   if (allowedFiles[extension] !== file.mimeType) throw new TRPCError({ code: "BAD_REQUEST", message: "UNSUPPORTED_FILE" });
   return extension;
 }
-async function membershipFor(email: string) {
+async function membershipFor(userId: string, email: string) {
   const [membership] = await db.select({ teamId: members.teamId, isCaptain: members.isCaptain }).from(members)
-    .where(sql`lower(${members.email}) = ${email.trim().toLowerCase()}`).limit(1);
+    .innerJoin(teams, eq(members.teamId, teams.id))
+    .where(or(
+      and(eq(teams.captainId, userId), eq(members.isCaptain, true)),
+      sql`lower(${members.email}) = ${email.trim().toLowerCase()}`,
+    )).limit(1);
   if (!membership) throw new TRPCError({ code: "FORBIDDEN", message: "TEAM_REQUIRED" });
   return membership;
 }
@@ -60,7 +64,7 @@ function submissionWhere(teamId: string, round: string) {
 
 export const roundSubmissionRouter = router({
   current: protectedProcedure.input(roundInput).query(async ({ ctx, input }) => {
-    const membership = await membershipFor(ctx.session.user.email);
+    const membership = await membershipFor(ctx.session.user.id, ctx.session.user.email);
     const settings = await getSubmissionSettings();
     const [submission] = await db.select({
       description: roundSubmissions.description, originalFilename: roundSubmissions.originalFilename,
@@ -71,7 +75,7 @@ export const roundSubmissionRouter = router({
     return { submission: submission ?? null, isSubmissionOpen: settings[input.round] };
   }),
   createUploadUrl: protectedProcedure.input(fileInput).mutation(async ({ ctx, input }) => {
-    const membership = await membershipFor(ctx.session.user.email); requireCaptain(membership);
+    const membership = await membershipFor(ctx.session.user.id, ctx.session.user.email); requireCaptain(membership);
     await requireSubmissionOpen(input.round);
     const uploadId = crypto.randomUUID();
     const uploadUrl = await getSignedUrl(s3, new PutObjectCommand({ Bucket: env.R2_BUCKET,
@@ -81,7 +85,7 @@ export const roundSubmissionRouter = router({
   }),
   finalize: protectedProcedure.input(fileInput.extend({ uploadId: z.uuid(), description: z.string().trim().min(1).max(5000) }))
     .mutation(async ({ ctx, input }) => {
-      const membership = await membershipFor(ctx.session.user.email); requireCaptain(membership);
+      const membership = await membershipFor(ctx.session.user.id, ctx.session.user.email); requireCaptain(membership);
       const key = objectKey(input.round, membership.teamId, input.uploadId, validateFile(input));
       try { await requireSubmissionOpen(input.round); } catch (error) {
         const [current] = await db.select({ objectKey: roundSubmissions.objectKey }).from(roundSubmissions)
@@ -108,7 +112,7 @@ export const roundSubmissionRouter = router({
       return { success: true };
     }),
   createDownloadUrl: protectedProcedure.input(roundInput).mutation(async ({ ctx, input }) => {
-    const membership = await membershipFor(ctx.session.user.email);
+    const membership = await membershipFor(ctx.session.user.id, ctx.session.user.email);
     const [submission] = await db.select({ objectKey: roundSubmissions.objectKey, filename: roundSubmissions.originalFilename })
       .from(roundSubmissions).where(submissionWhere(membership.teamId, input.round)).limit(1);
     if (!submission) throw new TRPCError({ code: "NOT_FOUND", message: "SUBMISSION_NOT_FOUND" });
@@ -117,7 +121,7 @@ export const roundSubmissionRouter = router({
       ResponseContentDisposition: `attachment; filename="${safeFilename}"` }), { expiresIn: URL_EXPIRY_SECONDS }) };
   }),
   createPreviewUrl: protectedProcedure.input(roundInput).mutation(async ({ ctx, input }) => {
-    const membership = await membershipFor(ctx.session.user.email);
+    const membership = await membershipFor(ctx.session.user.id, ctx.session.user.email);
     const [submission] = await db.select({ objectKey: roundSubmissions.objectKey, mimeType: roundSubmissions.mimeType })
       .from(roundSubmissions).where(submissionWhere(membership.teamId, input.round)).limit(1);
     if (!submission) throw new TRPCError({ code: "NOT_FOUND", message: "SUBMISSION_NOT_FOUND" });

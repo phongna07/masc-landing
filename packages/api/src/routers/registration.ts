@@ -1,7 +1,7 @@
 import { db } from "@masc-landing/db";
 import { members, teams } from "@masc-landing/db/schema/index";
 import { TRPCError } from "@trpc/server";
-import { eq, inArray, sql } from "drizzle-orm";
+import { and, eq, inArray, or, sql } from "drizzle-orm";
 
 import { protectedProcedure, router } from "../index";
 import { createTeamInputSchema } from "../registration-schema";
@@ -31,7 +31,10 @@ export const registrationRouter = router({
       })
       .from(members)
       .innerJoin(teams, eq(members.teamId, teams.id))
-      .where(sql`lower(${members.email}) = ${email}`)
+      .where(or(
+        and(eq(teams.captainId, ctx.session.user.id), eq(members.isCaptain, true)),
+        sql`lower(${members.email}) = ${email}`,
+      ))
       .limit(1);
 
     if (!membership) {
@@ -43,6 +46,7 @@ export const registrationRouter = router({
         id: members.id,
         fullName: members.fullName,
         email: members.email,
+        birthdate: members.birthdate,
         universityName: members.universityName,
         isCaptain: members.isCaptain,
       })
@@ -87,8 +91,9 @@ export const registrationRouter = router({
         id: crypto.randomUUID(),
         teamId,
         isCaptain: true,
-        fullName: ctx.session.user.name.trim(),
+        fullName: input.captainFullName,
         email: captainEmail,
+        birthdate: input.captainBirthdate,
         universityName: input.captainUniversityName,
       },
       ...input.teammates.map((member) => ({

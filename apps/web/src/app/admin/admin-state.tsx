@@ -22,3 +22,8 @@ export function AdminEmpty({ title, description }: { title: string; description:
 export function formatDate(value: string | Date, locale: string) {
   return new Intl.DateTimeFormat(locale, { dateStyle: "medium", timeStyle: "short" }).format(new Date(value));
 }
+
+export function formatBirthdate(value: string, locale: string) {
+  return new Intl.DateTimeFormat(locale, { dateStyle: "medium", timeZone: "UTC" })
+    .format(new Date(`${value}T00:00:00Z`));
+}

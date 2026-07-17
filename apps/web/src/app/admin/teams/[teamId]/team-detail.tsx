@@ -11,7 +11,7 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
 import { trpc } from "@/utils/trpc";
-import { AdminEmpty, AdminError, AdminLoading, formatDate } from "../../admin-state";
+import { AdminEmpty, AdminError, AdminLoading, formatBirthdate, formatDate } from "../../admin-state";
 
 export default function TeamDetail({ teamId }: { teamId: string }) {
   const t = useTranslations("Admin");
@@ -71,8 +71,8 @@ export default function TeamDetail({ teamId }: { teamId: string }) {
       </CardContent></Card>
     </div>
     <Card className="admin-table-card"><CardHeader><CardTitle>{t("detail.roster")}</CardTitle></CardHeader><CardContent className="admin-table-scroll">
-      <table className="admin-table"><thead><tr><th scope="col">{t("fields.member")}</th><th scope="col">{t("fields.email")}</th><th scope="col">{t("fields.university")}</th><th scope="col">{t("fields.role")}</th></tr></thead>
-        <tbody>{team.data.members.map((member) => <tr key={member.id}><td><strong>{member.fullName}</strong></td><td>{member.email}</td><td>{member.universityName}</td><td>{member.isCaptain && <span className="captain-tag">{t("values.captain")}</span>}</td></tr>)}</tbody>
+      <table className="admin-table"><thead><tr><th scope="col">{t("fields.member")}</th><th scope="col">{t("fields.email")}</th><th scope="col">{t("fields.birthdate")}</th><th scope="col">{t("fields.university")}</th><th scope="col">{t("fields.role")}</th></tr></thead>
+        <tbody>{team.data.members.map((member) => <tr key={member.id}><td><strong>{member.fullName}</strong></td><td>{member.email}</td><td>{formatBirthdate(member.birthdate, locale)}</td><td>{member.universityName}</td><td>{member.isCaptain && <span className="captain-tag">{t("values.captain")}</span>}</td></tr>)}</tbody>
       </table>
     </CardContent></Card>
     <Button className="admin-mobile-back" variant="outline" nativeButton={false} render={<Link href="/admin/teams" />}><ArrowLeftIcon aria-hidden="true" />{t("actions.backToTeams")}</Button>

@@ -57,6 +57,13 @@
       "when": 1784003707336,
       "tag": "0007_email-queue",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1784297131568,
+      "tag": "0008_participant-birthdate",
+      "breakpoints": true
     }
   ]
 }

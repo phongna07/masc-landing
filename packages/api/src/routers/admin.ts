@@ -3,7 +3,7 @@ import { GetObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { auth } from "@masc-landing/auth";
 import { db } from "@masc-landing/db";
-import { emailQueue, members, roundSubmissions, submissionSettings, teams, user } from "@masc-landing/db/schema/index";
+import { emailQueue, members, roundSubmissions, submissionSettings, teams } from "@masc-landing/db/schema/index";
 import { env } from "@masc-landing/env/server";
 import { TRPCError } from "@trpc/server";
 import { and, asc, count, desc, eq, sql } from "drizzle-orm";
@@ -27,6 +27,10 @@ const registrationStatusSchema = z.enum(["pending", "approved", "rejected"]);
 const mailStatusSchema = z.enum(["pending", "sent", "failed"]);
 const mailListStatusSchema = z.enum(["all", "pending", "sent", "failed"]);
 const mailSender = `Ban Tổ chức MASC <${env.MAIL_USERNAME}>`;
+const captainName = sql<string>`(select ${members.fullName} from ${members}
+  where ${members.teamId} = ${teams.id} and ${members.isCaptain} = true limit 1)`;
+const captainEmail = sql<string>`(select ${members.email} from ${members}
+  where ${members.teamId} = ${teams.id} and ${members.isCaptain} = true limit 1)`;
 
 const s3 = new S3Client({ region: "auto", endpoint: `https://${env.R2_ACCOUNT_ID}.r2.cloudflarestorage.com`,
   credentials: { accessKeyId: env.R2_ACCESS_KEY_ID, secretAccessKey: env.R2_SECRET_ACCESS_KEY } });
@@ -69,17 +73,17 @@ export const adminRouter = router({
       banReason: item.banReason, banExpires: item.banExpires, createdAt: item.createdAt, updatedAt: item.updatedAt }));
   }),
   listTeams: adminProcedure.query(async () => db.select({ id: teams.id, name: teams.teamName,
-    status: teams.registrationStatus, createdAt: teams.createdAt, captainName: user.name, captainEmail: user.email,
+    status: teams.registrationStatus, createdAt: teams.createdAt, captainName, captainEmail,
     captainPhone: teams.captainPhone, memberCount: count(members.id) }).from(teams)
-    .innerJoin(user, eq(teams.captainId, user.id)).leftJoin(members, eq(teams.id, members.teamId))
-    .groupBy(teams.id, user.id).orderBy(desc(teams.createdAt), asc(teams.teamName))),
+    .leftJoin(members, eq(teams.id, members.teamId))
+    .groupBy(teams.id).orderBy(desc(teams.createdAt), asc(teams.teamName))),
   getTeam: adminProcedure.input(z.object({ teamId: z.string().trim().min(1).max(128) })).query(async ({ input }) => {
     const [team] = await db.select({ id: teams.id, name: teams.teamName, status: teams.registrationStatus,
-      createdAt: teams.createdAt, captainName: user.name, captainEmail: user.email, captainPhone: teams.captainPhone })
-      .from(teams).innerJoin(user, eq(teams.captainId, user.id)).where(eq(teams.id, input.teamId)).limit(1);
+      createdAt: teams.createdAt, captainName, captainEmail, captainPhone: teams.captainPhone })
+      .from(teams).where(eq(teams.id, input.teamId)).limit(1);
     if (!team) throw new TRPCError({ code: "NOT_FOUND", message: "Team not found" });
     const roster = await db.select({ id: members.id, fullName: members.fullName, email: members.email,
-      universityName: members.universityName, isCaptain: members.isCaptain }).from(members)
+      birthdate: members.birthdate, universityName: members.universityName, isCaptain: members.isCaptain }).from(members)
       .where(eq(members.teamId, team.id)).orderBy(desc(members.isCaptain), asc(members.fullName));
     return { ...team, members: roster };
   }),
@@ -186,11 +190,11 @@ export const adminRouter = router({
   }),
   listRoundSubmissions: adminProcedure.input(roundInput).query(async ({ input }) => db.select({
     id: roundSubmissions.id, teamId: teams.id, teamName: teams.teamName, teamStatus: teams.registrationStatus,
-    captainName: user.name, captainEmail: user.email, originalFilename: roundSubmissions.originalFilename,
+    captainName, captainEmail, originalFilename: roundSubmissions.originalFilename,
     mimeType: roundSubmissions.mimeType, fileSize: roundSubmissions.fileSize, createdAt: roundSubmissions.createdAt,
     updatedAt: roundSubmissions.updatedAt,
   }).from(roundSubmissions).innerJoin(teams, eq(roundSubmissions.teamId, teams.id))
-    .innerJoin(user, eq(teams.captainId, user.id)).where(eq(roundSubmissions.round, input.round))
+    .where(eq(roundSubmissions.round, input.round))
     .orderBy(desc(roundSubmissions.updatedAt), asc(teams.teamName))),
   getRoundSubmission: adminProcedure.input(submissionInput).query(async ({ input }) => {
     const [submission] = await db.select({ id: roundSubmissions.id, description: roundSubmissions.description,
@@ -198,12 +202,12 @@ export const adminRouter = router({
       originalFilename: roundSubmissions.originalFilename, mimeType: roundSubmissions.mimeType,
       fileSize: roundSubmissions.fileSize, createdAt: roundSubmissions.createdAt, updatedAt: roundSubmissions.updatedAt,
       teamId: teams.id, teamName: teams.teamName, teamStatus: teams.registrationStatus, teamCreatedAt: teams.createdAt,
-      captainName: user.name, captainEmail: user.email, captainPhone: teams.captainPhone,
+      captainName, captainEmail, captainPhone: teams.captainPhone,
     }).from(roundSubmissions).innerJoin(teams, eq(roundSubmissions.teamId, teams.id))
-      .innerJoin(user, eq(teams.captainId, user.id)).where(identifiedSubmission(input)).limit(1);
+      .where(identifiedSubmission(input)).limit(1);
     if (!submission) throw new TRPCError({ code: "NOT_FOUND", message: "Submission not found" });
     const roster = await db.select({ id: members.id, fullName: members.fullName, email: members.email,
-      universityName: members.universityName, isCaptain: members.isCaptain }).from(members)
+      birthdate: members.birthdate, universityName: members.universityName, isCaptain: members.isCaptain }).from(members)
       .where(eq(members.teamId, submission.teamId)).orderBy(desc(members.isCaptain), asc(members.fullName));
     return { ...submission, members: roster };
   }),

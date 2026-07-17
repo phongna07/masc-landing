@@ -226,6 +226,7 @@
       "captainPhone": "Captain phone number",
       "fullName": "Full name",
       "email": "Email address",
+      "birthdate": "Birthdate",
       "university": "University / Company"
     },
     "actions": {
@@ -237,6 +238,7 @@
     "validation": {
       "required": "This field is required.",
       "email": "Enter a valid email address.",
+      "birthdate": "Participant must be between 18 and 22 years old.",
       "phone": "Enter a valid phone number with 8–15 digits.",
       "duplicateEmail": "Each team member must use a different email address."
     },
@@ -490,6 +492,7 @@
       "from": "From",
       "subject": "Subject",
       "phone": "Phone",
+      "birthdate": "Birthdate",
       "university": "University",
       "role": "Role",
       "verification": "Email",
