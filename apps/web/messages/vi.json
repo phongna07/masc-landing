@@ -200,7 +200,7 @@
     }
   },
   "Dashboard": {
-    "eyebrow": "Cổng thông tin cuộc thi",
+    "eyebrow": "Cổng thông tin",
     "title": "Dashboard",
     "welcome": "Chào mừng {name}",
     "nav": {
