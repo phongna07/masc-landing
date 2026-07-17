@@ -3,7 +3,7 @@ import { GetObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { auth } from "@masc-landing/auth";
 import { db } from "@masc-landing/db";
-import { emailQueue, members, roundSubmissions, submissionSettings, teams } from "@masc-landing/db/schema/index";
+import { dashboardTabSettings, emailQueue, members, roundSubmissions, submissionSettings, teams } from "@masc-landing/db/schema/index";
 import { env } from "@masc-landing/env/server";
 import { TRPCError } from "@trpc/server";
 import { and, asc, count, desc, eq, sql } from "drizzle-orm";
@@ -14,6 +14,7 @@ import {
   teamRegistrationSuccessEvent,
   teamRegistrationSuccessSubject,
 } from "../email/team-registration-success";
+import { getDashboardTabSettings } from "../dashboard-tab-settings";
 import { adminProcedure, router } from "../index";
 import { roundSchema } from "../rounds";
 import { getSubmissionSettings } from "../submission-settings";
@@ -68,6 +69,13 @@ export const adminRouter = router({
     await db.insert(submissionSettings).values({ round: input.round, isOpen: input.isOpen, updatedAt: new Date() })
       .onConflictDoUpdate({ target: submissionSettings.round, set: { isOpen: input.isOpen, updatedAt: new Date() } });
     return getSubmissionSettings();
+  }),
+  getDashboardTabSettings: adminProcedure.query(getDashboardTabSettings),
+  setRoundTabVisible: adminProcedure.input(roundInput.extend({ isVisible: z.boolean() })).mutation(async ({ input }) => {
+    await db.insert(dashboardTabSettings).values({ round: input.round, isVisible: input.isVisible, updatedAt: new Date() })
+      .onConflictDoUpdate({ target: dashboardTabSettings.round,
+        set: { isVisible: input.isVisible, updatedAt: new Date() } });
+    return getDashboardTabSettings();
   }),
   listUsers: adminProcedure.query(async ({ ctx }) => {
     const allUsers = []; let offset = 0; let total = 0;

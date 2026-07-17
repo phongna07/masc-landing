@@ -71,6 +71,13 @@
       "when": 1784304000000,
       "tag": "0009_team-submission-attempts",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1784304000001,
+      "tag": "0010_conscious_tomorrow_man",
+      "breakpoints": true
     }
   ]
 }

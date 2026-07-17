@@ -1051,6 +1051,28 @@ button {
   gap: 18px;
 }
 
+.admin-setting-section + .admin-setting-section {
+  margin-top: 48px;
+}
+
+.admin-setting-section-heading {
+  margin-bottom: 20px;
+}
+
+.admin-setting-section-heading h2 {
+  margin: 0 0 8px;
+  font-family: var(--font-castela), Georgia, serif;
+  font-size: 28px;
+  font-weight: 400;
+}
+
+.admin-setting-section-heading p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.65;
+}
+
 .admin-round-setting {
   border-color: rgba(255, 255, 255, .19);
   background: rgba(17, 16, 20, .88);
@@ -1086,12 +1108,14 @@ button {
   text-transform: uppercase;
 }
 
-.admin-round-setting .is-open {
+.admin-round-setting .is-open,
+.admin-round-setting .is-visible {
   color: #bde7ad;
   border-color: rgba(137, 210, 110, .3);
 }
 
-.admin-round-setting .is-closed {
+.admin-round-setting .is-closed,
+.admin-round-setting .is-hidden {
   color: #ffb1aa;
   border-color: rgba(255, 107, 98, .35);
 }

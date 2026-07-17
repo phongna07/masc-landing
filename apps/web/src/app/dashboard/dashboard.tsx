@@ -41,7 +41,11 @@ const emptyTeammate = (id: string): Teammate => ({
 
 export type DashboardTab = "overview" | "announcements" | `round-${RoundId}`;
 
-export default function Dashboard({ session, activeTab }: { session: Session; activeTab: DashboardTab }) {
+export default function Dashboard({ session, activeTab, tabSettings }: {
+  session: Session;
+  activeTab: DashboardTab;
+  tabSettings: Record<RoundId, boolean>;
+}) {
   const t = useTranslations("Dashboard");
   const membership = useQuery(trpc.registration.current.queryOptions());
 
@@ -86,7 +90,7 @@ export default function Dashboard({ session, activeTab }: { session: Session; ac
             </CardContent>
           </Card>
         ) : membership.data?.registered ? (
-          <TeamDashboard membership={membership.data} activeTab={activeTab} />
+          <TeamDashboard membership={membership.data} activeTab={activeTab} tabSettings={tabSettings} />
         ) : (
           <RegistrationForm session={session} />
         )}
@@ -95,15 +99,22 @@ export default function Dashboard({ session, activeTab }: { session: Session; ac
   );
 }
 
-const dashboardTabs = ["overview", "announcements", ...roundIds.map((round) => `round-${round}` as const)] as const;
-
 function dashboardTabHref(tab: DashboardTab): Route {
   return tab === "overview" ? "/dashboard" : `/dashboard/${tab}` as Route;
 }
 
-function TeamDashboard({ membership, activeTab }: { membership: Extract<Membership, { registered: true }>; activeTab: DashboardTab }) {
+function TeamDashboard({ membership, activeTab, tabSettings }: {
+  membership: Extract<Membership, { registered: true }>;
+  activeTab: DashboardTab;
+  tabSettings: Record<RoundId, boolean>;
+}) {
   const t = useTranslations("Dashboard");
   const router = useRouter();
+  const dashboardTabs: DashboardTab[] = [
+    "overview",
+    "announcements",
+    ...roundIds.filter((round) => tabSettings[round]).map((round) => `round-${round}` as const),
+  ];
   const selectTab = (tab: DashboardTab) => {
     router.push(dashboardTabHref(tab));
     requestAnimationFrame(() => document.getElementById(`dashboard-tab-${tab}`)?.focus());

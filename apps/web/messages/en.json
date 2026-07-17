@@ -355,7 +355,9 @@
     },
     "overview": {
       "title": "Overview",
-      "description": "Control when team members can create or replace round submissions.",
+      "description": "Control round submission availability and which round tabs participants can see.",
+      "submissionSectionTitle": "Submission availability",
+      "submissionSectionDescription": "Control when team members can create or replace round submissions.",
       "open": "Open",
       "closed": "Closed",
       "openAction": "Open submissions",
@@ -365,7 +367,18 @@
       "error": "Could not update submission availability. Please try again.",
       "loadError": "Could not load submission availability. Check your connection and try again.",
       "roundTitle": "Round {round} submissions",
-      "roundDescription": "Allow team members to submit or replace their Round {round} work."
+      "roundDescription": "Allow team members to submit or replace their Round {round} work.",
+      "tabSectionTitle": "Dashboard tab visibility",
+      "tabSectionDescription": "Choose which round tabs appear in the participant dashboard.",
+      "visible": "Visible",
+      "hidden": "Hidden",
+      "showAction": "Show tab",
+      "hideAction": "Hide tab",
+      "tabSuccess": "Dashboard tab visibility updated.",
+      "tabError": "Could not update dashboard tab visibility. Please try again.",
+      "tabLoadError": "Could not load dashboard tab visibility. Check your connection and try again.",
+      "tabRoundTitle": "Round {round} tab",
+      "tabRoundDescription": "Show or hide the Round {round} tab for team members."
     },
     "announcements": {
       "title": "Announcements",

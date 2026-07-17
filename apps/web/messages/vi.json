@@ -355,7 +355,9 @@
     },
     "overview": {
       "title": "Tổng quan",
-      "description": "Kiểm soát thời điểm các thành viên trong đội có thể tạo hoặc nộp lại bài theo từng vòng.",
+      "description": "Kiểm soát trạng thái nộp bài và các tab vòng thi mà thí sinh có thể nhìn thấy.",
+      "submissionSectionTitle": "Trạng thái nộp bài",
+      "submissionSectionDescription": "Kiểm soát thời điểm các thành viên trong đội có thể tạo hoặc nộp lại bài theo từng vòng.",
       "open": "Đang mở",
       "closed": "Đã đóng",
       "openAction": "Mở nộp bài",
@@ -365,7 +367,18 @@
       "error": "Không thể cập nhật trạng thái nộp bài. Vui lòng thử lại.",
       "loadError": "Không thể tải trạng thái nộp bài. Hãy kiểm tra kết nối và thử lại.",
       "roundTitle": "Bài nộp Vòng {round}",
-      "roundDescription": "Cho phép các thành viên trong đội nộp hoặc thay thế bài Vòng {round}."
+      "roundDescription": "Cho phép các thành viên trong đội nộp hoặc thay thế bài Vòng {round}.",
+      "tabSectionTitle": "Hiển thị tab trên bảng điều khiển",
+      "tabSectionDescription": "Chọn các tab vòng thi xuất hiện trên bảng điều khiển của thí sinh.",
+      "visible": "Đang hiển thị",
+      "hidden": "Đang ẩn",
+      "showAction": "Hiển thị tab",
+      "hideAction": "Ẩn tab",
+      "tabSuccess": "Đã cập nhật trạng thái hiển thị tab.",
+      "tabError": "Không thể cập nhật trạng thái hiển thị tab. Vui lòng thử lại.",
+      "tabLoadError": "Không thể tải trạng thái hiển thị tab. Hãy kiểm tra kết nối và thử lại.",
+      "tabRoundTitle": "Tab Vòng {round}",
+      "tabRoundDescription": "Hiển thị hoặc ẩn tab Vòng {round} đối với các thành viên trong đội."
     },
     "announcements": {
       "title": "Thông báo",
