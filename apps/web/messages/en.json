@@ -193,8 +193,8 @@
     }
   },
   "Auth": {
-    "title": "Continue to MASC",
-    "description": "Use your Google account to sign in or create an account.",
+    "title": "Continue to Marketing All-Star Challenge",
+    "description": "Use your Google account to sign in",
     "google": {
       "button": "Continue with Google"
     }
@@ -226,7 +226,7 @@
       "captainPhone": "Captain phone number",
       "fullName": "Full name",
       "email": "Email address",
-      "university": "University"
+      "university": "University / Company"
     },
     "actions": {
       "submit": "Submit registration",

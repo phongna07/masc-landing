@@ -290,7 +290,7 @@ function RegistrationForm({ session }: { session: Session }) {
           <div>
             <p className="dashboard-card-index">04 / {t("registration.membersSection")}</p>
             <CardTitle>{t("registration.membersTitle")}</CardTitle>
-            <p>{t("registration.memberCount", { count: TEAM_SIZE })}</p>
+            {/* <p>{t("registration.memberCount", { count: TEAM_SIZE })}</p> */}
           </div>
         </CardHeader>
         <CardContent className="teammate-list">

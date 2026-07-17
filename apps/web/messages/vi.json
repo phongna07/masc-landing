@@ -193,8 +193,8 @@
     }
   },
   "Auth": {
-    "title": "Tiếp tục đến MASC",
-    "description": "Sử dụng tài khoản Google để đăng nhập hoặc tạo tài khoản.",
+    "title": "Tiếp tục đến Marketing All-Star Challenge",
+    "description": "Sử dụng tài khoản Google để đăng nhập",
     "google": {
       "button": "Tiếp tục với Google"
     }
@@ -226,7 +226,7 @@
       "captainPhone": "Số điện thoại đội trưởng",
       "fullName": "Họ và tên",
       "email": "Địa chỉ email",
-      "university": "Trường đại học"
+      "university": "Trường đại học / Cơ quan"
     },
     "actions": {
       "submit": "Gửi đăng ký",
