@@ -9,7 +9,7 @@ import { Textarea } from "@masc-landing/ui/components/textarea";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { CheckCircle2Icon, Clock3Icon, DownloadIcon, FileTextIcon, RefreshCwIcon, UploadIcon } from "lucide-react";
 import { useFormatter, useTranslations } from "next-intl";
-import { useEffect, useState, type FormEvent } from "react";
+import { useEffect, useRef, useState, type FormEvent } from "react";
 import { toast } from "sonner";
 
 import { queryClient, trpc } from "@/utils/trpc";
@@ -19,7 +19,7 @@ const mimeTypes: Record<string, string> = { pdf: "application/pdf", doc: "applic
   docx: "application/vnd.openxmlformats-officedocument.wordprocessingml.document", ppt: "application/vnd.ms-powerpoint",
   pptx: "application/vnd.openxmlformats-officedocument.presentationml.presentation" };
 
-export default function RoundSubmission({ round, role }: { round: RoundId; role: "captain" | "member" }) {
+export default function RoundSubmission({ round }: { round: RoundId }) {
   const t = useTranslations("Dashboard"); const format = useFormatter();
   const input = { round };
   const submission = useQuery(trpc.roundSubmission.current.queryOptions(input));
@@ -34,26 +34,37 @@ export default function RoundSubmission({ round, role }: { round: RoundId; role:
     onSuccess: ({ downloadUrl }) => window.location.assign(downloadUrl), onError: () => toast.error(t("round.errors.download")),
   }));
   const preview = useMutation(trpc.roundSubmission.createPreviewUrl.mutationOptions());
+  const previewedSubmission = useRef<string | null>(null);
   const existing = submission.data?.submission ?? null;
   const isOpen = submission.data?.isSubmissionOpen ?? false;
-  const showForm = isOpen && role === "captain" && (!existing || editing);
-  const status = existing && !showForm ? "submitted" : !isOpen ? "unavailable" : role === "member" ? "waiting" : "open";
+  const attemptsUsed = submission.data?.attemptsUsed ?? 0;
+  const maxAttempts = submission.data?.maxAttempts ?? 3;
+  const canSubmit = submission.data?.canSubmit ?? false;
+  const showForm = canSubmit && (!existing || editing);
+  const status = existing && !showForm
+    ? attemptsUsed >= maxAttempts ? "limit" : "submitted"
+    : !isOpen ? "unavailable" : "open";
   const statusTitle = status === "submitted"
     ? t("round.submittedTitle", { round })
+    : status === "limit"
+      ? t("round.limitTitle", { round })
     : status === "unavailable"
       ? t("round.unavailableTitle", { round })
-      : status === "waiting"
-        ? t("round.memberEmpty", { round })
-        : t(existing ? "round.replaceTitle" : "round.openTitle", { round });
+      : t(existing ? "round.replaceTitle" : "round.openTitle", { round });
   const statusDescription = status === "submitted"
     ? t("round.submittedAt", { date: format.dateTime(new Date(existing!.updatedAt), { dateStyle: "medium", timeStyle: "short" }) })
+    : status === "limit"
+      ? t("round.limitDescription")
     : status === "unavailable"
       ? t("round.unavailableDescription")
-      : status === "waiting"
-        ? t("round.memberEmptyDescription")
-        : t(existing ? "round.replaceDescription" : "round.openDescription");
+      : t(existing ? "round.replaceDescription" : "round.openDescription");
 
-  useEffect(() => { if (existing && !showForm) preview.mutate(input); }, [existing?.updatedAt, showForm, round]); // eslint-disable-line react-hooks/exhaustive-deps
+  const previewKey = existing ? `${existing.attemptNumber}:${String(existing.updatedAt)}` : null;
+  useEffect(() => {
+    if (!previewKey || showForm || previewedSubmission.current === previewKey) return;
+    previewedSubmission.current = previewKey;
+    preview.mutate({ round });
+  }, [previewKey, showForm, round, preview.mutate]);
   if (submission.isPending) return <StateCard loading />;
   if (submission.isError) return <StateCard title={t("round.errors.loadTitle", { round })} description={t("round.errors.load")} retry={() => submission.refetch()} />;
 
@@ -71,7 +82,14 @@ export default function RoundSubmission({ round, role }: { round: RoundId; role:
       const response = await fetch(upload.uploadUrl, { method: "PUT", body: file, headers: { "Content-Type": mimeType } });
       if (!response.ok) throw new Error("UPLOAD_FAILED");
       await finalize.mutateAsync({ ...metadata, uploadId: upload.uploadId, description: cleanDescription });
-    } catch { setError(t("round.errors.submit")); }
+    } catch (cause) {
+      const message = cause instanceof Error ? cause.message : "";
+      if (message === "ATTEMPT_LIMIT_REACHED" || message === "SUBMISSION_CONFLICT") {
+        await submission.refetch();
+        setEditing(false);
+        toast.error(t(message === "ATTEMPT_LIMIT_REACHED" ? "round.errors.limit" : "round.errors.conflict"));
+      } else setError(t("round.errors.submit"));
+    }
   };
 
   return <div className="round-panel">
@@ -79,7 +97,8 @@ export default function RoundSubmission({ round, role }: { round: RoundId; role:
       <CardHeader className="round-status-header"><p className="dashboard-card-index">01 / {t("tabs.round", { round })}</p>
         <div className="round-status-heading"><span className="round-status-icon" aria-hidden="true">{status === "submitted" ? <CheckCircle2Icon /> : <Clock3Icon />}</span>
           <div><CardTitle>{statusTitle}</CardTitle><p>{statusDescription}</p></div></div>
-        {status === "submitted" && isOpen && role === "captain" && <Button variant="outline" onClick={() => { setDescription(existing!.description); setEditing(true); }}>{t("round.replace")}</Button>}
+        <div className="round-status-actions"><p className="round-attempts">{t("round.attemptsUsed", { used: attemptsUsed, max: maxAttempts })}</p>
+          {status === "submitted" && canSubmit && <Button variant="outline" onClick={() => { setDescription(existing!.description); setEditing(true); }}>{t("round.replace")}</Button>}</div>
       </CardHeader>
     {existing && !showForm && <CardContent className="submission-details"><div className="submission-description"><Label>{t("round.descriptionLabel")}</Label><p>{existing.description}</p></div>
       <div className="submission-file"><FileTextIcon aria-hidden="true" /><div><strong>{existing.originalFilename}</strong><span>{formatBytes(existing.fileSize)}</span></div>

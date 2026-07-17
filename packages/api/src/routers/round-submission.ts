@@ -4,7 +4,7 @@ import { db } from "@masc-landing/db";
 import { members, roundSubmissions, teams } from "@masc-landing/db/schema/index";
 import { env } from "@masc-landing/env/server";
 import { TRPCError } from "@trpc/server";
-import { and, eq, or, sql } from "drizzle-orm";
+import { and, desc, eq, or, sql } from "drizzle-orm";
 import { z } from "zod";
 
 import { protectedProcedure, router } from "../index";
@@ -12,6 +12,7 @@ import { roundSchema } from "../rounds";
 import { getSubmissionSettings, requireSubmissionOpen } from "../submission-settings";
 
 const MAX_FILE_SIZE = 20 * 1024 * 1024;
+const MAX_ATTEMPTS = 3;
 const URL_EXPIRY_SECONDS = 300;
 const allowedFiles: Record<string, string> = {
   ".pdf": "application/pdf", ".doc": "application/msword",
@@ -40,7 +41,7 @@ function validateFile(file: z.infer<typeof fileInput>) {
   return extension;
 }
 async function membershipFor(userId: string, email: string) {
-  const [membership] = await db.select({ teamId: members.teamId, isCaptain: members.isCaptain }).from(members)
+  const [membership] = await db.select({ memberId: members.id, teamId: members.teamId }).from(members)
     .innerJoin(teams, eq(members.teamId, teams.id))
     .where(or(
       and(eq(teams.captainId, userId), eq(members.isCaptain, true)),
@@ -48,9 +49,6 @@ async function membershipFor(userId: string, email: string) {
     )).limit(1);
   if (!membership) throw new TRPCError({ code: "FORBIDDEN", message: "TEAM_REQUIRED" });
   return membership;
-}
-function requireCaptain(membership: Awaited<ReturnType<typeof membershipFor>>) {
-  if (!membership.isCaptain) throw new TRPCError({ code: "FORBIDDEN", message: "CAPTAIN_REQUIRED" });
 }
 function objectKey(round: string, teamId: string, uploadId: string, extension: string) {
   return `round-${round}/${teamId}/${uploadId}${extension}`;
@@ -61,6 +59,20 @@ async function bestEffortDelete(key: string) {
 function submissionWhere(teamId: string, round: string) {
   return and(eq(roundSubmissions.teamId, teamId), eq(roundSubmissions.round, round));
 }
+async function attemptsUsed(teamId: string, round: string) {
+  const [result] = await db.select({ value: sql<number>`coalesce(max(${roundSubmissions.attemptNumber}), 0)` })
+    .from(roundSubmissions).where(submissionWhere(teamId, round));
+  return Number(result?.value ?? 0);
+}
+function isUniqueViolation(error: unknown) {
+  let current = error;
+  for (let depth = 0; depth < 4; depth += 1) {
+    if (typeof current !== "object" || current === null) return false;
+    if ("code" in current && current.code === "23505") return true;
+    current = "cause" in current ? current.cause : null;
+  }
+  return false;
+}
 
 export const roundSubmissionRouter = router({
   current: protectedProcedure.input(roundInput).query(async ({ ctx, input }) => {
@@ -69,14 +81,22 @@ export const roundSubmissionRouter = router({
     const [submission] = await db.select({
       description: roundSubmissions.description, originalFilename: roundSubmissions.originalFilename,
       mimeType: roundSubmissions.mimeType, fileSize: roundSubmissions.fileSize,
+      attemptNumber: roundSubmissions.attemptNumber,
       feedback: sql<string | null>`case when ${roundSubmissions.feedbackPublished} then ${roundSubmissions.feedback} else null end`,
       createdAt: roundSubmissions.createdAt, updatedAt: roundSubmissions.updatedAt,
-    }).from(roundSubmissions).where(submissionWhere(membership.teamId, input.round)).limit(1);
-    return { submission: submission ?? null, isSubmissionOpen: settings[input.round] };
+    }).from(roundSubmissions).where(submissionWhere(membership.teamId, input.round))
+      .orderBy(desc(roundSubmissions.attemptNumber)).limit(1);
+    const used = submission?.attemptNumber ?? 0;
+    return { submission: submission ?? null, isSubmissionOpen: settings[input.round], attemptsUsed: used,
+      attemptsRemaining: MAX_ATTEMPTS - used, maxAttempts: MAX_ATTEMPTS,
+      canSubmit: settings[input.round] && used < MAX_ATTEMPTS };
   }),
   createUploadUrl: protectedProcedure.input(fileInput).mutation(async ({ ctx, input }) => {
-    const membership = await membershipFor(ctx.session.user.id, ctx.session.user.email); requireCaptain(membership);
+    const membership = await membershipFor(ctx.session.user.id, ctx.session.user.email);
     await requireSubmissionOpen(input.round);
+    if (await attemptsUsed(membership.teamId, input.round) >= MAX_ATTEMPTS) {
+      throw new TRPCError({ code: "CONFLICT", message: "ATTEMPT_LIMIT_REACHED" });
+    }
     const uploadId = crypto.randomUUID();
     const uploadUrl = await getSignedUrl(s3, new PutObjectCommand({ Bucket: env.R2_BUCKET,
       Key: objectKey(input.round, membership.teamId, uploadId, validateFile(input)), ContentType: input.mimeType,
@@ -85,12 +105,10 @@ export const roundSubmissionRouter = router({
   }),
   finalize: protectedProcedure.input(fileInput.extend({ uploadId: z.uuid(), description: z.string().trim().min(1).max(5000) }))
     .mutation(async ({ ctx, input }) => {
-      const membership = await membershipFor(ctx.session.user.id, ctx.session.user.email); requireCaptain(membership);
+      const membership = await membershipFor(ctx.session.user.id, ctx.session.user.email);
       const key = objectKey(input.round, membership.teamId, input.uploadId, validateFile(input));
       try { await requireSubmissionOpen(input.round); } catch (error) {
-        const [current] = await db.select({ objectKey: roundSubmissions.objectKey }).from(roundSubmissions)
-          .where(submissionWhere(membership.teamId, input.round)).limit(1);
-        if (current?.objectKey !== key) await bestEffortDelete(key); throw error;
+        await bestEffortDelete(key); throw error;
       }
       let object;
       try { object = await s3.send(new HeadObjectCommand({ Bucket: env.R2_BUCKET, Key: key })); }
@@ -98,23 +116,37 @@ export const roundSubmissionRouter = router({
       if (object.ContentLength !== input.fileSize || object.ContentType !== input.mimeType) {
         await bestEffortDelete(key); throw new TRPCError({ code: "BAD_REQUEST", message: "UPLOAD_MISMATCH" });
       }
-      const [previous] = await db.select({ objectKey: roundSubmissions.objectKey }).from(roundSubmissions)
-        .where(submissionWhere(membership.teamId, input.round)).limit(1);
+      const submissionId = crypto.randomUUID();
       try {
-        await db.insert(roundSubmissions).values({ teamId: membership.teamId, round: input.round, description: input.description,
-          objectKey: key, originalFilename: input.filename, mimeType: input.mimeType, fileSize: input.fileSize })
-          .onConflictDoUpdate({ target: [roundSubmissions.teamId, roundSubmissions.round], set: {
-            description: input.description, objectKey: key, originalFilename: input.filename, mimeType: input.mimeType,
-            fileSize: input.fileSize, feedback: null, feedbackPublished: false, updatedAt: new Date(),
-          }});
-      } catch (error) { await bestEffortDelete(key); throw error; }
-      if (previous?.objectKey && previous.objectKey !== key) await bestEffortDelete(previous.objectKey);
-      return { success: true };
+        const inserted = await db.execute(sql`
+          with next_attempt as (
+            select coalesce(max(${roundSubmissions.attemptNumber}), 0) + 1 as attempt_number
+            from ${roundSubmissions}
+            where ${roundSubmissions.teamId} = ${membership.teamId} and ${roundSubmissions.round} = ${input.round}
+          )
+          insert into ${roundSubmissions} (id, team_id, round, attempt_number, submitted_by_member_id, description,
+            object_key, original_filename, mime_type, file_size)
+          select ${submissionId}, ${membership.teamId}, ${input.round}, next_attempt.attempt_number,
+            ${membership.memberId}, ${input.description}, ${key}, ${input.filename}, ${input.mimeType}, ${input.fileSize}
+          from next_attempt where next_attempt.attempt_number <= ${MAX_ATTEMPTS}
+          returning attempt_number
+        `);
+        if (inserted.rows.length === 0) {
+          throw new TRPCError({ code: "CONFLICT", message: "ATTEMPT_LIMIT_REACHED" });
+        }
+        return { success: true, attemptNumber: Number(inserted.rows[0]!.attempt_number) };
+      } catch (error) {
+        await bestEffortDelete(key);
+        if (error instanceof TRPCError) throw error;
+        if (isUniqueViolation(error)) throw new TRPCError({ code: "CONFLICT", message: "SUBMISSION_CONFLICT" });
+        throw error;
+      }
     }),
   createDownloadUrl: protectedProcedure.input(roundInput).mutation(async ({ ctx, input }) => {
     const membership = await membershipFor(ctx.session.user.id, ctx.session.user.email);
     const [submission] = await db.select({ objectKey: roundSubmissions.objectKey, filename: roundSubmissions.originalFilename })
-      .from(roundSubmissions).where(submissionWhere(membership.teamId, input.round)).limit(1);
+      .from(roundSubmissions).where(submissionWhere(membership.teamId, input.round))
+      .orderBy(desc(roundSubmissions.attemptNumber)).limit(1);
     if (!submission) throw new TRPCError({ code: "NOT_FOUND", message: "SUBMISSION_NOT_FOUND" });
     const safeFilename = submission.filename.replace(/[^a-zA-Z0-9._ -]/g, "_");
     return { downloadUrl: await getSignedUrl(s3, new GetObjectCommand({ Bucket: env.R2_BUCKET, Key: submission.objectKey,
@@ -123,7 +155,8 @@ export const roundSubmissionRouter = router({
   createPreviewUrl: protectedProcedure.input(roundInput).mutation(async ({ ctx, input }) => {
     const membership = await membershipFor(ctx.session.user.id, ctx.session.user.email);
     const [submission] = await db.select({ objectKey: roundSubmissions.objectKey, mimeType: roundSubmissions.mimeType })
-      .from(roundSubmissions).where(submissionWhere(membership.teamId, input.round)).limit(1);
+      .from(roundSubmissions).where(submissionWhere(membership.teamId, input.round))
+      .orderBy(desc(roundSubmissions.attemptNumber)).limit(1);
     if (!submission) throw new TRPCError({ code: "NOT_FOUND", message: "SUBMISSION_NOT_FOUND" });
     const sourceUrl = await getSignedUrl(s3, new GetObjectCommand({ Bucket: env.R2_BUCKET, Key: submission.objectKey,
       ResponseContentType: submission.mimeType, ResponseContentDisposition: "inline" }), { expiresIn: URL_EXPIRY_SECONDS });

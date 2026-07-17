@@ -271,7 +271,7 @@
     },
     "round": {
       "title": "Bài nộp Vòng {round}",
-      "description": "Nộp phần mô tả và tài liệu của đội. Chỉ đội trưởng có thể tạo hoặc nộp lại bài.",
+      "description": "Mọi thành viên trong đội đều có thể nộp phần mô tả và tài liệu của đội.",
       "formTitle": "Chuẩn bị bài nộp",
       "replaceTitle": "Nộp lại bài",
       "replaceDescription": "Cập nhật phần mô tả và chọn tệp mới để thay thế bài nộp hiện tại.",
@@ -287,14 +287,15 @@
       "success": "Bài nộp Vòng {round} đã được lưu.",
       "submittedTitle": "Đã nộp bài Vòng {round}",
       "submittedAt": "Cập nhật gần nhất {date}",
+      "attemptsUsed": "Đã dùng {used} / {max} lượt nộp",
+      "limitTitle": "Đã hết lượt nộp bài Vòng {round}",
+      "limitDescription": "Đội của bạn đã dùng hết 3 lượt nộp bài cho vòng này.",
       "replace": "Nộp lại bài",
       "download": "Tải tệp",
       "previewLabel": "Xem trước tệp",
       "previewTitle": "Xem trước {filename}",
       "feedbackTitle": "Nhận xét từ ban tổ chức",
       "emptyTitle": "Chưa có bài nộp",
-      "memberEmpty": "Đội trưởng chưa nộp bài Vòng {round}",
-      "memberEmptyDescription": "Chỉ đội trưởng có thể tạo bài nộp. Bài sẽ hiển thị tại đây sau khi được nộp.",
       "unavailableTitle": "Chưa mở nộp bài Vòng {round}",
       "unavailableDescription": "Ban tổ chức sẽ mở vòng này khi bắt đầu nhận bài.",
       "errors": {
@@ -305,6 +306,8 @@
         "fileType": "Hãy chọn tệp PDF, DOC, DOCX, PPT hoặc PPTX.",
         "fileSize": "Tệp không được lớn hơn 20 MB.",
         "submit": "Không thể tải bài nộp lên. Hãy kiểm tra tệp và thử lại.",
+        "limit": "Đội của bạn đã dùng hết 3 lượt nộp bài.",
+        "conflict": "Một thành viên khác vừa nộp bài cùng lúc. Bài mới nhất đã được tải lại; hãy thử lại nếu đội vẫn còn lượt nộp.",
         "download": "Không thể tải tệp xuống. Vui lòng thử lại."
       }
     },
@@ -352,7 +355,7 @@
     },
     "overview": {
       "title": "Tổng quan",
-      "description": "Kiểm soát thời điểm đội trưởng có thể tạo hoặc nộp lại bài theo từng vòng.",
+      "description": "Kiểm soát thời điểm các thành viên trong đội có thể tạo hoặc nộp lại bài theo từng vòng.",
       "open": "Đang mở",
       "closed": "Đã đóng",
       "openAction": "Mở nộp bài",
@@ -362,7 +365,7 @@
       "error": "Không thể cập nhật trạng thái nộp bài. Vui lòng thử lại.",
       "loadError": "Không thể tải trạng thái nộp bài. Hãy kiểm tra kết nối và thử lại.",
       "roundTitle": "Bài nộp Vòng {round}",
-      "roundDescription": "Cho phép đội trưởng nộp hoặc thay thế bài Vòng {round}."
+      "roundDescription": "Cho phép các thành viên trong đội nộp hoặc thay thế bài Vòng {round}."
     },
     "announcements": {
       "title": "Thông báo",

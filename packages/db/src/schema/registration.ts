@@ -2,6 +2,7 @@ import { relations, sql } from "drizzle-orm";
 import {
   bigint,
   boolean,
+  check,
   date,
   index,
   integer,
@@ -71,6 +72,8 @@ export const roundSubmissions = pgTable(
     id: text("id").$defaultFn(() => crypto.randomUUID()).primaryKey(),
     teamId: text("team_id").notNull().references(() => teams.id, { onDelete: "cascade" }),
     round: text("round").notNull(),
+    attemptNumber: integer("attempt_number").notNull(),
+    submittedByMemberId: text("submitted_by_member_id").notNull().references(() => members.id, { onDelete: "restrict" }),
     description: text("description").notNull(),
     objectKey: text("object_key").notNull(),
     originalFilename: text("original_filename").notNull(),
@@ -82,7 +85,8 @@ export const roundSubmissions = pgTable(
     updatedAt: timestamp("updated_at").defaultNow().notNull(),
   },
   (table) => [
-    uniqueIndex("round_submissions_team_id_round_unique_idx").on(table.teamId, table.round),
+    uniqueIndex("round_submissions_team_id_round_attempt_unique_idx").on(table.teamId, table.round, table.attemptNumber),
+    check("round_submissions_attempt_number_check", sql`${table.attemptNumber} between 1 and 3`),
     index("round_submissions_round_updated_at_idx").on(table.round, table.updatedAt),
   ],
 );
@@ -96,16 +100,21 @@ export const teamsRelations = relations(teams, ({ one, many }) => ({
   roundSubmissions: many(roundSubmissions),
 }));
 
-export const membersRelations = relations(members, ({ one }) => ({
+export const membersRelations = relations(members, ({ one, many }) => ({
   team: one(teams, {
     fields: [members.teamId],
     references: [teams.id],
   }),
+  roundSubmissions: many(roundSubmissions),
 }));
 
 export const roundSubmissionsRelations = relations(roundSubmissions, ({ one }) => ({
   team: one(teams, {
     fields: [roundSubmissions.teamId],
     references: [teams.id],
+  }),
+  submittedBy: one(members, {
+    fields: [roundSubmissions.submittedByMemberId],
+    references: [members.id],
   }),
 }));

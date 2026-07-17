@@ -271,7 +271,7 @@
     },
     "round": {
       "title": "Round {round} submission",
-      "description": "Submit your team's written description and supporting document. Only the team captain can create or replace a submission.",
+      "description": "Any team member can submit your team's written description and supporting document.",
       "formTitle": "Prepare your submission",
       "replaceTitle": "Replace your submission",
       "replaceDescription": "Update the description and choose the new file that will replace your current submission.",
@@ -287,14 +287,15 @@
       "success": "Your Round {round} submission has been saved.",
       "submittedTitle": "Round {round} submission received",
       "submittedAt": "Last updated {date}",
+      "attemptsUsed": "{used} / {max} attempts used",
+      "limitTitle": "Round {round} submission limit reached",
+      "limitDescription": "Your team has used all 3 submission attempts for this round.",
       "replace": "Resubmit",
       "download": "Download file",
       "previewLabel": "File preview",
       "previewTitle": "Preview of {filename}",
       "feedbackTitle": "Admin feedback",
       "emptyTitle": "No submission yet",
-      "memberEmpty": "Your captain has not submitted Round {round} yet",
-      "memberEmptyDescription": "Only your team captain can create the submission. It will appear here once submitted.",
       "unavailableTitle": "Round {round} submissions are not available yet",
       "unavailableDescription": "The organizers will open this round when submissions can begin.",
       "errors": {
@@ -305,6 +306,8 @@
         "fileType": "Choose a PDF, DOC, DOCX, PPT, or PPTX file.",
         "fileSize": "The file must be no larger than 20 MB.",
         "submit": "The submission could not be uploaded. Check the file and try again.",
+        "limit": "Your team has already used all 3 submission attempts.",
+        "conflict": "Another team member submitted at the same time. The latest submission has been loaded; try again if attempts remain.",
         "download": "The file could not be downloaded. Please try again."
       }
     },
@@ -352,7 +355,7 @@
     },
     "overview": {
       "title": "Overview",
-      "description": "Control when team captains can create or replace round submissions.",
+      "description": "Control when team members can create or replace round submissions.",
       "open": "Open",
       "closed": "Closed",
       "openAction": "Open submissions",
@@ -362,7 +365,7 @@
       "error": "Could not update submission availability. Please try again.",
       "loadError": "Could not load submission availability. Check your connection and try again.",
       "roundTitle": "Round {round} submissions",
-      "roundDescription": "Allow captains to submit or replace their Round {round} work."
+      "roundDescription": "Allow team members to submit or replace their Round {round} work."
     },
     "announcements": {
       "title": "Announcements",

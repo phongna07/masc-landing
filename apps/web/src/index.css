@@ -253,6 +253,19 @@ button {
   line-height: 1.7;
 }
 
+.round-status-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 12px;
+}
+
+.round-attempts {
+  margin: 0;
+  color: var(--muted);
+  font-size: 13px;
+}
+
 .round-status-icon {
   display: grid;
   width: 38px;
@@ -773,8 +786,13 @@ button {
     grid-column: auto;
   }
 
-  .round-status-header>[data-slot="button"] {
+  .round-status-actions,
+  .round-status-actions>[data-slot="button"] {
     width: 100%;
+  }
+
+  .round-status-actions {
+    align-items: stretch;
   }
 
   .round-status-heading {

@@ -135,7 +135,7 @@ function TeamDashboard({ membership, activeTab }: { membership: Extract<Membersh
     <section id={`dashboard-panel-${activeTab}`} role="tabpanel" aria-labelledby={`dashboard-tab-${activeTab}`} tabIndex={0}>
       {activeTab === "overview" && <TeamOverview membership={membership} />}
       {activeTab === "announcements" && <Announcements />}
-      {activeTab.startsWith("round-") && <RoundSubmission round={activeTab.slice(6) as RoundId} role={membership.role} />}
+      {activeTab.startsWith("round-") && <RoundSubmission round={activeTab.slice(6) as RoundId} />}
     </section>
   </div>;
 }

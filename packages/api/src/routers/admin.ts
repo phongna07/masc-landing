@@ -45,7 +45,15 @@ function encodeSesAddress(address: string) {
 }
 
 function identifiedSubmission(input: z.infer<typeof submissionInput>) {
-  return and(eq(roundSubmissions.id, input.submissionId), eq(roundSubmissions.round, input.round));
+  return and(eq(roundSubmissions.id, input.submissionId), eq(roundSubmissions.round, input.round), latestSubmission());
+}
+function latestSubmission() {
+  return sql`not exists (
+    select 1 from "round_submissions" as "newer_submission"
+    where "newer_submission"."team_id" = ${roundSubmissions.teamId}
+      and "newer_submission"."round" = ${roundSubmissions.round}
+      and "newer_submission"."attempt_number" > ${roundSubmissions.attemptNumber}
+  )`;
 }
 async function findSubmissionFile(input: z.infer<typeof submissionInput>) {
   const [submission] = await db.select({ objectKey: roundSubmissions.objectKey, filename: roundSubmissions.originalFilename,
@@ -194,7 +202,7 @@ export const adminRouter = router({
     mimeType: roundSubmissions.mimeType, fileSize: roundSubmissions.fileSize, createdAt: roundSubmissions.createdAt,
     updatedAt: roundSubmissions.updatedAt,
   }).from(roundSubmissions).innerJoin(teams, eq(roundSubmissions.teamId, teams.id))
-    .where(eq(roundSubmissions.round, input.round))
+    .where(and(eq(roundSubmissions.round, input.round), latestSubmission()))
     .orderBy(desc(roundSubmissions.updatedAt), asc(teams.teamName))),
   getRoundSubmission: adminProcedure.input(submissionInput).query(async ({ input }) => {
     const [submission] = await db.select({ id: roundSubmissions.id, description: roundSubmissions.description,

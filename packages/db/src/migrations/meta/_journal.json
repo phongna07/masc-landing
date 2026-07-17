@@ -64,6 +64,13 @@
       "when": 1784297131568,
       "tag": "0008_participant-birthdate",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1784304000000,
+      "tag": "0009_team-submission-attempts",
+      "breakpoints": true
     }
   ]
 }
