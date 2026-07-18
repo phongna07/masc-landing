@@ -4,6 +4,9 @@ import { isEligibleBirthdate, isValidBirthdate, TEAMMATE_COUNT } from "./registr
 
 const requiredText = (maximum: number) => z.string().trim().min(1).max(maximum);
 const normalizedEmail = z.string().trim().toLowerCase().email().max(254);
+const gmailEmail = normalizedEmail.refine((email) => email.endsWith("@gmail.com"), {
+  message: "GMAIL_EMAIL_REQUIRED",
+});
 const birthdate = z
   .string()
   .trim()
@@ -28,7 +31,7 @@ export const createTeamInputSchema = z.object({
     .array(
       z.object({
         fullName: requiredText(120),
-        email: normalizedEmail,
+        email: gmailEmail,
         birthdate,
         universityName: requiredText(160),
       }),

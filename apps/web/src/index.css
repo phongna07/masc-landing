@@ -515,6 +515,30 @@ button {
   gap: 14px;
 }
 
+.registration-email-notice {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px 16px;
+  border: 1px solid rgba(210, 166, 108, 0.32);
+  background: rgba(210, 166, 108, 0.08);
+  color: #e8d2b5;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.registration-email-notice svg {
+  width: 18px;
+  height: 18px;
+  margin-top: 2px;
+  flex: 0 0 auto;
+  color: #d2a66c;
+}
+
+.registration-email-notice p {
+  margin: 0;
+}
+
 .teammate-card {
   padding: 20px;
   border: 1px solid rgba(255, 255, 255, 0.1);

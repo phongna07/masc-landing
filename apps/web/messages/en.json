@@ -237,6 +237,7 @@
       "membersTitle": "Team members",
       "memberCount": "{count} of 3 team members",
       "memberNumber": "Member {number}",
+      "memberEmailNotice": "Enter each teammate's own Gmail address. Teammates can use the address entered here to sign in, update information, submit work, and receive competition updates.",
       "submitNote": "Review all names and email addresses carefully before submitting.",
       "sectionLabel": "Team registration form"
     },
@@ -257,6 +258,7 @@
     "validation": {
       "required": "This field is required.",
       "email": "Enter a valid email address.",
+      "gmailEmail": "Enter an email address ending in @gmail.com.",
       "birthdate": "Participant must be between 18 and 22 years old.",
       "phone": "Enter a valid phone number with 8–15 digits.",
       "duplicateEmail": "Each team member must use a different email address."

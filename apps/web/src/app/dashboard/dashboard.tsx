@@ -10,7 +10,7 @@ import { Label } from "@masc-landing/ui/components/label";
 import { Skeleton } from "@masc-landing/ui/components/skeleton";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import type { inferRouterOutputs } from "@trpc/server";
-import { MegaphoneIcon, RefreshCwIcon } from "lucide-react";
+import { MegaphoneIcon, RefreshCwIcon, TriangleAlertIcon } from "lucide-react";
 import type { Route } from "next";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -30,6 +30,9 @@ type Session = typeof authClient.$Infer.Session;
 type Membership = inferRouterOutputs<AppRouter>["registration"]["current"];
 type Teammate = { id: string; fullName: string; email: string; birthdate: string; universityName: string };
 type FormErrors = Record<string, string>;
+
+const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const gmailDomain = "@gmail.com";
 
 const emptyTeammate = (id: string): Teammate => ({
   id,
@@ -222,7 +225,7 @@ function RegistrationForm({ session }: { session: Session }) {
     }
 
     const normalizedCaptainEmail = captainEmail.trim().toLowerCase();
-    if (captainEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedCaptainEmail)) {
+    if (captainEmail && !emailPattern.test(normalizedCaptainEmail)) {
       next.captainEmail = t("validation.email");
     }
     if (captainBirthdate && !isEligibleBirthdate(captainBirthdate)) {
@@ -236,8 +239,12 @@ function RegistrationForm({ session }: { session: Session }) {
       required(`${prefix}.birthdate`, member.birthdate);
       required(`${prefix}.universityName`, member.universityName);
       const email = member.email.trim().toLowerCase();
-      if (member.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-        next[`${prefix}.email`] = t("validation.email");
+      if (member.email) {
+        if (!emailPattern.test(email)) {
+          next[`${prefix}.email`] = t("validation.email");
+        } else if (!email.endsWith(gmailDomain)) {
+          next[`${prefix}.email`] = t("validation.gmailEmail");
+        }
       }
       if (member.birthdate && !isEligibleBirthdate(member.birthdate)) {
         next[`${prefix}.birthdate`] = t("validation.birthdate");
@@ -329,6 +336,10 @@ function RegistrationForm({ session }: { session: Session }) {
           </div>
         </CardHeader>
         <CardContent className="teammate-list">
+          <div className="registration-email-notice" role="note">
+            <TriangleAlertIcon aria-hidden="true" />
+            <p>{t("registration.memberEmailNotice")}</p>
+          </div>
           {teammates.map((member, index) => (
             <section className="teammate-card" key={member.id} aria-labelledby={`${member.id}-title`}>
               <div className="teammate-heading">
@@ -339,7 +350,7 @@ function RegistrationForm({ session }: { session: Session }) {
                   <Input value={member.fullName} onChange={(event) => updateTeammate(member.id, "fullName", event.target.value)} aria-invalid={!!errors[`teammates.${index}.fullName`]} />
                 </Field>
                 <Field label={t("fields.email")} error={errors[`teammates.${index}.email`]}>
-                  <Input type="email" value={member.email} onChange={(event) => updateTeammate(member.id, "email", event.target.value)} aria-invalid={!!errors[`teammates.${index}.email`]} />
+                  <Input type="email" pattern=".+@gmail\.com" value={member.email} onChange={(event) => updateTeammate(member.id, "email", event.target.value)} aria-invalid={!!errors[`teammates.${index}.email`]} />
                 </Field>
                 <Field label={t("fields.birthdate")} error={errors[`teammates.${index}.birthdate`]}>
                   <Input type="date" min={birthdateRange.min} max={birthdateRange.max} value={member.birthdate} onChange={(event) => updateTeammate(member.id, "birthdate", event.target.value)} aria-invalid={!!errors[`teammates.${index}.birthdate`]} />

@@ -237,6 +237,7 @@
       "membersTitle": "Thành viên đội",
       "memberCount": "{count} trên 3 thành viên",
       "memberNumber": "Thành viên {number}",
+      "memberEmailNotice": "Hãy nhập địa chỉ Gmail của chính từng thành viên. Thành viên có thể dùng địa chỉ đã nhập tại đây để đăng nhập, cập nhật thông tin, nộp bài và nhận thông báo từ cuộc thi.",
       "submitNote": "Vui lòng kiểm tra kỹ họ tên và địa chỉ email trước khi gửi.",
       "sectionLabel": "Biểu mẫu đăng ký đội thi"
     },
@@ -257,6 +258,7 @@
     "validation": {
       "required": "Vui lòng nhập thông tin này.",
       "email": "Vui lòng nhập địa chỉ email hợp lệ.",
+      "gmailEmail": "Vui lòng nhập địa chỉ email có đuôi @gmail.com.",
       "birthdate": "Thí sinh phải từ 18 đến 22 tuổi.",
       "phone": "Nhập số điện thoại hợp lệ gồm 8–15 chữ số.",
       "duplicateEmail": "Mỗi thành viên phải sử dụng một địa chỉ email khác nhau."
