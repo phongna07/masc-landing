@@ -11,6 +11,7 @@ export const emailQueue = pgTable(
     id: text("id").$defaultFn(() => crypto.randomUUID()).primaryKey(),
     fromAddress: text("from_address").notNull(),
     toAddress: text("to_address").notNull(),
+    cc: text("cc").array().notNull(),
     subject: text("subject").notNull(),
     text: text("text").notNull(),
     html: text("html").notNull(),
@@ -29,9 +30,8 @@ export const emailQueue = pgTable(
   (table) => [
     index("email_queue_status_created_at_idx").on(table.status, table.createdAt),
     index("email_queue_team_id_idx").on(table.teamId),
-    uniqueIndex("email_queue_approval_member_unique_idx").on(
+    uniqueIndex("email_queue_approval_unique_idx").on(
       table.teamId,
-      table.memberId,
       table.eventType,
       table.approvalSequence,
     ),

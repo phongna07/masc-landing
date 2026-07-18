@@ -55,7 +55,11 @@ export default function AdminMailPage() {
             const canSend = item.status === "pending" || item.status === "failed";
             const isSending = sendMail.isPending && sendMail.variables?.mailId === item.id;
             return <tr key={item.id}>
-              <td><strong>{item.memberName}</strong><span>{item.toAddress}</span></td>
+              <td className="mail-recipients">
+                <strong>{t("fields.to")}: {item.memberName}</strong>
+                <span>{item.toAddress}</span>
+                <span><b>{t("fields.cc")}:</b> {item.cc.join(", ")}</span>
+              </td>
               <td>{item.teamName}</td>
               <td><Link className="admin-row-link" href={`/admin/mail/${item.id}`}><strong>{item.subject}</strong></Link></td>
               <td><span className={`mail-status mail-status-${item.status}`}>{t(`mail.status.${item.status}`)}</span></td>

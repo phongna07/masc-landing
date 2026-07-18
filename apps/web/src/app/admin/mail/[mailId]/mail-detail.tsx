@@ -42,7 +42,10 @@ export default function MailDetail({ mailId }: { mailId: string }) {
   return <>
     <Link className="admin-back-link" href="/admin/mail"><ArrowLeftIcon aria-hidden="true" />{t("mail.back")}</Link>
     <div className="admin-detail-heading mail-detail-heading">
-      <div><p>{t("mail.detailEyebrow")}</p><h1>{mail.data.memberName}</h1><span>{mail.data.toAddress}</span></div>
+      <div><p>{t("mail.detailEyebrow")}</p><h1>{mail.data.memberName}</h1>
+        <span>{t("fields.to")}: {mail.data.toAddress}</span>
+        <span>{t("fields.cc")}: {mail.data.cc.join(", ")}</span>
+      </div>
       {canSend && <Button type="button" disabled={sendMail.isPending} onClick={() => sendMail.mutate({ mailId })}>
         {mail.data.status === "failed" ? <RefreshCwIcon aria-hidden="true" /> : <SendIcon aria-hidden="true" />}
         {sendMail.isPending ? t("mail.sending") : t(mail.data.status === "failed" ? "mail.retry" : "mail.send")}
@@ -50,7 +53,8 @@ export default function MailDetail({ mailId }: { mailId: string }) {
     </div>
     <Card className="mail-metadata"><CardContent className="detail-list">
       <Detail label={t("fields.from")} value={mail.data.fromAddress} />
-      <Detail label={t("fields.recipient")} value={mail.data.toAddress} />
+      <Detail label={t("fields.to")} value={mail.data.toAddress} />
+      <Detail label={t("fields.cc")} value={mail.data.cc.join(", ")} />
       <Detail label={t("fields.subject")} value={mail.data.subject} />
       <Detail label={t("fields.team")} value={mail.data.teamName} />
       <Detail label={t("fields.status")} value={t(`mail.status.${mail.data.status}`)} />

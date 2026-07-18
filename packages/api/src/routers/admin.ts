@@ -102,14 +102,17 @@ export const adminRouter = router({
 
     if (input.status === "approved" && existing.status !== "approved") {
       const roster = await db.select({ id: members.id, fullName: members.fullName, email: members.email,
-        universityName: members.universityName }).from(members).where(eq(members.teamId, existing.id))
+        universityName: members.universityName, isCaptain: members.isCaptain }).from(members).where(eq(members.teamId, existing.id))
         .orderBy(desc(members.isCaptain), asc(members.fullName));
+      const captain = roster.find((member) => member.isCaptain);
+      if (!captain) throw new TRPCError({ code: "PRECONDITION_FAILED", message: "Team captain not found" });
       const content = renderTeamRegistrationSuccess(existing.name, roster);
       const nextSequence = existing.approvalSequence + 1;
-      const queueRecords = roster.map((member) => ({ id: crypto.randomUUID(), from_address: mailSender,
-        to_address: member.email, subject: teamRegistrationSuccessSubject, text: content.text, html: content.html,
-        event_type: teamRegistrationSuccessEvent, team_id: existing.id, member_id: member.id,
-        approval_sequence: nextSequence }));
+      const cc = roster.filter((member) => !member.isCaptain).map((member) => member.email);
+      const queueRecord = { id: crypto.randomUUID(), from_address: mailSender, to_address: captain.email, cc,
+        subject: teamRegistrationSuccessSubject, text: content.text, html: content.html,
+        event_type: teamRegistrationSuccessEvent, team_id: existing.id, member_id: captain.id,
+        approval_sequence: nextSequence };
       const queuedMail = await db.execute(sql`
         with transitioned as (
           update ${teams}
@@ -119,16 +122,16 @@ export const adminRouter = router({
             and ${teams.approvalSequence} = ${existing.approvalSequence}
           returning ${teams.id}
         )
-        insert into ${emailQueue} (id, from_address, to_address, subject, text, html, status, event_type,
+        insert into ${emailQueue} (id, from_address, to_address, cc, subject, text, html, status, event_type,
           team_id, member_id, approval_sequence, attempt_count, created_at, updated_at)
-        select item.id, item.from_address, item.to_address, item.subject, item.text, item.html, 'pending',
+        select item.id, item.from_address, item.to_address, item.cc, item.subject, item.text, item.html, 'pending',
           item.event_type, item.team_id, item.member_id, item.approval_sequence, 0, now(), now()
         from transitioned
-        cross join jsonb_to_recordset(${JSON.stringify(queueRecords)}::jsonb) as item(
-          id text, from_address text, to_address text, subject text, text text, html text, event_type text,
+        cross join jsonb_to_record(${JSON.stringify(queueRecord)}::jsonb) as item(
+          id text, from_address text, to_address text, cc text[], subject text, text text, html text, event_type text,
           team_id text, member_id text, approval_sequence integer
         )
-        on conflict (team_id, member_id, event_type, approval_sequence) do nothing
+        on conflict (team_id, event_type, approval_sequence) do nothing
         returning id
       `);
       if (queuedMail.rows.length === 0) {
@@ -146,7 +149,7 @@ export const adminRouter = router({
   }),
   listMail: adminProcedure.input(z.object({ status: mailListStatusSchema.default("pending") })).query(async ({ input }) => {
     const where = input.status === "all" ? undefined : eq(emailQueue.status, input.status);
-    return db.select({ id: emailQueue.id, toAddress: emailQueue.toAddress, subject: emailQueue.subject,
+    return db.select({ id: emailQueue.id, toAddress: emailQueue.toAddress, cc: emailQueue.cc, subject: emailQueue.subject,
       status: emailQueue.status, attemptCount: emailQueue.attemptCount, errorMessage: emailQueue.errorMessage,
       createdAt: emailQueue.createdAt, lastAttemptedAt: emailQueue.lastAttemptedAt, sentAt: emailQueue.sentAt,
       teamId: teams.id, teamName: teams.teamName, memberName: members.fullName })
@@ -156,7 +159,7 @@ export const adminRouter = router({
   }),
   getMail: adminProcedure.input(z.object({ mailId: z.string().trim().min(1).max(128) })).query(async ({ input }) => {
     const [mail] = await db.select({ id: emailQueue.id, fromAddress: emailQueue.fromAddress,
-      toAddress: emailQueue.toAddress, subject: emailQueue.subject, text: emailQueue.text, html: emailQueue.html,
+      toAddress: emailQueue.toAddress, cc: emailQueue.cc, subject: emailQueue.subject, text: emailQueue.text, html: emailQueue.html,
       status: emailQueue.status, eventType: emailQueue.eventType, approvalSequence: emailQueue.approvalSequence,
       attemptCount: emailQueue.attemptCount, errorMessage: emailQueue.errorMessage, createdAt: emailQueue.createdAt,
       lastAttemptedAt: emailQueue.lastAttemptedAt, sentAt: emailQueue.sentAt, teamId: teams.id,
@@ -175,7 +178,7 @@ export const adminRouter = router({
 
     const attemptedAt = new Date();
     try {
-      await sendMail({ from: mail.fromAddress, to: mail.toAddress, subject: mail.subject,
+      await sendMail({ from: mail.fromAddress, to: mail.toAddress, cc: mail.cc, subject: mail.subject,
         text: mail.text, html: mail.html });
     } catch (error) {
       const message = error instanceof Error ? error.message.slice(0, 2000) : "Unknown mail provider error";

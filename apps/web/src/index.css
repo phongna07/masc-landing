@@ -1330,6 +1330,15 @@ button {
   min-width: 980px;
 }
 
+.mail-recipients span,
+.mail-detail-heading>div>span {
+  display: block;
+}
+
+.mail-recipients b {
+  font-weight: 600;
+}
+
 .mail-row-actions {
   display: flex;
   align-items: center;
