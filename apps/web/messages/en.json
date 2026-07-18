@@ -361,6 +361,11 @@
   "Admin": {
     "eyebrow": "Administration",
     "title": "Admin dashboard",
+    "roles": {
+      "root": "Root admin",
+      "professional": "Professional admin",
+      "user": "User"
+    },
     "nav": {
       "homeLabel": "MASC 2026 - return home",
       "label": "Admin navigation",

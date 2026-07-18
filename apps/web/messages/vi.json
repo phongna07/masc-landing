@@ -361,6 +361,11 @@
   "Admin": {
     "eyebrow": "Quản trị",
     "title": "Bảng điều khiển quản trị",
+    "roles": {
+      "root": "Quản trị viên cấp cao",
+      "professional": "Ban chuyên môn",
+      "user": "Người dùng"
+    },
     "nav": {
       "homeLabel": "MASC 2026 - về trang chủ",
       "label": "Điều hướng quản trị",

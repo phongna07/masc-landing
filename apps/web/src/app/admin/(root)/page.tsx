@@ -9,7 +9,7 @@ import { toast } from "sonner";
 
 import { trpc } from "@/utils/trpc";
 
-import { AdminError, AdminHeading, AdminLoading } from "./admin-state";
+import { AdminError, AdminHeading, AdminLoading } from "../admin-state";
 
 export default function AdminPage() {
 	const t = useTranslations("Admin");

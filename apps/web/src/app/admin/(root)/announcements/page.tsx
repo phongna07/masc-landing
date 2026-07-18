@@ -13,7 +13,7 @@ import { toast } from "sonner";
 
 import { BrandLogo } from "@/components/hero-brand-logo";
 import { queryClient, trpc } from "@/utils/trpc";
-import { AdminError, AdminHeading, AdminLoading } from "../admin-state";
+import { AdminError, AdminHeading, AdminLoading } from "../../admin-state";
 
 const MAX_IMAGE_SIZE = 10 * 1024 * 1024;
 const allowedTypes = new Set(["image/jpeg", "image/png", "image/webp"]);

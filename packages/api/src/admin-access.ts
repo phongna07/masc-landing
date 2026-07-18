@@ -6,15 +6,19 @@ export function normalizeAdminEmail(email: string) {
   return email.trim().toLowerCase();
 }
 
-export async function isAdminEmail(email: string) {
+export async function getAdminByEmail(email: string) {
   const normalizedEmail = normalizeAdminEmail(email);
-  if (!normalizedEmail) return false;
+  if (!normalizedEmail) return null;
 
   const [admin] = await db
-    .select({ email: adminEmails.email })
+    .select({ email: adminEmails.email, role: adminEmails.role })
     .from(adminEmails)
     .where(eq(adminEmails.email, normalizedEmail))
     .limit(1);
 
-  return admin !== undefined;
+  return admin ?? null;
+}
+
+export async function isAdminEmail(email: string) {
+  return (await getAdminByEmail(email)) !== null;
 }

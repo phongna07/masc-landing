@@ -7,7 +7,9 @@ import { TRPCError } from "@trpc/server";
 import { desc, eq } from "drizzle-orm";
 import { z } from "zod";
 
-import { adminProcedure, protectedProcedure, router } from "../index";
+import { adminAreaProcedure, protectedProcedure, router } from "../index";
+
+const announcementsAdminProcedure = adminAreaProcedure("announcements");
 
 const MAX_IMAGE_SIZE = 10 * 1024 * 1024;
 const URL_EXPIRY_SECONDS = 300;
@@ -77,7 +79,7 @@ export const announcementsRouter = router({
     })));
   }),
 
-  createUploadUrl: adminProcedure.input(imageInput).mutation(async ({ input }) => {
+  createUploadUrl: announcementsAdminProcedure.input(imageInput).mutation(async ({ input }) => {
     const extension = validateImage(input);
     const uploadId = crypto.randomUUID();
     const uploadUrl = await getSignedUrl(s3, new PutObjectCommand({
@@ -89,7 +91,7 @@ export const announcementsRouter = router({
     return { uploadId, uploadUrl, expiresIn: URL_EXPIRY_SECONDS };
   }),
 
-  create: adminProcedure.input(z.object({
+  create: announcementsAdminProcedure.input(z.object({
     content: z.string().trim().min(1).max(5000),
     image: optionalImageInput.nullish(),
   })).mutation(async ({ input }) => {
@@ -118,7 +120,7 @@ export const announcementsRouter = router({
     }
   }),
 
-  delete: adminProcedure.input(z.object({ id: z.string().trim().min(1).max(128) })).mutation(async ({ input }) => {
+  delete: announcementsAdminProcedure.input(z.object({ id: z.string().trim().min(1).max(128) })).mutation(async ({ input }) => {
     const [deleted] = await db.delete(announcements).where(eq(announcements.id, input.id)).returning({ objectKey: announcements.objectKey });
     if (!deleted) throw new TRPCError({ code: "NOT_FOUND", message: "ANNOUNCEMENT_NOT_FOUND" });
     if (deleted.objectKey) await bestEffortDelete(deleted.objectKey);

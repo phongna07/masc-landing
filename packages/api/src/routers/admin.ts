@@ -14,11 +14,16 @@ import {
 } from "../email/team-registration-success";
 import { sendMail } from "../email/send-mail";
 import { getDashboardTabSettings } from "../dashboard-tab-settings";
-import { adminProcedure, router } from "../index";
+import { adminAreaProcedure, router } from "../index";
 import { roundSchema } from "../rounds";
 import { getSubmissionSettings } from "../submission-settings";
 
 const signedUrlExpirySeconds = 300;
+const overviewProcedure = adminAreaProcedure("overview");
+const usersProcedure = adminAreaProcedure("users");
+const teamsProcedure = adminAreaProcedure("teams");
+const mailProcedure = adminAreaProcedure("mail");
+const roundsProcedure = adminAreaProcedure("rounds");
 const roundInput = z.object({ round: roundSchema });
 const submissionInput = roundInput.extend({ submissionId: z.string().trim().min(1).max(128) });
 const feedbackInput = submissionInput.extend({
@@ -55,36 +60,36 @@ async function findSubmissionFile(input: z.infer<typeof submissionInput>) {
 }
 
 export const adminRouter = router({
-  getSubmissionSettings: adminProcedure.query(getSubmissionSettings),
-  setRoundSubmissionOpen: adminProcedure.input(roundInput.extend({ isOpen: z.boolean() })).mutation(async ({ input }) => {
+  getSubmissionSettings: overviewProcedure.query(getSubmissionSettings),
+  setRoundSubmissionOpen: overviewProcedure.input(roundInput.extend({ isOpen: z.boolean() })).mutation(async ({ input }) => {
     await db.insert(submissionSettings).values({ round: input.round, isOpen: input.isOpen, updatedAt: new Date() })
       .onConflictDoUpdate({ target: submissionSettings.round, set: { isOpen: input.isOpen, updatedAt: new Date() } });
     return getSubmissionSettings();
   }),
-  getDashboardTabSettings: adminProcedure.query(getDashboardTabSettings),
-  setRoundTabVisible: adminProcedure.input(roundInput.extend({ isVisible: z.boolean() })).mutation(async ({ input }) => {
+  getDashboardTabSettings: overviewProcedure.query(getDashboardTabSettings),
+  setRoundTabVisible: overviewProcedure.input(roundInput.extend({ isVisible: z.boolean() })).mutation(async ({ input }) => {
     await db.insert(dashboardTabSettings).values({ round: input.round, isVisible: input.isVisible, updatedAt: new Date() })
       .onConflictDoUpdate({ target: dashboardTabSettings.round,
         set: { isVisible: input.isVisible, updatedAt: new Date() } });
     return getDashboardTabSettings();
   }),
-  listUsers: adminProcedure.query(async () => {
+  listUsers: usersProcedure.query(async () => {
     const users = await db.select({ id: user.id, name: user.name, email: user.email,
-      emailVerified: user.emailVerified, image: user.image, adminEmail: adminEmails.email,
+      emailVerified: user.emailVerified, image: user.image, adminRole: adminEmails.role,
       createdAt: user.createdAt, updatedAt: user.updatedAt }).from(user)
       .leftJoin(adminEmails, eq(adminEmails.email, sql`lower(btrim(${user.email}))`))
       .orderBy(desc(user.createdAt));
-    return users.map(({ adminEmail, ...listedUser }) => ({
+    return users.map(({ adminRole, ...listedUser }) => ({
       ...listedUser,
-      role: adminEmail ? ("admin" as const) : ("user" as const),
+      role: adminRole ?? ("user" as const),
     }));
   }),
-  listTeams: adminProcedure.query(async () => db.select({ id: teams.id, name: teams.teamName,
+  listTeams: teamsProcedure.query(async () => db.select({ id: teams.id, name: teams.teamName,
     status: teams.registrationStatus, createdAt: teams.createdAt, captainName, captainEmail,
     captainPhone: teams.captainPhone, memberCount: count(members.id) }).from(teams)
     .leftJoin(members, eq(teams.id, members.teamId))
     .groupBy(teams.id).orderBy(desc(teams.createdAt), asc(teams.teamName))),
-  getTeam: adminProcedure.input(z.object({ teamId: z.string().trim().min(1).max(128) })).query(async ({ input }) => {
+  getTeam: teamsProcedure.input(z.object({ teamId: z.string().trim().min(1).max(128) })).query(async ({ input }) => {
     const [team] = await db.select({ id: teams.id, name: teams.teamName, status: teams.registrationStatus,
       createdAt: teams.createdAt, captainName, captainEmail, captainPhone: teams.captainPhone })
       .from(teams).where(eq(teams.id, input.teamId)).limit(1);
@@ -94,7 +99,7 @@ export const adminRouter = router({
       .where(eq(members.teamId, team.id)).orderBy(desc(members.isCaptain), asc(members.fullName));
     return { ...team, members: roster };
   }),
-  updateTeamStatus: adminProcedure.input(z.object({
+  updateTeamStatus: teamsProcedure.input(z.object({
     teamId: z.string().trim().min(1).max(128), status: registrationStatusSchema,
   })).mutation(async ({ input }) => {
     const [existing] = await db.select({ id: teams.id, name: teams.teamName, status: teams.registrationStatus,
@@ -148,7 +153,7 @@ export const adminRouter = router({
     if (!team) throw new TRPCError({ code: "NOT_FOUND", message: "Team not found" });
     return { ...team, queuedMailCount: 0 };
   }),
-  listMail: adminProcedure.input(z.object({ status: mailListStatusSchema.default("pending") })).query(async ({ input }) => {
+  listMail: mailProcedure.input(z.object({ status: mailListStatusSchema.default("pending") })).query(async ({ input }) => {
     const where = input.status === "all" ? undefined : eq(emailQueue.status, input.status);
     return db.select({ id: emailQueue.id, toAddress: emailQueue.toAddress, cc: emailQueue.cc, subject: emailQueue.subject,
       status: emailQueue.status, attemptCount: emailQueue.attemptCount, errorMessage: emailQueue.errorMessage,
@@ -158,7 +163,7 @@ export const adminRouter = router({
       .innerJoin(members, eq(emailQueue.memberId, members.id)).where(where)
       .orderBy(sql`case ${emailQueue.status} when 'pending' then 0 when 'failed' then 1 else 2 end`, desc(emailQueue.createdAt));
   }),
-  getMail: adminProcedure.input(z.object({ mailId: z.string().trim().min(1).max(128) })).query(async ({ input }) => {
+  getMail: mailProcedure.input(z.object({ mailId: z.string().trim().min(1).max(128) })).query(async ({ input }) => {
     const [mail] = await db.select({ id: emailQueue.id, fromAddress: emailQueue.fromAddress,
       toAddress: emailQueue.toAddress, cc: emailQueue.cc, subject: emailQueue.subject, text: emailQueue.text, html: emailQueue.html,
       status: emailQueue.status, eventType: emailQueue.eventType, approvalSequence: emailQueue.approvalSequence,
@@ -170,7 +175,7 @@ export const adminRouter = router({
     if (!mail) throw new TRPCError({ code: "NOT_FOUND", message: "Mail not found" });
     return mail;
   }),
-  sendMail: adminProcedure.input(z.object({ mailId: z.string().trim().min(1).max(128) })).mutation(async ({ input }) => {
+  sendMail: mailProcedure.input(z.object({ mailId: z.string().trim().min(1).max(128) })).mutation(async ({ input }) => {
     const [mail] = await db.select().from(emailQueue).where(eq(emailQueue.id, input.mailId)).limit(1);
     if (!mail) throw new TRPCError({ code: "NOT_FOUND", message: "Mail not found" });
     if (!mailStatusSchema.exclude(["sent"]).safeParse(mail.status).success) {
@@ -194,7 +199,7 @@ export const adminRouter = router({
       .returning({ id: emailQueue.id, status: emailQueue.status });
     return sent!;
   }),
-  listRoundSubmissions: adminProcedure.input(roundInput).query(async ({ input }) => db.select({
+  listRoundSubmissions: roundsProcedure.input(roundInput).query(async ({ input }) => db.select({
     id: roundSubmissions.id, teamId: teams.id, teamName: teams.teamName, teamStatus: teams.registrationStatus,
     captainName, captainEmail, originalFilename: roundSubmissions.originalFilename,
     mimeType: roundSubmissions.mimeType, fileSize: roundSubmissions.fileSize, createdAt: roundSubmissions.createdAt,
@@ -202,7 +207,7 @@ export const adminRouter = router({
   }).from(roundSubmissions).innerJoin(teams, eq(roundSubmissions.teamId, teams.id))
     .where(and(eq(roundSubmissions.round, input.round), latestSubmission()))
     .orderBy(desc(roundSubmissions.updatedAt), asc(teams.teamName))),
-  getRoundSubmission: adminProcedure.input(submissionInput).query(async ({ input }) => {
+  getRoundSubmission: roundsProcedure.input(submissionInput).query(async ({ input }) => {
     const [submission] = await db.select({ id: roundSubmissions.id, description: roundSubmissions.description,
       feedback: roundSubmissions.feedback, score: roundSubmissions.score,
       feedbackPublished: roundSubmissions.feedbackPublished,
@@ -218,24 +223,24 @@ export const adminRouter = router({
       .where(eq(members.teamId, submission.teamId)).orderBy(desc(members.isCaptain), asc(members.fullName));
     return { ...submission, members: roster };
   }),
-  saveRoundFeedbackDraft: adminProcedure.input(feedbackInput).mutation(async ({ input }) => {
+  saveRoundFeedbackDraft: roundsProcedure.input(feedbackInput).mutation(async ({ input }) => {
     const [submission] = await db.update(roundSubmissions)
       .set({ feedback: input.feedback, score: input.score, feedbackPublished: false })
       .where(identifiedSubmission(input)).returning({ id: roundSubmissions.id });
     if (!submission) throw new TRPCError({ code: "NOT_FOUND", message: "Submission not found" }); return { success: true };
   }),
-  publishRoundFeedback: adminProcedure.input(feedbackInput).mutation(async ({ input }) => {
+  publishRoundFeedback: roundsProcedure.input(feedbackInput).mutation(async ({ input }) => {
     const [submission] = await db.update(roundSubmissions)
       .set({ feedback: input.feedback, score: input.score, feedbackPublished: true })
       .where(identifiedSubmission(input)).returning({ id: roundSubmissions.id });
     if (!submission) throw new TRPCError({ code: "NOT_FOUND", message: "Submission not found" }); return { success: true };
   }),
-  createRoundDownloadUrl: adminProcedure.input(submissionInput).mutation(async ({ input }) => {
+  createRoundDownloadUrl: roundsProcedure.input(submissionInput).mutation(async ({ input }) => {
     const submission = await findSubmissionFile(input); const safeFilename = submission.filename.replace(/[^a-zA-Z0-9._ -]/g, "_");
     return { downloadUrl: await getSignedUrl(s3, new GetObjectCommand({ Bucket: env.R2_BUCKET, Key: submission.objectKey,
       ResponseContentDisposition: `attachment; filename="${safeFilename}"` }), { expiresIn: signedUrlExpirySeconds }) };
   }),
-  createRoundPreviewUrl: adminProcedure.input(submissionInput).mutation(async ({ input }) => {
+  createRoundPreviewUrl: roundsProcedure.input(submissionInput).mutation(async ({ input }) => {
     const submission = await findSubmissionFile(input);
     const sourceUrl = await getSignedUrl(s3, new GetObjectCommand({ Bucket: env.R2_BUCKET, Key: submission.objectKey,
       ResponseContentType: submission.mimeType, ResponseContentDisposition: "inline" }), { expiresIn: signedUrlExpirySeconds });

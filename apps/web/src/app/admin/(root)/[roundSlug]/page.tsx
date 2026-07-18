@@ -10,7 +10,7 @@ import { notFound, useParams } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
 
 import { trpc } from "@/utils/trpc";
-import { AdminEmpty, AdminError, AdminHeading, AdminLoading, formatDate } from "../admin-state";
+import { AdminEmpty, AdminError, AdminHeading, AdminLoading, formatDate } from "../../admin-state";
 
 export default function AdminRoundPage() {
   const { roundSlug } = useParams<{ roundSlug: string }>();

@@ -13,7 +13,7 @@ import { useLocale, useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { queryClient, trpc } from "@/utils/trpc";
-import { AdminEmpty, AdminError, AdminLoading, formatBirthdate, formatDate } from "../../admin-state";
+import { AdminEmpty, AdminError, AdminLoading, formatBirthdate, formatDate } from "../../../admin-state";
 
 export default function RoundSubmissionDetail({ round, submissionId }: { round: RoundId; submissionId: string }) {
   const t = useTranslations("Admin"); const locale = useLocale(); const input = { round, submissionId };

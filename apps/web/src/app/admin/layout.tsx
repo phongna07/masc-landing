@@ -1,8 +1,4 @@
-import { auth } from "@masc-landing/auth";
-import { isAdminEmail } from "@masc-landing/api/admin-access";
-import { headers } from "next/headers";
-import { redirect } from "next/navigation";
-
+import { requireAdmin } from "./admin-auth";
 import AdminShell from "./admin-shell";
 
 export default async function AdminLayout({
@@ -10,17 +6,7 @@ export default async function AdminLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
+  const admin = await requireAdmin();
 
-  if (!session?.user) {
-    redirect("/login");
-  }
-
-  if (!(await isAdminEmail(session.user.email))) {
-    redirect("/");
-  }
-
-  return <AdminShell>{children}</AdminShell>;
+  return <AdminShell role={admin.role}>{children}</AdminShell>;
 }
