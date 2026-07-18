@@ -19,6 +19,7 @@ import mentor4 from "@/assets/mentor-4.png";
 import { HeroBrandLogo } from "@/components/hero-brand-logo";
 import SiteHeader from "@/components/site-header";
 import { authClient } from "@/lib/auth-client";
+import { env } from "@masc-landing/env/web";
 
 export default function Home() {
   const t = useTranslations("Home");
@@ -263,15 +264,7 @@ export default function Home() {
               sizes="100vw"
             />
           </div>
-          {/* <div className="hero-cosmos" aria-hidden="true">
-            <div className="hero-nebula hero-nebula-one" />
-            <div className="hero-nebula hero-nebula-two" />
-            <div className="hero-starfield hero-starfield-near" />
-            <div className="hero-starfield hero-starfield-far" />
-            <span className="shooting-star shooting-star-one" />
-            <span className="shooting-star shooting-star-two" />
-            <span className="shooting-star shooting-star-three" />
-          </div> */}
+
           <div className="hero-shade" aria-hidden="true" />
 
           <div className="hero-content page-shell">
@@ -287,10 +280,12 @@ export default function Home() {
               </h1>
               <div className="hero-bottom reveal">
                 <p>{t("hero.description")}</p>
-                <Link className="primary-button" href={registrationLink}>
-                  <span>{isSignedIn ? t("hero.portal") : t("hero.apply")}</span>
-                  <span aria-hidden="true">↗</span>
-                </Link>
+                {env.NEXT_PUBLIC_IS_REGISTRATION_OPENED && (
+                  <Link className="primary-button" href={registrationLink}>
+                    <span>{isSignedIn ? t("hero.portal") : t("hero.apply")}</span>
+                    <span aria-hidden="true">↗</span>
+                  </Link>
+                )}
               </div>
             </div>
 
@@ -307,7 +302,7 @@ export default function Home() {
             </div>
           </div>
 
-          {/* <DeadlineCountdown /> */}
+          {env.NEXT_PUBLIC_IS_REGISTRATION_OPENED && <DeadlineCountdown />}
           <div className="hero-meta" aria-label={t("hero.participantDetails")}>
             <span>{t("hero.country")}</span>
             <span>{t("hero.age")}</span>
@@ -535,10 +530,12 @@ export default function Home() {
               })}
             </h2>
             <p>{t("finalCta.description")}</p>
-            <Link className="primary-button light" href={registrationLink}>
-              <span>{isSignedIn ? t("finalCta.portal") : t("finalCta.button")}</span>
-              <span aria-hidden="true">↗</span>
-            </Link>
+            {env.NEXT_PUBLIC_IS_REGISTRATION_OPENED && (
+              <Link className="primary-button light" href={registrationLink}>
+                <span>{isSignedIn ? t("finalCta.portal") : t("finalCta.button")}</span>
+                <span aria-hidden="true">↗</span>
+              </Link>
+            )}
           </div>
         </section>
       </main>

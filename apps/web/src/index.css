@@ -1150,7 +1150,7 @@ button {
   gap: 18px;
 }
 
-.admin-setting-section + .admin-setting-section {
+.admin-setting-section+.admin-setting-section {
   margin-top: 48px;
 }
 
@@ -1977,7 +1977,7 @@ img {
   border-bottom: 1px solid rgba(255, 255, 255, 0.09);
 }
 
-.auth-assurance-item > span {
+.auth-assurance-item>span {
   padding-top: 3px;
   color: #d7b671;
   font-size: 9px;
@@ -2426,8 +2426,7 @@ img {
 }
 
 .primary-button {
-  /* display: inline-flex; */
-  display: none;
+  display: inline-flex;
   min-width: 188px;
   align-items: center;
   justify-content: center;
