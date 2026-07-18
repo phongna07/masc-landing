@@ -5,78 +5,8 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1783841050438,
-      "tag": "0000_quick_peter_quill",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "7",
-      "when": 1783846671938,
-      "tag": "0001_purple_may_parker",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "7",
-      "when": 1783847723063,
-      "tag": "0002_curved_mother_askani",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "7",
-      "when": 1783850781690,
-      "tag": "0003_violet_major_mapleleaf",
-      "breakpoints": true
-    },
-    {
-      "idx": 4,
-      "version": "7",
-      "when": 1783858982515,
-      "tag": "0004_parameterized-round-submissions",
-      "breakpoints": true
-    },
-    {
-      "idx": 5,
-      "version": "7",
-      "when": 1783861955859,
-      "tag": "0005_registration-status-rejected",
-      "breakpoints": true
-    },
-    {
-      "idx": 6,
-      "version": "7",
-      "when": 1783999985220,
-      "tag": "0006_fixed-team-size",
-      "breakpoints": true
-    },
-    {
-      "idx": 7,
-      "version": "7",
-      "when": 1784003707336,
-      "tag": "0007_email-queue",
-      "breakpoints": true
-    },
-    {
-      "idx": 8,
-      "version": "7",
-      "when": 1784297131568,
-      "tag": "0008_participant-birthdate",
-      "breakpoints": true
-    },
-    {
-      "idx": 9,
-      "version": "7",
-      "when": 1784304000000,
-      "tag": "0009_team-submission-attempts",
-      "breakpoints": true
-    },
-    {
-      "idx": 10,
-      "version": "7",
-      "when": 1784304000001,
-      "tag": "0010_conscious_tomorrow_man",
+      "when": 1784357935635,
+      "tag": "0000_gorgeous_groot",
       "breakpoints": true
     }
   ]
