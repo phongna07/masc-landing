@@ -4,6 +4,7 @@ import {
   boolean,
   check,
   date,
+  doublePrecision,
   index,
   integer,
   pgEnum,
@@ -80,6 +81,7 @@ export const roundSubmissions = pgTable(
     mimeType: text("mime_type").notNull(),
     fileSize: bigint("file_size", { mode: "number" }).notNull(),
     feedback: text("feedback"),
+    score: doublePrecision("score"),
     feedbackPublished: boolean("feedback_published").default(false).notNull(),
     createdAt: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at").defaultNow().notNull(),
@@ -87,6 +89,7 @@ export const roundSubmissions = pgTable(
   (table) => [
     uniqueIndex("round_submissions_team_id_round_attempt_unique_idx").on(table.teamId, table.round, table.attemptNumber),
     check("round_submissions_attempt_number_check", sql`${table.attemptNumber} between 1 and 3`),
+    check("round_submissions_score_check", sql`${table.score} >= 0`),
     index("round_submissions_round_updated_at_idx").on(table.round, table.updatedAt),
   ],
 );

@@ -23,7 +23,10 @@ const userBatchSize = 100;
 const signedUrlExpirySeconds = 300;
 const roundInput = z.object({ round: roundSchema });
 const submissionInput = roundInput.extend({ submissionId: z.string().trim().min(1).max(128) });
-const feedbackInput = submissionInput.extend({ feedback: z.string().trim().min(1).max(5000) });
+const feedbackInput = submissionInput.extend({
+  feedback: z.string().trim().min(1).max(5000),
+  score: z.number().finite().nonnegative(),
+});
 const registrationStatusSchema = z.enum(["pending", "approved", "rejected"]);
 const mailStatusSchema = z.enum(["pending", "sent", "failed"]);
 const mailListStatusSchema = z.enum(["all", "pending", "sent", "failed"]);
@@ -203,7 +206,8 @@ export const adminRouter = router({
     .orderBy(desc(roundSubmissions.updatedAt), asc(teams.teamName))),
   getRoundSubmission: adminProcedure.input(submissionInput).query(async ({ input }) => {
     const [submission] = await db.select({ id: roundSubmissions.id, description: roundSubmissions.description,
-      feedback: roundSubmissions.feedback, feedbackPublished: roundSubmissions.feedbackPublished,
+      feedback: roundSubmissions.feedback, score: roundSubmissions.score,
+      feedbackPublished: roundSubmissions.feedbackPublished,
       originalFilename: roundSubmissions.originalFilename, mimeType: roundSubmissions.mimeType,
       fileSize: roundSubmissions.fileSize, createdAt: roundSubmissions.createdAt, updatedAt: roundSubmissions.updatedAt,
       teamId: teams.id, teamName: teams.teamName, teamStatus: teams.registrationStatus, teamCreatedAt: teams.createdAt,
@@ -217,12 +221,14 @@ export const adminRouter = router({
     return { ...submission, members: roster };
   }),
   saveRoundFeedbackDraft: adminProcedure.input(feedbackInput).mutation(async ({ input }) => {
-    const [submission] = await db.update(roundSubmissions).set({ feedback: input.feedback, feedbackPublished: false })
+    const [submission] = await db.update(roundSubmissions)
+      .set({ feedback: input.feedback, score: input.score, feedbackPublished: false })
       .where(identifiedSubmission(input)).returning({ id: roundSubmissions.id });
     if (!submission) throw new TRPCError({ code: "NOT_FOUND", message: "Submission not found" }); return { success: true };
   }),
   publishRoundFeedback: adminProcedure.input(feedbackInput).mutation(async ({ input }) => {
-    const [submission] = await db.update(roundSubmissions).set({ feedback: input.feedback, feedbackPublished: true })
+    const [submission] = await db.update(roundSubmissions)
+      .set({ feedback: input.feedback, score: input.score, feedbackPublished: true })
       .where(identifiedSubmission(input)).returning({ id: roundSubmissions.id });
     if (!submission) throw new TRPCError({ code: "NOT_FOUND", message: "Submission not found" }); return { success: true };
   }),

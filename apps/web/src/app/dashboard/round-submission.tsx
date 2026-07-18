@@ -7,7 +7,7 @@ import { Input } from "@masc-landing/ui/components/input";
 import { Label } from "@masc-landing/ui/components/label";
 import { Textarea } from "@masc-landing/ui/components/textarea";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { CheckCircle2Icon, Clock3Icon, DownloadIcon, FileTextIcon, RefreshCwIcon, UploadIcon } from "lucide-react";
+import { CheckCircle2Icon, Clock3Icon, DownloadIcon, FileTextIcon, MessageSquareQuoteIcon, RefreshCwIcon, UploadIcon } from "lucide-react";
 import { useFormatter, useTranslations } from "next-intl";
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import { toast } from "sonner";
@@ -103,9 +103,12 @@ export default function RoundSubmission({ round }: { round: RoundId }) {
     {existing && !showForm && <CardContent className="submission-details"><div className="submission-description"><Label>{t("round.descriptionLabel")}</Label><p>{existing.description}</p></div>
       <div className="submission-file"><FileTextIcon aria-hidden="true" /><div><strong>{existing.originalFilename}</strong><span>{formatBytes(existing.fileSize)}</span></div>
         <Button variant="outline" disabled={download.isPending} onClick={() => download.mutate(input)}><DownloadIcon aria-hidden="true" />{t("round.download")}</Button></div>
+      {existing.feedback && <section className="participant-feedback" aria-labelledby={`round-${round}-feedback-title`}>
+        <div className="participant-feedback-copy"><div className="participant-feedback-heading"><MessageSquareQuoteIcon aria-hidden="true" /><Label id={`round-${round}-feedback-title`}>{t("round.feedbackTitle")}</Label></div><p>{existing.feedback}</p></div>
+        {existing.score !== null && <div className="participant-feedback-score"><Label>{t("round.scoreTitle")}</Label><p>{existing.score}</p></div>}
+      </section>}
       {preview.data?.previewUrl && <div className="submission-preview"><Label>{t("round.previewLabel")}</Label><iframe src={preview.data.previewUrl} title={t("round.previewTitle", { filename: existing.originalFilename })} /></div>}
     </CardContent>}
-    {existing?.feedback && !showForm && <CardContent className="participant-feedback"><div className="submission-description"><Label>{t("round.feedbackTitle")}</Label><p>{existing.feedback}</p></div></CardContent>}
     {showForm && <form onSubmit={submit} className="round-submission-form" noValidate>
       <CardContent className="round-submission-fields"><Field label={t("round.descriptionLabel")}><Textarea value={description} maxLength={5000} rows={8} onChange={(event) => setDescription(event.target.value)} /><span className="field-hint">{t("round.characters", { count: description.length })}</span></Field>
       <Field label={t("round.fileLabel")}><Input type="file" accept=".pdf,.doc,.docx,.ppt,.pptx" onChange={(event) => setFile(event.target.files?.[0] ?? null)} /><span className="field-hint">{t("round.fileHint")}</span></Field></CardContent>

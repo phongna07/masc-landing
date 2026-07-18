@@ -92,6 +92,7 @@ export const roundSubmissionRouter = router({
       mimeType: roundSubmissions.mimeType, fileSize: roundSubmissions.fileSize,
       attemptNumber: roundSubmissions.attemptNumber,
       feedback: sql<string | null>`case when ${roundSubmissions.feedbackPublished} then ${roundSubmissions.feedback} else null end`,
+      score: sql<number | null>`case when ${roundSubmissions.feedbackPublished} then ${roundSubmissions.score} else null end`,
       createdAt: roundSubmissions.createdAt, updatedAt: roundSubmissions.updatedAt,
     }).from(roundSubmissions).where(submissionWhere(membership.teamId, input.round))
       .orderBy(desc(roundSubmissions.attemptNumber)).limit(1);

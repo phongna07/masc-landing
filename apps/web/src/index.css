@@ -303,8 +303,75 @@ button {
 }
 
 .participant-feedback {
-  margin-top: 0 !important;
-  background: rgba(210, 166, 108, 0.045);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: clamp(22px, 4vw, 42px);
+  align-items: stretch;
+  margin-top: 10px;
+  padding: clamp(20px, 3vw, 28px);
+  border: 1px solid rgba(210, 166, 108, 0.45);
+  border-left: 4px solid #d2a66c;
+  background:
+    linear-gradient(110deg, rgba(210, 166, 108, 0.14), rgba(210, 166, 108, 0.035)),
+    rgba(255, 255, 255, 0.02);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+.participant-feedback-copy {
+  display: grid;
+  align-content: start;
+  gap: 13px;
+}
+
+.participant-feedback-heading {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  color: #f2d584;
+}
+
+.participant-feedback-heading svg {
+  width: 18px;
+  height: 18px;
+}
+
+.participant-feedback-heading [data-slot="label"],
+.participant-feedback-score [data-slot="label"] {
+  color: inherit;
+  font-size: 11px;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+}
+
+.participant-feedback-copy p,
+.participant-feedback-score p {
+  margin: 0;
+}
+
+.participant-feedback-copy p {
+  max-width: 72ch;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  font-size: 15px;
+  line-height: 1.75;
+}
+
+.participant-feedback-score {
+  display: grid;
+  min-width: 118px;
+  place-content: center;
+  gap: 7px;
+  padding: 16px 22px;
+  border: 1px solid rgba(242, 213, 132, 0.35);
+  color: #f2d584;
+  background: rgba(9, 9, 12, 0.34);
+  text-align: center;
+}
+
+.participant-feedback-score p {
+  font-family: var(--font-castela), Georgia, serif;
+  font-size: clamp(32px, 5vw, 46px);
+  line-height: 1;
 }
 
 .round-submission-fields {
@@ -800,6 +867,14 @@ button {
   .submission-file [data-slot="button"] {
     grid-column: 1 / -1;
     width: 100%;
+  }
+
+  .participant-feedback {
+    grid-template-columns: 1fr;
+  }
+
+  .participant-feedback-score {
+    min-width: 0;
   }
 
   .round-status-header {
@@ -1319,6 +1394,10 @@ button {
   min-height: 180px;
   resize: vertical;
   line-height: 1.6;
+}
+
+.admin-feedback-fields [data-slot="input"] {
+  max-width: 260px;
 }
 
 .admin-feedback-actions {
