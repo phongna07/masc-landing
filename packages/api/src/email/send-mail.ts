@@ -1,5 +1,5 @@
-import { SendEmailCommand, SESClient } from "@aws-sdk/client-ses";
 import { env } from "@masc-landing/env/server";
+import nodemailer from "nodemailer";
 
 type Mail = {
   from: string;
@@ -9,38 +9,53 @@ type Mail = {
   html: string;
 };
 
-function encodeSesAddress(address: string) {
-  const match = address.match(/^\s*(.*?)\s*<([^<>]+)>\s*$/);
-  if (!match || /^[\x00-\x7F]*$/.test(match[1]!)) return address;
-  return `=?UTF-8?B?${Buffer.from(match[1]!).toString("base64")}?= <${match[2]}>`;
+class ResendDailyQuotaError extends Error {
+  constructor() {
+    super("Resend daily email quota exceeded");
+    this.name = "ResendDailyQuotaError";
+  }
 }
 
-async function sendWithAws(mail: Mail) {
-  const ses = new SESClient({
-    region: env.AWS_REGION!,
-    credentials: {
-      accessKeyId: env.AWS_ACCESS_KEY_ID!,
-      secretAccessKey: env.AWS_SECRET_ACCESS_KEY!,
-    },
-  });
-  await ses.send(new SendEmailCommand({
-    Source: encodeSesAddress(mail.from),
-    Destination: { ToAddresses: [mail.to] },
-    Message: {
-      Subject: { Data: mail.subject, Charset: "UTF-8" },
-      Body: {
-        Text: { Data: mail.text, Charset: "UTF-8" },
-        Html: { Data: mail.html, Charset: "UTF-8" },
-      },
-    },
-  }));
+const tinoMailTransport = nodemailer.createTransport({
+  host: env.MAIL_SERVER_URL,
+  port: env.MAIL_SERVER_PORT,
+  secure: false,
+  requireTLS: true,
+  auth: {
+    user: env.MAIL_USERNAME,
+    pass: env.MAIL_PASSWORD,
+  },
+});
+
+function parseResendError(details: string) {
+  try {
+    const parsed: unknown = JSON.parse(details);
+    if (typeof parsed === "object" && parsed !== null) {
+      const error = parsed as Record<string, unknown>;
+      return {
+        name: typeof error.name === "string" ? error.name : undefined,
+        message: typeof error.message === "string" ? error.message : details,
+      };
+    }
+  } catch {
+    // Preserve the raw response when Resend does not return its documented JSON shape.
+  }
+  return { name: undefined, message: details };
+}
+
+function errorMessage(error: unknown) {
+  return error instanceof Error ? error.message : "Unknown SMTP error";
+}
+
+async function sendWithTinoMail(mail: Mail) {
+  await tinoMailTransport.sendMail(mail);
 }
 
 async function sendWithResend(mail: Mail) {
   const response = await fetch("https://api.resend.com/emails", {
     method: "POST",
     headers: {
-      Authorization: `Bearer ${env.RESEND_API_KEY!}`,
+      Authorization: `Bearer ${env.RESEND_API_KEY}`,
       "Content-Type": "application/json",
     },
     body: JSON.stringify(mail),
@@ -48,11 +63,27 @@ async function sendWithResend(mail: Mail) {
 
   if (!response.ok) {
     const details = await response.text();
-    throw new Error(`Resend request failed (${response.status}): ${details}`);
+    const resendError = parseResendError(details);
+    if (response.status === 429 && resendError.name === "daily_quota_exceeded") {
+      throw new ResendDailyQuotaError();
+    }
+    const errorName = resendError.name ? `, ${resendError.name}` : "";
+    throw new Error(`Resend request failed (${response.status}${errorName}): ${resendError.message}`);
   }
 }
 
 export async function sendMail(mail: Mail) {
-  if (env.MAIL_SERVICE === "resend") return sendWithResend(mail);
-  return sendWithAws(mail);
+  try {
+    await sendWithResend(mail);
+  } catch (error) {
+    if (!(error instanceof ResendDailyQuotaError)) throw error;
+    try {
+      await sendWithTinoMail(mail);
+    } catch (fallbackError) {
+      throw new Error(
+        `TinoMail fallback failed after Resend daily quota was exceeded: ${errorMessage(fallbackError)}`,
+        { cause: fallbackError },
+      );
+    }
+  }
 }
