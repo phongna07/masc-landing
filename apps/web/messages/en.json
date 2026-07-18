@@ -552,8 +552,6 @@
     "values": {
       "verified": "Verified",
       "unverified": "Unverified",
-      "active": "Active",
-      "banned": "Banned",
       "captain": "Captain",
       "memberCount": "{count} / {required}",
       "status": {

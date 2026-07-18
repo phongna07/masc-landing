@@ -21,12 +21,11 @@ export default function AdminUsersPage() {
     ) : (
       <Card className="admin-table-card"><CardContent className="admin-table-scroll">
         <table className="admin-table">
-          <thead><tr><th scope="col">{t("fields.user")}</th><th scope="col">{t("fields.role")}</th><th scope="col">{t("fields.verification")}</th><th scope="col">{t("fields.status")}</th><th scope="col">{t("fields.created")}</th></tr></thead>
+          <thead><tr><th scope="col">{t("fields.user")}</th><th scope="col">{t("fields.role")}</th><th scope="col">{t("fields.verification")}</th><th scope="col">{t("fields.created")}</th></tr></thead>
           <tbody>{users.data.map((user) => <tr key={user.id}>
             <td><strong>{user.name}</strong><span>{user.email}</span></td>
             <td><span className="admin-badge">{user.role ?? "user"}</span></td>
             <td>{t(user.emailVerified ? "values.verified" : "values.unverified")}</td>
-            <td><span className={`admin-badge ${user.banned ? "is-danger" : "is-success"}`}>{t(user.banned ? "values.banned" : "values.active")}</span></td>
             <td>{formatDate(user.createdAt, locale)}</td>
           </tr>)}</tbody>
         </table>

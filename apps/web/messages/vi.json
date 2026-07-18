@@ -552,8 +552,6 @@
     "values": {
       "verified": "Đã xác minh",
       "unverified": "Chưa xác minh",
-      "active": "Hoạt động",
-      "banned": "Đã cấm",
       "captain": "Đội trưởng",
       "memberCount": "{count} / {required}",
       "status": {

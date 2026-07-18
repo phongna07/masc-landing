@@ -1,8 +1,7 @@
 import { GetObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
-import { auth } from "@masc-landing/auth";
 import { db } from "@masc-landing/db";
-import { dashboardTabSettings, emailQueue, members, roundSubmissions, submissionSettings, teams } from "@masc-landing/db/schema/index";
+import { dashboardTabSettings, emailQueue, members, roundSubmissions, submissionSettings, teams, user } from "@masc-landing/db/schema/index";
 import { env } from "@masc-landing/env/server";
 import { TRPCError } from "@trpc/server";
 import { and, asc, count, desc, eq, sql } from "drizzle-orm";
@@ -19,7 +18,6 @@ import { adminProcedure, router } from "../index";
 import { roundSchema } from "../rounds";
 import { getSubmissionSettings } from "../submission-settings";
 
-const userBatchSize = 100;
 const signedUrlExpirySeconds = 300;
 const roundInput = z.object({ round: roundSchema });
 const submissionInput = roundInput.extend({ submissionId: z.string().trim().min(1).max(128) });
@@ -70,17 +68,9 @@ export const adminRouter = router({
         set: { isVisible: input.isVisible, updatedAt: new Date() } });
     return getDashboardTabSettings();
   }),
-  listUsers: adminProcedure.query(async ({ ctx }) => {
-    const allUsers = []; let offset = 0; let total = 0;
-    do {
-      const result = await auth.api.listUsers({ headers: ctx.headers, query: { limit: userBatchSize, offset,
-        sortBy: "createdAt", sortDirection: "desc" } });
-      allUsers.push(...result.users); total = result.total; offset += result.users.length;
-    } while (offset < total && offset > 0);
-    return allUsers.map((item) => ({ id: item.id, name: item.name, email: item.email,
-      emailVerified: item.emailVerified, image: item.image, role: item.role, banned: item.banned,
-      banReason: item.banReason, banExpires: item.banExpires, createdAt: item.createdAt, updatedAt: item.updatedAt }));
-  }),
+  listUsers: adminProcedure.query(async () => db.select({ id: user.id, name: user.name, email: user.email,
+    emailVerified: user.emailVerified, image: user.image, role: user.role, createdAt: user.createdAt,
+    updatedAt: user.updatedAt }).from(user).orderBy(desc(user.createdAt))),
   listTeams: adminProcedure.query(async () => db.select({ id: teams.id, name: teams.teamName,
     status: teams.registrationStatus, createdAt: teams.createdAt, captainName, captainEmail,
     captainPhone: teams.captainPhone, memberCount: count(members.id) }).from(teams)
