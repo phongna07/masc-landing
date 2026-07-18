@@ -193,10 +193,29 @@
     }
   },
   "Auth": {
+    "eyebrow": "Participant portal",
     "title": "Continue to Marketing All-Star Challenge",
-    "description": "Use your Google account to sign in",
+    "description": "Sign in to manage your profile, team registration, and competition updates in one place.",
+    "secureSignIn": "Secure authentication powered by Google",
     "google": {
       "button": "Continue with Google"
+    },
+    "assurance": {
+      "eyebrow": "Privacy & access",
+      "title": "Your account, handled responsibly",
+      "google": {
+        "title": "Why sign in with Google?",
+        "description": "Google helps us verify your email, protect your account, and prevent duplicate registrations without asking you to create another password."
+      },
+      "data": {
+        "title": "Information we receive",
+        "description": "We receive your name, email address, and profile image. We never receive your Google password or access your Drive, contacts, or other Google services."
+      },
+      "use": {
+        "title": "How your information is used",
+        "description": "Your details are used only to provide portal access, administer the competition, and send essential registration or support communications. We do not sell your personal information."
+      },
+      "disclaimer": "By continuing, you confirm that the information provided is accurate and consent to its use for competition administration in accordance with MASC rules."
     }
   },
   "Dashboard": {

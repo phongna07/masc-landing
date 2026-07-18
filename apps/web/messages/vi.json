@@ -193,10 +193,29 @@
     }
   },
   "Auth": {
+    "eyebrow": "Cổng thông tin thí sinh",
     "title": "Tiếp tục đến Marketing All-Star Challenge",
-    "description": "Sử dụng tài khoản Google để đăng nhập",
+    "description": "Đăng nhập để quản lý hồ sơ, đăng ký đội thi và cập nhật thông tin cuộc thi tại một nơi.",
+    "secureSignIn": "Xác thực an toàn qua Google",
     "google": {
       "button": "Tiếp tục với Google"
+    },
+    "assurance": {
+      "eyebrow": "Quyền riêng tư & truy cập",
+      "title": "Thông tin của bạn được sử dụng có trách nhiệm",
+      "google": {
+        "title": "Tại sao cần tài khoản Google?",
+        "description": "Google giúp chúng tôi xác minh email, bảo vệ tài khoản và hạn chế đăng ký trùng lặp mà không yêu cầu bạn tạo thêm mật khẩu."
+      },
+      "data": {
+        "title": "Thông tin chúng tôi nhận được",
+        "description": "Chúng tôi nhận họ tên, địa chỉ email và ảnh đại diện. Chúng tôi không nhận mật khẩu Google hay truy cập Drive, danh bạ hoặc các dịch vụ Google khác của bạn."
+      },
+      "use": {
+        "title": "Thông tin được sử dụng như thế nào",
+        "description": "Thông tin chỉ được dùng để cấp quyền truy cập, vận hành cuộc thi và gửi các thông báo thiết yếu về đăng ký hoặc hỗ trợ. Chúng tôi không bán thông tin cá nhân của bạn."
+      },
+      "disclaimer": "Bằng việc tiếp tục, bạn xác nhận thông tin cung cấp là chính xác và đồng ý cho phép sử dụng thông tin để vận hành cuộc thi theo thể lệ MASC."
     }
   },
   "Dashboard": {
