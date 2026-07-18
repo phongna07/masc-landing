@@ -41,7 +41,11 @@ function validateFile(file: z.infer<typeof fileInput>) {
   return extension;
 }
 async function membershipFor(userId: string, email: string) {
-  const [membership] = await db.select({ memberId: members.id, teamId: members.teamId }).from(members)
+  const [membership] = await db.select({
+    memberId: members.id,
+    teamId: members.teamId,
+    registrationStatus: teams.registrationStatus,
+  }).from(members)
     .innerJoin(teams, eq(members.teamId, teams.id))
     .where(or(
       and(eq(teams.captainId, userId), eq(members.isCaptain, true)),
@@ -49,6 +53,11 @@ async function membershipFor(userId: string, email: string) {
     )).limit(1);
   if (!membership) throw new TRPCError({ code: "FORBIDDEN", message: "TEAM_REQUIRED" });
   return membership;
+}
+function requireApprovedTeam(registrationStatus: "pending" | "approved" | "rejected") {
+  if (registrationStatus !== "approved") {
+    throw new TRPCError({ code: "FORBIDDEN", message: "TEAM_NOT_APPROVED" });
+  }
 }
 function objectKey(round: string, teamId: string, uploadId: string, extension: string) {
   return `round-${round}/${teamId}/${uploadId}${extension}`;
@@ -87,12 +96,14 @@ export const roundSubmissionRouter = router({
     }).from(roundSubmissions).where(submissionWhere(membership.teamId, input.round))
       .orderBy(desc(roundSubmissions.attemptNumber)).limit(1);
     const used = submission?.attemptNumber ?? 0;
-    return { submission: submission ?? null, isSubmissionOpen: settings[input.round], attemptsUsed: used,
+    const isApproved = membership.registrationStatus === "approved";
+    return { submission: submission ?? null, isSubmissionOpen: isApproved && settings[input.round], attemptsUsed: used,
       attemptsRemaining: MAX_ATTEMPTS - used, maxAttempts: MAX_ATTEMPTS,
-      canSubmit: settings[input.round] && used < MAX_ATTEMPTS };
+      canSubmit: isApproved && settings[input.round] && used < MAX_ATTEMPTS };
   }),
   createUploadUrl: protectedProcedure.input(fileInput).mutation(async ({ ctx, input }) => {
     const membership = await membershipFor(ctx.session.user.id, ctx.session.user.email);
+    requireApprovedTeam(membership.registrationStatus);
     await requireSubmissionOpen(input.round);
     if (await attemptsUsed(membership.teamId, input.round) >= MAX_ATTEMPTS) {
       throw new TRPCError({ code: "CONFLICT", message: "ATTEMPT_LIMIT_REACHED" });
@@ -106,6 +117,7 @@ export const roundSubmissionRouter = router({
   finalize: protectedProcedure.input(fileInput.extend({ uploadId: z.uuid(), description: z.string().trim().min(1).max(5000) }))
     .mutation(async ({ ctx, input }) => {
       const membership = await membershipFor(ctx.session.user.id, ctx.session.user.email);
+      requireApprovedTeam(membership.registrationStatus);
       const key = objectKey(input.round, membership.teamId, input.uploadId, validateFile(input));
       try { await requireSubmissionOpen(input.round); } catch (error) {
         await bestEffortDelete(key); throw error;

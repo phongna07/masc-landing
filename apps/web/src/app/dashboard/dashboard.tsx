@@ -113,11 +113,18 @@ function TeamDashboard({ membership, activeTab, tabSettings }: {
 }) {
   const t = useTranslations("Dashboard");
   const router = useRouter();
+  const isApproved = membership.team.status === "approved";
+  const effectiveActiveTab = activeTab.startsWith("round-") && !isApproved ? "overview" : activeTab;
   const dashboardTabs: DashboardTab[] = [
     "overview",
     "announcements",
-    ...roundIds.filter((round) => tabSettings[round]).map((round) => `round-${round}` as const),
+    ...(isApproved
+      ? roundIds.filter((round) => tabSettings[round]).map((round) => `round-${round}` as const)
+      : []),
   ];
+  useEffect(() => {
+    if (activeTab.startsWith("round-") && !isApproved) router.replace("/dashboard");
+  }, [activeTab, isApproved, router]);
   const selectTab = (tab: DashboardTab) => {
     router.push(dashboardTabHref(tab));
     requestAnimationFrame(() => document.getElementById(`dashboard-tab-${tab}`)?.focus());
@@ -140,16 +147,16 @@ function TeamDashboard({ membership, activeTab, tabSettings }: {
         key={tab}
         href={dashboardTabHref(tab)}
         role="tab"
-        aria-selected={activeTab === tab}
+        aria-selected={effectiveActiveTab === tab}
         aria-controls={`dashboard-panel-${tab}`}
-        tabIndex={activeTab === tab ? 0 : -1}
+        tabIndex={effectiveActiveTab === tab ? 0 : -1}
         onKeyDown={(event) => onTabKeyDown(event, index)}
       >{tab.startsWith("round-") ? t("tabs.round", { round: tab.slice(6) }) : t(`tabs.${tab}`)}</Link>)}
     </div>
-    <section id={`dashboard-panel-${activeTab}`} role="tabpanel" aria-labelledby={`dashboard-tab-${activeTab}`} tabIndex={0}>
-      {activeTab === "overview" && <TeamOverview membership={membership} />}
-      {activeTab === "announcements" && <Announcements />}
-      {activeTab.startsWith("round-") && <RoundSubmission round={activeTab.slice(6) as RoundId} />}
+    <section id={`dashboard-panel-${effectiveActiveTab}`} role="tabpanel" aria-labelledby={`dashboard-tab-${effectiveActiveTab}`} tabIndex={0}>
+      {effectiveActiveTab === "overview" && <TeamOverview membership={membership} />}
+      {effectiveActiveTab === "announcements" && <Announcements />}
+      {isApproved && effectiveActiveTab.startsWith("round-") && <RoundSubmission round={effectiveActiveTab.slice(6) as RoundId} />}
     </section>
   </div>;
 }
