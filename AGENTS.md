@@ -11,6 +11,7 @@ Run commands from the repository root with pnpm 11.9.0.
 - `pnpm install` installs and links all workspace dependencies.
 - `pnpm dev:web` starts only the Next.js app; `pnpm dev` starts every available development script.
 - `pnpm build` builds all workspace packages that define a build script.
+- When validating the Next.js production build, always run `CI=1 NEXT_TELEMETRY_DISABLED=1 pnpm --filter web exec next build --webpack` from the repository root. Preserve `CI=1`, `NEXT_TELEMETRY_DISABLED=1`, and the `--webpack` flag unless the user explicitly requests different build settings.
 - `pnpm check-types` runs available package type checks. For the web app, also run `pnpm --filter web exec tsc --noEmit`.
 - `pnpm db:generate`, `pnpm db:migrate`, and `pnpm db:push` manage Drizzle schema changes. Confirm the target database before applying changes.
 
