@@ -1,4 +1,5 @@
 import { auth } from "@masc-landing/auth";
+import { isAdminEmail } from "@masc-landing/api/admin-access";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 
@@ -17,7 +18,7 @@ export default async function AdminLayout({
     redirect("/login");
   }
 
-  if (session.user.role !== "admin") {
+  if (!(await isAdminEmail(session.user.email))) {
     redirect("/");
   }
 

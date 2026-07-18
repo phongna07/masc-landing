@@ -37,6 +37,20 @@ This project uses PostgreSQL with Drizzle ORM.
 pnpm db:push
 ```
 
+### Administrator access
+
+Administrator access is controlled by the `admin_emails` database table. There
+is intentionally no API for changing this allowlist. Add and remove normalized
+(lowercase, trimmed) email addresses manually as a developer:
+
+```sql
+INSERT INTO admin_emails (email) VALUES ('admin@example.com');
+DELETE FROM admin_emails WHERE email = 'admin@example.com';
+```
+
+The table starts empty, so add the first administrator after applying the
+database migration.
+
 ## Cloudflare R2 Setup
 
 Round 1 files are stored in a private R2 bucket. Configure `R2_ACCOUNT_ID`,

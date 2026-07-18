@@ -1,7 +1,7 @@
 import { GetObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { db } from "@masc-landing/db";
-import { dashboardTabSettings, emailQueue, members, roundSubmissions, submissionSettings, teams, user } from "@masc-landing/db/schema/index";
+import { adminEmails, dashboardTabSettings, emailQueue, members, roundSubmissions, submissionSettings, teams, user } from "@masc-landing/db/schema/index";
 import { env } from "@masc-landing/env/server";
 import { TRPCError } from "@trpc/server";
 import { and, asc, count, desc, eq, sql } from "drizzle-orm";
@@ -68,9 +68,17 @@ export const adminRouter = router({
         set: { isVisible: input.isVisible, updatedAt: new Date() } });
     return getDashboardTabSettings();
   }),
-  listUsers: adminProcedure.query(async () => db.select({ id: user.id, name: user.name, email: user.email,
-    emailVerified: user.emailVerified, image: user.image, role: user.role, createdAt: user.createdAt,
-    updatedAt: user.updatedAt }).from(user).orderBy(desc(user.createdAt))),
+  listUsers: adminProcedure.query(async () => {
+    const users = await db.select({ id: user.id, name: user.name, email: user.email,
+      emailVerified: user.emailVerified, image: user.image, adminEmail: adminEmails.email,
+      createdAt: user.createdAt, updatedAt: user.updatedAt }).from(user)
+      .leftJoin(adminEmails, eq(adminEmails.email, sql`lower(btrim(${user.email}))`))
+      .orderBy(desc(user.createdAt));
+    return users.map(({ adminEmail, ...listedUser }) => ({
+      ...listedUser,
+      role: adminEmail ? ("admin" as const) : ("user" as const),
+    }));
+  }),
   listTeams: adminProcedure.query(async () => db.select({ id: teams.id, name: teams.teamName,
     status: teams.registrationStatus, createdAt: teams.createdAt, captainName, captainEmail,
     captainPhone: teams.captainPhone, memberCount: count(members.id) }).from(teams)

@@ -1,5 +1,6 @@
 import { initTRPC, TRPCError } from "@trpc/server";
 
+import { isAdminEmail } from "./admin-access";
 import type { Context } from "./context";
 
 export const t = initTRPC.context<Context>().create();
@@ -24,8 +25,8 @@ export const protectedProcedure = t.procedure.use(({ ctx, next }) => {
   });
 });
 
-export const adminProcedure = protectedProcedure.use(({ ctx, next }) => {
-  if (ctx.session.user.role !== "admin") {
+export const adminProcedure = protectedProcedure.use(async ({ ctx, next }) => {
+  if (!(await isAdminEmail(ctx.session.user.email))) {
     throw new TRPCError({
       code: "FORBIDDEN",
       message: "Administrator access required",

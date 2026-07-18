@@ -24,7 +24,7 @@ export default function AdminUsersPage() {
           <thead><tr><th scope="col">{t("fields.user")}</th><th scope="col">{t("fields.role")}</th><th scope="col">{t("fields.verification")}</th><th scope="col">{t("fields.created")}</th></tr></thead>
           <tbody>{users.data.map((user) => <tr key={user.id}>
             <td><strong>{user.name}</strong><span>{user.email}</span></td>
-            <td><span className="admin-badge">{user.role ?? "user"}</span></td>
+            <td><span className="admin-badge">{user.role}</span></td>
             <td>{t(user.emailVerified ? "values.verified" : "values.unverified")}</td>
             <td>{formatDate(user.createdAt, locale)}</td>
           </tr>)}</tbody>
