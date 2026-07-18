@@ -4178,6 +4178,8 @@ footer {
 }
 
 .hero-content {
+  --hero-brand-right: 7%;
+  --hero-brand-size: min(34vw, 520px);
   left: clamp(36px, 5vw, 60px);
   display: flex;
   min-height: 100svh;
@@ -4188,7 +4190,7 @@ footer {
 .hero-copy {
   position: relative;
   z-index: 2;
-  width: min(78vw, 1120px);
+  width: 100%;
 }
 
 .eyebrow .eyebrow-star {
@@ -4231,8 +4233,14 @@ footer {
 }
 
 .hero-bottom {
-  max-width: 810px;
+  position: relative;
+  width: 100%;
+  max-width: none;
   margin-top: 42px;
+  margin-left: 0;
+}
+
+.hero-bottom p {
   margin-left: 16%;
 }
 
@@ -4240,11 +4248,30 @@ footer {
   position: absolute;
   z-index: 1;
   top: 44%;
-  right: 7%;
-  width: min(34vw, 520px);
+  right: var(--hero-brand-right);
+  width: var(--hero-brand-size);
   aspect-ratio: 1;
   transform: translateY(-50%);
   filter: drop-shadow(0 0 46px rgba(165, 143, 255, 0.18));
+}
+
+.hero-brand-art {
+  position: absolute;
+  inset: 0;
+}
+
+.hero-brand-button {
+  white-space: nowrap;
+}
+
+.hero-brand-action {
+  position: absolute;
+  top: 50%;
+  right: var(--hero-brand-right);
+  display: flex;
+  width: var(--hero-brand-size);
+  justify-content: center;
+  transform: translateY(-50%);
 }
 
 .hero-brand-glow {
@@ -4335,11 +4362,13 @@ footer {
 
 @media (max-width: 900px) {
   .hero-content {
+    --hero-brand-right: 0%;
+    --hero-brand-size: min(38vw, 400px);
     padding-top: 110px;
   }
 
   .hero-copy {
-    width: min(82vw, 860px);
+    width: 100%;
   }
 
   .hero-brand-stage {
@@ -4361,6 +4390,10 @@ footer {
   }
 
   .hero-bottom {
+    margin-left: 0;
+  }
+
+  .hero-bottom p {
     margin-left: 9%;
   }
 }
@@ -4398,6 +4431,18 @@ footer {
     flex: 0 0 auto;
     opacity: 1;
     transform: none;
+    margin-bottom: 0;
+  }
+
+  .hero-brand-action {
+    position: static;
+    width: auto;
+    margin-top: 22px;
+    transform: none;
+  }
+
+  .hero-brand-button {
+    margin-inline: auto;
   }
 
   .hero-title {
@@ -4421,6 +4466,7 @@ footer {
 
   .hero-bottom p {
     max-width: 350px;
+    margin-inline: auto;
   }
 
   .eyebrow {

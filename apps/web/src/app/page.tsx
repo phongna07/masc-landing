@@ -281,24 +281,28 @@ export default function Home() {
               <div className="hero-bottom reveal">
                 <p>{t("hero.description")}</p>
                 {env.NEXT_PUBLIC_IS_REGISTRATION_OPENED && (
-                  <Link className="primary-button" href={registrationLink}>
-                    <span>{isSignedIn ? t("hero.portal") : t("hero.apply")}</span>
-                    <span aria-hidden="true">↗</span>
-                  </Link>
+                  <div className="hero-brand-action">
+                    <Link className="primary-button hero-brand-button" href={registrationLink}>
+                      <span>{isSignedIn ? t("hero.portal") : t("hero.apply")}</span>
+                      <span aria-hidden="true">↗</span>
+                    </Link>
+                  </div>
                 )}
               </div>
             </div>
 
-            <div className="hero-brand-stage" aria-hidden="true">
-              <div className="hero-brand-glow" />
-              <div className="hero-brand-orbit hero-brand-orbit-outer"><span /></div>
-              <div className="hero-brand-orbit hero-brand-orbit-inner"><span /></div>
-              <div className="hero-brand-image">
-                <HeroBrandLogo />
+            <div className="hero-brand-stage">
+              <div className="hero-brand-art" aria-hidden="true">
+                <div className="hero-brand-glow" />
+                <div className="hero-brand-orbit hero-brand-orbit-outer"><span /></div>
+                <div className="hero-brand-orbit hero-brand-orbit-inner"><span /></div>
+                <div className="hero-brand-image">
+                  <HeroBrandLogo />
+                </div>
+                <span className="brand-spark brand-spark-one">✦</span>
+                <span className="brand-spark brand-spark-two">✦</span>
+                <span className="brand-spark brand-spark-three">✦</span>
               </div>
-              <span className="brand-spark brand-spark-one">✦</span>
-              <span className="brand-spark brand-spark-two">✦</span>
-              <span className="brand-spark brand-spark-three">✦</span>
             </div>
           </div>
 
