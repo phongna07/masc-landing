@@ -194,28 +194,28 @@
   },
   "Auth": {
     "eyebrow": "Cổng thông tin thí sinh",
-    "title": "Tiếp tục đến Marketing All-Star Challenge",
-    "description": "Đăng nhập để quản lý hồ sơ, đăng ký đội thi và cập nhật thông tin cuộc thi tại một nơi.",
+    "title": "Đăng nhập vào Marketing All-Star Challenge 2026",
+    "description": "Đăng ký đội thi, quản lý hồ sơ và cập nhật thông tin về cuộc thi tại một nơi",
     "secureSignIn": "Xác thực an toàn qua Google",
     "google": {
       "button": "Tiếp tục với Google"
     },
     "assurance": {
-      "eyebrow": "Quyền riêng tư & truy cập",
-      "title": "Thông tin của bạn được sử dụng có trách nhiệm",
+      "eyebrow": "Quyền riêng tư & dữ liệu cá nhân",
+      "title": "Chúng tôi cam kết bảo mật thông tin của bạn.",
       "google": {
         "title": "Tại sao cần tài khoản Google?",
-        "description": "Google giúp chúng tôi xác minh email, bảo vệ tài khoản và hạn chế đăng ký trùng lặp mà không yêu cầu bạn tạo thêm mật khẩu."
+        "description": "Đăng nhập bằng Google giúp bảo mật tài khoản, không cần tạo mật khẩu, xác minh Email nhanh chóng và tránh việc đăng ký ảo."
       },
       "data": {
         "title": "Thông tin chúng tôi nhận được",
-        "description": "Chúng tôi nhận họ tên, địa chỉ email và ảnh đại diện. Chúng tôi không nhận mật khẩu Google hay truy cập Drive, danh bạ hoặc các dịch vụ Google khác của bạn."
+        "description": "Hệ thống chỉ thu thập họ tên, địa chỉ email và ảnh đại diện. Chúng tôi không yêu cầu mật khẩu hoặc quyền truy cập vào Drive, danh bạ hay các dịch vụ Google khác của bạn."
       },
       "use": {
-        "title": "Thông tin được sử dụng như thế nào",
-        "description": "Thông tin chỉ được dùng để cấp quyền truy cập, vận hành cuộc thi và gửi các thông báo thiết yếu về đăng ký hoặc hỗ trợ. Chúng tôi không bán thông tin cá nhân của bạn."
+        "title": "Mục đích sử dụng dữ liệu",
+        "description": "Thông tin chỉ được dùng để cấp quyền truy cập, vận hành cuộc thi và gửi các thông báo quan trọng. Chúng tôi cam kết không trao đổi dữ liệu cá nhân của bạn với bên tổ chức thứ 3."
       },
-      "disclaimer": "Bằng việc tiếp tục, bạn xác nhận thông tin cung cấp là chính xác và đồng ý cho phép sử dụng thông tin để vận hành cuộc thi theo thể lệ MASC."
+      "disclaimer": "Bằng việc tiếp tục, bạn xác nhận các thông tin cung cấp là chính xác, đồng thời đồng ý để chúng tôi sử dụng dữ liệu này cho mục đích vận hành cuộc thi theo thể lệ của MASC."
     }
   },
   "Dashboard": {

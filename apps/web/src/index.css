@@ -1875,9 +1875,9 @@ img {
   max-width: 650px;
   margin: 26px 0 0;
   font-family: var(--font-castela), Georgia, serif;
-  font-size: clamp(50px, 5vw, 72px);
+  font-size: clamp(50px, 4vw, 72px);
   font-weight: 400;
-  line-height: 0.92;
+  line-height: 1.15;
   letter-spacing: -0.04em;
 }
 
@@ -3696,7 +3696,7 @@ footer {
 
   .auth-panel h1 {
     margin-top: 20px;
-    font-size: clamp(42px, 13vw, 54px);
+    font-size: clamp(32px, 3vw, 54px);
   }
 
   .auth-panel-heading p {
