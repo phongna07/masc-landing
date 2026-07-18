@@ -4236,12 +4236,17 @@ footer {
   position: relative;
   width: 100%;
   max-width: none;
+  box-sizing: border-box;
+  padding-left: 16%;
+  padding-right: calc(var(--hero-brand-right) + var(--hero-brand-size) + 36px);
   margin-top: 42px;
   margin-left: 0;
 }
 
 .hero-bottom p {
-  margin-left: 16%;
+  width: 100%;
+  min-width: 0;
+  margin-left: 0;
 }
 
 .hero-brand-stage {
@@ -4390,11 +4395,12 @@ footer {
   }
 
   .hero-bottom {
+    padding-left: 9%;
     margin-left: 0;
   }
 
   .hero-bottom p {
-    margin-left: 9%;
+    margin-left: 0;
   }
 }
 
@@ -4461,6 +4467,8 @@ footer {
   }
 
   .hero-bottom {
+    padding-left: 0;
+    padding-right: 0;
     margin: 30px 0 0;
   }
 
