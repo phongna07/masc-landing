@@ -21,12 +21,22 @@ const phone = z
     return digits.length >= 8 && digits.length <= 15;
   });
 
+export const cvFileSchema = z.object({
+  filename: z.string().trim().min(1).max(255),
+  mimeType: z.literal("application/pdf"),
+  fileSize: z.number().int().positive().max(10 * 1024 * 1024),
+});
+
+export const uploadedCvSchema = cvFileSchema.extend({ uploadId: z.uuid() });
+
 export const createTeamInputSchema = z.object({
+  uploadBatchId: z.uuid(),
   teamName: requiredText(100),
   captainFullName: requiredText(120),
   captainBirthdate: birthdate,
   captainPhone: phone,
   captainUniversityName: requiredText(160),
+  captainCv: uploadedCvSchema,
   teammates: z
     .array(
       z.object({
@@ -34,6 +44,7 @@ export const createTeamInputSchema = z.object({
         email: gmailEmail,
         birthdate,
         universityName: requiredText(160),
+        cv: uploadedCvSchema,
       }),
     )
     .length(TEAMMATE_COUNT),

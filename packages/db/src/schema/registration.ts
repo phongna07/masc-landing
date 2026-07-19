@@ -57,6 +57,10 @@ export const members = pgTable(
     isCaptain: boolean("is_captain").default(false).notNull(),
     fullName: text("full_name").notNull(),
     email: text("email").notNull(),
+    cvObjectKey: text("cv_object_key").notNull(),
+    cvOriginalFilename: text("cv_original_filename").notNull(),
+    cvMimeType: text("cv_mime_type").notNull(),
+    cvFileSize: bigint("cv_file_size", { mode: "number" }).notNull(),
   },
   (table) => [
     index("members_team_id_idx").on(table.teamId),

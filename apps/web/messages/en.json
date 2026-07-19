@@ -238,6 +238,7 @@
       "memberCount": "{count} of 3 team members",
       "memberNumber": "Member {number}",
       "memberEmailNotice": "Enter each teammate's own Gmail address. Teammates can use the address entered here to sign in, update information, submit work, and receive competition updates.",
+      "cvHint": "PDF only - maximum 10 MB.",
       "submitNote": "Review all names and email addresses carefully before submitting.",
       "sectionLabel": "Team registration form"
     },
@@ -247,13 +248,17 @@
       "fullName": "Full name",
       "email": "Email address",
       "birthdate": "Birthdate",
-      "university": "University / Company"
+      "university": "University / Company",
+      "cv": "CV"
     },
     "actions": {
       "submit": "Submit registration",
       "submitting": "Submitting…",
+      "uploading": "Uploading CVs…",
       "loading": "Loading…",
-      "retry": "Try again"
+      "retry": "Try again",
+      "previewCv": "Preview CV",
+      "close": "Close"
     },
     "validation": {
       "required": "This field is required.",
@@ -261,13 +266,18 @@
       "gmailEmail": "Enter an email address ending in @gmail.com.",
       "birthdate": "Participant must be between 18 and 22 years old.",
       "phone": "Enter a valid phone number with 8–15 digits.",
-      "duplicateEmail": "Each team member must use a different email address."
+      "duplicateEmail": "Each team member must use a different email address.",
+      "cvRequired": "Choose a CV for this member.",
+      "cvType": "Choose a PDF file.",
+      "cvSize": "The CV must be no larger than 10 MB."
     },
     "errors": {
       "loadTitle": "We could not load your registration",
       "loadDescription": "Check your connection and try again.",
       "conflict": "You or one of these members is already registered with another team.",
-      "create": "Registration could not be submitted. Check the form and try again."
+      "create": "Registration could not be submitted. Check the form and try again.",
+      "uploadCv": "The CVs could not be uploaded. Check the files and try again.",
+      "previewCv": "The CV preview could not be opened. Please try again."
     },
     "success": {
       "created": "Your team has been registered successfully."
@@ -355,7 +365,8 @@
       "teamSize": "Team size",
       "people": "{count, plural, one {# person} other {# people}}",
       "captainContact": "Captain contact",
-      "roster": "Team roster"
+      "roster": "Team roster",
+      "cvPreviewTitle": "CV preview"
     }
   },
   "Admin": {
@@ -508,7 +519,8 @@
       "captainContact": "Captain contact",
       "roster": "Team roster",
       "notFoundTitle": "Team not found",
-      "notFoundDescription": "This team does not exist or may have been removed."
+      "notFoundDescription": "This team does not exist or may have been removed.",
+      "cvPreviewTitle": "CV preview"
     },
     "feedback": {
       "title": "Submission feedback",
@@ -552,7 +564,8 @@
       "submitted": "Last submitted",
       "originalSubmission": "First submitted",
       "fileType": "File type",
-      "description": "Description"
+      "description": "Description",
+      "cv": "CV"
     },
     "values": {
       "verified": "Verified",
@@ -573,7 +586,9 @@
       "backToRound": "Back to Round {round}",
       "preview": "Preview",
       "download": "Download",
-      "retry": "Try again"
+      "retry": "Try again",
+      "close": "Close",
+      "loading": "Loading…"
     },
     "errors": {
       "loadTitle": "We could not load this data",
