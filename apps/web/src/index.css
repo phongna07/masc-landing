@@ -564,6 +564,10 @@ button {
   font-size: 15px;
 }
 
+.dashboard-field [data-slot="input"][type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(1);
+}
+
 .field-error,
 .form-error {
   color: #ff9189;
