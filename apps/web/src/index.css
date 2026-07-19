@@ -936,43 +936,107 @@ button {
 
 }
 
-.admin-status-editor label {
+.admin-status-label {
   color: var(--muted);
   font-size: 13px;
 }
 
-.admin-status-editor>div {
+.admin-status-editor-controls {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: flex-end;
   gap: 10px;
 }
 
-.admin-status-editor select {
-  min-width: 160px;
-  border: 1px solid rgba(210, 166, 108, .5);
-  border-radius: 8px;
-  color-scheme: dark;
-  background: rgba(255, 255, 255, .045);
-  padding: 9px 34px 9px 11px;
-  color: var(--ink);
-  font: inherit;
+.admin-status-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.admin-status-editor-controls>.status-badge {
+  flex: 0 0 auto;
+}
+
+.admin-status-editor-controls>span:last-child:not(.status-badge) {
+  flex-basis: 100%;
+  color: var(--muted);
+  font-size: 13px;
   text-align: right;
 }
 
-.admin-status-editor select option {
+.status-confirmation-dialog {
+  position: fixed;
+  inset: 0;
+  width: min(440px, calc(100vw - 32px));
+  max-width: none;
+  margin: auto;
+  padding: 0;
   color: var(--ink);
+  border: 1px solid rgba(255, 255, 255, .2);
   background: #111014;
+  box-shadow: 0 30px 100px rgba(0, 0, 0, .7);
 }
 
-.admin-status-editor select:focus-visible {
-  outline: 2px solid #b56b2b;
-  outline-offset: 2px;
+.status-confirmation-dialog::backdrop {
+  background: rgba(0, 0, 0, .78);
+  backdrop-filter: blur(5px);
 }
 
-.admin-status-editor span {
+.status-confirmation-content {
+  display: grid;
+  justify-items: center;
+  padding: 30px;
+  text-align: center;
+}
+
+.status-confirmation-icon {
+  display: grid;
+  width: 44px;
+  height: 44px;
+  place-items: center;
+  margin-bottom: 18px;
+  border: 1px solid currentColor;
+  border-radius: 50%;
+}
+
+.status-confirmation-icon svg {
+  width: 20px;
+  height: 20px;
+}
+
+.status-confirmation-icon-approved {
+  color: #86efac;
+  background: rgba(34, 197, 94, .1);
+}
+
+.status-confirmation-icon-rejected {
+  color: #fca5a5;
+  background: rgba(239, 68, 68, .1);
+}
+
+.status-confirmation-content h2 {
+  margin: 0 0 10px;
+  font-family: var(--font-castela), Georgia, serif;
+  font-size: 28px;
+  font-weight: 400;
+}
+
+.status-confirmation-content p {
+  margin: 0;
   color: var(--muted);
-  font-size: 13px;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.status-confirmation-actions {
+  display: grid;
+  width: 100%;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 26px;
 }
 
 .announcement-feed {

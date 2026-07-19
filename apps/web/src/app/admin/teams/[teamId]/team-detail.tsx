@@ -4,16 +4,19 @@ import { TEAM_SIZE } from "@masc-landing/api/registration";
 import { Button } from "@masc-landing/ui/components/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@masc-landing/ui/components/card";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { ArrowLeftIcon, DownloadIcon, EyeIcon } from "lucide-react";
+import { ArrowLeftIcon, CheckIcon, DownloadIcon, EyeIcon, XIcon } from "lucide-react";
 import Link from "next/link";
 import { useLocale, useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 
 import { trpc } from "@/utils/trpc";
 import PdfPreviewDialog from "@/components/pdf-preview-dialog";
 import { AdminEmpty, AdminError, AdminLoading, formatBirthdate, formatDate } from "../../admin-state";
+
+type DecisionStatus = "approved" | "rejected";
+const mailFilters = ["pending", "failed", "sent", "all"] as const;
 
 export default function TeamDetail({ teamId }: { teamId: string }) {
   const t = useTranslations("Admin");
@@ -22,6 +25,7 @@ export default function TeamDetail({ teamId }: { teamId: string }) {
   const router = useRouter();
   const team = useQuery(trpc.admin.getTeam.queryOptions({ teamId }));
   const [previewMember, setPreviewMember] = useState<{ id: string; filename: string } | null>(null);
+  const [statusToConfirm, setStatusToConfirm] = useState<DecisionStatus | null>(null);
   const previewCv = useMutation(trpc.admin.createMemberCvPreviewUrl.mutationOptions());
   const downloadCv = useMutation(trpc.admin.createMemberCvDownloadUrl.mutationOptions({
     onSuccess: ({ downloadUrl }) => window.location.assign(downloadUrl),
@@ -34,9 +38,13 @@ export default function TeamDetail({ teamId }: { teamId: string }) {
   };
   const updateStatus = useMutation(trpc.admin.updateTeamStatus.mutationOptions({
     onSuccess: async (result) => {
+      setStatusToConfirm(null);
       await Promise.all([
         queryClient.invalidateQueries({ queryKey: trpc.admin.getTeam.queryKey({ teamId }) }),
         queryClient.invalidateQueries({ queryKey: trpc.admin.listTeams.queryKey() }),
+        ...mailFilters.map((status) => queryClient.invalidateQueries({
+          queryKey: trpc.admin.listMail.queryKey({ status }),
+        })),
       ]);
       if (result.queuedMailCount > 0) {
         toast.success(t("teams.mailQueued", { count: result.queuedMailCount }), {
@@ -66,13 +74,18 @@ export default function TeamDetail({ teamId }: { teamId: string }) {
         <Detail label={t("fields.created")} value={formatDate(team.data.createdAt, locale)} />
         <Detail label={t("fields.members")} value={t("values.memberCount", { count: team.data.members.length, required: TEAM_SIZE })} />
         <div className="admin-status-editor">
-          <label htmlFor="team-registration-status">{t("fields.status")}</label>
-          <div>
-            <select id="team-registration-status" value={team.data.status} disabled={updateStatus.isPending}
-              onChange={(event) => updateStatus.mutate({ teamId, status: event.target.value as "pending" | "approved" | "rejected" })}>
-              {(["pending", "approved", "rejected"] as const).map((status) =>
-                <option key={status} value={status}>{t(`values.status.${status}`)}</option>)}
-            </select>
+          <span className="admin-status-label">{t("fields.status")}</span>
+          <div className="admin-status-editor-controls">
+            <span className={`status-badge status-${team.data.status}`}>{t(`values.status.${team.data.status}`)}</span>
+            <div className="admin-status-actions">
+              {team.data.status !== "approved" && <Button type="button" size="sm" disabled={updateStatus.isPending}
+                onClick={() => setStatusToConfirm("approved")}><CheckIcon aria-hidden="true" />
+                {t(team.data.status === "rejected" ? "teams.changeToApprove" : "teams.approve")}</Button>}
+              {team.data.status !== "rejected" && <Button type="button" size="sm" variant="destructive"
+                disabled={updateStatus.isPending} onClick={() => setStatusToConfirm("rejected")}>
+                <XIcon aria-hidden="true" />
+                {t(team.data.status === "approved" ? "teams.changeToReject" : "teams.reject")}</Button>}
+            </div>
             {updateStatus.isPending && <span>{t("teams.statusUpdating")}</span>}
           </div>
         </div>
@@ -92,8 +105,50 @@ export default function TeamDetail({ teamId }: { teamId: string }) {
       filename={previewMember?.filename ?? ""} previewUrl={previewCv.data?.previewUrl}
       loading={previewCv.isPending} error={previewCv.isError ? t("errors.preview") : undefined}
       closeLabel={t("actions.close")} loadingLabel={t("actions.loading")} onClose={() => { setPreviewMember(null); previewCv.reset(); }} />
+    <StatusConfirmationDialog status={statusToConfirm} teamName={team.data.name} pending={updateStatus.isPending}
+      onCancel={() => setStatusToConfirm(null)}
+      onConfirm={(status) => updateStatus.mutate({ teamId, status })} />
     <Button className="admin-mobile-back" variant="outline" nativeButton={false} render={<Link href="/admin/teams" />}><ArrowLeftIcon aria-hidden="true" />{t("actions.backToTeams")}</Button>
   </>;
+}
+
+function StatusConfirmationDialog({ status, teamName, pending, onCancel, onConfirm }: {
+  status: DecisionStatus | null;
+  teamName: string;
+  pending: boolean;
+  onCancel: () => void;
+  onConfirm: (status: DecisionStatus) => void;
+}) {
+  const t = useTranslations("Admin");
+  const dialogRef = useRef<HTMLDialogElement>(null);
+
+  useEffect(() => {
+    const dialog = dialogRef.current;
+    if (!dialog) return;
+    if (status && !dialog.open) dialog.showModal();
+    if (!status && dialog.open) dialog.close();
+  }, [status]);
+
+  const close = () => {
+    if (!pending) onCancel();
+  };
+
+  return <dialog className="status-confirmation-dialog" ref={dialogRef} aria-labelledby="status-confirmation-title"
+    aria-describedby="status-confirmation-description" onClose={close}
+    onCancel={(event) => { if (pending) event.preventDefault(); else onCancel(); }}>
+    {status && <div className="status-confirmation-content">
+      <span className={`status-confirmation-icon status-confirmation-icon-${status}`} aria-hidden="true">
+        {status === "approved" ? <CheckIcon /> : <XIcon />}
+      </span>
+      <h2 id="status-confirmation-title">{t(`teams.confirmation.${status}.title`)}</h2>
+      <p id="status-confirmation-description">{t(`teams.confirmation.${status}.description`, { team: teamName })}</p>
+      <div className="status-confirmation-actions">
+        <Button type="button" variant="outline" disabled={pending} autoFocus onClick={onCancel}>{t("actions.cancel")}</Button>
+        <Button type="button" variant={status === "rejected" ? "destructive" : "default"} disabled={pending}
+          onClick={() => onConfirm(status)}>{pending ? t("teams.statusUpdating") : t(`teams.confirmation.${status}.confirm`)}</Button>
+      </div>
+    </div>}
+  </dialog>;
 }
 
 function Detail({ label, value }: { label: string; value: string }) {

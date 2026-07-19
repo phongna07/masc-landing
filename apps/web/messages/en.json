@@ -463,7 +463,23 @@
       "statusUpdateSuccess": "Team registration status updated.",
       "statusUpdateError": "Unable to update the team status. Please try again.",
       "mailQueued": "{count, plural, one {# email is queued.} other {# emails are queued.}} Check the Mail tab before sending.",
-      "openMail": "Open Mail"
+      "openMail": "Open Mail",
+      "approve": "Approve",
+      "reject": "Reject",
+      "changeToApprove": "Change to Approve",
+      "changeToReject": "Change to Reject",
+      "confirmation": {
+        "approved": {
+          "title": "Approve this team?",
+          "description": "Approve {team} and queue an approval email. Any unsent rejection email for this team will be removed.",
+          "confirm": "Approve team"
+        },
+        "rejected": {
+          "title": "Reject this team?",
+          "description": "Reject {team} and queue a rejection email. Any unsent approval email for this team will be removed.",
+          "confirm": "Reject team"
+        }
+      }
     },
     "mail": {
       "title": "Mail",
@@ -588,6 +604,7 @@
       "download": "Download",
       "retry": "Try again",
       "close": "Close",
+      "cancel": "Cancel",
       "loading": "Loading…"
     },
     "errors": {

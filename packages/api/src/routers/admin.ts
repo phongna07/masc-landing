@@ -12,6 +12,11 @@ import {
   teamRegistrationSuccessEvent,
   teamRegistrationSuccessSubject,
 } from "../email/team-registration-success";
+import {
+  renderTeamRegistrationRejected,
+  teamRegistrationRejectedEvent,
+  teamRegistrationRejectedSubject,
+} from "../email/team-registration-rejected";
 import { sendMail } from "../email/send-mail";
 import { getDashboardTabSettings } from "../dashboard-tab-settings";
 import { adminAreaProcedure, router } from "../index";
@@ -34,7 +39,7 @@ const feedbackInput = submissionInput.extend({
   feedback: z.string().trim().min(1).max(5000),
   score: z.number().finite().nonnegative(),
 });
-const registrationStatusSchema = z.enum(["pending", "approved", "rejected"]);
+const registrationDecisionSchema = z.enum(["approved", "rejected"]);
 const mailStatusSchema = z.enum(["pending", "sent", "failed"]);
 const mailListStatusSchema = z.enum(["all", "pending", "sent", "failed"]);
 const mailSender = `Ban Tổ chức MASC <${env.MAIL_USERNAME}>`;
@@ -131,34 +136,50 @@ export const adminRouter = router({
     }), { expiresIn: signedUrlExpirySeconds }) };
   }),
   updateTeamStatus: teamsProcedure.input(z.object({
-    teamId: z.string().trim().min(1).max(128), status: registrationStatusSchema,
+    teamId: z.string().trim().min(1).max(128), status: registrationDecisionSchema,
   })).mutation(async ({ input }) => {
     const [existing] = await db.select({ id: teams.id, name: teams.teamName, status: teams.registrationStatus,
       approvalSequence: teams.approvalSequence }).from(teams).where(eq(teams.id, input.teamId)).limit(1);
     if (!existing) throw new TRPCError({ code: "NOT_FOUND", message: "Team not found" });
+    if (existing.status === input.status) {
+      throw new TRPCError({ code: "CONFLICT", message: "Team already has this registration status" });
+    }
 
-    if (input.status === "approved" && existing.status !== "approved") {
-      const roster = await db.select({ id: members.id, fullName: members.fullName, email: members.email,
-        universityName: members.universityName, isCaptain: members.isCaptain }).from(members).where(eq(members.teamId, existing.id))
-        .orderBy(desc(members.isCaptain), asc(members.fullName));
-      const captain = roster.find((member) => member.isCaptain);
-      if (!captain) throw new TRPCError({ code: "PRECONDITION_FAILED", message: "Team captain not found" });
-      const content = renderTeamRegistrationSuccess(existing.name, roster);
-      const nextSequence = existing.approvalSequence + 1;
-      const cc = roster.filter((member) => !member.isCaptain).map((member) => member.email);
-      const queueRecord = { id: crypto.randomUUID(), from_address: mailSender, to_address: captain.email, cc,
-        subject: teamRegistrationSuccessSubject, text: content.text, html: content.html,
-        event_type: teamRegistrationSuccessEvent, team_id: existing.id, member_id: captain.id,
-        approval_sequence: nextSequence };
-      const queuedMail = await db.execute(sql`
-        with transitioned as (
-          update ${teams}
-          set "registration_status" = 'approved', "approval_sequence" = ${nextSequence}
-          where ${teams.id} = ${existing.id}
-            and ${teams.registrationStatus} = ${existing.status}
-            and ${teams.approvalSequence} = ${existing.approvalSequence}
-          returning ${teams.id}
-        )
+    const roster = await db.select({ id: members.id, fullName: members.fullName, email: members.email,
+      universityName: members.universityName, isCaptain: members.isCaptain }).from(members).where(eq(members.teamId, existing.id))
+      .orderBy(desc(members.isCaptain), asc(members.fullName));
+    const captain = roster.find((member) => member.isCaptain);
+    if (!captain) throw new TRPCError({ code: "PRECONDITION_FAILED", message: "Team captain not found" });
+
+    const isApproval = input.status === "approved";
+    const content = isApproval
+      ? renderTeamRegistrationSuccess(existing.name, roster)
+      : renderTeamRegistrationRejected(existing.name);
+    const eventType = isApproval ? teamRegistrationSuccessEvent : teamRegistrationRejectedEvent;
+    const oppositeEventType = isApproval ? teamRegistrationRejectedEvent : teamRegistrationSuccessEvent;
+    const subject = isApproval ? teamRegistrationSuccessSubject : teamRegistrationRejectedSubject;
+    const nextSequence = existing.approvalSequence + 1;
+    const cc = isApproval ? roster.filter((member) => !member.isCaptain).map((member) => member.email) : [];
+    const queueRecord = { id: crypto.randomUUID(), from_address: mailSender, to_address: captain.email, cc,
+      subject, text: content.text, html: content.html, event_type: eventType, team_id: existing.id,
+      member_id: captain.id, approval_sequence: nextSequence };
+    const transition = await db.execute(sql`
+      with transitioned as (
+        update ${teams}
+        set "registration_status" = ${input.status}, "approval_sequence" = ${nextSequence}
+        where ${teams.id} = ${existing.id}
+          and ${teams.registrationStatus} = ${existing.status}
+          and ${teams.approvalSequence} = ${existing.approvalSequence}
+          and ${teams.registrationStatus} <> ${input.status}
+        returning ${teams.id}, ${teams.registrationStatus}
+      ), removed as (
+        delete from ${emailQueue}
+        where ${emailQueue.teamId} = ${existing.id}
+          and ${emailQueue.eventType} = ${oppositeEventType}
+          and ${emailQueue.status} in ('pending', 'failed')
+          and exists (select 1 from transitioned)
+        returning ${emailQueue.id}
+      ), queued as (
         insert into ${emailQueue} (id, from_address, to_address, cc, subject, text, html, status, event_type,
           team_id, member_id, approval_sequence, attempt_count, created_at, updated_at)
         select item.id, item.from_address, item.to_address, item.cc, item.subject, item.text, item.html, 'pending',
@@ -168,21 +189,23 @@ export const adminRouter = router({
           id text, from_address text, to_address text, cc text[], subject text, text text, html text, event_type text,
           team_id text, member_id text, approval_sequence integer
         )
-        on conflict (team_id, event_type, approval_sequence) do nothing
+        cross join (select count(*) from removed) as removal
         returning id
-      `);
-      if (queuedMail.rows.length === 0) {
-        const [current] = await db.select({ id: teams.id, status: teams.registrationStatus })
-          .from(teams).where(eq(teams.id, existing.id)).limit(1);
-        return { ...current!, queuedMailCount: 0 };
-      }
-      return { id: existing.id, status: "approved" as const, queuedMailCount: queuedMail.rows.length };
-    }
-
-    const [team] = await db.update(teams).set({ registrationStatus: input.status })
-      .where(eq(teams.id, input.teamId)).returning({ id: teams.id, status: teams.registrationStatus });
-    if (!team) throw new TRPCError({ code: "NOT_FOUND", message: "Team not found" });
-    return { ...team, queuedMailCount: 0 };
+      )
+      select transitioned.id, transitioned.registration_status as status,
+        (select count(*)::integer from queued) as queued_mail_count,
+        (select count(*)::integer from removed) as removed_mail_count
+      from transitioned
+    `);
+    const result = transition.rows[0] as {
+      id: string;
+      status: "approved" | "rejected";
+      queued_mail_count: number;
+      removed_mail_count: number;
+    } | undefined;
+    if (!result) throw new TRPCError({ code: "CONFLICT", message: "Team status changed while updating" });
+    return { id: result.id, status: result.status, queuedMailCount: Number(result.queued_mail_count),
+      removedMailCount: Number(result.removed_mail_count) };
   }),
   listMail: mailProcedure.input(z.object({ status: mailListStatusSchema.default("pending") })).query(async ({ input }) => {
     const where = input.status === "all" ? undefined : eq(emailQueue.status, input.status);

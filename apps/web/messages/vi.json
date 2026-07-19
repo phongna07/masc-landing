@@ -463,7 +463,23 @@
       "statusUpdateSuccess": "Đã cập nhật trạng thái đăng ký của đội.",
       "statusUpdateError": "Không thể cập nhật trạng thái đội. Vui lòng thử lại.",
       "mailQueued": "Đã đưa {count} email vào hàng chờ. Hãy kiểm tra tab Thư trước khi gửi.",
-      "openMail": "Mở Thư"
+      "openMail": "Mở Thư",
+      "approve": "Phê duyệt",
+      "reject": "Từ chối",
+      "changeToApprove": "Chuyển sang Phê duyệt",
+      "changeToReject": "Chuyển sang Từ chối",
+      "confirmation": {
+        "approved": {
+          "title": "Phê duyệt đội thi này?",
+          "description": "Phê duyệt đội {team} và đưa email thông báo vào hàng chờ. Mọi email từ chối chưa gửi của đội này sẽ bị xóa.",
+          "confirm": "Phê duyệt đội"
+        },
+        "rejected": {
+          "title": "Từ chối đội thi này?",
+          "description": "Từ chối đội {team} và đưa email thông báo vào hàng chờ. Mọi email phê duyệt chưa gửi của đội này sẽ bị xóa.",
+          "confirm": "Từ chối đội"
+        }
+      }
     },
     "mail": {
       "title": "Thư",
@@ -588,6 +604,7 @@
       "download": "Tải xuống",
       "retry": "Thử lại",
       "close": "Đóng",
+      "cancel": "Hủy",
       "loading": "Đang tải…"
     },
     "errors": {
