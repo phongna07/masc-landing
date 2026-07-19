@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 
-import loginBackground from "@/assets/login-background.png";
+import loginBackground from "@/assets/image-3.png";
 import AuthForm from "@/components/auth-form";
 import SiteHeader from "@/components/site-header";
 
