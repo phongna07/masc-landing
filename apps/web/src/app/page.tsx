@@ -208,17 +208,6 @@ export default function Home() {
           },
         );
 
-        gsap.to(".final-orbit", {
-          rotate: 35,
-          scale: 1.14,
-          ease: "none",
-          scrollTrigger: {
-            trigger: ".final-cta",
-            start: "top bottom",
-            end: "bottom top",
-            scrub: 1.5,
-          },
-        });
 
         gsap.to(".scroll-progress span", {
           scaleX: 1,
@@ -524,7 +513,6 @@ export default function Home() {
         </section>
 
         <section className="final-cta" aria-labelledby="final-title">
-          <div className="final-orbit" aria-hidden="true" />
           <div className="page-shell final-content reveal">
             <p className="section-index">{t("finalCta.index")}</p>
             <h2 id="final-title">

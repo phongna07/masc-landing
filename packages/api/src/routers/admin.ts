@@ -238,7 +238,7 @@ export const adminRouter = router({
 
     const attemptedAt = new Date();
     try {
-      await sendMail({ from: mail.fromAddress, to: mail.toAddress, cc: mail.cc, subject: mail.subject,
+      await sendMail({ id: mail.id, from: mail.fromAddress, to: mail.toAddress, cc: mail.cc, subject: mail.subject,
         text: mail.text, html: mail.html });
     } catch (error) {
       const message = error instanceof Error ? error.message.slice(0, 2000) : "Unknown mail provider error";

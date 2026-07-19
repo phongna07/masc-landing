@@ -13,6 +13,8 @@ export const env = createEnv({
     R2_SECRET_ACCESS_KEY: z.string().min(1),
     R2_BUCKET: z.string().min(1),
     MAIL_USERNAME: z.string().email(),
+    MAILEROO_SENDING_KEY: z.string().min(1),
+    PRIMARY_EMAIL_SERVICE: z.enum(["zeptomail", "maileroo"]).default("zeptomail"),
     ZEPTOMAIL_URL: z.url(),
     ZEPTOMAIL_TOKEN: z.string().min(1),
     NODE_ENV: z.enum(["development", "production", "test"]).default("development"),
