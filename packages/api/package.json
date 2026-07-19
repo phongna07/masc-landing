@@ -21,12 +21,11 @@
     "dotenv": "catalog:",
     "drizzle-orm": "^0.45.2",
     "next": "catalog:",
-    "nodemailer": "^9.0.3",
+    "zeptomail": "^8.0.1",
     "zod": "catalog:"
   },
   "devDependencies": {
     "@masc-landing/config": "workspace:*",
-    "@types/nodemailer": "^8.0.1",
     "typescript": "catalog:"
   }
 }
