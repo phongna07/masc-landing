@@ -48,11 +48,11 @@
       "index": "Cuộc thi",
       "title": "Kiến tạo di sản từ sự <em>bứt phá</em>",
       "lead": "Marketing All-Star Challenge (MASC) là cuộc thi Marketing độc quyền quy mô toàn quốc do Câu lạc bộ Kotler Klub - VinUni House of Marketers tổ chức.",
-      "description": "Marketing All-Star Challenge 2026 lấy cảm hứng từ hiện tượng <strong>Hypernova</strong> - một trong những vụ nổ sao dữ dội và hiếm gặp nhất vũ trụ. Hypernova chính là hình tượng đại diện cho những marketer trẻ dám dấn thân vào môi trường thực chiến đầy thử thách để bứt phá giới hạn của bản thân, tạo ra bước đột phá về tư duy và chuyên môn, từ đó truyền cảm hứng cho các thế hệ Marketer tiếp theo.",
+      "description": "<strong>Marketing All-Star Challenge 2026</strong> lấy cảm hứng từ hiện tượng <strong>Hypernova</strong> - một trong những vụ nổ sao dữ dội và hiếm gặp nhất vũ trụ. Hypernova chính là hình tượng đại diện cho những Marketer trẻ dám dấn thân vào môi trường thực chiến đầy thử thách để bứt phá giới hạn của bản thân, tạo ra bước đột phá về tư duy và chuyên môn, từ đó truyền cảm hứng cho các thế hệ Marketer tương lai.",
       "organizerAlt": "Đơn vị tổ chức",
       "hostedBy": "Tổ chức bởi Kotler Klub",
       "organization": "VinUni House of Marketers",
-      "caption": "Marketing All-Star Challenge 2026 không chỉ dừng lại ở một cuộc thi thông thường mà còn mở ra không gian để các marketer trẻ thử thách khả năng sáng tạo và tìm ra lời giải sắc bén nhất cho những bài toán thương hiệu thực tế."
+      "caption": "Marketing All-Star Challenge 2026 không chỉ dừng lại ở một cuộc thi thông thường mà còn mở ra không gian để các Marketer trẻ thử thách khả năng sáng tạo và tìm ra lời giải sắc bén nhất cho những bài toán thương hiệu thực tế."
     },
     "prizes": {
       "index": "Giải thưởng",
@@ -94,7 +94,7 @@
         "round05": {
           "date": "20/7 - 10/08",
           "title": "Vòng Sơ loại: The Ignition (Industry Exposure)",
-          "summary": "Đề bài từ Brand Partner là mồi lửa để các marketer trẻ khai phá tiềm năng và chứng minh năng lực.",
+          "summary": "Đề bài từ Brand Partner là mồi lửa để các Marketer trẻ khai phá tiềm năng và chứng minh năng lực.",
           "detail": "Top 20% đội thi được chọn vào Vòng 1; trong đó, Top 2 đội xuất sắc nhất tiến thẳng vào Vòng 2."
         },
         "round1": {
@@ -127,13 +127,13 @@
       "index": "Tiêu chí đánh giá",
       "title": "Tiêu chí đánh giá từ <em>Ban Giám Khảo</em>",
       "round1": "Vòng 1 - The Star Gathering",
-      "round1Title": "Tư duy chuyên môn sâu theo Track",
+      "round1Title": "Tư duy chuyên môn sâu\ntheo Track",
       "round1Description": "Lựa chọn 1 trong 3 track chuyên môn (Product & Growth, Societal + PR/MarCom, Market Research + Trade), hoàn thiện bài làm qua phản hồi 1-1 từ mentor.",
       "round2": "Vòng 2 - The Stellar Forge",
-      "round2Title": "Sáng tạo thực tiễn & Tác động xã hội",
+      "round2Title": "Sáng tạo thực tiễn\n& Tác động xã hội",
       "round2Description": "Giải quyết bài toán từ Nhà tài trợ Kim Cương, cân bằng giữa tính sáng tạo đột phá, tính thực tiễn cao và tác động tích cực cho cộng đồng.",
       "finale": "Chung kết - The Infinite Glow",
-      "finaleTitle": "Thực chiến & Giải Mini Case trực tiếp",
+      "finaleTitle": "Thực chiến &\nGiải Mini Case trực tiếp",
       "finaleDescription": "Bảo vệ chiến dịch thực chiến đã triển khai trên thị trường, sau đó Top 2 giải quyết Mini Case dưới áp lực thời gian thực ngay trên sân khấu."
     },
     "mentors": {

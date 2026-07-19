@@ -3441,6 +3441,7 @@ img {
 
 .criteria-card h3 {
   margin: 32px 0 20px;
+  white-space: pre-line;
 }
 
 .criteria-card p {
