@@ -238,7 +238,6 @@
       "memberCount": "{count} trên 3 thành viên",
       "memberNumber": "Thành viên {number}",
       "memberEmailNotice": "Hãy nhập địa chỉ Gmail của chính từng thành viên. Thành viên có thể dùng địa chỉ đã nhập tại đây để đăng nhập, cập nhật thông tin, nộp bài và nhận thông báo từ cuộc thi.",
-      "cvHint": "Chỉ hỗ trợ PDF - tối đa 10 MB.",
       "submitNote": "Vui lòng kiểm tra kỹ họ tên và địa chỉ email trước khi gửi.",
       "sectionLabel": "Biểu mẫu đăng ký đội thi"
     },
@@ -248,17 +247,13 @@
       "fullName": "Họ và tên",
       "email": "Địa chỉ email",
       "birthdate": "Ngày sinh",
-      "university": "Trường đại học / Cơ quan",
-      "cv": "CV"
+      "university": "Trường đại học / Cơ quan"
     },
     "actions": {
       "submit": "Gửi đăng ký",
       "submitting": "Đang gửi…",
-      "uploading": "Đang tải CV lên…",
       "loading": "Đang tải…",
-      "retry": "Thử lại",
-      "previewCv": "Xem CV",
-      "close": "Đóng"
+      "retry": "Thử lại"
     },
     "validation": {
       "required": "Vui lòng nhập thông tin này.",
@@ -266,18 +261,13 @@
       "gmailEmail": "Vui lòng nhập địa chỉ email có đuôi @gmail.com.",
       "birthdate": "Thí sinh phải từ 18 đến 22 tuổi.",
       "phone": "Nhập số điện thoại hợp lệ gồm 8–15 chữ số.",
-      "duplicateEmail": "Mỗi thành viên phải sử dụng một địa chỉ email khác nhau.",
-      "cvRequired": "Hãy chọn CV cho thành viên này.",
-      "cvType": "Hãy chọn tệp PDF.",
-      "cvSize": "CV không được lớn hơn 10 MB."
+      "duplicateEmail": "Mỗi thành viên phải sử dụng một địa chỉ email khác nhau."
     },
     "errors": {
       "loadTitle": "Không thể tải thông tin đăng ký",
       "loadDescription": "Vui lòng kiểm tra kết nối và thử lại.",
       "conflict": "Bạn hoặc một thành viên đã đăng ký trong đội khác.",
-      "create": "Không thể gửi đăng ký. Vui lòng kiểm tra thông tin và thử lại.",
-      "uploadCv": "Không thể tải CV lên. Hãy kiểm tra các tệp và thử lại.",
-      "previewCv": "Không thể mở bản xem trước CV. Vui lòng thử lại."
+      "create": "Không thể gửi đăng ký. Vui lòng kiểm tra thông tin và thử lại."
     },
     "success": {
       "created": "Đội của bạn đã được đăng ký thành công."
@@ -365,8 +355,7 @@
       "teamSize": "Số thành viên",
       "people": "{count} người",
       "captainContact": "Liên hệ đội trưởng",
-      "roster": "Danh sách đội",
-      "cvPreviewTitle": "Xem trước CV"
+      "roster": "Danh sách đội"
     }
   },
   "Admin": {
@@ -535,8 +524,7 @@
       "captainContact": "Liên hệ đội trưởng",
       "roster": "Thành viên đội",
       "notFoundTitle": "Không tìm thấy đội",
-      "notFoundDescription": "Đội này không tồn tại hoặc có thể đã bị xóa.",
-      "cvPreviewTitle": "Xem trước CV"
+      "notFoundDescription": "Đội này không tồn tại hoặc có thể đã bị xóa."
     },
     "feedback": {
       "title": "Nhận xét bài nộp",
@@ -580,8 +568,7 @@
       "submitted": "Nộp gần nhất",
       "originalSubmission": "Nộp lần đầu",
       "fileType": "Loại tệp",
-      "description": "Mô tả",
-      "cv": "CV"
+      "description": "Mô tả"
     },
     "values": {
       "verified": "Đã xác minh",

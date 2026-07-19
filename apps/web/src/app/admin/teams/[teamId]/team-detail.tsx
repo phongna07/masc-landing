@@ -4,7 +4,7 @@ import { TEAM_SIZE } from "@masc-landing/api/registration";
 import { Button } from "@masc-landing/ui/components/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@masc-landing/ui/components/card";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { ArrowLeftIcon, CheckIcon, DownloadIcon, EyeIcon, XIcon } from "lucide-react";
+import { ArrowLeftIcon, CheckIcon, XIcon } from "lucide-react";
 import Link from "next/link";
 import { useLocale, useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
@@ -12,7 +12,6 @@ import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 
 import { trpc } from "@/utils/trpc";
-import PdfPreviewDialog from "@/components/pdf-preview-dialog";
 import { AdminEmpty, AdminError, AdminLoading, formatBirthdate, formatDate } from "../../admin-state";
 
 type DecisionStatus = "approved" | "rejected";
@@ -24,18 +23,7 @@ export default function TeamDetail({ teamId }: { teamId: string }) {
   const queryClient = useQueryClient();
   const router = useRouter();
   const team = useQuery(trpc.admin.getTeam.queryOptions({ teamId }));
-  const [previewMember, setPreviewMember] = useState<{ id: string; filename: string } | null>(null);
   const [statusToConfirm, setStatusToConfirm] = useState<DecisionStatus | null>(null);
-  const previewCv = useMutation(trpc.admin.createMemberCvPreviewUrl.mutationOptions());
-  const downloadCv = useMutation(trpc.admin.createMemberCvDownloadUrl.mutationOptions({
-    onSuccess: ({ downloadUrl }) => window.location.assign(downloadUrl),
-    onError: () => toast.error(t("errors.download")),
-  }));
-  const openPreview = (member: { id: string; cvOriginalFilename: string }) => {
-    previewCv.reset();
-    setPreviewMember({ id: member.id, filename: member.cvOriginalFilename });
-    previewCv.mutate({ teamId, memberId: member.id });
-  };
   const updateStatus = useMutation(trpc.admin.updateTeamStatus.mutationOptions({
     onSuccess: async (result) => {
       setStatusToConfirm(null);
@@ -97,14 +85,10 @@ export default function TeamDetail({ teamId }: { teamId: string }) {
       </CardContent></Card>
     </div>
     <Card className="admin-table-card"><CardHeader><CardTitle>{t("detail.roster")}</CardTitle></CardHeader><CardContent className="admin-table-scroll">
-      <table className="admin-table"><thead><tr><th scope="col">{t("fields.member")}</th><th scope="col">{t("fields.email")}</th><th scope="col">{t("fields.birthdate")}</th><th scope="col">{t("fields.university")}</th><th scope="col">{t("fields.cv")}</th><th scope="col">{t("fields.role")}</th></tr></thead>
-        <tbody>{team.data.members.map((member) => <tr key={member.id}><td><strong>{member.fullName}</strong></td><td>{member.email}</td><td>{formatBirthdate(member.birthdate, locale)}</td><td>{member.universityName}</td><td><div className="admin-file-actions"><Button variant="outline" size="sm" disabled={previewCv.isPending && previewMember?.id === member.id} onClick={() => openPreview(member)}><EyeIcon aria-hidden="true" />{t("actions.preview")}</Button><Button variant="outline" size="sm" disabled={downloadCv.isPending} onClick={() => downloadCv.mutate({ teamId, memberId: member.id })}><DownloadIcon aria-hidden="true" />{t("actions.download")}</Button></div></td><td>{member.isCaptain && <span className="captain-tag">{t("values.captain")}</span>}</td></tr>)}</tbody>
+      <table className="admin-table"><thead><tr><th scope="col">{t("fields.member")}</th><th scope="col">{t("fields.email")}</th><th scope="col">{t("fields.birthdate")}</th><th scope="col">{t("fields.university")}</th><th scope="col">{t("fields.role")}</th></tr></thead>
+        <tbody>{team.data.members.map((member) => <tr key={member.id}><td><strong>{member.fullName}</strong></td><td>{member.email}</td><td>{formatBirthdate(member.birthdate, locale)}</td><td>{member.universityName}</td><td>{member.isCaptain && <span className="captain-tag">{t("values.captain")}</span>}</td></tr>)}</tbody>
       </table>
     </CardContent></Card>
-    <PdfPreviewDialog open={!!previewMember} title={t("detail.cvPreviewTitle")}
-      filename={previewMember?.filename ?? ""} previewUrl={previewCv.data?.previewUrl}
-      loading={previewCv.isPending} error={previewCv.isError ? t("errors.preview") : undefined}
-      closeLabel={t("actions.close")} loadingLabel={t("actions.loading")} onClose={() => { setPreviewMember(null); previewCv.reset(); }} />
     <StatusConfirmationDialog status={statusToConfirm} teamName={team.data.name} pending={updateStatus.isPending}
       onCancel={() => setStatusToConfirm(null)}
       onConfirm={(status) => updateStatus.mutate({ teamId, status })} />

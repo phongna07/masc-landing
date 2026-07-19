@@ -10,7 +10,7 @@ import { Label } from "@masc-landing/ui/components/label";
 import { Skeleton } from "@masc-landing/ui/components/skeleton";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import type { inferRouterOutputs } from "@trpc/server";
-import { EyeIcon, MegaphoneIcon, RefreshCwIcon, TriangleAlertIcon, UploadIcon } from "lucide-react";
+import { MegaphoneIcon, RefreshCwIcon, TriangleAlertIcon } from "lucide-react";
 import type { Route } from "next";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -22,27 +22,23 @@ import { toast } from "sonner";
 import LanguageSwitcher from "@/components/language-switcher";
 import UserMenu from "@/components/user-menu";
 import { BrandLogo } from "@/components/hero-brand-logo";
-import PdfPreviewDialog from "@/components/pdf-preview-dialog";
 import { authClient } from "@/lib/auth-client";
 import { queryClient, trpc } from "@/utils/trpc";
 import RoundSubmission from "./round-submission";
 
 type Session = typeof authClient.$Infer.Session;
 type Membership = inferRouterOutputs<AppRouter>["registration"]["current"];
-type Teammate = { id: string; fullName: string; email: string; birthdate: string; universityName: string; cv: File | null };
+type Teammate = { id: string; fullName: string; email: string; birthdate: string; universityName: string };
 type FormErrors = Record<string, string>;
 
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const gmailDomain = "@gmail.com";
-const MAX_CV_FILE_SIZE = 10 * 1024 * 1024;
-
 const emptyTeammate = (id: string): Teammate => ({
   id,
   fullName: "",
   email: "",
   birthdate: "",
   universityName: "",
-  cv: null,
 });
 
 export type DashboardTab = "overview" | "announcements" | `round-${RoundId}`;
@@ -184,10 +180,6 @@ function StateCard({ title, description, retry }: { title: string; description: 
   return <Card className="dashboard-state-card"><CardHeader><CardTitle>{title}</CardTitle></CardHeader><CardContent><p>{description}</p><Button onClick={retry}><RefreshCwIcon aria-hidden="true" />{t("actions.retry")}</Button></CardContent></Card>;
 }
 
-function formatBytes(bytes: number) {
-  return bytes < 1024 * 1024 ? `${Math.ceil(bytes / 1024)} KB` : `${(bytes / 1024 / 1024).toFixed(1)} MB`;
-}
-
 function RegistrationForm({ session }: { session: Session }) {
   const t = useTranslations("Dashboard");
   const [teamName, setTeamName] = useState("");
@@ -196,13 +188,10 @@ function RegistrationForm({ session }: { session: Session }) {
   const [captainBirthdate, setCaptainBirthdate] = useState("");
   const [captainPhone, setCaptainPhone] = useState("");
   const [captainUniversityName, setCaptainUniversityName] = useState("");
-  const [captainCv, setCaptainCv] = useState<File | null>(null);
   const [teammates, setTeammates] = useState<Teammate[]>(
     Array.from({ length: TEAMMATE_COUNT }, (_, index) => emptyTeammate(`member-${index + 1}`)),
   );
   const [errors, setErrors] = useState<FormErrors>({});
-  const [submissionError, setSubmissionError] = useState<string | null>(null);
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const birthdateRange = getEligibleBirthdateRange();
 
   const createTeam = useMutation(
@@ -213,8 +202,7 @@ function RegistrationForm({ session }: { session: Session }) {
       },
     }),
   );
-  const createCvUploadUrls = useMutation(trpc.registration.createCvUploadUrls.mutationOptions());
-  const discardCvUploads = useMutation(trpc.registration.discardCvUploads.mutationOptions());
+  const isSubmitting = createTeam.isPending;
 
   const updateTeammate = <FieldName extends keyof Omit<Teammate, "id">>(id: string, field: FieldName, value: Teammate[FieldName]) => {
     setTeammates((current) =>
@@ -234,7 +222,6 @@ function RegistrationForm({ session }: { session: Session }) {
     required("captainBirthdate", captainBirthdate);
     required("captainPhone", captainPhone);
     required("captainUniversityName", captainUniversityName);
-    validateCv("captainCv", captainCv, next, t);
     const digits = captainPhone.replace(/\D/g, "");
     if (captainPhone && (!/^\+?[0-9\s()-]+$/.test(captainPhone) || digits.length < 8 || digits.length > 15)) {
       next.captainPhone = t("validation.phone");
@@ -254,7 +241,6 @@ function RegistrationForm({ session }: { session: Session }) {
       required(`${prefix}.email`, member.email);
       required(`${prefix}.birthdate`, member.birthdate);
       required(`${prefix}.universityName`, member.universityName);
-      validateCv(`${prefix}.cv`, member.cv, next, t);
       const email = member.email.trim().toLowerCase();
       if (member.email) {
         if (!emailPattern.test(email)) {
@@ -276,47 +262,18 @@ function RegistrationForm({ session }: { session: Session }) {
     return Object.keys(next).length === 0;
   };
 
-  const submit = async (event: FormEvent<HTMLFormElement>) => {
+  const submit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     createTeam.reset();
-    setSubmissionError(null);
     if (!validate()) return;
-    const cvFiles = [captainCv!, ...teammates.map((member) => member.cv!)];
-    const metadata = cvFiles.map((file) => ({
-      filename: file.name,
-      mimeType: "application/pdf" as const,
-      fileSize: file.size,
-    }));
-    setIsSubmitting(true);
-    let staged: { uploadBatchId: string; files: Array<(typeof metadata)[number] & { uploadId: string }> } | null = null;
-    try {
-      const prepared = await createCvUploadUrls.mutateAsync({ files: metadata });
-      staged = {
-        uploadBatchId: prepared.uploadBatchId,
-        files: metadata.map((file, index) => ({ ...file, uploadId: prepared.uploads[index]!.uploadId })),
-      };
-      const uploadResponses = await Promise.all(cvFiles.map((file, index) => fetch(prepared.uploads[index]!.uploadUrl, {
-        method: "PUT",
-        body: file,
-        headers: { "Content-Type": "application/pdf" },
-      })));
-      if (uploadResponses.some((response) => !response.ok)) throw new Error("CV_UPLOAD_FAILED");
-      await createTeam.mutateAsync({
-        uploadBatchId: staged.uploadBatchId,
-        teamName,
-        captainFullName,
-        captainBirthdate,
-        captainPhone,
-        captainUniversityName,
-        captainCv: staged.files[0]!,
-        teammates: teammates.map(({ id: _id, cv: _cv, ...member }, index) => ({ ...member, cv: staged!.files[index + 1]! })),
-      });
-    } catch {
-      setSubmissionError(t("errors.uploadCv"));
-      if (staged) await discardCvUploads.mutateAsync(staged).catch(() => undefined);
-    } finally {
-      setIsSubmitting(false);
-    }
+    createTeam.mutate({
+      teamName,
+      captainFullName,
+      captainBirthdate,
+      captainPhone,
+      captainUniversityName,
+      teammates: teammates.map(({ id: _id, ...member }) => member),
+    });
   };
 
   const mutationError = createTeam.error
@@ -370,8 +327,6 @@ function RegistrationForm({ session }: { session: Session }) {
           <Field label={t("fields.university")} error={errors.captainUniversityName}>
             <Input value={captainUniversityName} onChange={(event) => setCaptainUniversityName(event.target.value)} aria-invalid={!!errors.captainUniversityName} />
           </Field>
-          <CvFileField label={t("fields.cv")} hint={t("registration.cvHint")} error={errors.captainCv}
-            onChange={setCaptainCv} disabled={isSubmitting} />
         </CardContent>
       </Card>
 
@@ -405,20 +360,17 @@ function RegistrationForm({ session }: { session: Session }) {
                 <Field label={t("fields.university")} error={errors[`teammates.${index}.universityName`]}>
                   <Input value={member.universityName} onChange={(event) => updateTeammate(member.id, "universityName", event.target.value)} aria-invalid={!!errors[`teammates.${index}.universityName`]} />
                 </Field>
-                <CvFileField label={t("fields.cv")} hint={t("registration.cvHint")} error={errors[`teammates.${index}.cv`]}
-                  onChange={(file) => updateTeammate(member.id, "cv", file)} disabled={isSubmitting} />
               </div>
             </section>
           ))}
         </CardContent>
       </Card>
 
-      {(errors.form || mutationError || submissionError) && <p className="form-error" role="alert">{errors.form || mutationError || submissionError}</p>}
+      {(errors.form || mutationError) && <p className="form-error" role="alert">{errors.form || mutationError}</p>}
       <div className="registration-submit">
         <p>{t("registration.submitNote")}</p>
         <Button type="submit" size="lg" disabled={isSubmitting} aria-busy={isSubmitting}>
-          {isSubmitting && <UploadIcon aria-hidden="true" />}
-          {isSubmitting ? t("actions.uploading") : t("actions.submit")}
+          {isSubmitting ? t("actions.submitting") : t("actions.submit")}
         </Button>
       </div>
     </form>
@@ -429,14 +381,6 @@ function TeamOverview({ membership }: { membership: Extract<Membership, { regist
   const t = useTranslations("Dashboard");
   const format = useFormatter();
   const captain = membership.team.members.find((member) => member.isCaptain);
-  const [previewMember, setPreviewMember] = useState<(typeof membership.team.members)[number] | null>(null);
-  const preview = useMutation(trpc.registration.createCvPreviewUrl.mutationOptions());
-  const openPreview = (member: (typeof membership.team.members)[number]) => {
-    preview.reset();
-    setPreviewMember(member);
-    preview.mutate({ memberId: member.id });
-  };
-  const closePreview = () => { setPreviewMember(null); preview.reset(); };
   return (
     <div className="team-overview">
       <Card className="dashboard-card team-hero-card">
@@ -478,7 +422,6 @@ function TeamOverview({ membership }: { membership: Extract<Membership, { regist
                 <th scope="col">{t("fields.fullName")}</th>
                 <th scope="col">{t("fields.birthdate")}</th>
                 <th scope="col">{t("fields.university")}</th>
-                <th scope="col">{t("fields.cv")}</th>
                 <th scope="col" aria-label={t("roles.captain")} />
               </tr>
             </thead>
@@ -489,9 +432,6 @@ function TeamOverview({ membership }: { membership: Extract<Membership, { regist
                   <td><h3>{member.fullName}</h3><p>{member.email}</p></td>
                   <td><p>{format.dateTime(new Date(`${member.birthdate}T00:00:00Z`), { dateStyle: "medium", timeZone: "UTC" })}</p></td>
                   <td><p>{member.universityName}</p></td>
-                  <td><Button variant="outline" size="sm" onClick={() => openPreview(member)}>
-                    <EyeIcon aria-hidden="true" />{t("actions.previewCv")}
-                  </Button></td>
                   <td>{member.isCaptain && <span className="captain-tag">{t("roles.captain")}</span>}</td>
                 </tr>
               ))}
@@ -499,29 +439,8 @@ function TeamOverview({ membership }: { membership: Extract<Membership, { regist
           </table>
         </CardContent>
       </Card>
-      <PdfPreviewDialog open={!!previewMember} title={t("overview.cvPreviewTitle")}
-        filename={previewMember?.cvOriginalFilename ?? ""} previewUrl={preview.data?.previewUrl}
-        loading={preview.isPending} error={preview.isError ? t("errors.previewCv") : undefined}
-        closeLabel={t("actions.close")} loadingLabel={t("actions.loading")} onClose={closePreview} />
     </div>
   );
-}
-
-function validateCv(key: string, file: File | null, errors: FormErrors, t: ReturnType<typeof useTranslations<"Dashboard">>) {
-  if (!file) return void (errors[key] = t("validation.cvRequired"));
-  if (!file.name.toLowerCase().endsWith(".pdf") || file.type !== "application/pdf") {
-    errors[key] = t("validation.cvType");
-  } else if (file.size === 0 || file.size > MAX_CV_FILE_SIZE) {
-    errors[key] = t("validation.cvSize");
-  }
-}
-
-function CvFileField({ label, hint, error, disabled, onChange }: {
-  label: string; hint: string; error?: string; disabled: boolean; onChange: (file: File | null) => void;
-}) {
-  return <Field label={label} error={error} full><Input className="cv-file-input" type="file" accept=".pdf,application/pdf"
-    disabled={disabled} aria-invalid={!!error} onChange={(event) => onChange(event.target.files?.[0] ?? null)} />
-    <span className="field-hint">{hint}</span></Field>;
 }
 
 function Field({ label, error, full = false, children }: { label: string; error?: string; full?: boolean; children: React.ReactNode }) {

@@ -31,10 +31,6 @@ const mailProcedure = adminAreaProcedure("mail");
 const roundsProcedure = adminAreaProcedure("rounds");
 const roundInput = z.object({ round: roundSchema });
 const submissionInput = roundInput.extend({ submissionId: z.string().trim().min(1).max(128) });
-const memberCvInput = z.object({
-  teamId: z.string().trim().min(1).max(128),
-  memberId: z.string().trim().min(1).max(128),
-});
 const feedbackInput = submissionInput.extend({
   feedback: z.string().trim().min(1).max(5000),
   score: z.number().finite().nonnegative(),
@@ -67,16 +63,6 @@ async function findSubmissionFile(input: z.infer<typeof submissionInput>) {
   if (!submission) throw new TRPCError({ code: "NOT_FOUND", message: "Submission not found" });
   return submission;
 }
-async function findMemberCv(input: z.infer<typeof memberCvInput>) {
-  const [cv] = await db.select({
-    objectKey: members.cvObjectKey,
-    filename: members.cvOriginalFilename,
-    mimeType: members.cvMimeType,
-  }).from(members).where(and(eq(members.id, input.memberId), eq(members.teamId, input.teamId))).limit(1);
-  if (!cv) throw new TRPCError({ code: "NOT_FOUND", message: "CV not found" });
-  return cv;
-}
-
 export const adminRouter = router({
   getSubmissionSettings: overviewProcedure.query(getSubmissionSettings),
   setRoundSubmissionOpen: overviewProcedure.input(roundInput.extend({ isOpen: z.boolean() })).mutation(async ({ input }) => {
@@ -113,27 +99,9 @@ export const adminRouter = router({
       .from(teams).where(eq(teams.id, input.teamId)).limit(1);
     if (!team) throw new TRPCError({ code: "NOT_FOUND", message: "Team not found" });
     const roster = await db.select({ id: members.id, fullName: members.fullName, email: members.email,
-      birthdate: members.birthdate, universityName: members.universityName, isCaptain: members.isCaptain,
-      cvOriginalFilename: members.cvOriginalFilename, cvMimeType: members.cvMimeType,
-      cvFileSize: members.cvFileSize }).from(members)
+      birthdate: members.birthdate, universityName: members.universityName, isCaptain: members.isCaptain }).from(members)
       .where(eq(members.teamId, team.id)).orderBy(desc(members.isCaptain), asc(members.fullName));
     return { ...team, members: roster };
-  }),
-  createMemberCvPreviewUrl: teamsProcedure.input(memberCvInput).mutation(async ({ input }) => {
-    const cv = await findMemberCv(input);
-    if (cv.mimeType !== "application/pdf") throw new TRPCError({ code: "BAD_REQUEST", message: "UNSUPPORTED_PREVIEW" });
-    return { previewUrl: await getSignedUrl(s3, new GetObjectCommand({
-      Bucket: env.R2_BUCKET, Key: cv.objectKey, ResponseContentType: "application/pdf",
-      ResponseContentDisposition: "inline",
-    }), { expiresIn: signedUrlExpirySeconds }) };
-  }),
-  createMemberCvDownloadUrl: teamsProcedure.input(memberCvInput).mutation(async ({ input }) => {
-    const cv = await findMemberCv(input);
-    const safeFilename = cv.filename.replace(/[^a-zA-Z0-9._ -]/g, "_");
-    return { downloadUrl: await getSignedUrl(s3, new GetObjectCommand({
-      Bucket: env.R2_BUCKET, Key: cv.objectKey,
-      ResponseContentDisposition: `attachment; filename="${safeFilename}"`,
-    }), { expiresIn: signedUrlExpirySeconds }) };
   }),
   updateTeamStatus: teamsProcedure.input(z.object({
     teamId: z.string().trim().min(1).max(128), status: registrationDecisionSchema,
