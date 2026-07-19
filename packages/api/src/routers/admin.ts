@@ -242,8 +242,11 @@ export const adminRouter = router({
   }),
   createRoundPreviewUrl: roundsProcedure.input(submissionInput).mutation(async ({ input }) => {
     const submission = await findSubmissionFile(input);
+    if (submission.mimeType !== "application/pdf") {
+      throw new TRPCError({ code: "BAD_REQUEST", message: "UNSUPPORTED_PREVIEW" });
+    }
     const sourceUrl = await getSignedUrl(s3, new GetObjectCommand({ Bucket: env.R2_BUCKET, Key: submission.objectKey,
-      ResponseContentType: submission.mimeType, ResponseContentDisposition: "inline" }), { expiresIn: signedUrlExpirySeconds });
-    return { previewUrl: submission.mimeType === "application/pdf" ? sourceUrl : `https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(sourceUrl)}` };
+      ResponseContentType: "application/pdf", ResponseContentDisposition: "inline" }), { expiresIn: signedUrlExpirySeconds });
+    return { previewUrl: sourceUrl };
   }),
 });

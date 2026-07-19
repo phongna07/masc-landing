@@ -14,12 +14,7 @@ import { getSubmissionSettings, requireSubmissionOpen } from "../submission-sett
 const MAX_FILE_SIZE = 20 * 1024 * 1024;
 const MAX_ATTEMPTS = 3;
 const URL_EXPIRY_SECONDS = 300;
-const allowedFiles: Record<string, string> = {
-  ".pdf": "application/pdf", ".doc": "application/msword",
-  ".docx": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-  ".ppt": "application/vnd.ms-powerpoint",
-  ".pptx": "application/vnd.openxmlformats-officedocument.presentationml.presentation",
-};
+const allowedFiles: Record<string, string> = { ".pdf": "application/pdf" };
 const roundInput = z.object({ round: roundSchema });
 const fileInput = roundInput.extend({
   filename: z.string().trim().min(1).max(255), mimeType: z.string().trim().min(1).max(160),
@@ -171,8 +166,11 @@ export const roundSubmissionRouter = router({
       .from(roundSubmissions).where(submissionWhere(membership.teamId, input.round))
       .orderBy(desc(roundSubmissions.attemptNumber)).limit(1);
     if (!submission) throw new TRPCError({ code: "NOT_FOUND", message: "SUBMISSION_NOT_FOUND" });
+    if (submission.mimeType !== "application/pdf") {
+      throw new TRPCError({ code: "BAD_REQUEST", message: "UNSUPPORTED_PREVIEW" });
+    }
     const sourceUrl = await getSignedUrl(s3, new GetObjectCommand({ Bucket: env.R2_BUCKET, Key: submission.objectKey,
-      ResponseContentType: submission.mimeType, ResponseContentDisposition: "inline" }), { expiresIn: URL_EXPIRY_SECONDS });
-    return { previewUrl: submission.mimeType === "application/pdf" ? sourceUrl : `https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(sourceUrl)}` };
+      ResponseContentType: "application/pdf", ResponseContentDisposition: "inline" }), { expiresIn: URL_EXPIRY_SECONDS });
+    return { previewUrl: sourceUrl };
   }),
 });

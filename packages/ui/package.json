@@ -11,7 +11,7 @@
     "./postcss.config": "./postcss.config.mjs"
   },
   "scripts": {
-    "check-types": "tsc --noEmit"
+    "check-types": "tsc --noEmit && echo \"TypeScript check passed!\""
   },
   "dependencies": {
     "@base-ui/react": "^1.6.0",

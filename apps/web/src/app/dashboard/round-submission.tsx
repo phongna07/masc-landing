@@ -15,9 +15,7 @@ import { toast } from "sonner";
 import { queryClient, trpc } from "@/utils/trpc";
 
 const MAX_FILE_SIZE = 20 * 1024 * 1024;
-const mimeTypes: Record<string, string> = { pdf: "application/pdf", doc: "application/msword",
-  docx: "application/vnd.openxmlformats-officedocument.wordprocessingml.document", ppt: "application/vnd.ms-powerpoint",
-  pptx: "application/vnd.openxmlformats-officedocument.presentationml.presentation" };
+const mimeTypes: Record<string, string> = { pdf: "application/pdf" };
 
 export default function RoundSubmission({ round }: { round: RoundId }) {
   const t = useTranslations("Dashboard"); const format = useFormatter();
@@ -25,6 +23,7 @@ export default function RoundSubmission({ round }: { round: RoundId }) {
   const submission = useQuery(trpc.roundSubmission.current.queryOptions(input));
   const [description, setDescription] = useState(""); const [file, setFile] = useState<File | null>(null);
   const [editing, setEditing] = useState(false); const [error, setError] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const createUploadUrl = useMutation(trpc.roundSubmission.createUploadUrl.mutationOptions());
   const finalize = useMutation(trpc.roundSubmission.finalize.mutationOptions({ onSuccess: async () => {
     toast.success(t("round.success", { round })); setEditing(false); setFile(null);
@@ -61,10 +60,10 @@ export default function RoundSubmission({ round }: { round: RoundId }) {
 
   const previewKey = existing ? `${existing.attemptNumber}:${String(existing.updatedAt)}` : null;
   useEffect(() => {
-    if (!previewKey || showForm || previewedSubmission.current === previewKey) return;
+    if (!previewKey || existing?.mimeType !== "application/pdf" || showForm || previewedSubmission.current === previewKey) return;
     previewedSubmission.current = previewKey;
     preview.mutate({ round });
-  }, [previewKey, showForm, round, preview.mutate]);
+  }, [previewKey, existing?.mimeType, showForm, round, preview.mutate]);
   if (submission.isPending) return <StateCard loading />;
   if (submission.isError) return <StateCard title={t("round.errors.loadTitle", { round })} description={t("round.errors.load")} retry={() => submission.refetch()} />;
 
@@ -77,6 +76,7 @@ export default function RoundSubmission({ round }: { round: RoundId }) {
     if (!mimeType) return setError(t("round.errors.fileType"));
     if (file.size === 0 || file.size > MAX_FILE_SIZE) return setError(t("round.errors.fileSize"));
     const metadata = { round, filename: file.name, mimeType, fileSize: file.size };
+    setIsSubmitting(true);
     try {
       const upload = await createUploadUrl.mutateAsync(metadata);
       const response = await fetch(upload.uploadUrl, { method: "PUT", body: file, headers: { "Content-Type": mimeType } });
@@ -89,6 +89,8 @@ export default function RoundSubmission({ round }: { round: RoundId }) {
         setEditing(false);
         toast.error(t(message === "ATTEMPT_LIMIT_REACHED" ? "round.errors.limit" : "round.errors.conflict"));
       } else setError(t("round.errors.submit"));
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -107,13 +109,13 @@ export default function RoundSubmission({ round }: { round: RoundId }) {
         <div className="participant-feedback-copy"><div className="participant-feedback-heading"><MessageSquareQuoteIcon aria-hidden="true" /><Label id={`round-${round}-feedback-title`}>{t("round.feedbackTitle")}</Label></div><p>{existing.feedback}</p></div>
         {existing.score !== null && <div className="participant-feedback-score"><Label>{t("round.scoreTitle")}</Label><p>{existing.score}</p></div>}
       </section>}
-      {preview.data?.previewUrl && <div className="submission-preview"><Label>{t("round.previewLabel")}</Label><iframe src={preview.data.previewUrl} title={t("round.previewTitle", { filename: existing.originalFilename })} /></div>}
+      {existing.mimeType === "application/pdf" && preview.data?.previewUrl && <div className="submission-preview"><Label>{t("round.previewLabel")}</Label><iframe src={preview.data.previewUrl} title={t("round.previewTitle", { filename: existing.originalFilename })} /></div>}
     </CardContent>}
     {showForm && <form onSubmit={submit} className="round-submission-form" noValidate>
       <CardContent className="round-submission-fields"><Field label={t("round.descriptionLabel")}><Textarea value={description} maxLength={5000} rows={8} onChange={(event) => setDescription(event.target.value)} /><span className="field-hint">{t("round.characters", { count: description.length })}</span></Field>
-      <Field label={t("round.fileLabel")}><Input type="file" accept=".pdf,.doc,.docx,.ppt,.pptx" onChange={(event) => setFile(event.target.files?.[0] ?? null)} /><span className="field-hint">{t("round.fileHint")}</span></Field></CardContent>
-      {error && <p className="form-error" role="alert">{error}</p>}<div className="registration-submit">{editing ? <Button type="button" variant="ghost" onClick={() => { setEditing(false); setError(null); }}>{t("round.cancel")}</Button> : <span />}
-      <Button type="submit" size="lg" disabled={createUploadUrl.isPending || finalize.isPending}><UploadIcon aria-hidden="true" />{finalize.isPending || createUploadUrl.isPending ? t("round.uploading") : t("round.submit", { round })}</Button></div></form>}
+      <Field label={t("round.fileLabel")}><Input type="file" accept=".pdf,application/pdf" onChange={(event) => setFile(event.target.files?.[0] ?? null)} /><span className="field-hint">{t("round.fileHint")}</span></Field></CardContent>
+      {error && <p className="form-error" role="alert">{error}</p>}<div className="registration-submit">{editing ? <Button type="button" variant="outline" onClick={() => { setEditing(false); setError(null); }}>{t("round.cancel")}</Button> : <span />}
+      <Button type="submit" size="lg" disabled={isSubmitting} aria-busy={isSubmitting}><UploadIcon aria-hidden="true" />{isSubmitting ? t("round.uploading") : t("round.submit", { round })}</Button></div></form>}
     </Card>
   </div>;
 }
