@@ -7,6 +7,8 @@ import { toast } from "sonner";
 
 import { authClient } from "@/lib/auth-client";
 
+import CompetitionRulebook from "./competition-rulebook";
+
 function GoogleLogo() {
   return (
     <svg aria-hidden="true" className="google-sign-in-logo" viewBox="0 0 24 24">
@@ -21,7 +23,31 @@ function GoogleLogo() {
 export default function GoogleSignInButton() {
   const t = useTranslations("Auth");
   const [isPending, setIsPending] = useState(false);
+  const [isRulebookOpen, setIsRulebookOpen] = useState(false);
+  const [hasReadRulebook, setHasReadRulebook] = useState(false);
+  const dialogRef = useRef<HTMLDialogElement>(null);
+  const rulebookViewportRef = useRef<HTMLDivElement>(null);
   const popupRef = useRef<Window | null>(null);
+
+  useEffect(() => {
+    const dialog = dialogRef.current;
+    if (!dialog) {
+      return;
+    }
+
+    if (isRulebookOpen && !dialog.open) {
+      dialog.showModal();
+      const viewport = rulebookViewportRef.current;
+      if (viewport) {
+        viewport.scrollTop = 0;
+        if (viewport.scrollHeight - viewport.clientHeight <= 2) {
+          setHasReadRulebook(true);
+        }
+      }
+    } else if (!isRulebookOpen && dialog.open) {
+      dialog.close();
+    }
+  }, [isRulebookOpen]);
 
   useEffect(() => {
     const handleGoogleAuthComplete = (event: MessageEvent) => {
@@ -95,16 +121,79 @@ export default function GoogleSignInButton() {
     popup.location.href = data.url;
   };
 
+  const discardRulebook = () => {
+    setIsRulebookOpen(false);
+  };
+
+  const acceptRulebook = () => {
+    if (!hasReadRulebook) {
+      return;
+    }
+
+    setIsRulebookOpen(false);
+    void signInWithGoogle();
+  };
+
+  const handleRulebookScroll = () => {
+    const viewport = rulebookViewportRef.current;
+    if (
+      viewport &&
+      viewport.scrollHeight - viewport.scrollTop - viewport.clientHeight <= 2
+    ) {
+      setHasReadRulebook(true);
+    }
+  };
+
   return (
-    <Button
-      type="button"
-      variant="outline"
-      className="google-sign-in-button"
-      onClick={signInWithGoogle}
-      disabled={isPending}
-    >
-      <GoogleLogo />
-      <span>{t("google.button")}</span>
-    </Button>
+    <>
+      <Button
+        type="button"
+        variant="outline"
+        className="google-sign-in-button"
+        onClick={() => setIsRulebookOpen(true)}
+        disabled={isPending}
+      >
+        <GoogleLogo />
+        <span>{t("google.button")}</span>
+      </Button>
+
+      <dialog
+        ref={dialogRef}
+        className="rulebook-dialog"
+        aria-labelledby="rulebook-dialog-title"
+        aria-describedby="rulebook-dialog-instruction"
+        onClose={() => setIsRulebookOpen(false)}
+      >
+        <div className="rulebook-dialog-content">
+          <header className="rulebook-dialog-header">
+            <span className="auth-eyebrow">MASC '26</span>
+            <h2 id="rulebook-dialog-title">{t("rulebookTitle")}</h2>
+          </header>
+
+          <div
+            ref={rulebookViewportRef}
+            className="rulebook-dialog-viewport"
+            tabIndex={0}
+            onScroll={handleRulebookScroll}
+          >
+            <CompetitionRulebook />
+          </div>
+
+          <footer className="rulebook-dialog-footer">
+            <p aria-live="polite" className="rulebook-dialog-warning">
+              {!hasReadRulebook ? t("google.rulebook.instruction") : null}
+            </p>
+            <div className="rulebook-dialog-actions">
+              <Button type="button" variant="outline" onClick={discardRulebook}>
+                {t("google.rulebook.discard")}
+              </Button>
+              <Button type="button" disabled={!hasReadRulebook} onClick={acceptRulebook}>
+                {t("google.rulebook.accept")}
+              </Button>
+            </div>
+          </footer>
+        </div>
+      </dialog>
+    </>
   );
 }

@@ -198,8 +198,14 @@
     "description": "Sign in to manage your profile, team registration, and competition updates in one place.",
     "secureSignIn": "Secure authentication powered by Google",
     "google": {
-      "button": "Continue with Google"
+      "button": "Continue with Google",
+      "rulebook": {
+        "instruction": "Please scroll through the entire rulebook to enable acceptance.",
+        "discard": "Discard",
+        "accept": "Accept terms"
+      }
     },
+    "rulebookTitle": "MASC '26 competition rulebook",
     "assurance": {
       "eyebrow": "Privacy & access",
       "title": "Your account, handled responsibly",

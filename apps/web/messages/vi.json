@@ -198,8 +198,14 @@
     "description": "Đăng ký đội thi, quản lý hồ sơ và cập nhật thông tin về cuộc thi tại một nơi",
     "secureSignIn": "Xác thực an toàn qua Google",
     "google": {
-      "button": "Tiếp tục với Google"
+      "button": "Tiếp tục với Google",
+      "rulebook": {
+        "instruction": "Vui lòng đọc hết nội dung bộ luật trước khi đồng ý với các điều khoản.",
+        "discard": "Hủy bỏ",
+        "accept": "Đồng ý điều khoản"
+      }
     },
+    "rulebookTitle": "Bộ luật dự thi MASC '26",
     "assurance": {
       "eyebrow": "Quyền riêng tư & dữ liệu cá nhân",
       "title": "Chúng tôi cam kết bảo mật thông tin của bạn.",

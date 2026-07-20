@@ -1936,7 +1936,7 @@ img {
   text-transform: uppercase;
 }
 
-.auth-panel h1 {
+#auth-title {
   max-width: 650px;
   margin: 26px 0 0;
   font-family: var(--font-castela), Georgia, serif;
@@ -1995,6 +1995,203 @@ img {
   letter-spacing: 0.11em;
   text-align: center;
   text-transform: uppercase;
+}
+
+.rulebook-dialog {
+  position: fixed;
+  inset: 0;
+  width: min(920px, calc(100vw - 48px));
+  max-width: none;
+  max-height: none;
+  margin: auto;
+  padding: 0;
+  overflow: hidden;
+  color: var(--ink);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(10, 10, 14, 0.98);
+  box-shadow: 0 36px 120px rgba(0, 0, 0, 0.78), 0 0 70px rgba(91, 71, 190, 0.12);
+}
+
+.rulebook-dialog::backdrop {
+  background: rgba(0, 0, 0, 0.82);
+  backdrop-filter: blur(8px);
+}
+
+.rulebook-dialog-content {
+  display: grid;
+  height: min(860px, calc(100svh - 48px));
+  grid-template-rows: auto minmax(0, 1fr) auto;
+}
+
+.rulebook-dialog-header {
+  padding: 28px 34px 22px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.11);
+  background:
+    linear-gradient(120deg, rgba(123, 102, 255, 0.12), transparent 55%),
+    rgba(255, 255, 255, 0.025);
+}
+
+.rulebook-dialog-header h2 {
+  margin: 9px 0 0;
+  font-family: var(--font-castela), Georgia, serif;
+  font-size: clamp(28px, 3vw, 40px);
+  font-weight: 400;
+  line-height: 1.1;
+  letter-spacing: -0.025em;
+}
+
+.rulebook-dialog-header p {
+  margin: 10px 0 0;
+  color: rgba(255, 255, 255, 0.56);
+  font-size: 12px;
+  line-height: 1.55;
+}
+
+.rulebook-dialog-viewport {
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
+  background: #111116;
+  scroll-behavior: smooth;
+}
+
+.rulebook-dialog-viewport:focus-visible {
+  outline-offset: -3px;
+}
+
+.rulebook-dialog-footer {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 24px;
+  padding: 18px 24px;
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+  background: #0d0d11;
+}
+
+.rulebook-dialog-warning {
+  min-height: 1.5em;
+  margin: 0;
+  color: #d7b671;
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+.rulebook-dialog-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.rulebook-dialog-actions button {
+  min-width: 132px;
+  min-height: 42px;
+  padding-inline: 18px;
+}
+
+.competition-rulebook {
+  width: min(100% - 72px, 760px);
+  margin-inline: auto;
+  padding-block: 54px 72px;
+  color: rgba(255, 255, 255, 0.76);
+  font-family: Arial, sans-serif;
+  font-size: 14px;
+  line-height: 1.72;
+}
+
+.competition-rulebook-cover {
+  margin-bottom: 54px;
+  text-align: center;
+}
+
+.competition-rulebook-cover h1 {
+  margin: 0;
+  color: #fff;
+  font-family: "Times New Roman", Times, serif;
+  font-size: clamp(32px, 5vw, 46px);
+  font-weight: 400;
+  line-height: 1.2;
+}
+
+.competition-rulebook-cover p {
+  margin: 7px 0 0;
+}
+
+.competition-rulebook-cover p:last-child {
+  margin-top: 18px;
+  color: rgba(255, 255, 255, 0.58);
+}
+
+.competition-rulebook section+section {
+  margin-top: 40px;
+}
+
+.competition-rulebook h2,
+.competition-rulebook h3 {
+  color: #f2d584;
+  font-family: Arial, sans-serif;
+}
+
+.competition-rulebook h2 {
+  margin: 0 0 18px;
+  font-size: 19px;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+.competition-rulebook h3 {
+  margin: 28px 0 12px;
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1.45;
+}
+
+.competition-rulebook p {
+  margin: 0 0 14px;
+}
+
+.competition-rulebook strong {
+  color: rgba(255, 255, 255, 0.96);
+}
+
+.competition-rulebook blockquote {
+  margin: 24px 0;
+  padding: 18px 22px;
+  color: rgba(255, 255, 255, 0.88);
+  border-left: 2px solid #d7b671;
+  background: rgba(215, 182, 113, 0.06);
+  font-family: "Times New Roman", Times, serif;
+  font-size: 17px;
+  font-style: italic;
+}
+
+.competition-rulebook ul {
+  display: grid;
+  gap: 12px;
+  margin: 0;
+  padding-left: 22px;
+}
+
+.competition-rulebook li {
+  padding-left: 5px;
+}
+
+.competition-rulebook li::marker {
+  color: #d7b671;
+}
+
+.competition-rulebook a {
+  color: #f2d584;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.competition-rulebook-contacts {
+  margin-top: 16px;
+}
+
+.competition-rulebook-contacts p {
+  white-space: pre-wrap;
 }
 
 .auth-assurance {
@@ -3701,6 +3898,60 @@ footer {
 
 @media (max-width: 680px) {
 
+  .rulebook-dialog {
+    width: calc(100vw - 20px);
+  }
+
+  .rulebook-dialog-content {
+    height: calc(100svh - 20px);
+  }
+
+  .rulebook-dialog-header {
+    padding: 20px 20px 16px;
+  }
+
+  .rulebook-dialog-header h2 {
+    font-size: 28px;
+  }
+
+  .rulebook-dialog-header p {
+    margin-top: 7px;
+  }
+
+  .rulebook-dialog-footer {
+    grid-template-columns: 1fr;
+    gap: 10px;
+    padding: 14px;
+  }
+
+  .rulebook-dialog-warning {
+    text-align: center;
+  }
+
+  .rulebook-dialog-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .rulebook-dialog-actions button {
+    min-width: 0;
+    min-height: 46px;
+  }
+
+  .competition-rulebook {
+    width: min(100% - 36px, 760px);
+    padding-block: 38px 54px;
+    font-size: 13px;
+  }
+
+  .competition-rulebook-cover {
+    margin-bottom: 42px;
+  }
+
+  .competition-rulebook h2 {
+    font-size: 17px;
+  }
+
   .auth-header,
   .auth-layout {
     width: min(100% - 32px, 520px);
@@ -3723,7 +3974,7 @@ footer {
     padding: 34px 24px;
   }
 
-  .auth-panel h1 {
+  #auth-title {
     margin-top: 20px;
     font-size: clamp(32px, 3vw, 54px);
   }
