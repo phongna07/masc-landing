@@ -151,11 +151,11 @@ export default function CompetitionRulebook() {
 				<p>Ban Tổ chức MASC'26.</p>
 				<p>Thông tin liên lạc</p>
 				<div className="competition-rulebook-contacts">
-					<p>•     Email: <a href="mailto:masc26.work@gmail.com">masc26.work@gmail.com</a></p>
-					<p>•     Fanpage: facebook.com/MarketingAllStarChallenge</p>
-					<p>•     Mr. Lê Đức Anh - Đồng Trưởng ban Tổ chức - (+84) 857 129 878</p>
-					<p>•     Ms. Nguyễn Mai Ngọc Nhi - Đồng Trưởng ban Tổ chức - (+84) 782 356 586</p>
-					<p>•     Ms. Mai Phương Thảo - Phó ban Chuyên môn - (+84) 944 787 329</p>
+					<p>Email: <a href="mailto:masc26.work@gmail.com">masc26.work@gmail.com</a></p>
+					<p>Fanpage: facebook.com/MarketingAllStarChallenge</p>
+					<p>Mr. Lê Đức Anh - Đồng Trưởng ban Tổ chức - (+84) 857 129 878</p>
+					<p>Ms. Nguyễn Mai Ngọc Nhi - Đồng Trưởng ban Tổ chức - (+84) 782 356 586</p>
+					<p>Ms. Mai Phương Thảo - Phó ban Chuyên môn - (+84) 944 787 329</p>
 				</div>
 			</section>
 		</article>

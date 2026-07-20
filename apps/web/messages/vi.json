@@ -234,7 +234,7 @@
     "registration": {
       "section": "Đăng ký",
       "title": "Tạo đội thi",
-      "description": "Thành lập đội gồm đúng 3 thành viên, bao gồm bạn với vai trò đội trưởng. Thông tin không thể chỉnh sửa sau khi gửi.",
+      "description": "Thành lập đội gồm 3 thành viên, bao gồm bạn với vai trò đội trưởng. Thông tin không thể chỉnh sửa sau khi gửi.",
       "teamSection": "Đội thi",
       "teamDetails": "Thông tin đội thi",
       "captainSection": "Đội trưởng",

@@ -234,7 +234,7 @@
     "registration": {
       "section": "Registration",
       "title": "Create your team",
-      "description": "Assemble a team of exactly 3 members, including you as captain. Registration details cannot be edited after submission.",
+      "description": "Assemble a team of 3 members, including you as captain. Registration details cannot be edited after submission.",
       "teamSection": "Team",
       "teamDetails": "Team details",
       "captainSection": "Captain",
