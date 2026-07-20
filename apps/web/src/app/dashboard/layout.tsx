@@ -1,16 +1,14 @@
 import { isAdminEmail } from "@masc-landing/api/admin-access";
-import { auth } from "@masc-landing/auth";
-import { headers } from "next/headers";
 import { redirect } from "next/navigation";
+
+import { getServerSession } from "@/lib/server-session";
 
 export default async function DashboardLayout({
 	children,
 }: Readonly<{
 	children: React.ReactNode;
 }>) {
-	const session = await auth.api.getSession({
-		headers: await headers(),
-	});
+	const session = await getServerSession();
 
 	if (session?.user && (await isAdminEmail(session.user.email))) {
 		redirect("/admin");

@@ -10,8 +10,9 @@ export const router = t.router;
 
 export const publicProcedure = t.procedure;
 
-export const protectedProcedure = t.procedure.use(({ ctx, next }) => {
-  if (!ctx.session) {
+export const protectedProcedure = t.procedure.use(async ({ ctx, next }) => {
+  const session = await ctx.getSession();
+  if (!session) {
     throw new TRPCError({
       code: "UNAUTHORIZED",
       message: "Authentication required",
@@ -21,12 +22,29 @@ export const protectedProcedure = t.procedure.use(({ ctx, next }) => {
   return next({
     ctx: {
       ...ctx,
-      session: ctx.session,
+      session,
     },
   });
 });
 
-export const adminProcedure = protectedProcedure.use(async ({ ctx, next }) => {
+export const freshProtectedProcedure = t.procedure.use(async ({ ctx, next }) => {
+  const session = await ctx.getFreshSession();
+  if (!session) {
+    throw new TRPCError({
+      code: "UNAUTHORIZED",
+      message: "Authentication required",
+      cause: "No session",
+    });
+  }
+  return next({
+    ctx: {
+      ...ctx,
+      session,
+    },
+  });
+});
+
+export const adminProcedure = freshProtectedProcedure.use(async ({ ctx, next }) => {
   const admin = await getAdminByEmail(ctx.session.user.email);
   if (!admin) {
     throw new TRPCError({

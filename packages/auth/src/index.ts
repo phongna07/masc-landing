@@ -17,6 +17,14 @@ export function createAuth() {
     trustedOrigins: [env.CORS_ORIGIN],
     secret: env.BETTER_AUTH_SECRET,
     baseURL: env.BETTER_AUTH_URL,
+    session: {
+      cookieCache: {
+        enabled: true,
+        maxAge: 5 * 60,
+        strategy: "compact",
+        // Revoked sessions may remain valid on non-sensitive cached endpoints for up to five minutes; sensitive operations bypass this cache.
+      },
+    },
     plugins: [nextCookies()],
     socialProviders: {
       google: {
@@ -28,3 +36,14 @@ export function createAuth() {
 }
 
 export const auth = createAuth();
+
+export function getSession(headers: Headers) {
+  return auth.api.getSession({ headers });
+}
+
+export function getFreshSession(headers: Headers) {
+  return auth.api.getSession({
+    headers,
+    query: { disableCookieCache: true },
+  });
+}

@@ -1,14 +1,12 @@
-import { auth } from "@masc-landing/auth";
 import { getDashboardTabSettings } from "@masc-landing/api/dashboard-tab-settings";
-import { headers } from "next/headers";
 import { redirect } from "next/navigation";
+
+import { getServerSession } from "@/lib/server-session";
 
 import Dashboard, { type DashboardTab } from "./dashboard";
 
 export default async function AuthenticatedDashboard({ activeTab }: { activeTab: DashboardTab }) {
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
+  const session = await getServerSession();
 
   if (!session?.user) {
     redirect("/login");

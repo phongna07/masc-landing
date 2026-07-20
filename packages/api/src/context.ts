@@ -1,14 +1,21 @@
-import { auth } from "@masc-landing/auth";
+import { getFreshSession, getSession } from "@masc-landing/auth";
 import type { NextRequest } from "next/server";
 
-export async function createContext(req: NextRequest) {
-  const session = await auth.api.getSession({
-    headers: req.headers,
-  });
+export function createContext(req: NextRequest) {
+  let sessionPromise: ReturnType<typeof getSession> | undefined;
+  let freshSessionPromise: ReturnType<typeof getFreshSession> | undefined;
+
   return {
     auth: null,
     headers: req.headers,
-    session,
+    getSession: () => {
+      sessionPromise ??= getSession(req.headers);
+      return sessionPromise;
+    },
+    getFreshSession: () => {
+      freshSessionPromise ??= getFreshSession(req.headers);
+      return freshSessionPromise;
+    },
   };
 }
 

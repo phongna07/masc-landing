@@ -3,7 +3,7 @@ import { members, teams } from "@masc-landing/db/schema/index";
 import { TRPCError } from "@trpc/server";
 import { and, eq, inArray, or, sql } from "drizzle-orm";
 
-import { protectedProcedure, router } from "../index";
+import { freshProtectedProcedure, protectedProcedure, router } from "../index";
 import { createTeamInputSchema } from "../registration-schema";
 
 export { createTeamInputSchema } from "../registration-schema";
@@ -67,7 +67,7 @@ export const registrationRouter = router({
     };
   }),
 
-  createTeam: protectedProcedure.input(createTeamInputSchema).mutation(async ({ ctx, input }) => {
+  createTeam: freshProtectedProcedure.input(createTeamInputSchema).mutation(async ({ ctx, input }) => {
     const captainEmail = ctx.session.user.email.trim().toLowerCase();
     const allEmails = [captainEmail, ...input.teammates.map((member) => member.email)];
 

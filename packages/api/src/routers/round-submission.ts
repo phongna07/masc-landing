@@ -7,7 +7,7 @@ import { TRPCError } from "@trpc/server";
 import { and, desc, eq, or, sql } from "drizzle-orm";
 import { z } from "zod";
 
-import { protectedProcedure, router } from "../index";
+import { freshProtectedProcedure, protectedProcedure, router } from "../index";
 import { roundSchema } from "../rounds";
 import { getSubmissionSettings, requireSubmissionOpen } from "../submission-settings";
 
@@ -97,7 +97,7 @@ export const roundSubmissionRouter = router({
       attemptsRemaining: MAX_ATTEMPTS - used, maxAttempts: MAX_ATTEMPTS,
       canSubmit: isApproved && settings[input.round] && used < MAX_ATTEMPTS };
   }),
-  createUploadUrl: protectedProcedure.input(fileInput).mutation(async ({ ctx, input }) => {
+  createUploadUrl: freshProtectedProcedure.input(fileInput).mutation(async ({ ctx, input }) => {
     const membership = await membershipFor(ctx.session.user.id, ctx.session.user.email);
     requireApprovedTeam(membership.registrationStatus);
     await requireSubmissionOpen(input.round);
@@ -110,7 +110,7 @@ export const roundSubmissionRouter = router({
       ContentLength: input.fileSize }), { expiresIn: URL_EXPIRY_SECONDS });
     return { uploadId, uploadUrl, expiresIn: URL_EXPIRY_SECONDS };
   }),
-  finalize: protectedProcedure.input(fileInput.extend({ uploadId: z.uuid(), description: z.string().trim().min(1).max(5000) }))
+  finalize: freshProtectedProcedure.input(fileInput.extend({ uploadId: z.uuid(), description: z.string().trim().min(1).max(5000) }))
     .mutation(async ({ ctx, input }) => {
       const membership = await membershipFor(ctx.session.user.id, ctx.session.user.email);
       requireApprovedTeam(membership.registrationStatus);
@@ -150,7 +150,7 @@ export const roundSubmissionRouter = router({
         throw error;
       }
     }),
-  createDownloadUrl: protectedProcedure.input(roundInput).mutation(async ({ ctx, input }) => {
+  createDownloadUrl: freshProtectedProcedure.input(roundInput).mutation(async ({ ctx, input }) => {
     const membership = await membershipFor(ctx.session.user.id, ctx.session.user.email);
     const [submission] = await db.select({ objectKey: roundSubmissions.objectKey, filename: roundSubmissions.originalFilename })
       .from(roundSubmissions).where(submissionWhere(membership.teamId, input.round))
@@ -160,7 +160,7 @@ export const roundSubmissionRouter = router({
     return { downloadUrl: await getSignedUrl(s3, new GetObjectCommand({ Bucket: env.R2_BUCKET, Key: submission.objectKey,
       ResponseContentDisposition: `attachment; filename="${safeFilename}"` }), { expiresIn: URL_EXPIRY_SECONDS }) };
   }),
-  createPreviewUrl: protectedProcedure.input(roundInput).mutation(async ({ ctx, input }) => {
+  createPreviewUrl: freshProtectedProcedure.input(roundInput).mutation(async ({ ctx, input }) => {
     const membership = await membershipFor(ctx.session.user.id, ctx.session.user.email);
     const [submission] = await db.select({ objectKey: roundSubmissions.objectKey, mimeType: roundSubmissions.mimeType })
       .from(roundSubmissions).where(submissionWhere(membership.teamId, input.round))

@@ -4,15 +4,13 @@ import {
   canAccessAdminArea,
   type AdminArea,
 } from "@masc-landing/api/admin-roles";
-import { auth } from "@masc-landing/auth";
-import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { cache } from "react";
 
+import { getFreshServerSession } from "@/lib/server-session";
+
 const getCurrentAdmin = cache(async () => {
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
+  const session = await getFreshServerSession();
   const admin = session?.user
     ? await getAdminByEmail(session.user.email)
     : null;

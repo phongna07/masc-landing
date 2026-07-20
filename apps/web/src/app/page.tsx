@@ -3,7 +3,6 @@
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Image, { type StaticImageData } from "next/image";
-import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { useEffect, useRef, useState } from "react";
 
@@ -17,16 +16,13 @@ import mentor2 from "@/assets/mentor-2.png";
 import mentor3 from "@/assets/mentor-3.png";
 import mentor4 from "@/assets/mentor-4.png";
 import { HeroBrandLogo } from "@/components/hero-brand-logo";
+import SessionAwareLink from "@/components/session-aware-link";
 import SiteHeader from "@/components/site-header";
-import { authClient } from "@/lib/auth-client";
 import { env } from "@masc-landing/env/web";
 
 export default function Home() {
   const t = useTranslations("Home");
   const pageRef = useRef<HTMLDivElement>(null);
-  const { data: session, isPending } = authClient.useSession();
-  const isSignedIn = !isPending && Boolean(session?.user);
-  const registrationLink = isSignedIn ? "/dashboard" : "/login";
   const rounds = [
     { marker: "00", key: "round05" },
     { marker: "01", key: "round1" },
@@ -271,10 +267,11 @@ export default function Home() {
                 <p>{t("hero.description")}</p>
                 {env.NEXT_PUBLIC_IS_REGISTRATION_OPENED && (
                   <div className="hero-brand-action">
-                    <Link className="primary-button hero-brand-button" href={registrationLink}>
-                      <span>{isSignedIn ? t("hero.portal") : t("hero.apply")}</span>
-                      <span aria-hidden="true">↗</span>
-                    </Link>
+                    <SessionAwareLink
+                      className="primary-button hero-brand-button"
+                      signedInLabel={t("hero.portal")}
+                      signedOutLabel={t("hero.apply")}
+                    />
                   </div>
                 )}
               </div>
@@ -523,10 +520,11 @@ export default function Home() {
             </h2>
             <p>{t("finalCta.description")}</p>
             {env.NEXT_PUBLIC_IS_REGISTRATION_OPENED && (
-              <Link className="primary-button light" href={registrationLink}>
-                <span>{isSignedIn ? t("finalCta.portal") : t("finalCta.button")}</span>
-                <span aria-hidden="true">↗</span>
-              </Link>
+              <SessionAwareLink
+                className="primary-button light"
+                signedInLabel={t("finalCta.portal")}
+                signedOutLabel={t("finalCta.button")}
+              />
             )}
           </div>
         </section>
