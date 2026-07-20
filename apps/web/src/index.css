@@ -2010,31 +2010,10 @@ img {
 
 .auth-assurance-heading {
   display: grid;
-  grid-template-columns: auto 1fr;
+  grid-template-columns: 1fr;
   align-items: start;
-  gap: 16px;
   padding-bottom: 28px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.11);
-}
-
-.auth-assurance-icon {
-  display: grid;
-  width: 42px;
-  height: 42px;
-  place-items: center;
-  border: 1px solid rgba(215, 182, 113, 0.35);
-  border-radius: 50%;
-  color: #e8ce91;
-  background: rgba(215, 182, 113, 0.07);
-}
-
-.auth-assurance-icon svg {
-  width: 21px;
-  fill: none;
-  stroke: currentColor;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  stroke-width: 1.5;
 }
 
 .auth-assurance h2 {

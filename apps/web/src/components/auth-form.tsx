@@ -24,12 +24,6 @@ export default function AuthForm() {
 
       <aside className="auth-assurance" aria-labelledby="auth-assurance-title">
         <div className="auth-assurance-heading">
-          <span className="auth-assurance-icon" aria-hidden="true">
-            <svg viewBox="0 0 24 24">
-              <path d="M12 3 5.5 5.8v5.5c0 4.2 2.7 7.9 6.5 9.2 3.8-1.3 6.5-5 6.5-9.2V5.8L12 3Z" />
-              <path d="m9.2 11.8 1.8 1.8 3.9-4" />
-            </svg>
-          </span>
           <div>
             <span className="auth-eyebrow">{t("assurance.eyebrow")}</span>
             <h2 id="auth-assurance-title">{t("assurance.title")}</h2>
