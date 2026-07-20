@@ -598,7 +598,7 @@ function DeadlineCountdown() {
     return () => window.clearInterval(timer);
   }, []);
 
-  const target = new Date("2026-08-10T23:59:00+07:00").getTime();
+  const target = new Date("2026-08-07T23:59:00+07:00").getTime();
   const remaining = now === null ? 0 : Math.max(0, target - now);
   const isClosed = now !== null && now >= target;
   const days = Math.floor(remaining / 86_400_000);
