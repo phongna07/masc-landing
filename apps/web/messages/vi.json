@@ -243,7 +243,7 @@
       "membersTitle": "Thành viên đội",
       "memberCount": "{count} trên 3 thành viên",
       "memberNumber": "Thành viên {number}",
-      "memberEmailNotice": "Hãy nhập địa chỉ Gmail của chính từng thành viên. Thành viên có thể dùng địa chỉ đã nhập tại đây để đăng nhập, cập nhật thông tin, nộp bài và nhận thông báo từ cuộc thi.",
+      "memberEmailNotice": "Vui lòng nhập Email của các thành viên trong đội. Email này dùng để đăng nhập, nộp bài, cập nhật thông tin và nhận thông báo từ cuộc thi.",
       "submitNote": "Vui lòng kiểm tra kỹ họ tên và địa chỉ email trước khi gửi.",
       "sectionLabel": "Biểu mẫu đăng ký đội thi"
     },

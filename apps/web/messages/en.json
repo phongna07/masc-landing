@@ -243,7 +243,7 @@
       "membersTitle": "Team members",
       "memberCount": "{count} of 3 team members",
       "memberNumber": "Member {number}",
-      "memberEmailNotice": "Enter each teammate's own Gmail address. Teammates can use the address entered here to sign in, update information, submit work, and receive competition updates.",
+      "memberEmailNotice": "Please enter the email addresses of your team members. These email addresses are used to sign in, submit work, update information, and receive competition updates.",
       "submitNote": "Review all names and email addresses carefully before submitting.",
       "sectionLabel": "Team registration form"
     },
