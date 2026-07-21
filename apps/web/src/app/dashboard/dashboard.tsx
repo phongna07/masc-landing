@@ -3,6 +3,7 @@
 import type { AppRouter } from "@masc-landing/api/routers/index";
 import { roundIds, type RoundId } from "@masc-landing/api/rounds";
 import { getEligibleBirthdateRange, isEligibleBirthdate, TEAM_SIZE, TEAMMATE_COUNT } from "@masc-landing/api/registration";
+import { containsEmoji } from "@masc-landing/api/registration-schema";
 import { Button } from "@masc-landing/ui/components/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@masc-landing/ui/components/card";
 import { Input } from "@masc-landing/ui/components/input";
@@ -215,13 +216,17 @@ function RegistrationForm({ session }: { session: Session }) {
     const required = (key: string, value: string) => {
       if (!value.trim()) next[key] = t("validation.required");
     };
+    const text = (key: string, value: string) => {
+      required(key, value);
+      if (containsEmoji(value)) next[key] = t("validation.emoji");
+    };
 
-    required("teamName", teamName);
-    required("captainFullName", captainFullName);
+    text("teamName", teamName);
+    text("captainFullName", captainFullName);
     required("captainEmail", captainEmail);
     required("captainBirthdate", captainBirthdate);
     required("captainPhone", captainPhone);
-    required("captainUniversityName", captainUniversityName);
+    text("captainUniversityName", captainUniversityName);
     const digits = captainPhone.replace(/\D/g, "");
     if (captainPhone && (!/^\+?[0-9\s()-]+$/.test(captainPhone) || digits.length < 8 || digits.length > 15)) {
       next.captainPhone = t("validation.phone");
@@ -237,10 +242,10 @@ function RegistrationForm({ session }: { session: Session }) {
     const emails = [normalizedCaptainEmail];
     teammates.forEach((member, index) => {
       const prefix = `teammates.${index}`;
-      required(`${prefix}.fullName`, member.fullName);
+      text(`${prefix}.fullName`, member.fullName);
       required(`${prefix}.email`, member.email);
       required(`${prefix}.birthdate`, member.birthdate);
-      required(`${prefix}.universityName`, member.universityName);
+      text(`${prefix}.universityName`, member.universityName);
       const email = member.email.trim().toLowerCase();
       if (member.email) {
         if (!emailPattern.test(email)) {

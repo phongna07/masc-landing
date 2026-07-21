@@ -267,6 +267,7 @@
       "gmailEmail": "Enter an email address ending in @gmail.com.",
       "birthdate": "Participant must be between 18 and 22 years old.",
       "phone": "Enter a valid phone number with 8–15 digits.",
+      "emoji": "Emojis are not allowed in this field.",
       "duplicateEmail": "Each team member must use a different email address."
     },
     "errors": {

@@ -2,7 +2,14 @@ import { z } from "zod";
 
 import { isEligibleBirthdate, isValidBirthdate, TEAMMATE_COUNT } from "./registration";
 
-const requiredText = (maximum: number) => z.string().trim().min(1).max(maximum);
+const emojiPattern = /(?:\p{Extended_Pictographic}|\p{Regional_Indicator}|[#*0-9]\uFE0F?\u20E3)/u;
+
+export const containsEmoji = (value: string) => emojiPattern.test(value);
+
+const requiredText = (maximum: number) =>
+  z.string().trim().min(1).max(maximum).refine((value) => !containsEmoji(value), {
+    message: "EMOJI_NOT_ALLOWED",
+  });
 const normalizedEmail = z.string().trim().toLowerCase().email().max(254);
 const gmailEmail = normalizedEmail.refine((email) => email.endsWith("@gmail.com"), {
   message: "GMAIL_EMAIL_REQUIRED",

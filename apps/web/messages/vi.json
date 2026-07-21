@@ -267,6 +267,7 @@
       "gmailEmail": "Vui lòng nhập địa chỉ email có đuôi @gmail.com.",
       "birthdate": "Thí sinh phải từ 18 đến 22 tuổi.",
       "phone": "Nhập số điện thoại hợp lệ gồm 8–15 chữ số.",
+      "emoji": "Không được sử dụng biểu tượng cảm xúc trong trường này.",
       "duplicateEmail": "Mỗi thành viên phải sử dụng một địa chỉ email khác nhau."
     },
     "errors": {
