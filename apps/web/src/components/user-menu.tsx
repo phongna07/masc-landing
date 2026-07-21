@@ -63,7 +63,10 @@ export default function UserMenu() {
         <DropdownMenuGroup>
           <DropdownMenuLabel>{t("account")}</DropdownMenuLabel>
           <DropdownMenuSeparator />
-          <DropdownMenuItem>{session.user.email}</DropdownMenuItem>
+          <p className="px-2 py-2 text-xs">{session.user.email}</p>
+          <DropdownMenuItem render={<Link href="/dashboard" />}>
+            {t("profile")}
+          </DropdownMenuItem>
           <DropdownMenuItem
             variant="destructive"
             onClick={() => {

@@ -618,6 +618,7 @@
   "UserMenu": {
     "signIn": "Đăng nhập",
     "account": "Tài khoản của tôi",
+    "profile": "Thông tin cá nhân",
     "signOut": "Đăng xuất"
   }
 }

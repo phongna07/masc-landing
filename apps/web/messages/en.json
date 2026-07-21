@@ -618,6 +618,7 @@
   "UserMenu": {
     "signIn": "Sign In",
     "account": "My Account",
+    "profile": "My Profile",
     "signOut": "Sign Out"
   }
 }
