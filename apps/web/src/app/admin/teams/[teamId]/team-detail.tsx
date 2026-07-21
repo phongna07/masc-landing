@@ -30,6 +30,8 @@ export default function TeamDetail({ teamId }: { teamId: string }) {
       await Promise.all([
         queryClient.invalidateQueries({ queryKey: trpc.admin.getTeam.queryKey({ teamId }) }),
         queryClient.invalidateQueries({ queryKey: trpc.admin.listTeams.queryKey() }),
+        queryClient.invalidateQueries({ queryKey: trpc.admin.getTeamStats.queryKey() }),
+        queryClient.invalidateQueries({ queryKey: trpc.admin.getMailStats.queryKey() }),
         ...mailFilters.map((status) => queryClient.invalidateQueries({
           queryKey: trpc.admin.listMail.queryKey({ status }),
         })),

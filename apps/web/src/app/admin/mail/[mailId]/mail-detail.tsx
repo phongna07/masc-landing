@@ -22,12 +22,16 @@ export default function MailDetail({ mailId }: { mailId: string }) {
     onSuccess: async () => {
       await Promise.all([
         queryClient.invalidateQueries({ queryKey: trpc.admin.getMail.queryKey({ mailId }) }),
+        queryClient.invalidateQueries({ queryKey: trpc.admin.getMailStats.queryKey() }),
         ...filters.map((status) => queryClient.invalidateQueries({ queryKey: trpc.admin.listMail.queryKey({ status }) })),
       ]);
       toast.success(t("mail.sendSuccess"));
     },
     onError: async () => {
-      await queryClient.invalidateQueries({ queryKey: trpc.admin.getMail.queryKey({ mailId }) });
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: trpc.admin.getMail.queryKey({ mailId }) }),
+        queryClient.invalidateQueries({ queryKey: trpc.admin.getMailStats.queryKey() }),
+      ]);
       toast.error(t("mail.sendError"));
     },
   }));

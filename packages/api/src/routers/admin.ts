@@ -88,11 +88,35 @@ export const adminRouter = router({
       role: adminRole ?? ("user" as const),
     }));
   }),
+  getUserStats: usersProcedure.query(async () => {
+    const [stats] = await db.select({ totalUsers: count() }).from(user);
+    return { totalUsers: Number(stats?.totalUsers ?? 0) };
+  }),
   listTeams: teamsProcedure.query(async () => db.select({ id: teams.id, name: teams.teamName,
     status: teams.registrationStatus, createdAt: teams.createdAt, captainName, captainEmail,
     captainPhone: teams.captainPhone, memberCount: count(members.id) }).from(teams)
     .leftJoin(members, eq(teams.id, members.teamId))
     .groupBy(teams.id).orderBy(desc(teams.createdAt), asc(teams.teamName))),
+  getTeamStats: teamsProcedure.query(async () => {
+    const [teamStatsRows, participantStatsRows] = await Promise.all([
+      db.select({
+        totalTeams: count(),
+        pendingTeams: sql<number>`count(*) filter (where ${teams.registrationStatus} = ${"pending"})`,
+        approvedTeams: sql<number>`count(*) filter (where ${teams.registrationStatus} = ${"approved"})`,
+        rejectedTeams: sql<number>`count(*) filter (where ${teams.registrationStatus} = ${"rejected"})`,
+      }).from(teams),
+      db.select({ totalParticipants: count() }).from(members),
+    ]);
+    const [teamStats] = teamStatsRows;
+    const [participantStats] = participantStatsRows;
+    return {
+      totalTeams: Number(teamStats?.totalTeams ?? 0),
+      totalParticipants: Number(participantStats?.totalParticipants ?? 0),
+      pendingTeams: Number(teamStats?.pendingTeams ?? 0),
+      approvedTeams: Number(teamStats?.approvedTeams ?? 0),
+      rejectedTeams: Number(teamStats?.rejectedTeams ?? 0),
+    };
+  }),
   getTeam: teamsProcedure.input(z.object({ teamId: z.string().trim().min(1).max(128) })).query(async ({ input }) => {
     const [team] = await db.select({ id: teams.id, name: teams.teamName, status: teams.registrationStatus,
       createdAt: teams.createdAt, captainName, captainEmail, captainPhone: teams.captainPhone })
@@ -184,6 +208,20 @@ export const adminRouter = router({
       .from(emailQueue).innerJoin(teams, eq(emailQueue.teamId, teams.id))
       .innerJoin(members, eq(emailQueue.memberId, members.id)).where(where)
       .orderBy(sql`case ${emailQueue.status} when 'pending' then 0 when 'failed' then 1 else 2 end`, desc(emailQueue.createdAt));
+  }),
+  getMailStats: mailProcedure.query(async () => {
+    const [stats] = await db.select({
+      totalMails: count(),
+      pendingMails: sql<number>`count(*) filter (where ${emailQueue.status} = ${"pending"})`,
+      sentMails: sql<number>`count(*) filter (where ${emailQueue.status} = ${"sent"})`,
+      failedMails: sql<number>`count(*) filter (where ${emailQueue.status} = ${"failed"})`,
+    }).from(emailQueue);
+    return {
+      totalMails: Number(stats?.totalMails ?? 0),
+      pendingMails: Number(stats?.pendingMails ?? 0),
+      sentMails: Number(stats?.sentMails ?? 0),
+      failedMails: Number(stats?.failedMails ?? 0),
+    };
   }),
   getMail: mailProcedure.input(z.object({ mailId: z.string().trim().min(1).max(128) })).query(async ({ input }) => {
     const [mail] = await db.select({ id: emailQueue.id, fromAddress: emailQueue.fromAddress,

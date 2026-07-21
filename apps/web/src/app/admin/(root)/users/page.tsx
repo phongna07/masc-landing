@@ -5,15 +5,19 @@ import { useQuery } from "@tanstack/react-query";
 import { useLocale, useTranslations } from "next-intl";
 
 import { trpc } from "@/utils/trpc";
-import { AdminEmpty, AdminError, AdminHeading, AdminLoading, formatDate } from "../../admin-state";
+import { AdminEmpty, AdminError, AdminHeading, AdminLoading, AdminMetrics, formatDate } from "../../admin-state";
 
 export default function AdminUsersPage() {
   const t = useTranslations("Admin");
   const locale = useLocale();
   const users = useQuery(trpc.admin.listUsers.queryOptions());
+  const stats = useQuery(trpc.admin.getUserStats.queryOptions());
 
   return <>
     <AdminHeading eyebrow={t("eyebrow")} title={t("users.title")} description={t("users.description")} />
+    <AdminMetrics label={t("stats.label")} isPending={stats.isPending} isError={stats.isError}
+      errorLabel={t("stats.error")} retry={() => stats.refetch()} retryLabel={t("actions.retry")} locale={locale}
+      metrics={[{ label: t("stats.totalUsers"), value: stats.data?.totalUsers }]} />
     {users.isPending ? <AdminLoading /> : users.isError ? (
       <AdminError title={t("errors.loadTitle")} description={t("errors.users")} retry={() => users.refetch()} retryLabel={t("actions.retry")} />
     ) : users.data.length === 0 ? (

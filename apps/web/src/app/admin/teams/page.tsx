@@ -8,15 +8,25 @@ import Link from "next/link";
 import { useLocale, useTranslations } from "next-intl";
 
 import { trpc } from "@/utils/trpc";
-import { AdminEmpty, AdminError, AdminHeading, AdminLoading, formatDate } from "../admin-state";
+import { AdminEmpty, AdminError, AdminHeading, AdminLoading, AdminMetrics, formatDate } from "../admin-state";
 
 export default function AdminTeamsPage() {
   const t = useTranslations("Admin");
   const locale = useLocale();
   const teams = useQuery(trpc.admin.listTeams.queryOptions());
+  const stats = useQuery(trpc.admin.getTeamStats.queryOptions());
 
   return <>
     <AdminHeading eyebrow={t("eyebrow")} title={t("teams.title")} description={t("teams.description")} />
+    <AdminMetrics label={t("stats.label")} isPending={stats.isPending} isError={stats.isError}
+      errorLabel={t("stats.error")} retry={() => stats.refetch()} retryLabel={t("actions.retry")} locale={locale}
+      metrics={[
+        { label: t("stats.totalTeams"), value: stats.data?.totalTeams },
+        { label: t("stats.totalParticipants"), value: stats.data?.totalParticipants },
+        { label: t("stats.pendingTeams"), value: stats.data?.pendingTeams },
+        { label: t("stats.approvedTeams"), value: stats.data?.approvedTeams },
+        { label: t("stats.rejectedTeams"), value: stats.data?.rejectedTeams },
+      ]} />
     {teams.isPending ? <AdminLoading /> : teams.isError ? (
       <AdminError title={t("errors.loadTitle")} description={t("errors.teams")} retry={() => teams.refetch()} retryLabel={t("actions.retry")} />
     ) : teams.data.length === 0 ? (

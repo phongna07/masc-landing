@@ -10,7 +10,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 
 import { trpc } from "@/utils/trpc";
-import { AdminEmpty, AdminError, AdminHeading, AdminLoading, formatDate } from "../admin-state";
+import { AdminEmpty, AdminError, AdminHeading, AdminLoading, AdminMetrics, formatDate } from "../admin-state";
 
 const filters = ["pending", "failed", "sent", "all"] as const;
 type MailFilter = (typeof filters)[number];
@@ -21,22 +21,35 @@ export default function AdminMailPage() {
   const queryClient = useQueryClient();
   const [status, setStatus] = useState<MailFilter>("pending");
   const mail = useQuery(trpc.admin.listMail.queryOptions({ status }));
+  const stats = useQuery(trpc.admin.getMailStats.queryOptions());
   const sendMail = useMutation(trpc.admin.sendMail.mutationOptions({
     onSuccess: async (_, input) => {
       await Promise.all(filters.map((filter) => queryClient.invalidateQueries({
         queryKey: trpc.admin.listMail.queryKey({ status: filter }),
       })));
       await queryClient.invalidateQueries({ queryKey: trpc.admin.getMail.queryKey({ mailId: input.mailId }) });
+      await queryClient.invalidateQueries({ queryKey: trpc.admin.getMailStats.queryKey() });
       toast.success(t("mail.sendSuccess"));
     },
     onError: async () => {
-      await queryClient.invalidateQueries({ queryKey: trpc.admin.listMail.queryKey({ status }) });
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: trpc.admin.listMail.queryKey({ status }) }),
+        queryClient.invalidateQueries({ queryKey: trpc.admin.getMailStats.queryKey() }),
+      ]);
       toast.error(t("mail.sendError"));
     },
   }));
 
   return <>
     <AdminHeading eyebrow={t("eyebrow")} title={t("mail.title")} description={t("mail.description")} />
+    <AdminMetrics label={t("stats.label")} isPending={stats.isPending} isError={stats.isError}
+      errorLabel={t("stats.error")} retry={() => stats.refetch()} retryLabel={t("actions.retry")} locale={locale}
+      metrics={[
+        { label: t("stats.totalMails"), value: stats.data?.totalMails },
+        { label: t("stats.pendingMails"), value: stats.data?.pendingMails },
+        { label: t("stats.sentMails"), value: stats.data?.sentMails },
+        { label: t("stats.failedMails"), value: stats.data?.failedMails },
+      ]} />
     <div className="mail-filters" role="group" aria-label={t("mail.filterLabel")}>
       {filters.map((filter) => <Button key={filter} type="button" variant={status === filter ? "default" : "outline"}
         onClick={() => setStatus(filter)}>{t(`mail.filters.${filter}`)}</Button>)}

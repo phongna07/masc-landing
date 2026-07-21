@@ -387,6 +387,20 @@
       "mail": "Mail",
       "round": "Round {round}"
     },
+    "stats": {
+      "label": "Summary statistics",
+      "error": "Summary statistics could not be loaded.",
+      "totalTeams": "Total teams",
+      "totalParticipants": "Total participants",
+      "pendingTeams": "Pending teams",
+      "approvedTeams": "Approved teams",
+      "rejectedTeams": "Rejected teams",
+      "totalUsers": "Total users",
+      "totalMails": "Total mail",
+      "pendingMails": "Pending mail",
+      "sentMails": "Sent mail",
+      "failedMails": "Failed mail"
+    },
     "overview": {
       "title": "Overview",
       "description": "Control round submission availability and which round tabs participants can see.",

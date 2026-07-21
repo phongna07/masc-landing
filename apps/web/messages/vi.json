@@ -387,6 +387,20 @@
       "mail": "Thư",
       "round": "Vòng {round}"
     },
+    "stats": {
+      "label": "Thống kê tổng quan",
+      "error": "Không thể tải thống kê tổng quan.",
+      "totalTeams": "Tổng số đội",
+      "totalParticipants": "Tổng số thí sinh",
+      "pendingTeams": "Đội đang chờ",
+      "approvedTeams": "Đội đã phê duyệt",
+      "rejectedTeams": "Đội bị từ chối",
+      "totalUsers": "Tổng số người dùng",
+      "totalMails": "Tổng số thư",
+      "pendingMails": "Thư đang chờ",
+      "sentMails": "Thư đã gửi",
+      "failedMails": "Thư thất bại"
+    },
     "overview": {
       "title": "Tổng quan",
       "description": "Kiểm soát trạng thái nộp bài và các tab vòng thi mà thí sinh có thể nhìn thấy.",
