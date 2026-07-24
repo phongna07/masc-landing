@@ -22,6 +22,14 @@ export const registrationStatus = pgEnum("registration_status", [
   "rejected",
 ]);
 
+export const registrationAwarenessSource = pgEnum("registration_awareness_source", [
+  "masc_fanpage",
+  "masc_community_group",
+  "other_facebook_group",
+  "other_organization_fanpage",
+  "media_ambassador",
+]);
+
 export const teams = pgTable(
   "teams",
   {
@@ -39,6 +47,8 @@ export const teams = pgTable(
       .references(() => user.id, { onDelete: "restrict" })
       .unique(),
     captainPhone: text("captain_phone").notNull(),
+    awarenessSource: registrationAwarenessSource("awareness_source"),
+    awarenessSourceDetail: text("awareness_source_detail"),
   },
   (table) => [index("teams_registration_status_idx").on(table.registrationStatus)],
 );

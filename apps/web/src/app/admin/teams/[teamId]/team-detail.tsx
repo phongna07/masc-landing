@@ -52,6 +52,9 @@ export default function TeamDetail({ teamId }: { teamId: string }) {
     if (team.error.data?.code === "NOT_FOUND") return <AdminEmpty title={t("detail.notFoundTitle")} description={t("detail.notFoundDescription")} />;
     return <AdminError title={t("errors.loadTitle")} description={t("errors.detail")} retry={() => team.refetch()} retryLabel={t("actions.retry")} />;
   }
+  const awarenessSource = team.data.awarenessSource
+    ? `${t(`values.awarenessSource.${team.data.awarenessSource}`)}${team.data.awarenessSourceDetail ? ` — ${team.data.awarenessSourceDetail}` : ""}`
+    : t("values.notProvided");
 
   return <>
     <Link className="admin-back-link" href="/admin/teams"><ArrowLeftIcon aria-hidden="true" />{t("actions.backToTeams")}</Link>
@@ -63,6 +66,7 @@ export default function TeamDetail({ teamId }: { teamId: string }) {
       <Card className="dashboard-card"><CardHeader><CardTitle>{t("detail.registration")}</CardTitle></CardHeader><CardContent className="detail-list">
         <Detail label={t("fields.created")} value={formatDate(team.data.createdAt, locale)} />
         <Detail label={t("fields.members")} value={t("values.memberCount", { count: team.data.members.length, required: TEAM_SIZE })} />
+        <Detail label={t("fields.awarenessSource")} value={awarenessSource} />
         <div className="admin-status-editor">
           <span className="admin-status-label">{t("fields.status")}</span>
           <div className="admin-status-editor-controls">

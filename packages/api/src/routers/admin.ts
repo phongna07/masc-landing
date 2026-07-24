@@ -94,7 +94,8 @@ export const adminRouter = router({
   }),
   listTeams: teamsProcedure.query(async () => db.select({ id: teams.id, name: teams.teamName,
     status: teams.registrationStatus, createdAt: teams.createdAt, captainName, captainEmail,
-    captainPhone: teams.captainPhone, memberCount: count(members.id) }).from(teams)
+    captainPhone: teams.captainPhone, awarenessSource: teams.awarenessSource,
+    awarenessSourceDetail: teams.awarenessSourceDetail, memberCount: count(members.id) }).from(teams)
     .leftJoin(members, eq(teams.id, members.teamId))
     .groupBy(teams.id).orderBy(desc(teams.createdAt), asc(teams.teamName))),
   getTeamStats: teamsProcedure.query(async () => {
@@ -119,7 +120,8 @@ export const adminRouter = router({
   }),
   getTeam: teamsProcedure.input(z.object({ teamId: z.string().trim().min(1).max(128) })).query(async ({ input }) => {
     const [team] = await db.select({ id: teams.id, name: teams.teamName, status: teams.registrationStatus,
-      createdAt: teams.createdAt, captainName, captainEmail, captainPhone: teams.captainPhone })
+      createdAt: teams.createdAt, captainName, captainEmail, captainPhone: teams.captainPhone,
+      awarenessSource: teams.awarenessSource, awarenessSourceDetail: teams.awarenessSourceDetail })
       .from(teams).where(eq(teams.id, input.teamId)).limit(1);
     if (!team) throw new TRPCError({ code: "NOT_FOUND", message: "Team not found" });
     const roster = await db.select({ id: members.id, fullName: members.fullName, email: members.email,

@@ -3,7 +3,12 @@
 import type { AppRouter } from "@masc-landing/api/routers/index";
 import { roundIds, type RoundId } from "@masc-landing/api/rounds";
 import { getEligibleBirthdateRange, isEligibleBirthdate, TEAM_SIZE, TEAMMATE_COUNT } from "@masc-landing/api/registration";
-import { containsEmoji } from "@masc-landing/api/registration-schema";
+import {
+  awarenessSources,
+  awarenessSourcesRequiringDetail,
+  type AwarenessSource,
+  containsEmoji,
+} from "@masc-landing/api/registration-schema";
 import { Button } from "@masc-landing/ui/components/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@masc-landing/ui/components/card";
 import { Input } from "@masc-landing/ui/components/input";
@@ -189,6 +194,8 @@ function RegistrationForm({ session }: { session: Session }) {
   const [captainBirthdate, setCaptainBirthdate] = useState("");
   const [captainPhone, setCaptainPhone] = useState("");
   const [captainUniversityName, setCaptainUniversityName] = useState("");
+  const [awarenessSource, setAwarenessSource] = useState<AwarenessSource | "">("");
+  const [awarenessSourceDetail, setAwarenessSourceDetail] = useState("");
   const [teammates, setTeammates] = useState<Teammate[]>(
     Array.from({ length: TEAMMATE_COUNT }, (_, index) => emptyTeammate(`member-${index + 1}`)),
   );
@@ -204,6 +211,19 @@ function RegistrationForm({ session }: { session: Session }) {
     }),
   );
   const isSubmitting = createTeam.isPending;
+  const awarenessDetailRequired = awarenessSource !== "" &&
+    awarenessSourcesRequiringDetail.includes(awarenessSource);
+
+  const selectAwarenessSource = (source: AwarenessSource) => {
+    setAwarenessSource(source);
+    if (!awarenessSourcesRequiringDetail.includes(source)) {
+      setAwarenessSourceDetail("");
+    }
+    setErrors((current) => {
+      const { awarenessSource: _sourceError, awarenessSourceDetail: _detailError, ...remaining } = current;
+      return remaining;
+    });
+  };
 
   const updateTeammate = <FieldName extends keyof Omit<Teammate, "id">>(id: string, field: FieldName, value: Teammate[FieldName]) => {
     setTeammates((current) =>
@@ -227,6 +247,13 @@ function RegistrationForm({ session }: { session: Session }) {
     required("captainBirthdate", captainBirthdate);
     required("captainPhone", captainPhone);
     text("captainUniversityName", captainUniversityName);
+    if (!awarenessSource) next.awarenessSource = t("validation.required");
+    if (awarenessDetailRequired) {
+      text("awarenessSourceDetail", awarenessSourceDetail);
+      if (awarenessSourceDetail.length > 200) {
+        next.awarenessSourceDetail = t("validation.maxCharacters", { count: 200 });
+      }
+    }
     const digits = captainPhone.replace(/\D/g, "");
     if (captainPhone && (!/^\+?[0-9\s()-]+$/.test(captainPhone) || digits.length < 8 || digits.length > 15)) {
       next.captainPhone = t("validation.phone");
@@ -277,6 +304,8 @@ function RegistrationForm({ session }: { session: Session }) {
       captainBirthdate,
       captainPhone,
       captainUniversityName,
+      awarenessSource: awarenessSource as AwarenessSource,
+      awarenessSourceDetail: awarenessDetailRequired ? awarenessSourceDetail : undefined,
       teammates: teammates.map(({ id: _id, ...member }) => member),
     });
   };
@@ -368,6 +397,43 @@ function RegistrationForm({ session }: { session: Session }) {
               </div>
             </section>
           ))}
+        </CardContent>
+      </Card>
+
+      <Card className="dashboard-card">
+        <CardHeader>
+          <p className="dashboard-card-index">05 / {t("registration.awareness.section")}</p>
+          <CardTitle>{t("registration.awareness.title")}</CardTitle>
+          {/* <p>{t("registration.awareness.description")}</p> */}
+        </CardHeader>
+        <CardContent>
+          <fieldset className="awareness-fieldset" aria-invalid={!!errors.awarenessSource}
+            aria-describedby={errors.awarenessSource ? "awareness-source-error" : undefined}>
+            <legend className="sr-only">{t("registration.awareness.title")}</legend>
+            <div className="awareness-options">
+              {awarenessSources.map((source) => (
+                <label className="awareness-option" key={source}>
+                  <input type="radio" name="awarenessSource" value={source}
+                    checked={awarenessSource === source}
+                    onChange={() => selectAwarenessSource(source)} />
+                  <span>{t(`registration.awareness.options.${source}`)}</span>
+                </label>
+              ))}
+            </div>
+            {errors.awarenessSource &&
+              <span className="field-error" id="awareness-source-error">{errors.awarenessSource}</span>}
+          </fieldset>
+          {awarenessDetailRequired && (
+            <div className="awareness-detail">
+              <Field label={t(`registration.awareness.detailLabels.${awarenessSource}`)}
+                error={errors.awarenessSourceDetail}>
+                <Input value={awarenessSourceDetail} maxLength={200}
+                  placeholder={t(`registration.awareness.detailPlaceholders.${awarenessSource}`)}
+                  onChange={(event) => setAwarenessSourceDetail(event.target.value)}
+                  aria-invalid={!!errors.awarenessSourceDetail} />
+              </Field>
+            </div>
+          )}
         </CardContent>
       </Card>
 

@@ -244,6 +244,28 @@
       "memberCount": "{count} of 3 team members",
       "memberNumber": "Member {number}",
       "memberEmailNotice": "Please enter the email addresses of your team members. These email addresses are used to sign in, submit work, update information, and receive competition updates.",
+      "awareness": {
+        "section": "About the competition",
+        "title": "How did you hear about the competition?",
+        "description": "Select the source that introduced you to MASC.",
+        "options": {
+          "masc_fanpage": "MASC Fanpage",
+          "masc_community_group": "MASC Community Group",
+          "other_facebook_group": "Another Facebook group",
+          "other_organization_fanpage": "Another organization or club's fanpage",
+          "media_ambassador": "Media ambassador"
+        },
+        "detailLabels": {
+          "other_facebook_group": "Facebook group name",
+          "other_organization_fanpage": "Organization, club, or fanpage name",
+          "media_ambassador": "Media ambassador name"
+        },
+        "detailPlaceholders": {
+          "other_facebook_group": "Enter the Facebook group name",
+          "other_organization_fanpage": "Enter the organization, club, or fanpage name",
+          "media_ambassador": "Enter the media ambassador's name"
+        }
+      },
       "submitNote": "Review all names and email addresses carefully before submitting.",
       "sectionLabel": "Team registration form"
     },
@@ -268,6 +290,7 @@
       "birthdate": "Participant must be between 18 and 22 years old.",
       "phone": "Enter a valid phone number with 8–15 digits.",
       "emoji": "Emojis are not allowed in this field.",
+      "maxCharacters": "Enter no more than {count} characters.",
       "duplicateEmail": "Each team member must use a different email address."
     },
     "errors": {
@@ -589,13 +612,22 @@
       "submitted": "Last submitted",
       "originalSubmission": "First submitted",
       "fileType": "File type",
-      "description": "Description"
+      "description": "Description",
+      "awarenessSource": "How they heard about MASC"
     },
     "values": {
       "verified": "Verified",
       "unverified": "Unverified",
+      "notProvided": "Not provided",
       "captain": "Captain",
       "memberCount": "{count} / {required}",
+      "awarenessSource": {
+        "masc_fanpage": "MASC Fanpage",
+        "masc_community_group": "MASC Community Group",
+        "other_facebook_group": "Another Facebook group",
+        "other_organization_fanpage": "Another organization or club's fanpage",
+        "media_ambassador": "Media ambassador"
+      },
       "status": {
         "pending": "Pending review",
         "approved": "Approved",

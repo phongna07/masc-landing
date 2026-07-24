@@ -4,7 +4,7 @@ import { TRPCError } from "@trpc/server";
 import { and, eq, inArray, or, sql } from "drizzle-orm";
 
 import { freshProtectedProcedure, protectedProcedure, router } from "../index";
-import { createTeamInputSchema } from "../registration-schema";
+import { awarenessSourcesRequiringDetail, createTeamInputSchema } from "../registration-schema";
 
 export { createTeamInputSchema } from "../registration-schema";
 
@@ -111,6 +111,10 @@ export const registrationRouter = router({
           teamName: input.teamName,
           captainId: ctx.session.user.id,
           captainPhone: input.captainPhone,
+          awarenessSource: input.awarenessSource,
+          awarenessSourceDetail: awarenessSourcesRequiringDetail.includes(input.awarenessSource)
+            ? input.awarenessSourceDetail
+            : null,
         }),
         db.insert(members).values(roster),
       ]);
