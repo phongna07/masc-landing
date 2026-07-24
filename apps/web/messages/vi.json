@@ -252,18 +252,18 @@
           "masc_fanpage": "Fanpage MASC",
           "masc_community_group": "Group Community MASC",
           "other_facebook_group": "Group Facebook khác",
-          "other_organization_fanpage": "Fanpage của các tổ chức/ CLB khác",
+          "other_organization_fanpage": "Fanpage của các Tổ chức/ CLB khác",
           "media_ambassador": "Đại sứ Truyền thông"
         },
         "detailLabels": {
           "other_facebook_group": "Tên Group Facebook",
-          "other_organization_fanpage": "Tên tổ chức, CLB hoặc Fanpage",
-          "media_ambassador": "Tên đại sứ Truyền thông"
+          "other_organization_fanpage": "Tên Fanpage của các Tổ chức/ CLB",
+          "media_ambassador": "Tên Đại sứ Truyền thông"
         },
         "detailPlaceholders": {
           "other_facebook_group": "Nhập tên Group Facebook",
-          "other_organization_fanpage": "Nhập tên tổ chức, CLB hoặc Fanpage",
-          "media_ambassador": "Nhập tên đại sứ Truyền thông"
+          "other_organization_fanpage": "Nhập tên Fanpage của các Tổ chức/ CLB",
+          "media_ambassador": "Nhập tên Đại sứ Truyền thông"
         }
       },
       "submitNote": "Vui lòng kiểm tra lại các thông tin trước khi hoàn tất đăng ký.",
@@ -625,7 +625,7 @@
         "masc_fanpage": "Fanpage MASC",
         "masc_community_group": "Group Community MASC",
         "other_facebook_group": "Group Facebook khác",
-        "other_organization_fanpage": "Fanpage của các tổ chức/ CLB khác",
+        "other_organization_fanpage": "Fanpage của các Tổ chức/ CLB khác",
         "media_ambassador": "Đại sứ Truyền thông"
       },
       "status": {

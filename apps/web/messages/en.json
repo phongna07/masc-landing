@@ -257,12 +257,12 @@
         },
         "detailLabels": {
           "other_facebook_group": "Facebook group name",
-          "other_organization_fanpage": "Organization, club, or fanpage name",
+          "other_organization_fanpage": "Fanpage name of organization or club",
           "media_ambassador": "Media ambassador name"
         },
         "detailPlaceholders": {
           "other_facebook_group": "Enter the Facebook group name",
-          "other_organization_fanpage": "Enter the organization, club, or fanpage name",
+          "other_organization_fanpage": "Enter the Fanpage name of organization or club",
           "media_ambassador": "Enter the media ambassador's name"
         }
       },
