@@ -226,8 +226,40 @@
   },
   "Dashboard": {
     "eyebrow": "Competition portal",
-    "title": "Dashboard",
+    "title": "Competition rounds",
     "welcome": "Welcome {name}",
+    "hub": {
+      "roundTitle": "Round {round}",
+      "apply": "Apply to Round {round}",
+      "go": "Go to Round {round} dashboard",
+      "open": "Applications open",
+      "closed": "Applications closed",
+      "notEligible": "Not eligible yet",
+      "registered": "Registered as {team}",
+      "registeredTeam": "Registered team",
+      "back": "Back to rounds",
+      "closedDescription": "The organizers are not accepting applications for this round right now.",
+      "eligibilityDescription": "Round {round} is available only after an administrator promotes an eligible team.",
+      "roundOneAlternative": "Round 1 uses a separate CV-screening application. You can apply here even if your team already entered Round 0.5.",
+      "dashboardUnavailable": "This round dashboard is currently hidden by the organizers. Your registration remains recorded.",
+      "emptyTitle": "No rounds are available right now",
+      "emptyDescription": "Your registered rounds and any open application routes will appear here when they become available.",
+      "announcementsTitle": "Competition updates",
+      "announcementsDescription": "Check deadlines, instructions, results, and updates from the organizers.",
+      "announcementsAction": "View announcements",
+      "names": {
+        "0_5": "The Ignition",
+        "1": "The Star Gathering",
+        "2": "The Stellar Forge",
+        "3": "The Cosmic Blast"
+      },
+      "description": {
+        "0_5": "Create a team and begin your MASC journey.",
+        "1": "Apply with a CV for each of the three team members.",
+        "2": "Eligible teams are promoted by the organizers.",
+        "3": "Eligible Round 2 teams are promoted by the organizers."
+      }
+    },
     "nav": {
       "homeLabel": "MASC 2026 - return home"
     },
@@ -244,6 +276,17 @@
       "memberCount": "{count} of 3 team members",
       "memberNumber": "Member {number}",
       "memberEmailNotice": "Please enter the email addresses of your team members. These email addresses are used to sign in, submit work, update information, and receive competition updates.",
+      "cv": {
+        "section": "CV screening",
+        "title": "Member CVs",
+        "description": "Upload one PDF CV for each team member. Each file can be up to 10 MB.",
+        "memberLabel": "CV for {name}",
+        "fileType": "Choose a PDF file.",
+        "fileSize": "The file must be no larger than 10 MB.",
+        "uploadError": "The CV files could not be uploaded. Check the files and try again.",
+        "download": "Download CV",
+        "downloadError": "The CV could not be downloaded."
+      },
       "awareness": {
         "section": "About the competition",
         "title": "How did you hear about the competition?",
@@ -385,7 +428,14 @@
       "teamSize": "Team size",
       "people": "{count, plural, one {# person} other {# people}}",
       "captainContact": "Captain contact",
-      "roster": "Team roster"
+      "roster": "Team roster",
+      "admissionMethod": "Admission method",
+      "admissionMethods": {
+        "direct": "Direct application",
+        "cv_screening": "CV screening",
+        "round_0_5_promotion": "Promoted from Round 0.5",
+        "promotion": "Promoted by the organizers"
+      }
     }
   },
   "Admin": {
@@ -427,6 +477,14 @@
     "overview": {
       "title": "Overview",
       "description": "Control round submission availability and which round tabs participants can see.",
+      "admissionSectionTitle": "Application availability",
+      "admissionSectionDescription": "Open or close direct applications independently from round visibility and submissions.",
+      "admissionRoundDescription": "Allow direct applications to Round {round}.",
+      "openAdmission": "Open applications",
+      "closeAdmission": "Close applications",
+      "admissionSuccess": "Application availability updated.",
+      "admissionError": "Could not update application availability.",
+      "admissionLoadError": "Could not load application availability.",
       "submissionSectionTitle": "Submission availability",
       "submissionSectionDescription": "Control when team members can create or replace round submissions.",
       "open": "Open",
@@ -490,6 +548,33 @@
     "teams": {
       "title": "Teams",
       "description": "Review submitted teams, captains, and registration status.",
+      "roundHubDescription": "Review admissions independently for each competition round.",
+      "roundTitle": "Round {round} teams",
+      "roundDescription": "Review registrations, decisions, and advancement for Round {round}.",
+      "openRound": "Open Round {round} admissions",
+      "backToRounds": "Back to admission rounds",
+      "selectAll": "Select all approved teams",
+      "selectTeam": "Select {team}",
+      "statusFilter": "Filter teams by status",
+      "filterAll": "All statuses",
+      "promoteSelected": "Promote {count} to Round {round}",
+      "promoteTo": "Promote to Round {round}",
+      "confirmPromotion": "Promote {count} selected team(s) to Round {round}?",
+      "promotionResult": "Promotion finished: {succeeded} succeeded, {failed} failed.",
+      "promotionSuccess": "Team promoted successfully.",
+      "promotionError": "The team could not be promoted. Check eligibility and target-round conflicts.",
+      "promotionConflicts": "Conflicting member emails: {emails}",
+      "admissionMethod": "Admission method",
+      "admissionMethods": {
+        "direct": "Direct application",
+        "cv_screening": "CV screening",
+        "round_0_5_promotion": "Promoted from Round 0.5",
+        "promotion": "Promotion"
+      },
+      "cv": "CV",
+      "previewCv": "Preview",
+      "downloadCv": "Download",
+      "cvError": "The CV could not be opened.",
       "emptyTitle": "No teams found",
       "emptyDescription": "Submitted team registrations will appear here.",
       "statusUpdating": "Updating…",

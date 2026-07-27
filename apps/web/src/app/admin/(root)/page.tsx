@@ -15,6 +15,7 @@ export default function AdminPage() {
 	const t = useTranslations("Admin");
 	const settings = useQuery(trpc.admin.getSubmissionSettings.queryOptions());
 	const tabSettings = useQuery(trpc.admin.getDashboardTabSettings.queryOptions());
+	const admissionSettings = useQuery(trpc.admin.getAdmissionSettings.queryOptions());
 	const update = useMutation(trpc.admin.setRoundSubmissionOpen.mutationOptions({
 		onSuccess: async (data) => {
 			settings.refetch();
@@ -31,9 +32,25 @@ export default function AdminPage() {
 		},
 		onError: () => toast.error(t("overview.tabError")),
 	}));
+	const updateAdmission = useMutation(trpc.admin.setRoundAdmissionOpen.mutationOptions({
+		onSuccess: async () => { await admissionSettings.refetch(); toast.success(t("overview.admissionSuccess")); },
+		onError: () => toast.error(t("overview.admissionError")),
+	}));
 
 	return <>
 		<AdminHeading eyebrow={t("eyebrow")} title={t("overview.title")} description={t("overview.description")} />
+		<section className="admin-setting-section" aria-labelledby="admission-settings-title">
+			<div className="admin-setting-section-heading"><h2 id="admission-settings-title">{t("overview.admissionSectionTitle")}</h2>
+				<p>{t("overview.admissionSectionDescription")}</p></div>
+			{admissionSettings.isPending ? <AdminLoading /> : admissionSettings.isError ?
+				<AdminError title={t("errors.loadTitle")} description={t("overview.admissionLoadError")} retry={() => admissionSettings.refetch()} retryLabel={t("actions.retry")} /> :
+				<div className="admin-round-settings">{(["0.5", "1"] as const).map((round) => { const isOpen = admissionSettings.data[round]; return <Card className="admin-round-setting" key={round}>
+					<CardHeader><div><CardTitle>{t("overview.roundTitle", { round })}</CardTitle><p>{t("overview.admissionRoundDescription", { round })}</p></div>
+						<span className={isOpen ? "is-open" : "is-closed"}>{t(isOpen ? "overview.open" : "overview.closed")}</span></CardHeader>
+					<CardContent><Button role="switch" aria-checked={isOpen} disabled={updateAdmission.isPending}
+						onClick={() => updateAdmission.mutate({ round, isOpen: !isOpen })}>{t(isOpen ? "overview.closeAdmission" : "overview.openAdmission")}</Button></CardContent>
+				</Card>; })}</div>}
+		</section>
 		<section className="admin-setting-section" aria-labelledby="submission-settings-title">
 			<div className="admin-setting-section-heading">
 				<h2 id="submission-settings-title">{t("overview.submissionSectionTitle")}</h2>

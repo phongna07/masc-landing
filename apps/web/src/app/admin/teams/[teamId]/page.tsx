@@ -1,6 +1,6 @@
-import TeamDetail from "./team-detail";
+import { redirect } from "next/navigation";
 
-export default async function AdminTeamDetailPage({ params }: { params: Promise<{ teamId: string }> }) {
+export default async function LegacyTeamDetailPage({ params }: { params: Promise<{ teamId: string }> }) {
   const { teamId } = await params;
-  return <TeamDetail teamId={teamId} />;
+  redirect(`/admin/teams/round-0.5/${teamId}`);
 }

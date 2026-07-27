@@ -1,0 +1,70 @@
+"use client";
+
+import type { RoundId } from "@masc-landing/api/rounds";
+import { TEAM_SIZE } from "@masc-landing/api/registration";
+import { Button } from "@masc-landing/ui/components/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@masc-landing/ui/components/card";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { ArrowLeftIcon, CheckIcon, DownloadIcon, EyeIcon, XIcon } from "lucide-react";
+import Link from "next/link";
+import { useLocale, useTranslations } from "next-intl";
+import { toast } from "sonner";
+
+import { queryClient, trpc } from "@/utils/trpc";
+import { AdminEmpty, AdminError, AdminLoading, formatBirthdate, formatDate } from "../admin-state";
+
+const targets: Record<RoundId, RoundId[]> = { "0.5": ["1", "2"], "1": ["2"], "2": ["3"], "3": [] };
+
+export default function RoundTeamDetail({ round, teamId }: { round: RoundId; teamId: string }) {
+  const t = useTranslations("Admin"); const locale = useLocale();
+  const input = { round, teamId };
+  const team = useQuery(trpc.admin.getTeam.queryOptions(input));
+  const update = useMutation(trpc.admin.updateTeamStatus.mutationOptions({ onSuccess: async () => {
+    toast.success(t("teams.statusUpdateSuccess"));
+    await Promise.all([queryClient.invalidateQueries({ queryKey: trpc.admin.getTeam.queryKey(input) }),
+      queryClient.invalidateQueries({ queryKey: trpc.admin.listTeams.queryKey({ round }) }),
+      queryClient.invalidateQueries({ queryKey: trpc.admin.getTeamStats.queryKey({ round }) })]);
+  }, onError: () => toast.error(t("teams.statusUpdateError")) }));
+  const promote = useMutation(trpc.admin.promoteTeams.mutationOptions({ onSuccess: ({ results }) => {
+    const result = results[0]; toast[result?.success ? "success" : "error"](result?.success ? t("teams.promotionSuccess") : t("teams.promotionError"),
+      { description: result && !result.success && result.conflictingEmails.length ? t("teams.promotionConflicts", { emails: result.conflictingEmails.join(", ") }) : undefined });
+  }, onError: () => toast.error(t("teams.promotionError")) }));
+  const cvUrl = useMutation(trpc.admin.createTeamCvUrl.mutationOptions({ onSuccess: ({ url }) => window.open(url, "_blank", "noopener,noreferrer"),
+    onError: () => toast.error(t("teams.cvError")) }));
+  if (team.isPending) return <AdminLoading />;
+  if (team.isError) return team.error.data?.code === "NOT_FOUND" ? <AdminEmpty title={t("detail.notFoundTitle")} description={t("detail.notFoundDescription")} />
+    : <AdminError title={t("errors.loadTitle")} description={t("errors.detail")} retry={() => team.refetch()} retryLabel={t("actions.retry")} />;
+  const decide = (status: "approved" | "rejected") => {
+    if (window.confirm(t(`teams.confirmation.${status}.description`, { team: team.data.name }))) update.mutate({ ...input, status });
+  };
+  const runPromotion = (targetRound: RoundId) => {
+    if (!window.confirm(t("teams.confirmPromotion", { count: 1, round: targetRound }))) return;
+    if (round === "0.5" && (targetRound === "1" || targetRound === "2")) promote.mutate({ sourceRound: round, targetRound, teamIds: [teamId] });
+    else if (round === "1" && targetRound === "2") promote.mutate({ sourceRound: round, targetRound, teamIds: [teamId] });
+    else if (round === "2" && targetRound === "3") promote.mutate({ sourceRound: round, targetRound, teamIds: [teamId] });
+  };
+  return <><Link className="admin-back-link" href={`/admin/teams/round-${round}`}><ArrowLeftIcon />{t("actions.backToTeams")}</Link>
+    <div className="admin-detail-heading"><div><p>{t("teams.roundTitle", { round })}</p><h1>{team.data.name}</h1></div>
+      <span className={`status-badge status-${team.data.status}`}>{t(`values.status.${team.data.status}`)}</span></div>
+    <div className="admin-status-actions">
+      {team.data.status !== "approved" && <Button onClick={() => decide("approved")} disabled={update.isPending}><CheckIcon />{t("teams.approve")}</Button>}
+      {team.data.status !== "rejected" && <Button variant="destructive" onClick={() => decide("rejected")} disabled={update.isPending}><XIcon />{t("teams.reject")}</Button>}
+      {team.data.status === "approved" && targets[round].map((targetRound) => <Button variant="outline" key={targetRound} onClick={() => runPromotion(targetRound)} disabled={promote.isPending}>{t("teams.promoteTo", { round: targetRound })}</Button>)}
+    </div>
+    <div className="admin-detail-grid"><Card className="dashboard-card"><CardHeader><CardTitle>{t("detail.registration")}</CardTitle></CardHeader><CardContent className="detail-list">
+      <Detail label={t("fields.created")} value={formatDate(team.data.createdAt, locale)} /><Detail label={t("fields.members")} value={t("values.memberCount", { count: team.data.members.length, required: TEAM_SIZE })} />
+      <Detail label={t("teams.admissionMethod")} value={t(`teams.admissionMethods.${team.data.admissionMethod}`)} /></CardContent></Card>
+      <Card className="dashboard-card"><CardHeader><CardTitle>{t("detail.captainContact")}</CardTitle></CardHeader><CardContent className="detail-list">
+        <Detail label={t("fields.name")} value={team.data.captainName} /><Detail label={t("fields.email")} value={team.data.captainEmail} /><Detail label={t("fields.phone")} value={team.data.captainPhone} />
+      </CardContent></Card></div>
+    <Card className="admin-table-card"><CardHeader><CardTitle>{t("detail.roster")}</CardTitle></CardHeader><CardContent className="admin-table-scroll"><table className="admin-table">
+      <thead><tr><th>{t("fields.member")}</th><th>{t("fields.email")}</th><th>{t("fields.birthdate")}</th><th>{t("fields.university")}</th><th>{t("fields.role")}</th><th>{t("teams.cv")}</th></tr></thead>
+      <tbody>{team.data.members.map((member) => <tr key={member.id}><td><strong>{member.fullName}</strong></td><td>{member.email}</td><td>{formatBirthdate(member.birthdate, locale)}</td>
+        <td>{member.universityName}</td><td>{member.isCaptain && <span className="captain-tag">{t("values.captain")}</span>}</td><td>{member.cv && <div className="admin-status-actions">
+          <Button size="sm" variant="outline" onClick={() => cvUrl.mutate({ teamId, memberId: member.id, disposition: "inline" })}><EyeIcon />{t("teams.previewCv")}</Button>
+          <Button size="sm" variant="outline" onClick={() => cvUrl.mutate({ teamId, memberId: member.id, disposition: "attachment" })}><DownloadIcon />{t("teams.downloadCv")}</Button></div>}</td></tr>)}</tbody>
+    </table></CardContent></Card>
+  </>;
+}
+
+function Detail({ label, value }: { label: string; value: string }) { return <div><dt>{label}</dt><dd>{value}</dd></div>; }

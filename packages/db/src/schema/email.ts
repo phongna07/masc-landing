@@ -1,7 +1,6 @@
-import { relations } from "drizzle-orm";
 import { index, integer, pgEnum, pgTable, text, timestamp, uniqueIndex } from "drizzle-orm/pg-core";
 
-import { members, teams } from "./registration";
+import { competitionRound } from "./registration";
 
 export const emailStatus = pgEnum("email_status", ["pending", "sent", "failed"]);
 
@@ -17,8 +16,11 @@ export const emailQueue = pgTable(
     html: text("html").notNull(),
     status: emailStatus("status").default("pending").notNull(),
     eventType: text("event_type").notNull(),
-    teamId: text("team_id").notNull().references(() => teams.id, { onDelete: "restrict" }),
-    memberId: text("member_id").notNull().references(() => members.id, { onDelete: "restrict" }),
+    round: competitionRound("round").default("0.5").notNull(),
+    teamId: text("team_id").notNull(),
+    memberId: text("member_id").notNull(),
+    teamName: text("team_name").notNull(),
+    memberName: text("member_name").notNull(),
     approvalSequence: integer("approval_sequence").notNull(),
     attemptCount: integer("attempt_count").default(0).notNull(),
     lastAttemptedAt: timestamp("last_attempted_at"),
@@ -31,14 +33,10 @@ export const emailQueue = pgTable(
     index("email_queue_status_created_at_idx").on(table.status, table.createdAt),
     index("email_queue_team_id_idx").on(table.teamId),
     uniqueIndex("email_queue_approval_unique_idx").on(
+      table.round,
       table.teamId,
       table.eventType,
       table.approvalSequence,
     ),
   ],
 );
-
-export const emailQueueRelations = relations(emailQueue, ({ one }) => ({
-  team: one(teams, { fields: [emailQueue.teamId], references: [teams.id] }),
-  member: one(members, { fields: [emailQueue.memberId], references: [members.id] }),
-}));

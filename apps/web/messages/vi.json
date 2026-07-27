@@ -226,8 +226,40 @@
   },
   "Dashboard": {
     "eyebrow": "Cổng thông tin",
-    "title": "Dashboard",
+    "title": "Các vòng thi",
     "welcome": "Chào mừng {name}",
+    "hub": {
+      "roundTitle": "Vòng {round}",
+      "apply": "Đăng ký Vòng {round}",
+      "go": "Đến dashboard Vòng {round}",
+      "open": "Đang nhận hồ sơ",
+      "closed": "Đã đóng đăng ký",
+      "notEligible": "Chưa đủ điều kiện",
+      "registered": "Đã đăng ký với đội {team}",
+      "registeredTeam": "Đội đã đăng ký",
+      "back": "Quay lại các vòng",
+      "closedDescription": "Ban Tổ chức hiện chưa nhận hồ sơ đăng ký cho vòng này.",
+      "eligibilityDescription": "Vòng {round} chỉ dành cho các đội đủ điều kiện được quản trị viên lựa chọn.",
+      "roundOneAlternative": "Vòng 1 sử dụng hồ sơ sàng lọc CV riêng. Đội của bạn vẫn có thể đăng ký tại đây ngay cả khi đã tham gia Vòng 0.5.",
+      "dashboardUnavailable": "Dashboard của vòng này hiện đang được Ban Tổ chức ẩn. Thông tin đăng ký của đội vẫn được lưu.",
+      "emptyTitle": "Hiện chưa có vòng thi nào khả dụng",
+      "emptyDescription": "Các vòng đội đã đăng ký và những vòng đang mở hồ sơ sẽ xuất hiện tại đây khi khả dụng.",
+      "announcementsTitle": "Cập nhật cuộc thi",
+      "announcementsDescription": "Theo dõi thời hạn, hướng dẫn, kết quả và thông tin mới từ Ban Tổ chức.",
+      "announcementsAction": "Xem thông báo",
+      "names": {
+        "0_5": "The Ignition",
+        "1": "The Star Gathering",
+        "2": "The Stellar Forge",
+        "3": "The Cosmic Blast"
+      },
+      "description": {
+        "0_5": "Thành lập đội và bắt đầu hành trình MASC.",
+        "1": "Đăng ký với CV của từng thành viên trong đội.",
+        "2": "Các đội đủ điều kiện sẽ được Ban Tổ chức lựa chọn.",
+        "3": "Các đội đủ điều kiện từ Vòng 2 sẽ được Ban Tổ chức lựa chọn."
+      }
+    },
     "nav": {
       "homeLabel": "MASC 2026 - trở về trang chủ"
     },
@@ -244,6 +276,17 @@
       "memberCount": "{count} trên 3 thành viên",
       "memberNumber": "Thành viên {number}",
       "memberEmailNotice": "Vui lòng nhập Email của các thành viên trong đội. Email này dùng để đăng nhập, nộp bài, cập nhật thông tin và nhận thông báo từ cuộc thi.",
+      "cv": {
+        "section": "Sàng lọc CV",
+        "title": "CV thành viên",
+        "description": "Tải lên một CV định dạng PDF cho mỗi thành viên. Mỗi tệp tối đa 10 MB.",
+        "memberLabel": "CV của {name}",
+        "fileType": "Vui lòng chọn tệp PDF.",
+        "fileSize": "Tệp không được lớn hơn 10 MB.",
+        "uploadError": "Không thể tải CV lên. Vui lòng kiểm tra tệp và thử lại.",
+        "download": "Tải CV",
+        "downloadError": "Không thể tải CV xuống."
+      },
       "awareness": {
         "section": "Về cuộc thi",
         "title": "Bạn biết cuộc thi qua đâu?",
@@ -385,7 +428,14 @@
       "teamSize": "Số thành viên",
       "people": "{count} người",
       "captainContact": "Liên hệ đội trưởng",
-      "roster": "Danh sách đội"
+      "roster": "Danh sách đội",
+      "admissionMethod": "Hình thức tham gia",
+      "admissionMethods": {
+        "direct": "Đăng ký trực tiếp",
+        "cv_screening": "Sàng lọc CV",
+        "round_0_5_promotion": "Được chọn từ Vòng 0.5",
+        "promotion": "Được Ban Tổ chức lựa chọn"
+      }
     }
   },
   "Admin": {
@@ -427,6 +477,14 @@
     "overview": {
       "title": "Tổng quan",
       "description": "Kiểm soát trạng thái nộp bài và các tab vòng thi mà thí sinh có thể nhìn thấy.",
+      "admissionSectionTitle": "Thời gian đăng ký",
+      "admissionSectionDescription": "Mở hoặc đóng đăng ký trực tiếp độc lập với hiển thị vòng và thời gian nộp bài.",
+      "admissionRoundDescription": "Cho phép đăng ký trực tiếp vào Vòng {round}.",
+      "openAdmission": "Mở đăng ký",
+      "closeAdmission": "Đóng đăng ký",
+      "admissionSuccess": "Đã cập nhật thời gian đăng ký.",
+      "admissionError": "Không thể cập nhật thời gian đăng ký.",
+      "admissionLoadError": "Không thể tải trạng thái đăng ký.",
       "submissionSectionTitle": "Trạng thái nộp bài",
       "submissionSectionDescription": "Kiểm soát thời điểm các thành viên trong đội có thể tạo hoặc nộp lại bài theo từng vòng.",
       "open": "Đang mở",
@@ -490,6 +548,33 @@
     "teams": {
       "title": "Đội thi",
       "description": "Xem các đội đã đăng ký, đội trưởng và trạng thái đăng ký.",
+      "roundHubDescription": "Xét duyệt hồ sơ độc lập cho từng vòng thi.",
+      "roundTitle": "Đội thi Vòng {round}",
+      "roundDescription": "Xem hồ sơ, kết quả xét duyệt và thăng hạng của Vòng {round}.",
+      "openRound": "Mở hồ sơ Vòng {round}",
+      "backToRounds": "Quay lại các vòng xét tuyển",
+      "selectAll": "Chọn tất cả đội đã duyệt",
+      "selectTeam": "Chọn đội {team}",
+      "statusFilter": "Lọc đội theo trạng thái",
+      "filterAll": "Tất cả trạng thái",
+      "promoteSelected": "Chọn {count} đội vào Vòng {round}",
+      "promoteTo": "Chọn vào Vòng {round}",
+      "confirmPromotion": "Chọn {count} đội vào Vòng {round}?",
+      "promotionResult": "Hoàn tất: {succeeded} thành công, {failed} thất bại.",
+      "promotionSuccess": "Đã chuyển đội sang vòng mới.",
+      "promotionError": "Không thể chuyển đội. Vui lòng kiểm tra điều kiện và thành viên bị trùng ở vòng đích.",
+      "promotionConflicts": "Email thành viên bị trùng: {emails}",
+      "admissionMethod": "Hình thức tham gia",
+      "admissionMethods": {
+        "direct": "Đăng ký trực tiếp",
+        "cv_screening": "Sàng lọc CV",
+        "round_0_5_promotion": "Được chọn từ Vòng 0.5",
+        "promotion": "Được lựa chọn"
+      },
+      "cv": "CV",
+      "previewCv": "Xem",
+      "downloadCv": "Tải xuống",
+      "cvError": "Không thể mở CV.",
       "emptyTitle": "Chưa có đội thi",
       "emptyDescription": "Các đội đã đăng ký sẽ xuất hiện tại đây.",
       "statusUpdating": "Đang cập nhật…",

@@ -1,7 +1,6 @@
 import { db } from "@masc-landing/db";
 import { submissionSettings } from "@masc-landing/db/schema/index";
 import { TRPCError } from "@trpc/server";
-import { eq } from "drizzle-orm";
 
 import { type RoundId, roundIds } from "./rounds";
 

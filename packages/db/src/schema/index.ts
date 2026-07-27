@@ -1,4 +1,5 @@
 export * from "./auth";
+export * from "./admission-settings";
 export * from "./admin-emails";
 export * from "./announcements";
 export * from "./dashboard-tab-settings";

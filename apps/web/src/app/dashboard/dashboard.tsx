@@ -2,7 +2,7 @@
 
 import type { AppRouter } from "@masc-landing/api/routers/index";
 import { roundIds, type RoundId } from "@masc-landing/api/rounds";
-import { getEligibleBirthdateRange, isEligibleBirthdate, TEAM_SIZE, TEAMMATE_COUNT } from "@masc-landing/api/registration";
+import { getEligibleBirthdateRange, isEligibleBirthdate, TEAMMATE_COUNT } from "@masc-landing/api/registration";
 import {
   awarenessSources,
   awarenessSourcesRequiringDetail,
@@ -16,12 +16,11 @@ import { Label } from "@masc-landing/ui/components/label";
 import { Skeleton } from "@masc-landing/ui/components/skeleton";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import type { inferRouterOutputs } from "@trpc/server";
-import { MegaphoneIcon, RefreshCwIcon, TriangleAlertIcon } from "lucide-react";
+import { ArrowRightIcon, MegaphoneIcon, RefreshCwIcon, TriangleAlertIcon } from "lucide-react";
 import type { Route } from "next";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useFormatter, useTranslations } from "next-intl";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import type { FormEvent } from "react";
 import { toast } from "sonner";
 
@@ -34,11 +33,13 @@ import RoundSubmission from "./round-submission";
 
 type Session = typeof authClient.$Infer.Session;
 type Membership = inferRouterOutputs<AppRouter>["registration"]["current"];
+type Memberships = inferRouterOutputs<AppRouter>["registration"]["memberships"];
 type Teammate = { id: string; fullName: string; email: string; birthdate: string; universityName: string };
 type FormErrors = Record<string, string>;
 
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const gmailDomain = "@gmail.com";
+const directAdmissionRounds = ["0.5", "1"] as const;
 const emptyTeammate = (id: string): Teammate => ({
   id,
   fullName: "",
@@ -49,13 +50,16 @@ const emptyTeammate = (id: string): Teammate => ({
 
 export type DashboardTab = "overview" | "announcements" | `round-${RoundId}`;
 
-export default function Dashboard({ session, activeTab, tabSettings }: {
+export default function Dashboard({ session, activeTab, tabSettings, initialMemberships, initialSettings }: {
   session: Session;
   activeTab: DashboardTab;
   tabSettings: Record<RoundId, boolean>;
+  initialMemberships: Memberships;
+  initialSettings: Record<RoundId, boolean>;
 }) {
   const t = useTranslations("Dashboard");
-  const membership = useQuery(trpc.registration.current.queryOptions());
+  const memberships = useQuery({ ...trpc.registration.memberships.queryOptions(), initialData: initialMemberships });
+  const settings = useQuery({ ...trpc.registration.settings.queryOptions(), initialData: initialSettings });
 
   return (
     <div className="dashboard-page">
@@ -75,94 +79,101 @@ export default function Dashboard({ session, activeTab, tabSettings }: {
       </header>
 
       <main className="dashboard-main">
-        {membership.data?.registered && (
-          <div className="dashboard-heading">
-            <p className="dashboard-eyebrow">{t("eyebrow")}</p>
-            <h1>{t("title")}</h1>
-            <p>{t("welcome", { name: session.user.name })}</p>
-          </div>
-        )}
+        <div className="dashboard-heading">
+          <p className="dashboard-eyebrow">{t("eyebrow")}</p>
+          <h1>{activeTab.startsWith("round-") ? t("hub.roundTitle", { round: activeTab.slice(6) }) : t("title")}</h1>
+          <p>{t("welcome", { name: session.user.name })}</p>
+        </div>
 
-        {membership.isPending ? (
+        {memberships.isPending || settings.isPending ? (
           <DashboardSkeleton />
-        ) : membership.isError ? (
+        ) : memberships.isError || settings.isError ? (
           <Card className="dashboard-state-card">
             <CardHeader>
               <CardTitle>{t("errors.loadTitle")}</CardTitle>
             </CardHeader>
             <CardContent>
               <p>{t("errors.loadDescription")}</p>
-              <Button onClick={() => membership.refetch()}>
+              <Button onClick={() => { memberships.refetch(); settings.refetch(); }}>
                 <RefreshCwIcon aria-hidden="true" /> {t("actions.retry")}
               </Button>
             </CardContent>
           </Card>
-        ) : membership.data?.registered ? (
-          <TeamDashboard membership={membership.data} activeTab={activeTab} tabSettings={tabSettings} />
-        ) : (
-          <RegistrationForm session={session} />
-        )}
+        ) : activeTab === "overview" ? <RoundHub memberships={memberships.data!} settings={settings.data!} tabSettings={tabSettings} />
+          : activeTab === "announcements" ? <><Link className="admin-back-link" href="/dashboard">← {t("hub.back")}</Link><Announcements /></>
+          : <RoundDashboard round={activeTab.slice(6) as RoundId} session={session} settings={settings.data!} />}
       </main>
     </div>
   );
 }
 
-function dashboardTabHref(tab: DashboardTab): Route {
-  return tab === "overview" ? "/dashboard" : `/dashboard/${tab}` as Route;
-}
-
-function TeamDashboard({ membership, activeTab, tabSettings }: {
-  membership: Extract<Membership, { registered: true }>;
-  activeTab: DashboardTab;
+function RoundHub({ memberships, settings, tabSettings }: {
+  memberships: Memberships;
+  settings: Record<RoundId, boolean>;
   tabSettings: Record<RoundId, boolean>;
 }) {
   const t = useTranslations("Dashboard");
-  const router = useRouter();
-  const isApproved = membership.team.status === "approved";
-  const effectiveActiveTab = activeTab.startsWith("round-") && !isApproved ? "overview" : activeTab;
-  const dashboardTabs: DashboardTab[] = [
-    "overview",
-    "announcements",
-    ...(isApproved
-      ? roundIds.filter((round) => tabSettings[round]).map((round) => `round-${round}` as const)
-      : []),
-  ];
-  useEffect(() => {
-    if (activeTab.startsWith("round-") && !isApproved) router.replace("/dashboard");
-  }, [activeTab, isApproved, router]);
-  const selectTab = (tab: DashboardTab) => {
-    router.push(dashboardTabHref(tab));
-    requestAnimationFrame(() => document.getElementById(`dashboard-tab-${tab}`)?.focus());
-  };
-  const onTabKeyDown = (event: React.KeyboardEvent, index: number) => {
-    let next = index;
-    if (event.key === "ArrowRight") next = (index + 1) % dashboardTabs.length;
-    else if (event.key === "ArrowLeft") next = (index - 1 + dashboardTabs.length) % dashboardTabs.length;
-    else if (event.key === "Home") next = 0;
-    else if (event.key === "End") next = dashboardTabs.length - 1;
-    else return;
-    event.preventDefault();
-    selectTab(dashboardTabs[next]!);
-  };
+  const visibleRounds = roundIds.filter((round) => memberships[round].registered || tabSettings[round] ||
+    (directAdmissionRounds.some((admissionRound) => admissionRound === round) && settings[round]));
 
-  return <div className="team-dashboard">
-    <div className="dashboard-tabs" role="tablist" aria-label={t("tabs.label")}>
-      {dashboardTabs.map((tab, index) => <Link
-        id={`dashboard-tab-${tab}`}
-        key={tab}
-        href={dashboardTabHref(tab)}
-        role="tab"
-        aria-selected={effectiveActiveTab === tab}
-        aria-controls={`dashboard-panel-${tab}`}
-        tabIndex={effectiveActiveTab === tab ? 0 : -1}
-        onKeyDown={(event) => onTabKeyDown(event, index)}
-      >{tab.startsWith("round-") ? t("tabs.round", { round: tab.slice(6) }) : t(`tabs.${tab}`)}</Link>)}
-    </div>
-    <section id={`dashboard-panel-${effectiveActiveTab}`} role="tabpanel" aria-labelledby={`dashboard-tab-${effectiveActiveTab}`} tabIndex={0}>
-      {effectiveActiveTab === "overview" && <TeamOverview membership={membership} />}
-      {effectiveActiveTab === "announcements" && <Announcements />}
-      {isApproved && effectiveActiveTab.startsWith("round-") && <RoundSubmission round={effectiveActiveTab.slice(6) as RoundId} />}
-    </section>
+  return <div className="round-hub">
+    {visibleRounds.length > 0 ? <div className="round-entry-grid">{visibleRounds.map((round) => {
+    const membership = memberships[round];
+    const isDirectAdmissionRound = round === "0.5" || round === "1";
+    const canApply = !membership.registered && isDirectAdmissionRound && settings[round];
+    const canOpen = membership.registered && tabSettings[round];
+    const roundKey = round.replace(".", "_");
+    const description = canApply && round === "1" && memberships["0.5"].registered
+      ? t("hub.roundOneAlternative") : t(`hub.description.${roundKey}`);
+    const state = membership.registered ? membership.team.status : canApply ? "open"
+      : isDirectAdmissionRound ? "closed" : "locked";
+    const stateLabel = membership.registered ? t(`status.${membership.team.status}`) : canApply ? t("hub.open")
+      : isDirectAdmissionRound ? t("hub.closed") : t("hub.notEligible");
+    return <Card className={`dashboard-card round-entry-card round-entry-card-${state}`} key={round}>
+      <CardHeader>
+        <div className="round-entry-topline"><p className="dashboard-card-index">{t("tabs.round", { round })}</p>
+          <span className={`status-badge status-${state}`}>{stateLabel}</span></div>
+        <CardTitle>{t(`hub.names.${roundKey}`)}</CardTitle>
+        <p>{description}</p>
+      </CardHeader>
+      <CardContent>
+        {membership.registered ? <div className="round-entry-team">
+          <span>{t("hub.registeredTeam")}</span><strong>{membership.team.name}</strong>
+          <small>{t(`roles.${membership.role}`)}</small>
+        </div> : !canApply && <p className="round-entry-unavailable">
+          {isDirectAdmissionRound ? t("hub.closedDescription") : t("hub.eligibilityDescription", { round })}</p>}
+        {canOpen && <Button nativeButton={false} render={<Link href={`/dashboard/round-${round}` as Route} />}>
+          {t("hub.go", { round })}<ArrowRightIcon aria-hidden="true" /></Button>}
+        {canApply && <Button nativeButton={false} render={<Link href={`/dashboard/round-${round}` as Route} />}>
+          {t("hub.apply", { round })}<ArrowRightIcon aria-hidden="true" /></Button>}
+        {membership.registered && !tabSettings[round] && <p className="round-entry-unavailable">
+          {t("hub.dashboardUnavailable")}</p>}
+      </CardContent>
+    </Card>;
+  })}</div> : <Card className="dashboard-state-card round-hub-empty">
+      <CardHeader><CardTitle>{t("hub.emptyTitle")}</CardTitle></CardHeader>
+      <CardContent><p>{t("hub.emptyDescription")}</p></CardContent>
+    </Card>}
+    <Card className="dashboard-card round-hub-announcements">
+      <CardHeader><MegaphoneIcon aria-hidden="true" /><div><p className="dashboard-card-index">{t("tabs.announcements")}</p>
+        <CardTitle>{t("hub.announcementsTitle")}</CardTitle><p>{t("hub.announcementsDescription")}</p></div></CardHeader>
+      <CardContent><Button variant="outline" nativeButton={false} render={<Link href="/dashboard/announcements" />}>
+        {t("hub.announcementsAction")}<ArrowRightIcon aria-hidden="true" /></Button></CardContent>
+    </Card>
+  </div>;
+}
+
+function RoundDashboard({ round, session, settings }: { round: RoundId; session: Session; settings: Record<RoundId, boolean> }) {
+  const t = useTranslations("Dashboard");
+  const membership = useQuery(trpc.registration.current.queryOptions({ round }));
+  if (membership.isPending) return <DashboardSkeleton />;
+  if (membership.isError) return <StateCard title={t("errors.loadTitle")} description={t("errors.loadDescription")} retry={() => membership.refetch()} />;
+  return <div className="team-dashboard"><Link className="admin-back-link" href="/dashboard">← {t("hub.back")}</Link>
+    {!membership.data.registered ? (round === "0.5" || round === "1")
+      ? settings[round] ? <RegistrationForm session={session} round={round} />
+        : <Card className="dashboard-state-card"><CardHeader><CardTitle>{t("hub.closed")}</CardTitle></CardHeader><CardContent><p>{t("hub.closedDescription")}</p></CardContent></Card>
+      : <Card className="dashboard-state-card"><CardHeader><CardTitle>{t("hub.notEligible")}</CardTitle></CardHeader><CardContent><p>{t("hub.eligibilityDescription", { round })}</p></CardContent></Card>
+      : <><TeamOverview membership={membership.data} />{membership.data.team.status === "approved" && <RoundSubmission round={round} />}</>}
   </div>;
 }
 
@@ -186,7 +197,7 @@ function StateCard({ title, description, retry }: { title: string; description: 
   return <Card className="dashboard-state-card"><CardHeader><CardTitle>{title}</CardTitle></CardHeader><CardContent><p>{description}</p><Button onClick={retry}><RefreshCwIcon aria-hidden="true" />{t("actions.retry")}</Button></CardContent></Card>;
 }
 
-function RegistrationForm({ session }: { session: Session }) {
+function RegistrationForm({ session, round }: { session: Session; round: "0.5" | "1" }) {
   const t = useTranslations("Dashboard");
   const [teamName, setTeamName] = useState("");
   const [captainFullName, setCaptainFullName] = useState(session.user.name);
@@ -200,17 +211,21 @@ function RegistrationForm({ session }: { session: Session }) {
     Array.from({ length: TEAMMATE_COUNT }, (_, index) => emptyTeammate(`member-${index + 1}`)),
   );
   const [errors, setErrors] = useState<FormErrors>({});
+  const [cvFiles, setCvFiles] = useState<(File | null)[]>([null, null, null]);
+  const [uploading, setUploading] = useState(false);
   const birthdateRange = getEligibleBirthdateRange();
 
-  const createTeam = useMutation(
-    trpc.registration.createTeam.mutationOptions({
-      onSuccess: async () => {
-        toast.success(t("success.created"));
-        await queryClient.invalidateQueries({ queryKey: trpc.registration.current.queryKey() });
-      },
-    }),
-  );
-  const isSubmitting = createTeam.isPending;
+  const onCreated = async () => {
+    toast.success(t("success.created"));
+    await Promise.all([
+      queryClient.invalidateQueries({ queryKey: trpc.registration.current.queryKey({ round }) }),
+      queryClient.invalidateQueries({ queryKey: trpc.registration.memberships.queryKey() }),
+    ]);
+  };
+  const createRoundHalfTeam = useMutation(trpc.registration.createRoundHalfTeam.mutationOptions({ onSuccess: onCreated }));
+  const createRoundOneTeam = useMutation(trpc.registration.createRoundOneTeam.mutationOptions({ onSuccess: onCreated }));
+  const createCvUploadUrl = useMutation(trpc.registration.createRoundOneCvUploadUrl.mutationOptions());
+  const isSubmitting = createRoundHalfTeam.isPending || createRoundOneTeam.isPending || uploading;
   const awarenessDetailRequired = awarenessSource !== "" &&
     awarenessSourcesRequiringDetail.includes(awarenessSource);
 
@@ -290,15 +305,20 @@ function RegistrationForm({ session }: { session: Session }) {
     if (emails.some((email, index) => email && emails.indexOf(email) !== index)) {
       next.form = t("validation.duplicateEmail");
     }
+    if (round === "1") cvFiles.forEach((file, index) => {
+      if (!file) next[`cvs.${index}`] = t("validation.required");
+      else if (!file.name.toLowerCase().endsWith(".pdf")) next[`cvs.${index}`] = t("registration.cv.fileType");
+      else if (file.size === 0 || file.size > 10 * 1024 * 1024) next[`cvs.${index}`] = t("registration.cv.fileSize");
+    });
     setErrors(next);
     return Object.keys(next).length === 0;
   };
 
-  const submit = (event: FormEvent<HTMLFormElement>) => {
+  const submit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    createTeam.reset();
+    createRoundHalfTeam.reset(); createRoundOneTeam.reset();
     if (!validate()) return;
-    createTeam.mutate({
+    const registration = {
       teamName,
       captainFullName,
       captainBirthdate,
@@ -307,13 +327,33 @@ function RegistrationForm({ session }: { session: Session }) {
       awarenessSource: awarenessSource as AwarenessSource,
       awarenessSourceDetail: awarenessDetailRequired ? awarenessSourceDetail : undefined,
       teammates: teammates.map(({ id: _id, ...member }) => member),
-    });
+    };
+    if (round === "0.5") return createRoundHalfTeam.mutate(registration);
+    setUploading(true);
+    try {
+      const cvs = await Promise.all(cvFiles.map(async (file) => {
+        const selected = file!;
+        const metadata = { filename: selected.name, mimeType: "application/pdf" as const, fileSize: selected.size };
+        const signed = await createCvUploadUrl.mutateAsync(metadata);
+        const response = await fetch(signed.uploadUrl, { method: "PUT", body: selected,
+          headers: { "Content-Type": "application/pdf" } });
+        if (!response.ok) throw new Error("UPLOAD_FAILED");
+        return { ...metadata, uploadId: signed.uploadId };
+      }));
+      await createRoundOneTeam.mutateAsync({ ...registration, cvs });
+    } catch (cause) {
+      const message = cause instanceof Error ? cause.message : "";
+      if (message !== "EMAIL_ALREADY_REGISTERED" && message !== "DUPLICATE_EMAILS") {
+        setErrors((current) => ({ ...current, form: t("registration.cv.uploadError") }));
+      }
+    } finally { setUploading(false); }
   };
 
-  const mutationError = createTeam.error
-    ? createTeam.error.data?.code === "CONFLICT"
+  const mutation = createRoundHalfTeam.error ?? createRoundOneTeam.error;
+  const mutationError = mutation
+    ? mutation.data?.code === "CONFLICT"
       ? t("errors.conflict")
-      : createTeam.error.message === "DUPLICATE_EMAILS"
+      : mutation.message === "DUPLICATE_EMAILS"
         ? t("validation.duplicateEmail")
         : t("errors.create")
     : null;
@@ -327,6 +367,17 @@ function RegistrationForm({ session }: { session: Session }) {
           <p>{t("registration.description")}</p>
         </CardHeader>
       </Card>
+
+      {round === "1" && <Card className="dashboard-card">
+        <CardHeader><p className="dashboard-card-index">05 / {t("registration.cv.section")}</p>
+          <CardTitle>{t("registration.cv.title")}</CardTitle><p>{t("registration.cv.description")}</p></CardHeader>
+        <CardContent className="dashboard-fields">
+          {[captainFullName || t("roles.captain"), ...teammates.map((member) => member.fullName || t("registration.memberNumber", { number: teammates.indexOf(member) + 2 }))]
+            .map((name, index) => <Field key={index} label={t("registration.cv.memberLabel", { name })} error={errors[`cvs.${index}`]} full>
+              <Input type="file" accept=".pdf,application/pdf" onChange={(event) => setCvFiles((current) => current.map((file, fileIndex) => fileIndex === index ? event.target.files?.[0] ?? null : file))} />
+            </Field>)}
+        </CardContent>
+      </Card>}
 
       <Card className="dashboard-card">
         <CardHeader>
@@ -451,6 +502,10 @@ function RegistrationForm({ session }: { session: Session }) {
 function TeamOverview({ membership }: { membership: Extract<Membership, { registered: true }> }) {
   const t = useTranslations("Dashboard");
   const format = useFormatter();
+  const cvDownload = useMutation(trpc.registration.createRoundOneCvDownloadUrl.mutationOptions({
+    onSuccess: ({ downloadUrl }) => window.location.assign(downloadUrl),
+    onError: () => toast.error(t("registration.cv.downloadError")),
+  }));
   const captain = membership.team.members.find((member) => member.isCaptain);
   return (
     <div className="team-overview">
@@ -472,6 +527,7 @@ function TeamOverview({ membership }: { membership: Extract<Membership, { regist
             <Detail label={t("fields.teamName")} value={membership.team.name} />
             <Detail label={t("overview.statusLabel")} value={t(`status.${membership.team.status}`)} />
             <Detail label={t("overview.teamSize")} value={t("overview.people", { count: membership.team.members.length })} />
+            <Detail label={t("overview.admissionMethod")} value={t(`overview.admissionMethods.${membership.team.admissionMethod}`)} />
           </CardContent>
         </Card>
         <Card className="dashboard-card">
@@ -503,7 +559,9 @@ function TeamOverview({ membership }: { membership: Extract<Membership, { regist
                   <td><h3>{member.fullName}</h3><p>{member.email}</p></td>
                   <td><p>{format.dateTime(new Date(`${member.birthdate}T00:00:00Z`), { dateStyle: "medium", timeZone: "UTC" })}</p></td>
                   <td><p>{member.universityName}</p></td>
-                  <td>{member.isCaptain && <span className="captain-tag">{t("roles.captain")}</span>}</td>
+                  <td>{member.isCaptain && <span className="captain-tag">{t("roles.captain")}</span>}
+                    {membership.role === "captain" && "hasCv" in member && member.hasCv && <Button size="sm" variant="outline"
+                      disabled={cvDownload.isPending} onClick={() => cvDownload.mutate({ memberId: member.id })}>{t("registration.cv.download")}</Button>}</td>
                 </tr>
               ))}
             </tbody>
