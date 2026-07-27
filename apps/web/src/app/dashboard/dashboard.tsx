@@ -18,6 +18,7 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import type { inferRouterOutputs } from "@trpc/server";
 import { ArrowRightIcon, MegaphoneIcon, RefreshCwIcon, TriangleAlertIcon } from "lucide-react";
 import type { Route } from "next";
+import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useFormatter, useTranslations } from "next-intl";
 import { useState } from "react";
@@ -29,6 +30,7 @@ import UserMenu from "@/components/user-menu";
 import { BrandLogo } from "@/components/hero-brand-logo";
 import { authClient } from "@/lib/auth-client";
 import { queryClient, trpc } from "@/utils/trpc";
+import AnnouncementsSkeleton from "./announcements-skeleton";
 import RoundSubmission from "./round-submission";
 
 type Session = typeof authClient.$Infer.Session;
@@ -48,7 +50,11 @@ const emptyTeammate = (id: string): Teammate => ({
   universityName: "",
 });
 
-export type DashboardTab = "overview" | "announcements" | `round-${RoundId}`;
+export type DashboardTab = "overview" | `round-${RoundId}`;
+
+const AnnouncementsFeed = dynamic(() => import("./announcements-feed"), {
+  loading: () => <AnnouncementsSkeleton />,
+});
 
 export default function Dashboard({ session, activeTab, tabSettings, initialMemberships, initialSettings }: {
   session: Session;
@@ -100,7 +106,6 @@ export default function Dashboard({ session, activeTab, tabSettings, initialMemb
             </CardContent>
           </Card>
         ) : activeTab === "overview" ? <RoundHub memberships={memberships.data!} settings={settings.data!} tabSettings={tabSettings} />
-          : activeTab === "announcements" ? <><Link className="admin-back-link" href="/dashboard">← {t("hub.back")}</Link><Announcements /></>
           : <RoundDashboard round={activeTab.slice(6) as RoundId} session={session} settings={settings.data!} />}
       </main>
     </div>
@@ -154,12 +159,15 @@ function RoundHub({ memberships, settings, tabSettings }: {
       <CardHeader><CardTitle>{t("hub.emptyTitle")}</CardTitle></CardHeader>
       <CardContent><p>{t("hub.emptyDescription")}</p></CardContent>
     </Card>}
-    <Card className="dashboard-card round-hub-announcements">
-      <CardHeader><MegaphoneIcon aria-hidden="true" /><div><p className="dashboard-card-index">{t("tabs.announcements")}</p>
-        <CardTitle>{t("hub.announcementsTitle")}</CardTitle><p>{t("hub.announcementsDescription")}</p></div></CardHeader>
-      <CardContent><Button variant="outline" nativeButton={false} render={<Link href="/dashboard/announcements" />}>
-        {t("hub.announcementsAction")}<ArrowRightIcon aria-hidden="true" /></Button></CardContent>
-    </Card>
+    <section className="announcement-section" aria-labelledby="dashboard-announcements-title">
+      <div className="announcement-section-heading">
+        <div className="announcement-section-icon"><MegaphoneIcon aria-hidden="true" /></div>
+        <div><p className="dashboard-card-index">{t("tabs.announcements")}</p>
+          <h2 id="dashboard-announcements-title">{t("hub.announcementsTitle")}</h2>
+          <p>{t("hub.announcementsDescription")}</p></div>
+      </div>
+      <AnnouncementsFeed />
+    </section>
   </div>;
 }
 
@@ -175,21 +183,6 @@ function RoundDashboard({ round, session, settings }: { round: RoundId; session:
       : <Card className="dashboard-state-card"><CardHeader><CardTitle>{t("hub.notEligible")}</CardTitle></CardHeader><CardContent><p>{t("hub.eligibilityDescription", { round })}</p></CardContent></Card>
       : <><TeamOverview membership={membership.data} />{membership.data.team.status === "approved" && <RoundSubmission round={round} />}</>}
   </div>;
-}
-
-function Announcements() {
-  const t = useTranslations("Dashboard");
-  const format = useFormatter();
-  const announcements = useQuery(trpc.announcements.list.queryOptions());
-
-  if (announcements.isPending) return <div className="announcement-feed"><Skeleton className="h-64 w-full" /><Skeleton className="h-64 w-full" /></div>;
-  if (announcements.isError) return <StateCard title={t("announcements.errors.loadTitle")} description={t("announcements.errors.load")} retry={() => announcements.refetch()} />;
-  if (announcements.data.length === 0) return <Card className="announcement-empty"><MegaphoneIcon aria-hidden="true" /><h2>{t("announcements.emptyTitle")}</h2><p>{t("announcements.emptyDescription")}</p></Card>;
-
-  return <div className="announcement-feed">{announcements.data.map((announcement) => <Card className="announcement-post" key={announcement.id}>
-    <CardHeader className="announcement-post-header"><div className="announcement-avatar"><BrandLogo /></div><div><CardTitle>{t("announcements.organizer")}</CardTitle><time dateTime={new Date(announcement.createdAt).toISOString()}>{format.dateTime(new Date(announcement.createdAt), { dateStyle: "medium", timeStyle: "short" })}</time></div></CardHeader>
-    <CardContent><p className="announcement-content">{announcement.content}</p>{announcement.imageUrl && <img className="announcement-image" src={announcement.imageUrl} alt="" />}</CardContent>
-  </Card>)}</div>;
 }
 
 function StateCard({ title, description, retry }: { title: string; description: string; retry: () => void }) {
