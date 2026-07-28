@@ -139,17 +139,21 @@ function RoundHub({ memberships, settings, tabSettings }: {
           <p>{description}</p>
         </CardHeader>
         <CardContent>
-          {membership.registered ? <div className="round-entry-team">
-            <span>{t("hub.registeredTeam")}</span><strong>{membership.team.name}</strong>
-            <small>{t(`roles.${membership.role}`)}</small>
-          </div> : !canApply && <p className="round-entry-unavailable">
-            {isDirectAdmissionRound ? t("hub.closedDescription") : t("hub.eligibilityDescription", { round })}</p>}
-          {canOpen && <Button nativeButton={false} render={<Link href={`/dashboard/round-${round}` as Route} />}>
-            {t("hub.go", { round })}<ArrowRightIcon aria-hidden="true" /></Button>}
-          {canApply && <Button nativeButton={false} render={<Link href={`/dashboard/round-${round}` as Route} />}>
-            {t("hub.apply", { round })}<ArrowRightIcon aria-hidden="true" /></Button>}
-          {membership.registered && !tabSettings[round] && <p className="round-entry-unavailable">
-            {t("hub.dashboardUnavailable")}</p>}
+          {membership.registered ? <>
+            <div className="round-entry-registration">
+              <div className="round-entry-team">
+                <span>{t("hub.registeredTeam")}</span><strong>{membership.team.name}</strong>
+              </div>
+              {canOpen && <Button nativeButton={false} render={<Link href={`/dashboard/round-${round}` as Route} />}>
+                {t("hub.go", { round })}<ArrowRightIcon aria-hidden="true" /></Button>}
+            </div>
+            {!tabSettings[round] && <p className="round-entry-unavailable">{t("hub.dashboardUnavailable")}</p>}
+          </> : <>
+            {!canApply && <p className="round-entry-unavailable">
+              {isDirectAdmissionRound ? t("hub.closedDescription") : t("hub.eligibilityDescription", { round })}</p>}
+            {canApply && <Button nativeButton={false} render={<Link href={`/dashboard/round-${round}` as Route} />}>
+              {t("hub.apply", { round })}<ArrowRightIcon aria-hidden="true" /></Button>}
+          </>}
         </CardContent>
       </Card>;
     })}</div>

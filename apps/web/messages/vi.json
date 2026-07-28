@@ -494,7 +494,7 @@
       "success": "Đã cập nhật trạng thái nộp bài.",
       "error": "Không thể cập nhật trạng thái nộp bài. Vui lòng thử lại.",
       "loadError": "Không thể tải trạng thái nộp bài. Hãy kiểm tra kết nối và thử lại.",
-      "roundTitle": "Bài nộp Vòng {round}",
+      "roundTitle": "Vòng {round}",
       "roundDescription": "Cho phép các thành viên trong đội nộp hoặc thay thế bài Vòng {round}.",
       "tabSectionTitle": "Hiển thị tab trên bảng điều khiển",
       "tabSectionDescription": "Chọn các tab vòng thi xuất hiện trên bảng điều khiển của thí sinh.",
@@ -505,7 +505,7 @@
       "tabSuccess": "Đã cập nhật trạng thái hiển thị tab.",
       "tabError": "Không thể cập nhật trạng thái hiển thị tab. Vui lòng thử lại.",
       "tabLoadError": "Không thể tải trạng thái hiển thị tab. Hãy kiểm tra kết nối và thử lại.",
-      "tabRoundTitle": "Tab Vòng {round}",
+      "tabRoundTitle": "Vòng {round}",
       "tabRoundDescription": "Hiển thị hoặc ẩn tab Vòng {round} đối với các thành viên trong đội."
     },
     "announcements": {

@@ -494,7 +494,7 @@
       "success": "Submission availability updated.",
       "error": "Could not update submission availability. Please try again.",
       "loadError": "Could not load submission availability. Check your connection and try again.",
-      "roundTitle": "Round {round} submissions",
+      "roundTitle": "Round {round}",
       "roundDescription": "Allow team members to submit or replace their Round {round} work.",
       "tabSectionTitle": "Dashboard tab visibility",
       "tabSectionDescription": "Choose which round tabs appear in the participant dashboard.",

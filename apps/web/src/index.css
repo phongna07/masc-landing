@@ -256,9 +256,23 @@ dialog[open]::backdrop {
   font-weight: 400;
 }
 
-.round-entry-team small {
-  color: #f2d584;
-  font-size: 12px;
+.round-entry-registration {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 210px), 1fr));
+  align-items: center;
+  width: 100%;
+  gap: 20px;
+}
+
+.round-entry-registration [data-slot="button"] {
+  justify-content: space-between;
+  width: 100%;
+  min-width: 0;
+  height: auto;
+  min-height: 32px;
+  line-height: 1.35;
+  text-align: left;
+  white-space: normal;
 }
 
 .round-entry-unavailable {
