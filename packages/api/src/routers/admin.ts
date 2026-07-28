@@ -1,7 +1,7 @@
 import { GetObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { db } from "@masc-landing/db";
-import { adminEmails, admissionSettings, dashboardTabSettings, emailQueue, members, roundOneMemberCvs,
+import { adminEmails, admissionSettings, emailQueue, members, roundOneMemberCvs,
   roundOneMembers, roundOneSubmissions, roundOneTeams, roundSubmissions, roundThreeMembers,
   roundThreeSubmissions, roundThreeTeams, roundTwoMembers, roundTwoSubmissions, roundTwoTeams,
   submissionSettings, teams, user } from "@masc-landing/db/schema/index";
@@ -22,7 +22,6 @@ import {
 } from "../email/team-registration-rejected";
 import { sendMail } from "../email/send-mail";
 import { renderTeamRoundPromotion, teamRoundPromotionEvent } from "../email/team-round-promotion";
-import { getDashboardTabSettings } from "../dashboard-tab-settings";
 import { getAdmissionSettings } from "../admission-settings";
 import { adminAreaProcedure, router } from "../index";
 import { roundSchema, type RoundId } from "../rounds";
@@ -189,13 +188,6 @@ export const adminRouter = router({
     await db.insert(submissionSettings).values({ round: input.round, isOpen: input.isOpen, updatedAt: new Date() })
       .onConflictDoUpdate({ target: submissionSettings.round, set: { isOpen: input.isOpen, updatedAt: new Date() } });
     return getSubmissionSettings();
-  }),
-  getDashboardTabSettings: overviewProcedure.query(getDashboardTabSettings),
-  setRoundTabVisible: overviewProcedure.input(roundInput.extend({ isVisible: z.boolean() })).mutation(async ({ input }) => {
-    await db.insert(dashboardTabSettings).values({ round: input.round, isVisible: input.isVisible, updatedAt: new Date() })
-      .onConflictDoUpdate({ target: dashboardTabSettings.round,
-        set: { isVisible: input.isVisible, updatedAt: new Date() } });
-    return getDashboardTabSettings();
   }),
   getAdmissionSettings: overviewProcedure.query(getAdmissionSettings),
   setRoundAdmissionOpen: overviewProcedure.input(roundInput.extend({ isOpen: z.boolean() })).mutation(async ({ input }) => {

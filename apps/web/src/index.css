@@ -1707,14 +1707,12 @@ dialog[open]::backdrop {
   text-transform: uppercase;
 }
 
-.admin-round-setting .is-open,
-.admin-round-setting .is-visible {
+.admin-round-setting .is-open {
   color: #bde7ad;
   border-color: rgba(137, 210, 110, .3);
 }
 
-.admin-round-setting .is-closed,
-.admin-round-setting .is-hidden {
+.admin-round-setting .is-closed {
   color: #ffb1aa;
   border-color: rgba(255, 107, 98, .35);
 }

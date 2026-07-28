@@ -241,7 +241,6 @@
       "closedDescription": "The organizers are not accepting applications for this round right now.",
       "eligibilityDescription": "Round {round} is available only after an administrator promotes an eligible team.",
       "roundOneAlternative": "Round 1 uses a separate CV-screening application. You can apply here even if your team already entered Round 0.5.",
-      "dashboardUnavailable": "This round dashboard is currently hidden by the organizers. Your registration remains recorded.",
       "emptyTitle": "No rounds are available right now",
       "emptyDescription": "Your registered rounds and any open application routes will appear here when they become available.",
       "announcementsTitle": "Competition updates",
@@ -495,18 +494,7 @@
       "error": "Could not update submission availability. Please try again.",
       "loadError": "Could not load submission availability. Check your connection and try again.",
       "roundTitle": "Round {round}",
-      "roundDescription": "Allow team members to submit or replace their Round {round} work.",
-      "tabSectionTitle": "Dashboard tab visibility",
-      "tabSectionDescription": "Choose which round tabs appear in the participant dashboard.",
-      "visible": "Visible",
-      "hidden": "Hidden",
-      "showAction": "Show tab",
-      "hideAction": "Hide tab",
-      "tabSuccess": "Dashboard tab visibility updated.",
-      "tabError": "Could not update dashboard tab visibility. Please try again.",
-      "tabLoadError": "Could not load dashboard tab visibility. Check your connection and try again.",
-      "tabRoundTitle": "Round {round} tab",
-      "tabRoundDescription": "Show or hide the Round {round} tab for team members."
+      "roundDescription": "Allow team members to submit or replace their Round {round} work."
     },
     "announcements": {
       "title": "Announcements",

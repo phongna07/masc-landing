@@ -241,7 +241,6 @@
       "closedDescription": "Ban Tổ chức hiện chưa nhận hồ sơ đăng ký cho vòng này.",
       "eligibilityDescription": "Vòng {round} chỉ dành cho các đội đủ điều kiện được quản trị viên lựa chọn.",
       "roundOneAlternative": "Vòng 1 sử dụng hồ sơ sàng lọc CV riêng. Đội của bạn vẫn có thể đăng ký tại đây ngay cả khi đã tham gia Vòng 0.5.",
-      "dashboardUnavailable": "Dashboard của vòng này hiện đang được Ban Tổ chức ẩn. Thông tin đăng ký của đội vẫn được lưu.",
       "emptyTitle": "Hiện chưa có vòng thi nào khả dụng",
       "emptyDescription": "Các vòng đội đã đăng ký và những vòng đang mở hồ sơ sẽ xuất hiện tại đây khi khả dụng.",
       "announcementsTitle": "Cập nhật cuộc thi",
@@ -495,18 +494,7 @@
       "error": "Không thể cập nhật trạng thái nộp bài. Vui lòng thử lại.",
       "loadError": "Không thể tải trạng thái nộp bài. Hãy kiểm tra kết nối và thử lại.",
       "roundTitle": "Vòng {round}",
-      "roundDescription": "Cho phép các thành viên trong đội nộp hoặc thay thế bài Vòng {round}.",
-      "tabSectionTitle": "Hiển thị tab trên bảng điều khiển",
-      "tabSectionDescription": "Chọn các tab vòng thi xuất hiện trên bảng điều khiển của thí sinh.",
-      "visible": "Đang hiển thị",
-      "hidden": "Đang ẩn",
-      "showAction": "Hiển thị tab",
-      "hideAction": "Ẩn tab",
-      "tabSuccess": "Đã cập nhật trạng thái hiển thị tab.",
-      "tabError": "Không thể cập nhật trạng thái hiển thị tab. Vui lòng thử lại.",
-      "tabLoadError": "Không thể tải trạng thái hiển thị tab. Hãy kiểm tra kết nối và thử lại.",
-      "tabRoundTitle": "Vòng {round}",
-      "tabRoundDescription": "Hiển thị hoặc ẩn tab Vòng {round} đối với các thành viên trong đội."
+      "roundDescription": "Cho phép các thành viên trong đội nộp hoặc thay thế bài Vòng {round}."
     },
     "announcements": {
       "title": "Thông báo",

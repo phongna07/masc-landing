@@ -55,10 +55,9 @@ const AnnouncementsFeed = dynamic(() => import("./announcements-feed"), {
   loading: () => <AnnouncementsSkeleton />,
 });
 
-export default function Dashboard({ session, activeTab, tabSettings, initialMemberships, initialSettings }: {
+export default function Dashboard({ session, activeTab, initialMemberships, initialSettings }: {
   session: Session;
   activeTab: DashboardTab;
-  tabSettings: Record<RoundId, boolean>;
   initialMemberships: Memberships;
   initialSettings: Record<RoundId, boolean>;
 }) {
@@ -104,17 +103,16 @@ export default function Dashboard({ session, activeTab, tabSettings, initialMemb
               </Button>
             </CardContent>
           </Card>
-        ) : activeTab === "overview" ? <RoundHub memberships={memberships.data!} settings={settings.data!} tabSettings={tabSettings} />
+        ) : activeTab === "overview" ? <RoundHub memberships={memberships.data!} settings={settings.data!} />
           : <RoundDashboard round={activeTab.slice(6) as RoundId} session={session} settings={settings.data!} />}
       </main>
     </div>
   );
 }
 
-function RoundHub({ memberships, settings, tabSettings }: {
+function RoundHub({ memberships, settings }: {
   memberships: Memberships;
   settings: Record<RoundId, boolean>;
-  tabSettings: Record<RoundId, boolean>;
 }) {
   const t = useTranslations("Dashboard");
 
@@ -123,7 +121,6 @@ function RoundHub({ memberships, settings, tabSettings }: {
       const membership = memberships[round];
       const isDirectAdmissionRound = round === "0.5" || round === "1";
       const canApply = !membership.registered && isDirectAdmissionRound && settings[round];
-      const canOpen = membership.registered && tabSettings[round];
       const roundKey = round.replace(".", "_");
       const description = canApply && round === "1" && memberships["0.5"].registered
         ? t("hub.roundOneAlternative") : t(`hub.description.${roundKey}`);
@@ -144,10 +141,9 @@ function RoundHub({ memberships, settings, tabSettings }: {
               <div className="round-entry-team">
                 <span>{t("hub.registeredTeam")}</span><strong>{membership.team.name}</strong>
               </div>
-              {canOpen && <Button nativeButton={false} render={<Link href={`/dashboard/round-${round}` as Route} />}>
-                {t("hub.go", { round })}<ArrowRightIcon aria-hidden="true" /></Button>}
+              <Button nativeButton={false} render={<Link href={`/dashboard/round-${round}` as Route} />}>
+                {t("hub.go", { round })}<ArrowRightIcon aria-hidden="true" /></Button>
             </div>
-            {!tabSettings[round] && <p className="round-entry-unavailable">{t("hub.dashboardUnavailable")}</p>}
           </> : <>
             {!canApply && <p className="round-entry-unavailable">
               {isDirectAdmissionRound ? t("hub.closedDescription") : t("hub.eligibilityDescription", { round })}</p>}
