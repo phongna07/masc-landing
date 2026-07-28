@@ -719,6 +719,7 @@ dialog[open]::backdrop {
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 50%;
   box-shadow: 0 0 0 52px rgba(255, 255, 255, 0.018), 0 0 0 104px rgba(255, 255, 255, 0.01);
+  pointer-events: none;
 }
 
 .dashboard-card-index {
@@ -938,9 +939,116 @@ dialog[open]::backdrop {
 .team-hero-card {
   position: relative;
   min-height: 250px;
-  justify-content: flex-end;
+  gap: 0;
+  padding: 0;
   border-color: rgba(123, 102, 255, 0.32);
   background: linear-gradient(115deg, rgba(123, 102, 255, 0.15), rgba(210, 166, 108, 0.08));
+  transition: border-color 180ms ease, box-shadow 180ms ease;
+}
+
+.team-overview-item {
+  display: grid;
+}
+
+.team-details-panel-inner {
+  display: grid;
+  gap: 18px;
+}
+
+.team-hero-header {
+  display: flex;
+  flex: 1;
+  margin: 0;
+}
+
+.team-hero-trigger {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+  gap: 32px;
+  width: 100%;
+  min-height: 250px;
+  padding: 82px clamp(22px, 4vw, 42px) 30px;
+  border: 0;
+  outline: none;
+  color: inherit;
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+}
+
+.team-hero-card:has(.team-hero-trigger:hover),
+.team-hero-card:has(.team-hero-trigger[data-panel-open]) {
+  border-color: rgba(210, 166, 108, 0.48);
+  box-shadow: inset 0 0 60px rgba(123, 102, 255, 0.06);
+}
+
+.team-hero-trigger:focus-visible {
+  outline: 2px solid #f2d584;
+  outline-offset: -5px;
+}
+
+.team-hero-copy {
+  display: grid;
+  min-width: 0;
+}
+
+.team-hero-title {
+  font-family: var(--font-castela), Georgia, serif;
+  font-size: clamp(25px, 2.5vw, 34px);
+  font-weight: 400;
+  line-height: 1.15;
+  overflow-wrap: anywhere;
+}
+
+.team-hero-description {
+  margin-top: 9px;
+  color: var(--muted);
+  font-size: 15px;
+  line-height: 1.7;
+}
+
+.team-accordion-action {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  padding-bottom: 3px;
+  color: #f2d584;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.team-accordion-action svg {
+  width: 18px;
+  height: 18px;
+  transition: transform 220ms ease;
+}
+
+.team-hero-trigger[data-panel-open] .team-accordion-action svg {
+  transform: rotate(180deg);
+}
+
+.team-details-panel {
+  height: var(--accordion-panel-height);
+  overflow: hidden;
+  opacity: 1;
+  transition: height 240ms ease, opacity 180ms ease;
+}
+
+.team-details-panel[data-starting-style],
+.team-details-panel[data-ending-style] {
+  height: 0;
+  opacity: 0;
+}
+
+.team-details-panel-inner {
+  padding-top: 18px;
 }
 
 .team-badges {
@@ -1161,7 +1269,20 @@ dialog[open]::backdrop {
 
   .team-badges {
     position: static;
-    margin-bottom: 28px;
+    margin-bottom: 10px;
+  }
+
+  .team-hero-trigger {
+    grid-template-columns: 1fr;
+    gap: 20px;
+    padding-top: 28px;
+  }
+
+  .team-accordion-action {
+    justify-content: space-between;
+    width: 100%;
+    padding-top: 18px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
   }
 
   .dashboard-tabs [role="tab"] {
@@ -5413,5 +5534,11 @@ footer {
   .parallax-media img,
   .parallax-frame img {
     transform: none !important;
+  }
+
+  .team-details-panel,
+  .team-accordion-action svg,
+  .team-hero-card {
+    transition-duration: 0.01ms !important;
   }
 }

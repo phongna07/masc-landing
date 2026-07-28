@@ -425,6 +425,8 @@
       "registration": "Đơn đăng ký của bạn",
       "captainMessage": "Bạn đang dẫn dắt đội thi này. Đội hình đã đăng ký được hiển thị bên dưới.",
       "memberMessage": "Bạn đã được đăng ký là thành viên của đội thi này.",
+      "showDetails": "Xem thông tin đội",
+      "hideDetails": "Ẩn thông tin đội",
       "details": "Thông tin đội thi",
       "statusLabel": "Trạng thái đăng ký",
       "teamSize": "Số thành viên",

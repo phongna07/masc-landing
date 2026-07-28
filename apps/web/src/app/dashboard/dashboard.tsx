@@ -9,6 +9,13 @@ import {
   type AwarenessSource,
   containsEmoji,
 } from "@masc-landing/api/registration-schema";
+import {
+  Accordion,
+  AccordionHeader,
+  AccordionItem,
+  AccordionPanel,
+  AccordionTrigger,
+} from "@masc-landing/ui/components/accordion";
 import { Button } from "@masc-landing/ui/components/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@masc-landing/ui/components/card";
 import { Input } from "@masc-landing/ui/components/input";
@@ -17,7 +24,7 @@ import { Skeleton } from "@masc-landing/ui/components/skeleton";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import type { inferRouterOutputs } from "@trpc/server";
 import {
-  ArrowRightIcon, CheckCircle2Icon, MegaphoneIcon, MessageSquareQuoteIcon,
+  ArrowRightIcon, CheckCircle2Icon, ChevronDownIcon, MegaphoneIcon, MessageSquareQuoteIcon,
   RefreshCwIcon, TriangleAlertIcon
 } from "lucide-react";
 import type { Route } from "next";
@@ -510,73 +517,91 @@ function RegistrationForm({ session, round }: { session: Session; round: "0.5" |
 function TeamOverview({ membership }: { membership: Extract<Membership, { registered: true }> }) {
   const t = useTranslations("Dashboard");
   const format = useFormatter();
+  const [detailsOpen, setDetailsOpen] = useState(false);
   const cvDownload = useMutation(trpc.registration.createRoundOneCvDownloadUrl.mutationOptions({
     onSuccess: ({ downloadUrl }) => window.location.assign(downloadUrl),
     onError: () => toast.error(t("registration.cv.downloadError")),
   }));
   const captain = membership.team.members.find((member) => member.isCaptain);
   return (
-    <div className="team-overview">
-      <Card className="dashboard-card team-hero-card">
-        <CardHeader>
-          <div className="team-badges">
-            <span className="role-badge">{t(`roles.${membership.role}`)}</span>
-            <span className={`status-badge status-${membership.team.status}`}>{t(`status.${membership.team.status}`)}</span>
+    <Accordion className="team-overview" value={detailsOpen ? ["registration-details"] : []}
+      onValueChange={(value) => setDetailsOpen(value.includes("registration-details"))}>
+      <AccordionItem className="team-overview-item" value="registration-details">
+        <Card className="dashboard-card team-hero-card">
+          <AccordionHeader className="team-hero-header">
+            <AccordionTrigger className="team-hero-trigger">
+              <span className="team-badges">
+                <span className="role-badge">{t(`roles.${membership.role}`)}</span>
+                <span className={`status-badge status-${membership.team.status}`}>{t(`status.${membership.team.status}`)}</span>
+              </span>
+              <span className="team-hero-copy">
+                <span className="dashboard-card-index">01 / {t("overview.registration")}</span>
+                <span className="team-hero-title">{membership.team.name}</span>
+                <span className="team-hero-description">
+                  {membership.role === "captain" ? t("overview.captainMessage") : t("overview.memberMessage")}
+                </span>
+              </span>
+              <span className="team-accordion-action">
+                <span>{detailsOpen ? t("overview.hideDetails") : t("overview.showDetails")}</span>
+                <ChevronDownIcon aria-hidden="true" />
+              </span>
+            </AccordionTrigger>
+          </AccordionHeader>
+        </Card>
+        <AccordionPanel className="team-details-panel">
+          <div className="team-details-panel-inner">
+            <div className="overview-grid">
+              <Card className="dashboard-card">
+                <CardHeader><CardTitle>{t("overview.details")}</CardTitle></CardHeader>
+                <CardContent className="detail-list">
+                  <Detail label={t("fields.teamName")} value={membership.team.name} />
+                  <Detail label={t("overview.statusLabel")} value={t(`status.${membership.team.status}`)} />
+                  <Detail label={t("overview.teamSize")} value={t("overview.people", { count: membership.team.members.length })} />
+                  <Detail label={t("overview.admissionMethod")} value={t(`overview.admissionMethods.${membership.team.admissionMethod}`)} />
+                </CardContent>
+              </Card>
+              <Card className="dashboard-card">
+                <CardHeader><CardTitle>{t("overview.captainContact")}</CardTitle></CardHeader>
+                <CardContent className="detail-list">
+                  <Detail label={t("fields.fullName")} value={captain?.fullName ?? "-"} />
+                  <Detail label={t("fields.email")} value={captain?.email ?? "-"} />
+                  <Detail label={t("fields.captainPhone")} value={membership.team.captainPhone} />
+                </CardContent>
+              </Card>
+            </div>
+            <Card className="dashboard-card roster-card">
+              <CardHeader><CardTitle>{t("overview.roster")}</CardTitle></CardHeader>
+              <CardContent className="roster-list">
+                <table className="roster-table">
+                  <thead>
+                    <tr>
+                      <th scope="col" aria-label="Number">#</th>
+                      <th scope="col">{t("fields.fullName")}</th>
+                      <th scope="col">{t("fields.birthdate")}</th>
+                      <th scope="col">{t("fields.university")}</th>
+                      <th scope="col" aria-label={t("roles.captain")} />
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {membership.team.members.map((member, index) => (
+                      <tr key={member.id}>
+                        <td className="roster-index">{String(index + 1).padStart(2, "0")}</td>
+                        <td><h3>{member.fullName}</h3><p>{member.email}</p></td>
+                        <td><p>{format.dateTime(new Date(`${member.birthdate}T00:00:00Z`), { dateStyle: "medium", timeZone: "UTC" })}</p></td>
+                        <td><p>{member.universityName}</p></td>
+                        <td>{member.isCaptain && <span className="captain-tag">{t("roles.captain")}</span>}
+                          {membership.role === "captain" && "hasCv" in member && member.hasCv && <Button size="sm" variant="outline"
+                            disabled={cvDownload.isPending} onClick={() => cvDownload.mutate({ memberId: member.id })}>{t("registration.cv.download")}</Button>}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </CardContent>
+            </Card>
           </div>
-          <p className="dashboard-card-index">01 / {t("overview.registration")}</p>
-          <CardTitle>{membership.team.name}</CardTitle>
-          <p>{membership.role === "captain" ? t("overview.captainMessage") : t("overview.memberMessage")}</p>
-        </CardHeader>
-      </Card>
-      <div className="overview-grid">
-        <Card className="dashboard-card">
-          <CardHeader><CardTitle>{t("overview.details")}</CardTitle></CardHeader>
-          <CardContent className="detail-list">
-            <Detail label={t("fields.teamName")} value={membership.team.name} />
-            <Detail label={t("overview.statusLabel")} value={t(`status.${membership.team.status}`)} />
-            <Detail label={t("overview.teamSize")} value={t("overview.people", { count: membership.team.members.length })} />
-            <Detail label={t("overview.admissionMethod")} value={t(`overview.admissionMethods.${membership.team.admissionMethod}`)} />
-          </CardContent>
-        </Card>
-        <Card className="dashboard-card">
-          <CardHeader><CardTitle>{t("overview.captainContact")}</CardTitle></CardHeader>
-          <CardContent className="detail-list">
-            <Detail label={t("fields.fullName")} value={captain?.fullName ?? "-"} />
-            <Detail label={t("fields.email")} value={captain?.email ?? "-"} />
-            <Detail label={t("fields.captainPhone")} value={membership.team.captainPhone} />
-          </CardContent>
-        </Card>
-      </div>
-      <Card className="dashboard-card roster-card">
-        <CardHeader><CardTitle>{t("overview.roster")}</CardTitle></CardHeader>
-        <CardContent className="roster-list">
-          <table className="roster-table">
-            <thead>
-              <tr>
-                <th scope="col" aria-label="Number">#</th>
-                <th scope="col">{t("fields.fullName")}</th>
-                <th scope="col">{t("fields.birthdate")}</th>
-                <th scope="col">{t("fields.university")}</th>
-                <th scope="col" aria-label={t("roles.captain")} />
-              </tr>
-            </thead>
-            <tbody>
-              {membership.team.members.map((member, index) => (
-                <tr key={member.id}>
-                  <td className="roster-index">{String(index + 1).padStart(2, "0")}</td>
-                  <td><h3>{member.fullName}</h3><p>{member.email}</p></td>
-                  <td><p>{format.dateTime(new Date(`${member.birthdate}T00:00:00Z`), { dateStyle: "medium", timeZone: "UTC" })}</p></td>
-                  <td><p>{member.universityName}</p></td>
-                  <td>{member.isCaptain && <span className="captain-tag">{t("roles.captain")}</span>}
-                    {membership.role === "captain" && "hasCv" in member && member.hasCv && <Button size="sm" variant="outline"
-                      disabled={cvDownload.isPending} onClick={() => cvDownload.mutate({ memberId: member.id })}>{t("registration.cv.download")}</Button>}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </CardContent>
-      </Card>
-    </div>
+        </AccordionPanel>
+      </AccordionItem>
+    </Accordion>
   );
 }
 

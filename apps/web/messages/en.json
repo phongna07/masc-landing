@@ -425,6 +425,8 @@
       "registration": "Your registration",
       "captainMessage": "You are leading this team. Your submitted roster is shown below.",
       "memberMessage": "You are registered as a member of this team.",
+      "showDetails": "Show team details",
+      "hideDetails": "Hide team details",
       "details": "Team details",
       "statusLabel": "Registration status",
       "teamSize": "Team size",
