@@ -2,6 +2,7 @@ export const TEAM_SIZE = 3;
 export const TEAMMATE_COUNT = TEAM_SIZE - 1;
 export const MIN_PARTICIPANT_AGE = 18;
 export const MAX_PARTICIPANT_AGE = 22;
+export const PARTICIPANT_AGE_REFERENCE_DATE = "2026-08-07";
 
 const isoDatePattern = /^(\d{4})-(\d{2})-(\d{2})$/;
 
@@ -19,15 +20,40 @@ export function isValidBirthdate(value: string) {
     && date.getUTCDate() === day;
 }
 
-export function isEligibleBirthdate(value: string, referenceYear = new Date().getFullYear()) {
-  if (!isValidBirthdate(value)) return false;
-  const ageByYear = referenceYear - Number(value.slice(0, 4));
-  return ageByYear >= MIN_PARTICIPANT_AGE && ageByYear <= MAX_PARTICIPANT_AGE;
+function formatIsoDate(date: Date) {
+  return date.toISOString().slice(0, 10);
 }
 
-export function getEligibleBirthdateRange(referenceYear = new Date().getFullYear()) {
+function subtractUtcYears(date: Date, years: number) {
+  return new Date(Date.UTC(
+    date.getUTCFullYear() - years,
+    date.getUTCMonth(),
+    date.getUTCDate(),
+  ));
+}
+
+export function isEligibleBirthdate(
+  value: string,
+  referenceDate = PARTICIPANT_AGE_REFERENCE_DATE,
+) {
+  if (!isValidBirthdate(value)) return false;
+  const range = getEligibleBirthdateRange(referenceDate);
+  return value >= range.min && value <= range.max;
+}
+
+export function getEligibleBirthdateRange(
+  referenceDate = PARTICIPANT_AGE_REFERENCE_DATE,
+) {
+  if (!isValidBirthdate(referenceDate)) {
+    throw new Error("Invalid participant age reference date");
+  }
+
+  const reference = new Date(`${referenceDate}T00:00:00Z`);
+  const oldestBirthdate = subtractUtcYears(reference, MAX_PARTICIPANT_AGE + 1);
+  oldestBirthdate.setUTCDate(oldestBirthdate.getUTCDate() + 1);
+
   return {
-    min: `${referenceYear - MAX_PARTICIPANT_AGE}-01-01`,
-    max: `${referenceYear - MIN_PARTICIPANT_AGE}-12-31`,
+    min: formatIsoDate(oldestBirthdate),
+    max: formatIsoDate(subtractUtcYears(reference, MIN_PARTICIPANT_AGE)),
   };
 }
