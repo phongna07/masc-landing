@@ -2,6 +2,7 @@
 
 import { Button } from "@masc-landing/ui/components/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@masc-landing/ui/components/card";
+import { ConfirmationDialog } from "@masc-landing/ui/components/confirmation-dialog";
 import { Input } from "@masc-landing/ui/components/input";
 import { Label } from "@masc-landing/ui/components/label";
 import { Textarea } from "@masc-landing/ui/components/textarea";
@@ -71,7 +72,6 @@ export default function AdminAnnouncementsPage() {
   };
 
   const remove = async (id: string) => {
-    if (!window.confirm(t("announcements.deleteConfirm"))) return;
     try {
       await deleteAnnouncement.mutateAsync({ id });
       await queryClient.invalidateQueries({ queryKey: trpc.announcements.list.queryKey() });
@@ -103,16 +103,27 @@ export default function AdminAnnouncementsPage() {
     {announcements.isPending ? <AdminLoading /> : announcements.isError ? <AdminError title={t("errors.loadTitle")} description={t("errors.announcements")} retry={() => announcements.refetch()} retryLabel={t("actions.retry")} /> : (
       <div className="announcement-feed admin-announcement-feed">
         {announcements.data.length === 0 ? <Card className="announcement-empty"><MegaphoneIcon aria-hidden="true" /><h2>{t("announcements.emptyTitle")}</h2><p>{t("announcements.emptyDescription")}</p></Card> : announcements.data.map((item) => (
-          <AnnouncementCard key={item.id} item={item} locale={locale} organizer={t("announcements.organizer")} deleteLabel={t("announcements.delete")} deleting={deleteAnnouncement.isPending} onDelete={() => remove(item.id)} />
+          <AnnouncementCard key={item.id} item={item} locale={locale} organizer={t("announcements.organizer")} deleteLabel={t("announcements.delete")} deleting={deleteAnnouncement.isPending}
+            confirmation={{ title: t("announcements.deleteConfirmation.title"), description: t("announcements.deleteConfirmation.description"), confirm: t("announcements.deleteConfirmation.confirm"), cancel: t("actions.cancel") }}
+            onDelete={() => void remove(item.id)} />
         ))}
       </div>
     )}
   </>;
 }
 
-function AnnouncementCard({ item, locale, organizer, deleteLabel, deleting, onDelete }: { item: { id: string; content: string; imageUrl: string | null; createdAt: string }; locale: string; organizer: string; deleteLabel: string; deleting: boolean; onDelete: () => void }) {
+function AnnouncementCard({ item, locale, organizer, deleteLabel, deleting, confirmation, onDelete }: { item: { id: string; content: string; imageUrl: string | null; createdAt: string }; locale: string; organizer: string; deleteLabel: string; deleting: boolean; confirmation: { title: string; description: string; confirm: string; cancel: string }; onDelete: () => void }) {
   return <Card className="announcement-post">
-    <CardHeader className="announcement-post-header"><div className="announcement-avatar"><BrandLogo /></div><div><CardTitle>{organizer}</CardTitle><time dateTime={new Date(item.createdAt).toISOString()}>{new Intl.DateTimeFormat(locale, { dateStyle: "medium", timeStyle: "short" }).format(new Date(item.createdAt))}</time></div><Button type="button" variant="ghost" size="icon" disabled={deleting} onClick={onDelete} aria-label={deleteLabel}><Trash2Icon aria-hidden="true" /></Button></CardHeader>
+    <CardHeader className="announcement-post-header"><div className="announcement-avatar"><BrandLogo /></div><div><CardTitle>{organizer}</CardTitle><time dateTime={new Date(item.createdAt).toISOString()}>{new Intl.DateTimeFormat(locale, { dateStyle: "medium", timeStyle: "short" }).format(new Date(item.createdAt))}</time></div><ConfirmationDialog
+      trigger={<Button type="button" variant="ghost" size="icon" disabled={deleting} aria-label={deleteLabel}><Trash2Icon aria-hidden="true" /></Button>}
+      title={confirmation.title}
+      description={confirmation.description}
+      confirmLabel={confirmation.confirm}
+      cancelLabel={confirmation.cancel}
+      icon={<Trash2Icon />}
+      tone="destructive"
+      onConfirm={onDelete}
+    /></CardHeader>
     <CardContent><p className="announcement-content">{item.content}</p>{item.imageUrl && <img className="announcement-image" src={item.imageUrl} alt="" />}</CardContent>
   </Card>;
 }

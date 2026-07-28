@@ -4,6 +4,7 @@ import type { RoundId } from "@masc-landing/api/rounds";
 import { TEAM_SIZE } from "@masc-landing/api/registration";
 import { Button } from "@masc-landing/ui/components/button";
 import { Card, CardContent } from "@masc-landing/ui/components/card";
+import { ConfirmationDialog } from "@masc-landing/ui/components/confirmation-dialog";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { ArrowUpRightIcon, ChevronRightIcon } from "lucide-react";
 import Link from "next/link";
@@ -37,7 +38,7 @@ export default function RoundTeamList({ round }: { round: RoundId }) {
   const approvedIds = visibleTeams.filter((team) => team.status === "approved").map((team) => team.id);
   const toggleAll = () => setSelected(selected.length === approvedIds.length ? [] : approvedIds);
   const runPromotion = (targetRound: RoundId) => {
-    if (!selected.length || !window.confirm(t("teams.confirmPromotion", { count: selected.length, round: targetRound }))) return;
+    if (!selected.length) return;
     if (round === "0.5" && (targetRound === "1" || targetRound === "2")) promote.mutate({ sourceRound: round, targetRound, teamIds: selected });
     else if (round === "1" && targetRound === "2") promote.mutate({ sourceRound: round, targetRound, teamIds: selected });
     else if (round === "2" && targetRound === "3") promote.mutate({ sourceRound: round, targetRound, teamIds: selected });
@@ -51,10 +52,18 @@ export default function RoundTeamList({ round }: { round: RoundId }) {
         { label: t("stats.rejectedTeams"), value: stats.data?.rejectedTeams },
       ]} />
     <div className="admin-team-toolbar">
-      {targets[round].length > 0 && <div className="admin-status-actions admin-promotion-actions">{targets[round].map((targetRound) => <Button
-        aria-busy={promote.isPending} className="admin-promotion-button" key={targetRound}
-        disabled={!selected.length || promote.isPending} onClick={() => runPromotion(targetRound)}>
-        <ArrowUpRightIcon />{t("teams.promoteSelected", { round: targetRound, count: selected.length })}</Button>)}</div>}
+      {targets[round].length > 0 && <div className="admin-status-actions admin-promotion-actions">{targets[round].map((targetRound) => <ConfirmationDialog
+        key={targetRound}
+        trigger={<Button aria-busy={promote.isPending} className="admin-promotion-button"
+          disabled={!selected.length || promote.isPending}>
+          <ArrowUpRightIcon />{t("teams.promoteSelected", { round: targetRound, count: selected.length })}</Button>}
+        title={t("teams.promotionConfirmation.title", { count: selected.length, round: targetRound })}
+        description={t("teams.promotionConfirmation.description", { count: selected.length, round: targetRound })}
+        confirmLabel={t("teams.promotionConfirmation.confirm", { count: selected.length })}
+        cancelLabel={t("actions.cancel")}
+        icon={<ArrowUpRightIcon />}
+        onConfirm={() => runPromotion(targetRound)}
+      />)}</div>}
       <div className="admin-status-actions admin-status-filter" role="group" aria-label={t("teams.statusFilter")}>
         {(["all", "pending", "approved", "rejected"] as const).map((status) => <Button
           aria-pressed={statusFilter === status} className="admin-status-filter-button" data-status={status} key={status}

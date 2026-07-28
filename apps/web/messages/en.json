@@ -510,7 +510,11 @@
       "publishing": "Publishing…",
       "organizer": "Marketing All-Star Challenge organizers",
       "delete": "Delete announcement",
-      "deleteConfirm": "Delete this announcement? This cannot be undone.",
+      "deleteConfirmation": {
+        "title": "Delete this announcement?",
+        "description": "This announcement will be permanently removed. This action cannot be undone.",
+        "confirm": "Delete announcement"
+      },
       "emptyTitle": "No announcements yet",
       "emptyDescription": "Publish the first update for participants above.",
       "success": {
@@ -546,7 +550,11 @@
       "filterAll": "All statuses",
       "promoteSelected": "Promote {count} to Round {round}",
       "promoteTo": "Promote to Round {round}",
-      "confirmPromotion": "Promote {count} selected team(s) to Round {round}?",
+      "promotionConfirmation": {
+        "title": "{count, plural, =1 {Promote this team?} other {Promote # teams?}}",
+        "description": "{count, plural, =1 {The selected team will be added to Round {round}.} other {The # selected teams will be added to Round {round}.}}",
+        "confirm": "{count, plural, =1 {Promote team} other {Promote # teams}}"
+      },
       "promotionResult": "Promotion finished: {succeeded} succeeded, {failed} failed.",
       "promotionSuccess": "Team promoted successfully.",
       "promotionError": "The team could not be promoted. Check eligibility and target-round conflicts.",

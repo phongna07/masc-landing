@@ -4,8 +4,9 @@ import type { RoundId } from "@masc-landing/api/rounds";
 import { TEAM_SIZE } from "@masc-landing/api/registration";
 import { Button } from "@masc-landing/ui/components/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@masc-landing/ui/components/card";
+import { ConfirmationDialog } from "@masc-landing/ui/components/confirmation-dialog";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { ArrowLeftIcon, CheckIcon, DownloadIcon, EyeIcon, XIcon } from "lucide-react";
+import { ArrowLeftIcon, ArrowUpRightIcon, CheckIcon, DownloadIcon, EyeIcon, XIcon } from "lucide-react";
 import Link from "next/link";
 import { useLocale, useTranslations } from "next-intl";
 import { toast } from "sonner";
@@ -35,10 +36,9 @@ export default function RoundTeamDetail({ round, teamId }: { round: RoundId; tea
   if (team.isError) return team.error.data?.code === "NOT_FOUND" ? <AdminEmpty title={t("detail.notFoundTitle")} description={t("detail.notFoundDescription")} />
     : <AdminError title={t("errors.loadTitle")} description={t("errors.detail")} retry={() => team.refetch()} retryLabel={t("actions.retry")} />;
   const decide = (status: "approved" | "rejected") => {
-    if (window.confirm(t(`teams.confirmation.${status}.description`, { team: team.data.name }))) update.mutate({ ...input, status });
+    update.mutate({ ...input, status });
   };
   const runPromotion = (targetRound: RoundId) => {
-    if (!window.confirm(t("teams.confirmPromotion", { count: 1, round: targetRound }))) return;
     if (round === "0.5" && (targetRound === "1" || targetRound === "2")) promote.mutate({ sourceRound: round, targetRound, teamIds: [teamId] });
     else if (round === "1" && targetRound === "2") promote.mutate({ sourceRound: round, targetRound, teamIds: [teamId] });
     else if (round === "2" && targetRound === "3") promote.mutate({ sourceRound: round, targetRound, teamIds: [teamId] });
@@ -47,9 +47,36 @@ export default function RoundTeamDetail({ round, teamId }: { round: RoundId; tea
     <div className="admin-detail-heading"><div><p>{t("teams.roundTitle", { round })}</p><h1>{team.data.name}</h1></div>
       <span className={`status-badge status-${team.data.status}`}>{t(`values.status.${team.data.status}`)}</span></div>
     <div className="admin-status-actions">
-      {team.data.status !== "approved" && <Button onClick={() => decide("approved")} disabled={update.isPending}><CheckIcon />{t("teams.approve")}</Button>}
-      {team.data.status !== "rejected" && <Button variant="destructive" onClick={() => decide("rejected")} disabled={update.isPending}><XIcon />{t("teams.reject")}</Button>}
-      {team.data.status === "approved" && targets[round].map((targetRound) => <Button variant="outline" key={targetRound} onClick={() => runPromotion(targetRound)} disabled={promote.isPending}>{t("teams.promoteTo", { round: targetRound })}</Button>)}
+      {team.data.status !== "approved" && <ConfirmationDialog
+        trigger={<Button disabled={update.isPending}><CheckIcon />{t("teams.approve")}</Button>}
+        title={t("teams.confirmation.approved.title")}
+        description={t("teams.confirmation.approved.description", { team: team.data.name })}
+        confirmLabel={t("teams.confirmation.approved.confirm")}
+        cancelLabel={t("actions.cancel")}
+        icon={<CheckIcon />}
+        tone="success"
+        onConfirm={() => decide("approved")}
+      />}
+      {team.data.status !== "rejected" && <ConfirmationDialog
+        trigger={<Button variant="destructive" disabled={update.isPending}><XIcon />{t("teams.reject")}</Button>}
+        title={t("teams.confirmation.rejected.title")}
+        description={t("teams.confirmation.rejected.description", { team: team.data.name })}
+        confirmLabel={t("teams.confirmation.rejected.confirm")}
+        cancelLabel={t("actions.cancel")}
+        icon={<XIcon />}
+        tone="destructive"
+        onConfirm={() => decide("rejected")}
+      />}
+      {team.data.status === "approved" && targets[round].map((targetRound) => <ConfirmationDialog
+        key={targetRound}
+        trigger={<Button variant="outline" disabled={promote.isPending}>{t("teams.promoteTo", { round: targetRound })}</Button>}
+        title={t("teams.promotionConfirmation.title", { count: 1, round: targetRound })}
+        description={t("teams.promotionConfirmation.description", { count: 1, round: targetRound })}
+        confirmLabel={t("teams.promotionConfirmation.confirm", { count: 1 })}
+        cancelLabel={t("actions.cancel")}
+        icon={<ArrowUpRightIcon />}
+        onConfirm={() => runPromotion(targetRound)}
+      />)}
     </div>
     <div className="admin-detail-grid"><Card className="dashboard-card"><CardHeader><CardTitle>{t("detail.registration")}</CardTitle></CardHeader><CardContent className="detail-list">
       <Detail label={t("fields.created")} value={formatDate(team.data.createdAt, locale)} /><Detail label={t("fields.members")} value={t("values.memberCount", { count: team.data.members.length, required: TEAM_SIZE })} />

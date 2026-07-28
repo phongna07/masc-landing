@@ -510,7 +510,11 @@
       "publishing": "Đang đăng…",
       "organizer": "Ban tổ chức Marketing All-Star Challenge",
       "delete": "Xóa thông báo",
-      "deleteConfirm": "Xóa thông báo này? Thao tác này không thể hoàn tác.",
+      "deleteConfirmation": {
+        "title": "Xóa thông báo này?",
+        "description": "Thông báo này sẽ bị xóa vĩnh viễn. Thao tác này không thể hoàn tác.",
+        "confirm": "Xóa thông báo"
+      },
       "emptyTitle": "Chưa có thông báo",
       "emptyDescription": "Hãy đăng cập nhật đầu tiên cho các thí sinh ở phía trên.",
       "success": {
@@ -546,7 +550,11 @@
       "filterAll": "Tất cả trạng thái",
       "promoteSelected": "Chọn {count} đội vào Vòng {round}",
       "promoteTo": "Chọn vào Vòng {round}",
-      "confirmPromotion": "Chọn {count} đội vào Vòng {round}?",
+      "promotionConfirmation": {
+        "title": "{count, plural, =1 {Chọn đội này vào vòng tiếp theo?} other {Chọn # đội vào vòng tiếp theo?}}",
+        "description": "{count, plural, =1 {Đội đã chọn sẽ được thêm vào Vòng {round}.} other {# đội đã chọn sẽ được thêm vào Vòng {round}.}}",
+        "confirm": "{count, plural, =1 {Chọn đội} other {Chọn # đội}}"
+      },
       "promotionResult": "Hoàn tất: {succeeded} thành công, {failed} thất bại.",
       "promotionSuccess": "Đã chuyển đội sang vòng mới.",
       "promotionError": "Không thể chuyển đội. Vui lòng kiểm tra điều kiện và thành viên bị trùng ở vòng đích.",
