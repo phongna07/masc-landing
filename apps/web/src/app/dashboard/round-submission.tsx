@@ -27,7 +27,10 @@ export default function RoundSubmission({ round }: { round: RoundId }) {
   const createUploadUrl = useMutation(trpc.roundSubmission.createUploadUrl.mutationOptions());
   const finalize = useMutation(trpc.roundSubmission.finalize.mutationOptions({ onSuccess: async () => {
     toast.success(t("round.success", { round })); setEditing(false); setFile(null);
-    await queryClient.invalidateQueries({ queryKey: trpc.roundSubmission.current.queryKey(input) });
+    await Promise.all([
+      queryClient.invalidateQueries({ queryKey: trpc.roundSubmission.current.queryKey(input) }),
+      queryClient.invalidateQueries({ queryKey: trpc.roundSubmission.statuses.queryKey() }),
+    ]);
   }}));
   const download = useMutation(trpc.roundSubmission.createDownloadUrl.mutationOptions({
     onSuccess: ({ downloadUrl }) => window.location.assign(downloadUrl), onError: () => toast.error(t("round.errors.download")),

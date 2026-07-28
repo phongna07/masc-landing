@@ -1,5 +1,6 @@
 import { getAdmissionSettings } from "@masc-landing/api/admission-settings";
 import { getRoundMemberships } from "@masc-landing/api/registration-memberships";
+import { getRoundSubmissionStatuses } from "@masc-landing/api/routers/round-submission";
 import { redirect } from "next/navigation";
 
 import { getServerSession } from "@/lib/server-session";
@@ -14,11 +15,13 @@ export default async function AuthenticatedDashboard({ activeTab }: { activeTab:
   }
 
   const user = { id: session.user.id, email: session.user.email };
-  const [admissionSettings, memberships] = await Promise.all([
+  const [admissionSettings, memberships, submissionStatuses] = await Promise.all([
     getAdmissionSettings(),
     getRoundMemberships(user),
+    getRoundSubmissionStatuses(user),
   ]);
 
   return <Dashboard session={session} activeTab={activeTab}
-    initialMemberships={memberships} initialSettings={admissionSettings} />;
+    initialMemberships={memberships} initialSettings={admissionSettings}
+    initialSubmissionStatuses={submissionStatuses} />;
 }

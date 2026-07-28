@@ -10,7 +10,7 @@ import { and, desc, eq, or, sql } from "drizzle-orm";
 import { z } from "zod";
 
 import { freshProtectedProcedure, protectedProcedure, router } from "../index";
-import { roundSchema, type RoundId } from "../rounds";
+import { roundIds, roundSchema, type RoundId } from "../rounds";
 import { getSubmissionSettings, requireSubmissionOpen } from "../submission-settings";
 
 const MAX_FILE_SIZE = 20 * 1024 * 1024;
@@ -45,6 +45,36 @@ function tablesForRound(round: RoundId) {
     member: roundTwoMembers as unknown as typeof members, submission: roundTwoSubmissions as unknown as typeof roundSubmissions };
   return { team: roundThreeTeams as unknown as typeof teams,
     member: roundThreeMembers as unknown as typeof members, submission: roundThreeSubmissions as unknown as typeof roundSubmissions };
+}
+
+export type RoundSubmissionStatus = "submitted" | "feedback" | null;
+export type RoundSubmissionStatuses = Record<RoundId, RoundSubmissionStatus>;
+
+async function submissionStatusFor(round: RoundId, userId: string, email: string): Promise<RoundSubmissionStatus> {
+  const { team, member, submission } = tablesForRound(round);
+  const [latest] = await db.select({ feedbackPublished: submission.feedbackPublished })
+    .from(submission)
+    .innerJoin(team, eq(submission.teamId, team.id))
+    .innerJoin(member, eq(member.teamId, team.id))
+    .where(and(
+      eq(submission.round, round),
+      or(
+        and(eq(team.captainId, userId), eq(member.isCaptain, true)),
+        sql`lower(${member.email}) = ${email.trim().toLowerCase()}`,
+      ),
+    ))
+    .orderBy(desc(submission.attemptNumber))
+    .limit(1);
+  if (!latest) return null;
+  return latest.feedbackPublished ? "feedback" : "submitted";
+}
+
+export async function getRoundSubmissionStatuses(user: { id: string; email: string }): Promise<RoundSubmissionStatuses> {
+  const statuses = await Promise.all(roundIds.map(async (round) => [
+    round,
+    await submissionStatusFor(round, user.id, user.email),
+  ] as const));
+  return Object.fromEntries(statuses) as RoundSubmissionStatuses;
 }
 
 async function membershipFor(round: RoundId, userId: string, email: string) {
@@ -92,6 +122,10 @@ function isUniqueViolation(error: unknown) {
 }
 
 export const roundSubmissionRouter = router({
+  statuses: protectedProcedure.query(async ({ ctx }) => getRoundSubmissionStatuses({
+    id: ctx.session.user.id,
+    email: ctx.session.user.email,
+  })),
   current: protectedProcedure.input(roundInput).query(async ({ ctx, input }) => {
     const { submission: submissionTable } = tablesForRound(input.round);
     const membership = await membershipFor(input.round, ctx.session.user.id, ctx.session.user.email);

@@ -16,7 +16,10 @@ import { Label } from "@masc-landing/ui/components/label";
 import { Skeleton } from "@masc-landing/ui/components/skeleton";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import type { inferRouterOutputs } from "@trpc/server";
-import { ArrowRightIcon, MegaphoneIcon, RefreshCwIcon, TriangleAlertIcon } from "lucide-react";
+import {
+  ArrowRightIcon, CheckCircle2Icon, MegaphoneIcon, MessageSquareQuoteIcon,
+  RefreshCwIcon, TriangleAlertIcon
+} from "lucide-react";
 import type { Route } from "next";
 import dynamic from "next/dynamic";
 import Link from "next/link";
@@ -36,6 +39,7 @@ import RoundSubmission from "./round-submission";
 type Session = typeof authClient.$Infer.Session;
 type Membership = inferRouterOutputs<AppRouter>["registration"]["current"];
 type Memberships = inferRouterOutputs<AppRouter>["registration"]["memberships"];
+type SubmissionStatuses = inferRouterOutputs<AppRouter>["roundSubmission"]["statuses"];
 type Teammate = { id: string; fullName: string; email: string; birthdate: string; universityName: string };
 type FormErrors = Record<string, string>;
 
@@ -55,15 +59,20 @@ const AnnouncementsFeed = dynamic(() => import("./announcements-feed"), {
   loading: () => <AnnouncementsSkeleton />,
 });
 
-export default function Dashboard({ session, activeTab, initialMemberships, initialSettings }: {
+export default function Dashboard({ session, activeTab, initialMemberships, initialSettings, initialSubmissionStatuses }: {
   session: Session;
   activeTab: DashboardTab;
   initialMemberships: Memberships;
   initialSettings: Record<RoundId, boolean>;
+  initialSubmissionStatuses: SubmissionStatuses;
 }) {
   const t = useTranslations("Dashboard");
   const memberships = useQuery({ ...trpc.registration.memberships.queryOptions(), initialData: initialMemberships });
   const settings = useQuery({ ...trpc.registration.settings.queryOptions(), initialData: initialSettings });
+  const submissionStatuses = useQuery({
+    ...trpc.roundSubmission.statuses.queryOptions(),
+    initialData: initialSubmissionStatuses,
+  });
 
   return (
     <div className="dashboard-page">
@@ -103,22 +112,25 @@ export default function Dashboard({ session, activeTab, initialMemberships, init
               </Button>
             </CardContent>
           </Card>
-        ) : activeTab === "overview" ? <RoundHub memberships={memberships.data!} settings={settings.data!} />
+        ) : activeTab === "overview" ? <RoundHub memberships={memberships.data!} settings={settings.data!}
+          submissionStatuses={submissionStatuses.data ?? initialSubmissionStatuses} />
           : <RoundDashboard round={activeTab.slice(6) as RoundId} session={session} settings={settings.data!} />}
       </main>
     </div>
   );
 }
 
-function RoundHub({ memberships, settings }: {
+function RoundHub({ memberships, settings, submissionStatuses }: {
   memberships: Memberships;
   settings: Record<RoundId, boolean>;
+  submissionStatuses: SubmissionStatuses;
 }) {
   const t = useTranslations("Dashboard");
 
   return <div className="round-hub">
     <div className="round-entry-grid">{roundIds.map((round) => {
       const membership = memberships[round];
+      const submissionStatus = submissionStatuses[round];
       const isDirectAdmissionRound = round === "0.5" || round === "1";
       const canApply = !membership.registered && isDirectAdmissionRound && settings[round];
       const roundKey = round.replace(".", "_");
@@ -129,6 +141,12 @@ function RoundHub({ memberships, settings }: {
       const stateLabel = membership.registered ? t(`status.${membership.team.status}`) : canApply ? t("hub.open")
         : isDirectAdmissionRound ? t("hub.closed") : t("hub.notEligible");
       return <Card className={`dashboard-card round-entry-card round-entry-card-${state}`} key={round}>
+        {membership.registered && submissionStatus && <div
+          className={`round-entry-submission-status round-entry-submission-status-${submissionStatus}`}>
+          {submissionStatus === "feedback" ? <MessageSquareQuoteIcon aria-hidden="true" />
+            : <CheckCircle2Icon aria-hidden="true" />}
+          <p>{t(`hub.submissionStatus.${submissionStatus}`)}</p>
+        </div>}
         <CardHeader>
           <div className="round-entry-topline"><p className="dashboard-card-index">{t("tabs.round", { round })}</p>
             <span className={`status-badge status-${state}`}>{stateLabel}</span></div>

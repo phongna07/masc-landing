@@ -245,6 +245,10 @@
       "emptyDescription": "Your registered rounds and any open application routes will appear here when they become available.",
       "announcementsTitle": "Competition updates",
       "announcementsDescription": "Check deadlines, instructions, results, and updates from the organizers.",
+      "submissionStatus": {
+        "feedback": "Admin feedback is ready. Open this round to review it.",
+        "submitted": "Your team has submitted work for this round."
+      },
       "names": {
         "0_5": "The Ignition",
         "1": "The Star Gathering",
