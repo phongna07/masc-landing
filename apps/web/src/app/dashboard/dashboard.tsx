@@ -41,7 +41,6 @@ type FormErrors = Record<string, string>;
 
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const gmailDomain = "@gmail.com";
-const directAdmissionRounds = ["0.5", "1"] as const;
 const emptyTeammate = (id: string): Teammate => ({
   id,
   fullName: "",
@@ -118,47 +117,42 @@ function RoundHub({ memberships, settings, tabSettings }: {
   tabSettings: Record<RoundId, boolean>;
 }) {
   const t = useTranslations("Dashboard");
-  const visibleRounds = roundIds.filter((round) => memberships[round].registered || tabSettings[round] ||
-    (directAdmissionRounds.some((admissionRound) => admissionRound === round) && settings[round]));
 
   return <div className="round-hub">
-    {visibleRounds.length > 0 ? <div className="round-entry-grid">{visibleRounds.map((round) => {
-    const membership = memberships[round];
-    const isDirectAdmissionRound = round === "0.5" || round === "1";
-    const canApply = !membership.registered && isDirectAdmissionRound && settings[round];
-    const canOpen = membership.registered && tabSettings[round];
-    const roundKey = round.replace(".", "_");
-    const description = canApply && round === "1" && memberships["0.5"].registered
-      ? t("hub.roundOneAlternative") : t(`hub.description.${roundKey}`);
-    const state = membership.registered ? membership.team.status : canApply ? "open"
-      : isDirectAdmissionRound ? "closed" : "locked";
-    const stateLabel = membership.registered ? t(`status.${membership.team.status}`) : canApply ? t("hub.open")
-      : isDirectAdmissionRound ? t("hub.closed") : t("hub.notEligible");
-    return <Card className={`dashboard-card round-entry-card round-entry-card-${state}`} key={round}>
-      <CardHeader>
-        <div className="round-entry-topline"><p className="dashboard-card-index">{t("tabs.round", { round })}</p>
-          <span className={`status-badge status-${state}`}>{stateLabel}</span></div>
-        <CardTitle>{t(`hub.names.${roundKey}`)}</CardTitle>
-        <p>{description}</p>
-      </CardHeader>
-      <CardContent>
-        {membership.registered ? <div className="round-entry-team">
-          <span>{t("hub.registeredTeam")}</span><strong>{membership.team.name}</strong>
-          <small>{t(`roles.${membership.role}`)}</small>
-        </div> : !canApply && <p className="round-entry-unavailable">
-          {isDirectAdmissionRound ? t("hub.closedDescription") : t("hub.eligibilityDescription", { round })}</p>}
-        {canOpen && <Button nativeButton={false} render={<Link href={`/dashboard/round-${round}` as Route} />}>
-          {t("hub.go", { round })}<ArrowRightIcon aria-hidden="true" /></Button>}
-        {canApply && <Button nativeButton={false} render={<Link href={`/dashboard/round-${round}` as Route} />}>
-          {t("hub.apply", { round })}<ArrowRightIcon aria-hidden="true" /></Button>}
-        {membership.registered && !tabSettings[round] && <p className="round-entry-unavailable">
-          {t("hub.dashboardUnavailable")}</p>}
-      </CardContent>
-    </Card>;
-  })}</div> : <Card className="dashboard-state-card round-hub-empty">
-      <CardHeader><CardTitle>{t("hub.emptyTitle")}</CardTitle></CardHeader>
-      <CardContent><p>{t("hub.emptyDescription")}</p></CardContent>
-    </Card>}
+    <div className="round-entry-grid">{roundIds.map((round) => {
+      const membership = memberships[round];
+      const isDirectAdmissionRound = round === "0.5" || round === "1";
+      const canApply = !membership.registered && isDirectAdmissionRound && settings[round];
+      const canOpen = membership.registered && tabSettings[round];
+      const roundKey = round.replace(".", "_");
+      const description = canApply && round === "1" && memberships["0.5"].registered
+        ? t("hub.roundOneAlternative") : t(`hub.description.${roundKey}`);
+      const state = membership.registered ? membership.team.status : canApply ? "open"
+        : isDirectAdmissionRound ? "closed" : "locked";
+      const stateLabel = membership.registered ? t(`status.${membership.team.status}`) : canApply ? t("hub.open")
+        : isDirectAdmissionRound ? t("hub.closed") : t("hub.notEligible");
+      return <Card className={`dashboard-card round-entry-card round-entry-card-${state}`} key={round}>
+        <CardHeader>
+          <div className="round-entry-topline"><p className="dashboard-card-index">{t("tabs.round", { round })}</p>
+            <span className={`status-badge status-${state}`}>{stateLabel}</span></div>
+          <CardTitle>{t(`hub.names.${roundKey}`)}</CardTitle>
+          <p>{description}</p>
+        </CardHeader>
+        <CardContent>
+          {membership.registered ? <div className="round-entry-team">
+            <span>{t("hub.registeredTeam")}</span><strong>{membership.team.name}</strong>
+            <small>{t(`roles.${membership.role}`)}</small>
+          </div> : !canApply && <p className="round-entry-unavailable">
+            {isDirectAdmissionRound ? t("hub.closedDescription") : t("hub.eligibilityDescription", { round })}</p>}
+          {canOpen && <Button nativeButton={false} render={<Link href={`/dashboard/round-${round}` as Route} />}>
+            {t("hub.go", { round })}<ArrowRightIcon aria-hidden="true" /></Button>}
+          {canApply && <Button nativeButton={false} render={<Link href={`/dashboard/round-${round}` as Route} />}>
+            {t("hub.apply", { round })}<ArrowRightIcon aria-hidden="true" /></Button>}
+          {membership.registered && !tabSettings[round] && <p className="round-entry-unavailable">
+            {t("hub.dashboardUnavailable")}</p>}
+        </CardContent>
+      </Card>;
+    })}</div>
     <section className="announcement-section" aria-labelledby="dashboard-announcements-title">
       <div className="announcement-section-heading">
         <div className="announcement-section-icon"><MegaphoneIcon aria-hidden="true" /></div>
@@ -328,8 +322,10 @@ function RegistrationForm({ session, round }: { session: Session; round: "0.5" |
         const selected = file!;
         const metadata = { filename: selected.name, mimeType: "application/pdf" as const, fileSize: selected.size };
         const signed = await createCvUploadUrl.mutateAsync(metadata);
-        const response = await fetch(signed.uploadUrl, { method: "PUT", body: selected,
-          headers: { "Content-Type": "application/pdf" } });
+        const response = await fetch(signed.uploadUrl, {
+          method: "PUT", body: selected,
+          headers: { "Content-Type": "application/pdf" }
+        });
         if (!response.ok) throw new Error("UPLOAD_FAILED");
         return { ...metadata, uploadId: signed.uploadId };
       }));
@@ -360,17 +356,6 @@ function RegistrationForm({ session, round }: { session: Session; round: "0.5" |
           <p>{t("registration.description")}</p>
         </CardHeader>
       </Card>
-
-      {round === "1" && <Card className="dashboard-card">
-        <CardHeader><p className="dashboard-card-index">05 / {t("registration.cv.section")}</p>
-          <CardTitle>{t("registration.cv.title")}</CardTitle><p>{t("registration.cv.description")}</p></CardHeader>
-        <CardContent className="dashboard-fields">
-          {[captainFullName || t("roles.captain"), ...teammates.map((member) => member.fullName || t("registration.memberNumber", { number: teammates.indexOf(member) + 2 }))]
-            .map((name, index) => <Field key={index} label={t("registration.cv.memberLabel", { name })} error={errors[`cvs.${index}`]} full>
-              <Input type="file" accept=".pdf,application/pdf" onChange={(event) => setCvFiles((current) => current.map((file, fileIndex) => fileIndex === index ? event.target.files?.[0] ?? null : file))} />
-            </Field>)}
-        </CardContent>
-      </Card>}
 
       <Card className="dashboard-card">
         <CardHeader>
@@ -444,9 +429,21 @@ function RegistrationForm({ session, round }: { session: Session; round: "0.5" |
         </CardContent>
       </Card>
 
+      {round === "1" && <Card className="dashboard-card">
+        <CardHeader><p className="dashboard-card-index">05 / {t("registration.cv.section")}</p>
+          <CardTitle>{t("registration.cv.title")}</CardTitle><p>{t("registration.cv.description")}</p></CardHeader>
+        <CardContent className="dashboard-fields">
+          {[captainFullName || t("roles.captain"), ...teammates.map((member) => member.fullName || t("registration.memberNumber", { number: teammates.indexOf(member) + 2 }))]
+            .map((name, index) => <Field key={index} label={t("registration.cv.memberLabel", { name })} error={errors[`cvs.${index}`]} full>
+              <Input className="cv-file-input" type="file" accept=".pdf,application/pdf" aria-invalid={!!errors[`cvs.${index}`]}
+                onChange={(event) => setCvFiles((current) => current.map((file, fileIndex) => fileIndex === index ? event.target.files?.[0] ?? null : file))} />
+            </Field>)}
+        </CardContent>
+      </Card>}
+
       <Card className="dashboard-card">
         <CardHeader>
-          <p className="dashboard-card-index">05 / {t("registration.awareness.section")}</p>
+          <p className="dashboard-card-index">{round === "1" ? "06" : "05"} / {t("registration.awareness.section")}</p>
           <CardTitle>{t("registration.awareness.title")}</CardTitle>
           {/* <p>{t("registration.awareness.description")}</p> */}
         </CardHeader>
