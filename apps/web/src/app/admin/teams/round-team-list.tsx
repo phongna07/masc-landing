@@ -5,7 +5,7 @@ import { TEAM_SIZE } from "@masc-landing/api/registration";
 import { Button } from "@masc-landing/ui/components/button";
 import { Card, CardContent } from "@masc-landing/ui/components/card";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { ChevronRightIcon } from "lucide-react";
+import { ArrowUpRightIcon, ChevronRightIcon } from "lucide-react";
 import Link from "next/link";
 import type { Route } from "next";
 import { useLocale, useTranslations } from "next-intl";
@@ -50,11 +50,18 @@ export default function RoundTeamList({ round }: { round: RoundId }) {
         { label: t("stats.pendingTeams"), value: stats.data?.pendingTeams }, { label: t("stats.approvedTeams"), value: stats.data?.approvedTeams },
         { label: t("stats.rejectedTeams"), value: stats.data?.rejectedTeams },
       ]} />
-    {targets[round].length > 0 && <div className="admin-status-actions">{targets[round].map((targetRound) => <Button key={targetRound}
-      disabled={!selected.length || promote.isPending} onClick={() => runPromotion(targetRound)}>{t("teams.promoteSelected", { round: targetRound, count: selected.length })}</Button>)}</div>}
-    <div className="admin-status-actions" aria-label={t("teams.statusFilter")}>{(["all", "pending", "approved", "rejected"] as const).map((status) =>
-      <Button key={status} size="sm" variant={statusFilter === status ? "default" : "outline"} onClick={() => { setStatusFilter(status); setSelected([]); }}>
-        {status === "all" ? t("teams.filterAll") : t(`values.status.${status}`)}</Button>)}</div>
+    <div className="admin-team-toolbar">
+      {targets[round].length > 0 && <div className="admin-status-actions admin-promotion-actions">{targets[round].map((targetRound) => <Button
+        aria-busy={promote.isPending} className="admin-promotion-button" key={targetRound}
+        disabled={!selected.length || promote.isPending} onClick={() => runPromotion(targetRound)}>
+        <ArrowUpRightIcon />{t("teams.promoteSelected", { round: targetRound, count: selected.length })}</Button>)}</div>}
+      <div className="admin-status-actions admin-status-filter" role="group" aria-label={t("teams.statusFilter")}>
+        {(["all", "pending", "approved", "rejected"] as const).map((status) => <Button
+          aria-pressed={statusFilter === status} className="admin-status-filter-button" data-status={status} key={status}
+          size="sm" variant="ghost" onClick={() => { setStatusFilter(status); setSelected([]); }}>
+          {status === "all" ? t("teams.filterAll") : t(`values.status.${status}`)}</Button>)}
+      </div>
+    </div>
     {teams.isPending ? <AdminLoading /> : teams.isError ? <AdminError title={t("errors.loadTitle")} description={t("errors.teams")}
       retry={() => teams.refetch()} retryLabel={t("actions.retry")} /> : teams.data.length === 0 ?
       <AdminEmpty title={t("teams.emptyTitle")} description={t("teams.emptyDescription")} /> :
