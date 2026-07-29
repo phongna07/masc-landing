@@ -3,12 +3,14 @@ import { announcementsRouter } from "./announcements";
 import { adminRouter } from "./admin";
 import { registrationRouter } from "./registration";
 import { roundSubmissionRouter } from "./round-submission";
+import { userAnnouncementsRouter } from "./user-announcements";
 
 export const appRouter = router({
   announcements: announcementsRouter,
   admin: adminRouter,
   registration: registrationRouter,
   roundSubmission: roundSubmissionRouter,
+  userAnnouncements: userAnnouncementsRouter,
   healthCheck: publicProcedure.query(() => {
     return "OK";
   }),

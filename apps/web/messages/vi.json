@@ -228,6 +228,17 @@
     "eyebrow": "Cổng thông tin",
     "title": "Các vòng thi",
     "welcome": "Chào mừng {name}",
+    "promotionAnnouncements": {
+      "label": "Thông báo thăng hạng của bạn",
+      "successLabel": "Cập nhật thăng hạng",
+      "title": "Được thăng hạng lên Vòng {round}",
+      "description": "Đội {team} của bạn đã được thăng hạng lên Vòng {round}.",
+      "errors": {
+        "title": "Không thể tải thông báo thăng hạng",
+        "description": "Vui lòng kiểm tra kết nối và thử lại.",
+        "retry": "Thử lại"
+      }
+    },
     "hub": {
       "roundTitle": "Vòng {round}",
       "apply": "Đăng ký Vòng {round}",

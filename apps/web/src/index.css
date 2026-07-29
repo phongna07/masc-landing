@@ -171,6 +171,81 @@ dialog[open]::backdrop {
   line-height: 1.7;
 }
 
+.promotion-announcements {
+  display: grid;
+  gap: 12px;
+  margin: -22px 0 28px;
+}
+
+.promotion-announcement {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 18px;
+  border: 1px solid rgba(92, 211, 142, .34);
+  border-radius: 12px;
+  color: #e9fff1;
+  background: linear-gradient(135deg, rgba(44, 132, 82, .22), rgba(25, 76, 49, .12));
+}
+
+.promotion-announcement>svg {
+  width: 22px;
+  height: 22px;
+  color: #72e59f;
+}
+
+.promotion-announcement-copy {
+  min-width: 0;
+}
+
+.promotion-announcement strong,
+.promotion-announcement p {
+  margin: 0;
+}
+
+.promotion-announcement strong {
+  font-size: 15px;
+}
+
+.promotion-announcement p,
+.promotion-announcement time {
+  color: #c9e8d3;
+  font-size: 13px;
+}
+
+.promotion-announcement time {
+  white-space: nowrap;
+}
+
+.promotion-announcement-error {
+  margin: -22px 0 28px;
+  border-color: rgba(255, 154, 82, .35);
+  color: var(--ink);
+  background: rgba(125, 62, 28, .18);
+}
+
+.promotion-announcement-error>svg {
+  color: var(--ember);
+}
+
+.promotion-announcement-error [data-slot="button"] {
+  white-space: nowrap;
+}
+
+@media (max-width: 700px) {
+  .promotion-announcement {
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: start;
+  }
+
+  .promotion-announcement time,
+  .promotion-announcement-error [data-slot="button"] {
+    grid-column: 2;
+    justify-self: start;
+  }
+}
+
 .registration-form,
 .team-overview,
 .round-panel,

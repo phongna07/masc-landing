@@ -4,10 +4,10 @@ import { db } from "@masc-landing/db";
 import { adminEmails, admissionSettings, emailQueue, members, roundOneMemberCvs,
   roundOneMembers, roundOneSubmissions, roundOneTeams, roundSubmissions, roundThreeMembers,
   roundThreeSubmissions, roundThreeTeams, roundTwoMembers, roundTwoSubmissions, roundTwoTeams,
-  submissionSettings, teams, user } from "@masc-landing/db/schema/index";
+  submissionSettings, teams, user, userAnnouncements } from "@masc-landing/db/schema/index";
 import { env } from "@masc-landing/env/server";
 import { TRPCError } from "@trpc/server";
-import { and, asc, count, desc, eq, getTableName, inArray, sql } from "drizzle-orm";
+import { and, asc, count, desc, eq, getTableName, inArray, or, sql } from "drizzle-orm";
 import { z } from "zod";
 
 import {
@@ -132,6 +132,11 @@ async function promoteOne(input: PromotionInput, sourceTeamId: string) {
   if (conflicts.length) return { sourceTeamId, success: false as const, reason: "MEMBER_CONFLICT" as const,
     conflictingEmails: conflicts.map((item) => item.email) };
 
+  const recipients = await db.select({ id: user.id }).from(user).where(or(
+    eq(user.id, sourceTeam.captainId),
+    inArray(sql<string>`lower(btrim(${user.email}))`, normalizedEmails),
+  ));
+
   const targetTeamId = crypto.randomUUID();
   const targetRoster = roster.map((member) => ({ id: crypto.randomUUID(), teamId: targetTeamId,
     fullName: member.fullName, email: member.email, birthdate: member.birthdate,
@@ -143,6 +148,14 @@ async function promoteOne(input: PromotionInput, sourceTeamId: string) {
     text: promotionMail.text, html: promotionMail.html, eventType: teamRoundPromotionEvent, round: input.targetRound,
     teamId: targetTeamId, memberId: targetCaptain.id, teamName: sourceTeam.name, memberName: captain.fullName,
     approvalSequence: 0 });
+  const promotionSourceKey = `team-promotion:${input.sourceRound}:${sourceTeam.id}:${input.targetRound}`;
+  const notification = db.insert(userAnnouncements).values(recipients.map((recipient) => ({
+    userId: recipient.id,
+    type: "team_promoted" as const,
+    promotedRound: Number(input.targetRound),
+    teamName: sourceTeam.name,
+    sourceKey: promotionSourceKey,
+  }))).onConflictDoNothing({ target: [userAnnouncements.userId, userAnnouncements.sourceKey] });
 
   try {
     if (input.targetRound === "1") {
@@ -151,7 +164,7 @@ async function promoteOne(input: PromotionInput, sourceTeamId: string) {
           registrationStatus: "approved", captainId: sourceTeam.captainId, captainPhone: sourceTeam.captainPhone,
           awarenessSource: sourceTeam.awarenessSource, awarenessSourceDetail: sourceTeam.awarenessSourceDetail,
           admissionMethod: "round_0_5_promotion", sourceRoundHalfTeamId: sourceTeam.id }),
-        db.insert(roundOneMembers).values(targetRoster), queue,
+        db.insert(roundOneMembers).values(targetRoster), queue, notification,
       ]);
     } else if (input.targetRound === "2") {
       await db.batch([
@@ -160,7 +173,7 @@ async function promoteOne(input: PromotionInput, sourceTeamId: string) {
           awarenessSource: sourceTeam.awarenessSource, awarenessSourceDetail: sourceTeam.awarenessSourceDetail,
           sourceRoundHalfTeamId: input.sourceRound === "0.5" ? sourceTeam.id : null,
           sourceRoundOneTeamId: input.sourceRound === "1" ? sourceTeam.id : null }),
-        db.insert(roundTwoMembers).values(targetRoster), queue,
+        db.insert(roundTwoMembers).values(targetRoster), queue, notification,
       ]);
     } else {
       await db.batch([
@@ -168,7 +181,7 @@ async function promoteOne(input: PromotionInput, sourceTeamId: string) {
           registrationStatus: "approved", captainId: sourceTeam.captainId, captainPhone: sourceTeam.captainPhone,
           awarenessSource: sourceTeam.awarenessSource, awarenessSourceDetail: sourceTeam.awarenessSourceDetail,
           sourceRoundTwoTeamId: sourceTeam.id }),
-        db.insert(roundThreeMembers).values(targetRoster), queue,
+        db.insert(roundThreeMembers).values(targetRoster), queue, notification,
       ]);
     }
   } catch (error) {

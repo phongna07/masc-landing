@@ -228,6 +228,17 @@
     "eyebrow": "Competition portal",
     "title": "Competition rounds",
     "welcome": "Welcome {name}",
+    "promotionAnnouncements": {
+      "label": "Your promotion announcements",
+      "successLabel": "Promotion update",
+      "title": "Promoted to Round {round}",
+      "description": "Your team {team} has been promoted to Round {round}.",
+      "errors": {
+        "title": "Could not load your promotion announcements",
+        "description": "Check your connection and try again.",
+        "retry": "Try again"
+      }
+    },
     "hub": {
       "roundTitle": "Round {round}",
       "apply": "Apply to Round {round}",

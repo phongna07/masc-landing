@@ -41,12 +41,14 @@ import { BrandLogo } from "@/components/hero-brand-logo";
 import { authClient } from "@/lib/auth-client";
 import { queryClient, trpc } from "@/utils/trpc";
 import AnnouncementsSkeleton from "./announcements-skeleton";
+import PromotionAnnouncements from "./promotion-announcements";
 import RoundSubmission from "./round-submission";
 
 type Session = typeof authClient.$Infer.Session;
 type Membership = inferRouterOutputs<AppRouter>["registration"]["current"];
 type Memberships = inferRouterOutputs<AppRouter>["registration"]["memberships"];
 type SubmissionStatuses = inferRouterOutputs<AppRouter>["roundSubmission"]["statuses"];
+type UserAnnouncements = inferRouterOutputs<AppRouter>["userAnnouncements"]["listMine"];
 type Teammate = { id: string; fullName: string; email: string; birthdate: string; universityName: string };
 type FormErrors = Record<string, string>;
 
@@ -66,12 +68,14 @@ const AnnouncementsFeed = dynamic(() => import("./announcements-feed"), {
   loading: () => <AnnouncementsSkeleton />,
 });
 
-export default function Dashboard({ session, activeTab, initialMemberships, initialSettings, initialSubmissionStatuses }: {
+export default function Dashboard({ session, activeTab, initialMemberships, initialSettings, initialSubmissionStatuses,
+  initialUserAnnouncements }: {
   session: Session;
   activeTab: DashboardTab;
   initialMemberships: Memberships;
   initialSettings: Record<RoundId, boolean>;
   initialSubmissionStatuses: SubmissionStatuses;
+  initialUserAnnouncements: UserAnnouncements;
 }) {
   const t = useTranslations("Dashboard");
   const memberships = useQuery({ ...trpc.registration.memberships.queryOptions(), initialData: initialMemberships });
@@ -104,6 +108,8 @@ export default function Dashboard({ session, activeTab, initialMemberships, init
           <h1>{activeTab.startsWith("round-") ? t("hub.roundTitle", { round: activeTab.slice(6) }) : t("title")}</h1>
           <p>{t("welcome", { name: session.user.name })}</p>
         </div>
+
+        {activeTab === "overview" && <PromotionAnnouncements initialAnnouncements={initialUserAnnouncements} />}
 
         {memberships.isPending || settings.isPending ? (
           <DashboardSkeleton />
