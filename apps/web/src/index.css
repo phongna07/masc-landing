@@ -1443,7 +1443,7 @@ dialog[open]::backdrop {
   background: rgba(17, 16, 20, .72);
 }
 
-.admin-promotion-actions {
+.admin-team-actions {
   justify-content: flex-start;
 }
 
@@ -1557,7 +1557,7 @@ dialog[open]::backdrop {
 @media (max-width: 620px) {
 
   .admin-team-toolbar,
-  .admin-promotion-actions,
+  .admin-team-actions,
   .admin-status-filter {
     width: 100%;
   }

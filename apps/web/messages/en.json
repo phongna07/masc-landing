@@ -565,6 +565,10 @@
       "selectTeam": "Select {team}",
       "statusFilter": "Filter teams by status",
       "filterAll": "All statuses",
+      "exportExcel": "Export Excel",
+      "exportingExcel": "Exporting…",
+      "exportSuccess": "Exported {count} teams.",
+      "exportError": "The Excel file could not be created. Please try again.",
       "promoteSelected": "Promote {count} to Round {round}",
       "promoteTo": "Promote to Round {round}",
       "promotionConfirmation": {

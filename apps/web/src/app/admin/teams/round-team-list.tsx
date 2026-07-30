@@ -7,7 +7,7 @@ import { Button } from "@masc-landing/ui/components/button";
 import { Card, CardContent } from "@masc-landing/ui/components/card";
 import { ConfirmationDialog } from "@masc-landing/ui/components/confirmation-dialog";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { ArrowUpRightIcon, ChevronRightIcon } from "lucide-react";
+import { ArrowUpRightIcon, ChevronRightIcon, FileSpreadsheetIcon } from "lucide-react";
 import Link from "next/link";
 import type { Route } from "next";
 import { useLocale, useTranslations } from "next-intl";
@@ -16,6 +16,7 @@ import { toast } from "sonner";
 
 import { queryClient, trpc } from "@/utils/trpc";
 import { AdminEmpty, AdminError, AdminHeading, AdminLoading, AdminMetrics, formatDate } from "../admin-state";
+import { exportTeamsToExcel } from "./team-excel-export";
 
 const targets: Record<RoundId, RoundId[]> = { "0.5": ["1", "2"], "1": ["2"], "2": ["3"], "3": [] };
 
@@ -23,6 +24,7 @@ export default function RoundTeamList({ round }: { round: RoundId }) {
   const t = useTranslations("Admin"); const locale = useLocale();
   const [selected, setSelected] = useState<string[]>([]);
   const [statusFilter, setStatusFilter] = useState<"all" | "pending" | "approved" | "rejected">("all");
+  const [isExporting, setIsExporting] = useState(false);
   const teams = useQuery(trpc.admin.listTeams.queryOptions({ round }));
   const stats = useQuery(trpc.admin.getTeamStats.queryOptions({ round }));
   const promote = useMutation(trpc.admin.promoteTeams.mutationOptions({ onSuccess: async ({ results }) => {
@@ -52,6 +54,22 @@ export default function RoundTeamList({ round }: { round: RoundId }) {
     else if (round === "1" && targetRound === "2") promote.mutate({ sourceRound: round, targetRound, teamIds: selected });
     else if (round === "2" && targetRound === "3") promote.mutate({ sourceRound: round, targetRound, teamIds: selected });
   };
+  const runExport = async () => {
+    if (isExporting) return;
+    setIsExporting(true);
+    try {
+      const exportedTeams = await queryClient.fetchQuery({
+        ...trpc.admin.exportTeams.queryOptions({ round }),
+        staleTime: 0,
+      });
+      await exportTeamsToExcel(round, exportedTeams);
+      toast.success(t("teams.exportSuccess", { count: exportedTeams.length }));
+    } catch {
+      toast.error(t("teams.exportError"));
+    } finally {
+      setIsExporting(false);
+    }
+  };
   return <><Link className="admin-back-link" href="/admin/teams">← {t("teams.backToRounds")}</Link>
     <AdminHeading eyebrow={t("eyebrow")} title={t("teams.roundTitle", { round })} description={t("teams.roundDescription", { round })} />
     <AdminMetrics label={t("stats.label")} isPending={stats.isPending} isError={stats.isError} errorLabel={t("stats.error")}
@@ -62,18 +80,24 @@ export default function RoundTeamList({ round }: { round: RoundId }) {
         ...awarenessMetrics,
       ]} />
     <div className="admin-team-toolbar">
-      {targets[round].length > 0 && <div className="admin-status-actions admin-promotion-actions">{targets[round].map((targetRound) => <ConfirmationDialog
-        key={targetRound}
-        trigger={<Button aria-busy={promote.isPending} className="admin-promotion-button"
-          disabled={!selected.length || promote.isPending}>
-          <ArrowUpRightIcon />{t("teams.promoteSelected", { round: targetRound, count: selected.length })}</Button>}
-        title={t("teams.promotionConfirmation.title", { count: selected.length, round: targetRound })}
-        description={t("teams.promotionConfirmation.description", { count: selected.length, round: targetRound })}
-        confirmLabel={t("teams.promotionConfirmation.confirm", { count: selected.length })}
-        cancelLabel={t("actions.cancel")}
-        icon={<ArrowUpRightIcon />}
-        onConfirm={() => runPromotion(targetRound)}
-      />)}</div>}
+      <div className="admin-status-actions admin-team-actions">
+        <Button aria-busy={isExporting} disabled={teams.isPending || !teams.data?.length || isExporting}
+          variant="outline" onClick={runExport}>
+          <FileSpreadsheetIcon />{isExporting ? t("teams.exportingExcel") : t("teams.exportExcel")}
+        </Button>
+        {targets[round].map((targetRound) => <ConfirmationDialog
+          key={targetRound}
+          trigger={<Button aria-busy={promote.isPending} className="admin-promotion-button"
+            disabled={!selected.length || promote.isPending}>
+            <ArrowUpRightIcon />{t("teams.promoteSelected", { round: targetRound, count: selected.length })}</Button>}
+          title={t("teams.promotionConfirmation.title", { count: selected.length, round: targetRound })}
+          description={t("teams.promotionConfirmation.description", { count: selected.length, round: targetRound })}
+          confirmLabel={t("teams.promotionConfirmation.confirm", { count: selected.length })}
+          cancelLabel={t("actions.cancel")}
+          icon={<ArrowUpRightIcon />}
+          onConfirm={() => runPromotion(targetRound)}
+        />)}
+      </div>
       <div className="admin-status-actions admin-status-filter" role="group" aria-label={t("teams.statusFilter")}>
         {(["all", "pending", "approved", "rejected"] as const).map((status) => <Button
           aria-pressed={statusFilter === status} className="admin-status-filter-button" data-status={status} key={status}

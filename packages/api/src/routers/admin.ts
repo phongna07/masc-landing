@@ -108,6 +108,73 @@ async function findSubmissionFile(input: z.infer<typeof submissionInput>) {
 }
 
 type PromotionInput = z.infer<typeof promotionPairSchema>;
+type ExportAdmissionMethod = "direct" | "cv_screening" | "round_0_5_promotion" | "promotion";
+type ExportTeamRow = {
+  id: string;
+  name: string;
+  status: "pending" | "approved" | "rejected";
+  createdAt: Date;
+  captainPhone: string;
+  awarenessSource: AwarenessSource | null;
+  awarenessSourceDetail: string | null;
+  admissionMethod: ExportAdmissionMethod;
+  sourceRound: RoundId | null;
+  sourceTeamId: string | null;
+  sourceTeamName: string | null;
+};
+
+async function getExportTeamRows(round: RoundId): Promise<ExportTeamRow[]> {
+  if (round === "0.5") {
+    const rows = await db.select({ id: teams.id, name: teams.teamName, status: teams.registrationStatus,
+      createdAt: teams.createdAt, captainPhone: teams.captainPhone, awarenessSource: teams.awarenessSource,
+      awarenessSourceDetail: teams.awarenessSourceDetail }).from(teams)
+      .orderBy(desc(teams.createdAt), asc(teams.teamName));
+    return rows.map((row) => ({ ...row, admissionMethod: "direct", sourceRound: null,
+      sourceTeamId: null, sourceTeamName: null }));
+  }
+
+  if (round === "1") {
+    const rows = await db.select({ id: roundOneTeams.id, name: roundOneTeams.teamName,
+      status: roundOneTeams.registrationStatus, createdAt: roundOneTeams.createdAt,
+      captainPhone: roundOneTeams.captainPhone, awarenessSource: roundOneTeams.awarenessSource,
+      awarenessSourceDetail: roundOneTeams.awarenessSourceDetail, admissionMethod: roundOneTeams.admissionMethod,
+      sourceTeamId: roundOneTeams.sourceRoundHalfTeamId, sourceTeamName: teams.teamName })
+      .from(roundOneTeams).leftJoin(teams, eq(roundOneTeams.sourceRoundHalfTeamId, teams.id))
+      .orderBy(desc(roundOneTeams.createdAt), asc(roundOneTeams.teamName));
+    return rows.map((row) => ({ ...row, sourceRound: row.sourceTeamId ? "0.5" : null }));
+  }
+
+  if (round === "2") {
+    const rows = await db.select({ id: roundTwoTeams.id, name: roundTwoTeams.teamName,
+      status: roundTwoTeams.registrationStatus, createdAt: roundTwoTeams.createdAt,
+      captainPhone: roundTwoTeams.captainPhone, awarenessSource: roundTwoTeams.awarenessSource,
+      awarenessSourceDetail: roundTwoTeams.awarenessSourceDetail,
+      sourceRoundHalfTeamId: roundTwoTeams.sourceRoundHalfTeamId,
+      sourceRoundOneTeamId: roundTwoTeams.sourceRoundOneTeamId,
+      sourceRoundHalfTeamName: teams.teamName, sourceRoundOneTeamName: roundOneTeams.teamName })
+      .from(roundTwoTeams)
+      .leftJoin(teams, eq(roundTwoTeams.sourceRoundHalfTeamId, teams.id))
+      .leftJoin(roundOneTeams, eq(roundTwoTeams.sourceRoundOneTeamId, roundOneTeams.id))
+      .orderBy(desc(roundTwoTeams.createdAt), asc(roundTwoTeams.teamName));
+    return rows.map(({ sourceRoundHalfTeamId, sourceRoundOneTeamId, sourceRoundHalfTeamName,
+      sourceRoundOneTeamName, ...row }) => ({
+      ...row,
+      admissionMethod: "promotion",
+      sourceRound: sourceRoundOneTeamId ? "1" : sourceRoundHalfTeamId ? "0.5" : null,
+      sourceTeamId: sourceRoundOneTeamId ?? sourceRoundHalfTeamId,
+      sourceTeamName: sourceRoundOneTeamName ?? sourceRoundHalfTeamName,
+    }));
+  }
+
+  const rows = await db.select({ id: roundThreeTeams.id, name: roundThreeTeams.teamName,
+    status: roundThreeTeams.registrationStatus, createdAt: roundThreeTeams.createdAt,
+    captainPhone: roundThreeTeams.captainPhone, awarenessSource: roundThreeTeams.awarenessSource,
+    awarenessSourceDetail: roundThreeTeams.awarenessSourceDetail,
+    sourceTeamId: roundThreeTeams.sourceRoundTwoTeamId, sourceTeamName: roundTwoTeams.teamName })
+    .from(roundThreeTeams).leftJoin(roundTwoTeams, eq(roundThreeTeams.sourceRoundTwoTeamId, roundTwoTeams.id))
+    .orderBy(desc(roundThreeTeams.createdAt), asc(roundThreeTeams.teamName));
+  return rows.map((row) => ({ ...row, admissionMethod: "promotion", sourceRound: "2" }));
+}
 
 async function promoteOne(input: PromotionInput, sourceTeamId: string) {
   const source = registrationTables(input.sourceRound);
@@ -235,6 +302,23 @@ export const adminRouter = router({
       awarenessSource: team.awarenessSource, awarenessSourceDetail: team.awarenessSourceDetail,
       memberCount: count(member.id) }).from(team).leftJoin(member, eq(team.id, member.teamId))
       .groupBy(team.id).orderBy(desc(team.createdAt), asc(team.teamName));
+  }),
+  exportTeams: teamsProcedure.input(roundInput).query(async ({ input }) => {
+    const teamRows = await getExportTeamRows(input.round);
+    if (!teamRows.length) return [];
+    const { member } = registrationTables(input.round);
+    const memberRows = await db.select({ id: member.id, teamId: member.teamId, fullName: member.fullName,
+      email: member.email, birthdate: member.birthdate, universityName: member.universityName,
+      isCaptain: member.isCaptain }).from(member)
+      .where(inArray(member.teamId, teamRows.map((team) => team.id)))
+      .orderBy(asc(member.teamId), desc(member.isCaptain), asc(member.fullName));
+    const membersByTeam = new Map<string, Omit<(typeof memberRows)[number], "teamId">[]>();
+    for (const { teamId, ...listedMember } of memberRows) {
+      const roster = membersByTeam.get(teamId) ?? [];
+      roster.push(listedMember);
+      membersByTeam.set(teamId, roster);
+    }
+    return teamRows.map((team) => ({ ...team, members: membersByTeam.get(team.id) ?? [] }));
   }),
   getTeamStats: teamsProcedure.input(roundInput).query(async ({ input }) => {
     const { team, member } = registrationTables(input.round);

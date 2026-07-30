@@ -29,6 +29,7 @@
     "react": "catalog:",
     "react-dom": "catalog:",
     "sonner": "catalog:",
+    "write-excel-file": "^4.1.1",
     "zod": "catalog:"
   },
   "devDependencies": {

@@ -565,6 +565,10 @@
       "selectTeam": "Chọn đội {team}",
       "statusFilter": "Lọc đội theo trạng thái",
       "filterAll": "Tất cả trạng thái",
+      "exportExcel": "Xuất Excel",
+      "exportingExcel": "Đang xuất…",
+      "exportSuccess": "Đã xuất {count} đội.",
+      "exportError": "Không thể tạo tệp Excel. Vui lòng thử lại.",
       "promoteSelected": "Chọn {count} đội vào Vòng {round}",
       "promoteTo": "Chọn vào Vòng {round}",
       "promotionConfirmation": {
