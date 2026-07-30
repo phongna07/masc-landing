@@ -2,6 +2,7 @@
 
 import type { RoundId } from "@masc-landing/api/rounds";
 import { TEAM_SIZE } from "@masc-landing/api/registration";
+import { awarenessSources } from "@masc-landing/api/registration-schema";
 import { Button } from "@masc-landing/ui/components/button";
 import { Card, CardContent } from "@masc-landing/ui/components/card";
 import { ConfirmationDialog } from "@masc-landing/ui/components/confirmation-dialog";
@@ -35,6 +36,14 @@ export default function RoundTeamList({ round }: { round: RoundId }) {
       ...targets[round].map((targetRound) => queryClient.invalidateQueries({ queryKey: trpc.admin.listTeams.queryKey({ round: targetRound }) }))]);
   }, onError: () => toast.error(t("teams.promotionError")) }));
   const visibleTeams = teams.data?.filter((team) => statusFilter === "all" || team.status === statusFilter) ?? [];
+  const showAwarenessSource = round === "0.5" && (teams.data?.some((team) => team.awarenessSource !== null) ?? false);
+  const awarenessSourceCounts = stats.data?.awarenessSourceCounts;
+  const awarenessMetrics = (round === "0.5" || round === "1") && awarenessSourceCounts
+    ? awarenessSources.map((source) => ({
+      label: t(`values.awarenessSource.${source}`),
+      value: awarenessSourceCounts[source],
+    }))
+    : [];
   const approvedIds = visibleTeams.filter((team) => team.status === "approved").map((team) => team.id);
   const toggleAll = () => setSelected(selected.length === approvedIds.length ? [] : approvedIds);
   const runPromotion = (targetRound: RoundId) => {
@@ -50,6 +59,7 @@ export default function RoundTeamList({ round }: { round: RoundId }) {
         { label: t("stats.totalTeams"), value: stats.data?.totalTeams }, { label: t("stats.totalParticipants"), value: stats.data?.totalParticipants },
         { label: t("stats.pendingTeams"), value: stats.data?.pendingTeams }, { label: t("stats.approvedTeams"), value: stats.data?.approvedTeams },
         { label: t("stats.rejectedTeams"), value: stats.data?.rejectedTeams },
+        ...awarenessMetrics,
       ]} />
     <div className="admin-team-toolbar">
       {targets[round].length > 0 && <div className="admin-status-actions admin-promotion-actions">{targets[round].map((targetRound) => <ConfirmationDialog
@@ -76,13 +86,21 @@ export default function RoundTeamList({ round }: { round: RoundId }) {
       <AdminEmpty title={t("teams.emptyTitle")} description={t("teams.emptyDescription")} /> :
       <Card className="admin-table-card"><CardContent className="admin-table-scroll"><table className="admin-table admin-team-table">
         <thead><tr><th><input type="checkbox" aria-label={t("teams.selectAll")} checked={approvedIds.length > 0 && selected.length === approvedIds.length} onChange={toggleAll} /></th>
-          <th>{t("fields.team")}</th><th>{t("fields.captain")}</th><th>{t("fields.members")}</th><th>{t("fields.status")}</th><th>{t("fields.created")}</th><th /></tr></thead>
-        <tbody>{visibleTeams.map((team) => <tr key={team.id}><td><input type="checkbox" aria-label={t("teams.selectTeam", { team: team.name })}
-          disabled={team.status !== "approved"} checked={selected.includes(team.id)} onChange={() => setSelected((items) => items.includes(team.id) ? items.filter((id) => id !== team.id) : [...items, team.id])} /></td>
-          <td><Link className="admin-row-link" href={`/admin/teams/round-${round}/${team.id}` as Route}><strong>{team.name}</strong></Link></td>
-          <td><strong>{team.captainName}</strong><span>{team.captainEmail}</span></td><td>{t("values.memberCount", { count: team.memberCount, required: TEAM_SIZE })}</td>
-          <td><span className={`status-badge status-${team.status}`}>{t(`values.status.${team.status}`)}</span></td><td>{formatDate(team.createdAt, locale)}</td>
-          <td><Link className="admin-view-link" href={`/admin/teams/round-${round}/${team.id}` as Route}><ChevronRightIcon /></Link></td></tr>)}</tbody>
+          <th>{t("fields.team")}</th><th>{t("fields.captain")}</th><th>{t("fields.members")}</th>
+          {showAwarenessSource && <th>{t("fields.awarenessSource")}</th>}
+          <th>{t("fields.status")}</th><th>{t("fields.created")}</th><th /></tr></thead>
+        <tbody>{visibleTeams.map((team) => {
+          const awarenessSource = team.awarenessSource
+            ? `${t(`values.awarenessSource.${team.awarenessSource}`)}${team.awarenessSourceDetail ? ` — ${team.awarenessSourceDetail}` : ""}`
+            : t("values.notProvided");
+          return <tr key={team.id}><td><input type="checkbox" aria-label={t("teams.selectTeam", { team: team.name })}
+            disabled={team.status !== "approved"} checked={selected.includes(team.id)} onChange={() => setSelected((items) => items.includes(team.id) ? items.filter((id) => id !== team.id) : [...items, team.id])} /></td>
+            <td><Link className="admin-row-link" href={`/admin/teams/round-${round}/${team.id}` as Route}><strong>{team.name}</strong></Link></td>
+            <td><strong>{team.captainName}</strong><span>{team.captainEmail}</span></td><td>{t("values.memberCount", { count: team.memberCount, required: TEAM_SIZE })}</td>
+            {showAwarenessSource && <td>{awarenessSource}</td>}
+            <td><span className={`status-badge status-${team.status}`}>{t(`values.status.${team.status}`)}</span></td><td>{formatDate(team.createdAt, locale)}</td>
+            <td><Link className="admin-view-link" href={`/admin/teams/round-${round}/${team.id}` as Route}><ChevronRightIcon /></Link></td></tr>;
+        })}</tbody>
       </table></CardContent></Card>}
   </>;
 }

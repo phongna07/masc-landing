@@ -7,7 +7,7 @@ import { adminEmails, admissionSettings, emailQueue, members, roundOneMemberCvs,
   submissionSettings, teams, user, userAnnouncements } from "@masc-landing/db/schema/index";
 import { env } from "@masc-landing/env/server";
 import { TRPCError } from "@trpc/server";
-import { and, asc, count, desc, eq, getTableName, inArray, or, sql } from "drizzle-orm";
+import { and, asc, count, desc, eq, getTableName, inArray, isNotNull, or, sql } from "drizzle-orm";
 import { z } from "zod";
 
 import {
@@ -24,6 +24,7 @@ import { sendMail } from "../email/send-mail";
 import { renderTeamRoundPromotion, teamRoundPromotionEvent } from "../email/team-round-promotion";
 import { getAdmissionSettings } from "../admission-settings";
 import { adminAreaProcedure, router } from "../index";
+import { awarenessSources, type AwarenessSource } from "../registration-schema";
 import { roundSchema, type RoundId } from "../rounds";
 import { getSubmissionSettings } from "../submission-settings";
 
@@ -237,7 +238,7 @@ export const adminRouter = router({
   }),
   getTeamStats: teamsProcedure.input(roundInput).query(async ({ input }) => {
     const { team, member } = registrationTables(input.round);
-    const [teamStatsRows, participantStatsRows] = await Promise.all([
+    const [teamStatsRows, participantStatsRows, awarenessStatsRows] = await Promise.all([
       db.select({
         totalTeams: count(),
         pendingTeams: sql<number>`count(*) filter (where ${team.registrationStatus} = ${"pending"})`,
@@ -245,15 +246,22 @@ export const adminRouter = router({
         rejectedTeams: sql<number>`count(*) filter (where ${team.registrationStatus} = ${"rejected"})`,
       }).from(team),
       db.select({ totalParticipants: count() }).from(member),
+      db.select({ awarenessSource: team.awarenessSource, total: count() }).from(team)
+        .where(isNotNull(team.awarenessSource)).groupBy(team.awarenessSource),
     ]);
     const [teamStats] = teamStatsRows;
     const [participantStats] = participantStatsRows;
+    const awarenessSourceCounts = awarenessStatsRows.length === 0 ? null : Object.fromEntries(
+      awarenessSources.map((source) => [source,
+        Number(awarenessStatsRows.find((row) => row.awarenessSource === source)?.total ?? 0)]),
+    ) as Record<AwarenessSource, number>;
     return {
       totalTeams: Number(teamStats?.totalTeams ?? 0),
       totalParticipants: Number(participantStats?.totalParticipants ?? 0),
       pendingTeams: Number(teamStats?.pendingTeams ?? 0),
       approvedTeams: Number(teamStats?.approvedTeams ?? 0),
       rejectedTeams: Number(teamStats?.rejectedTeams ?? 0),
+      awarenessSourceCounts,
     };
   }),
   getTeam: teamsProcedure.input(roundInput.extend({ teamId: z.string().trim().min(1).max(128) })).query(async ({ input }) => {
