@@ -9,6 +9,7 @@ import type { Route } from "next";
 import { notFound, useParams } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
 
+import { useRoundLabel } from "@/hooks/use-round-label";
 import { trpc } from "@/utils/trpc";
 import { AdminEmpty, AdminError, AdminHeading, AdminLoading, formatDate } from "../../admin-state";
 
@@ -16,10 +17,11 @@ export default function AdminRoundPage() {
   const { roundSlug } = useParams<{ roundSlug: string }>();
   const round = roundFromSlug(roundSlug); if (!round) notFound();
   const t = useTranslations("Admin"); const locale = useLocale();
+  const roundLabel = useRoundLabel()(round);
   const submissions = useQuery(trpc.admin.listRoundSubmissions.queryOptions({ round }));
-  return <><AdminHeading eyebrow={t("eyebrow")} title={t("round.title", { round })} description={t("round.description", { round })} />
+  return <><AdminHeading eyebrow={t("eyebrow")} title={t("round.title", { roundLabel })} description={t("round.description", { roundLabel })} />
     {submissions.isPending ? <AdminLoading /> : submissions.isError ? <AdminError title={t("errors.loadTitle")} description={t("errors.round")} retry={() => submissions.refetch()} retryLabel={t("actions.retry")} />
-    : submissions.data.length === 0 ? <AdminEmpty title={t("round.emptyTitle", { round })} description={t("round.emptyDescription")} />
+    : submissions.data.length === 0 ? <AdminEmpty title={t("round.emptyTitle", { roundLabel })} description={t("round.emptyDescription")} />
     : <Card className="admin-table-card"><CardContent className="admin-table-scroll"><table className="admin-table admin-round-table">
       <thead><tr><th>{t("fields.team")}</th><th>{t("fields.captain")}</th><th>{t("fields.file")}</th><th>{t("fields.size")}</th><th>{t("fields.submitted")}</th><th><span className="sr-only">{t("actions.view")}</span></th></tr></thead>
       <tbody>{submissions.data.map((submission) => <tr key={submission.id}><td><Link className="admin-row-link" href={`/admin/${roundSlug}/${submission.id}` as Route}><strong>{submission.teamName}</strong><span>{t(`values.status.${submission.teamStatus}`)}</span></Link></td>

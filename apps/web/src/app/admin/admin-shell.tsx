@@ -12,6 +12,7 @@ import { useState } from "react";
 import { BrandLogo } from "@/components/hero-brand-logo";
 import LanguageSwitcher from "@/components/language-switcher";
 import UserMenu from "@/components/user-menu";
+import { useRoundLabel } from "@/hooks/use-round-label";
 
 const items = [
   { href: "/admin", key: "overview", area: "overview", icon: LayoutDashboardIcon },
@@ -24,6 +25,7 @@ const items = [
 
 export default function AdminShell({ children, role }: { children: React.ReactNode; role: AdminRole }) {
   const t = useTranslations("Admin");
+  const roundLabel = useRoundLabel();
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const visibleItems = items.filter((item) => canAccessAdminArea(role, item.area as AdminArea));
@@ -69,7 +71,7 @@ export default function AdminShell({ children, role }: { children: React.ReactNo
                   aria-current={active ? "page" : undefined}
                   onClick={() => setOpen(false)}
                 >
-                  <Icon aria-hidden="true" /> {"round" in item ? t("tabs.round", { round: item.round }) : t(`tabs.${item.key}`)}
+                  <Icon aria-hidden="true" /> {"round" in item ? t("tabs.round", { roundLabel: roundLabel(item.round) }) : t(`tabs.${item.key}`)}
                 </Link>
               );
             })}

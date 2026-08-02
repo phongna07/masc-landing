@@ -11,6 +11,7 @@ import Link from "next/link";
 import { useLocale, useTranslations } from "next-intl";
 import { toast } from "sonner";
 
+import { useRoundLabel } from "@/hooks/use-round-label";
 import { queryClient, trpc } from "@/utils/trpc";
 import { AdminEmpty, AdminError, AdminLoading, formatBirthdate, formatDate } from "../admin-state";
 
@@ -18,6 +19,7 @@ const targets: Record<RoundId, RoundId[]> = { "0.5": ["1", "2"], "1": ["2"], "2"
 
 export default function RoundTeamDetail({ round, teamId }: { round: RoundId; teamId: string }) {
   const t = useTranslations("Admin"); const locale = useLocale();
+  const roundLabel = useRoundLabel();
   const input = { round, teamId };
   const team = useQuery(trpc.admin.getTeam.queryOptions(input));
   const update = useMutation(trpc.admin.updateTeamStatus.mutationOptions({ onSuccess: async () => {
@@ -44,7 +46,7 @@ export default function RoundTeamDetail({ round, teamId }: { round: RoundId; tea
     else if (round === "2" && targetRound === "3") promote.mutate({ sourceRound: round, targetRound, teamIds: [teamId] });
   };
   return <><Link className="admin-back-link" href={`/admin/teams/round-${round}`}><ArrowLeftIcon />{t("actions.backToTeams")}</Link>
-    <div className="admin-detail-heading"><div><p>{t("teams.roundTitle", { round })}</p><h1>{team.data.name}</h1></div>
+    <div className="admin-detail-heading"><div><p>{t("teams.roundTitle", { roundLabel: roundLabel(round) })}</p><h1>{team.data.name}</h1></div>
       <span className={`status-badge status-${team.data.status}`}>{t(`values.status.${team.data.status}`)}</span></div>
     <div className="admin-status-actions">
       {team.data.status !== "approved" && <ConfirmationDialog
@@ -69,9 +71,9 @@ export default function RoundTeamDetail({ round, teamId }: { round: RoundId; tea
       />}
       {team.data.status === "approved" && targets[round].map((targetRound) => <ConfirmationDialog
         key={targetRound}
-        trigger={<Button variant="outline" disabled={promote.isPending}>{t("teams.promoteTo", { round: targetRound })}</Button>}
-        title={t("teams.promotionConfirmation.title", { count: 1, round: targetRound })}
-        description={t("teams.promotionConfirmation.description", { count: 1, round: targetRound })}
+        trigger={<Button variant="outline" disabled={promote.isPending}>{t("teams.promoteTo", { roundLabel: roundLabel(targetRound) })}</Button>}
+        title={t("teams.promotionConfirmation.title", { count: 1, roundLabel: roundLabel(targetRound) })}
+        description={t("teams.promotionConfirmation.description", { count: 1, roundLabel: roundLabel(targetRound) })}
         confirmLabel={t("teams.promotionConfirmation.confirm", { count: 1 })}
         cancelLabel={t("actions.cancel")}
         icon={<ArrowUpRightIcon />}

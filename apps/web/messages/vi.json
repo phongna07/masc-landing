@@ -8,6 +8,13 @@
     "english": "English",
     "vietnamese": "Tiếng Việt"
   },
+  "RoundLabels": {
+    "preliminary": "Vòng sơ loại",
+    "round1": "Vòng 1",
+    "round2": "Vòng 2",
+    "round3": "Vòng 3",
+    "numbered": "Vòng {round}"
+  },
   "Home": {
     "header": {
       "backToTop": "MASC 2026 - về đầu trang",
@@ -34,9 +41,9 @@
       "scroll": "Cuộn để khám phá"
     },
     "countdown": {
-      "applications": "Đơn đăng ký Vòng 0.5",
+      "applications": "Đơn đăng ký Vòng sơ loại",
       "closesIn": "Thời gian đóng đơn còn",
-      "opensIn": "Vòng 0.5 mở đơn sau",
+      "opensIn": "Vòng sơ loại mở đơn sau",
       "closed": "Đã đóng đơn",
       "aria": "{days} ngày, {hours} giờ, {minutes} phút, {seconds} giây",
       "days": "Ngày",
@@ -231,8 +238,8 @@
     "promotionAnnouncements": {
       "label": "Thông báo thăng hạng của bạn",
       "successLabel": "Cập nhật thăng hạng",
-      "title": "Được thăng hạng lên Vòng {round}",
-      "description": "Đội {team} của bạn đã được thăng hạng lên Vòng {round}.",
+      "title": "Được thăng hạng lên {roundLabel}",
+      "description": "Đội {team} của bạn đã được thăng hạng lên {roundLabel}.",
       "errors": {
         "title": "Không thể tải thông báo thăng hạng",
         "description": "Vui lòng kiểm tra kết nối và thử lại.",
@@ -240,9 +247,9 @@
       }
     },
     "hub": {
-      "roundTitle": "Vòng {round}",
-      "apply": "Đăng ký Vòng {round}",
-      "go": "Đến dashboard Vòng {round}",
+      "roundTitle": "{roundLabel}",
+      "apply": "Đăng ký {roundLabel}",
+      "go": "Đến dashboard {roundLabel}",
       "open": "Đang nhận hồ sơ",
       "closed": "Đã đóng đăng ký",
       "notEligible": "Chưa đủ điều kiện",
@@ -250,8 +257,8 @@
       "registeredTeam": "Đội đã đăng ký",
       "back": "Quay lại các vòng",
       "closedDescription": "Ban Tổ chức hiện chưa nhận hồ sơ đăng ký cho vòng này.",
-      "eligibilityDescription": "Vòng {round} chỉ dành cho các đội đủ điều kiện được quản trị viên lựa chọn.",
-      "roundOneAlternative": "Vòng 1 sử dụng hồ sơ sàng lọc CV riêng. Đội của bạn vẫn có thể đăng ký tại đây ngay cả khi đã tham gia Vòng 0.5.",
+      "eligibilityDescription": "{roundLabel} chỉ dành cho các đội đủ điều kiện được quản trị viên lựa chọn.",
+      "roundOneAlternative": "Vòng 1 sử dụng hồ sơ sàng lọc CV riêng. Đội của bạn vẫn có thể đăng ký tại đây ngay cả khi đã tham gia Vòng sơ loại.",
       "emptyTitle": "Hiện chưa có vòng thi nào khả dụng",
       "emptyDescription": "Các vòng đội đã đăng ký và những vòng đang mở hồ sơ sẽ xuất hiện tại đây khi khả dụng.",
       "announcementsTitle": "Cập nhật cuộc thi",
@@ -371,31 +378,31 @@
       "label": "Các mục trong bảng điều khiển đội thi",
       "overview": "Tổng quan",
       "announcements": "Thông báo",
-      "round": "Vòng {round}",
+      "round": "{roundLabel}",
       "round1": "Vòng 1",
       "round2": "Vòng 2",
       "round3": "Vòng 3"
     },
     "round": {
-      "title": "Bài nộp Vòng {round}",
+      "title": "Bài nộp {roundLabel}",
       "description": "Mọi thành viên trong đội đều có thể nộp phần mô tả và tài liệu của đội.",
       "formTitle": "Chuẩn bị bài nộp",
       "replaceTitle": "Nộp lại bài",
       "replaceDescription": "Cập nhật phần mô tả và chọn tệp mới để thay thế bài nộp hiện tại.",
-      "openTitle": "Đã mở nộp bài Vòng {round}",
+      "openTitle": "Đã mở nộp bài {roundLabel}",
       "openDescription": "Chuẩn bị phần mô tả và tài liệu của đội ở bên dưới.",
       "descriptionLabel": "Mô tả",
       "fileLabel": "Tệp bài nộp",
       "fileHint": "Chỉ hỗ trợ PDF - tối đa 20 MB.",
       "characters": "{count} / 5000 ký tự",
-      "submit": "Nộp bài Vòng {round}",
+      "submit": "Nộp bài {roundLabel}",
       "uploading": "Đang tải lên…",
       "cancel": "Hủy",
-      "success": "Bài nộp Vòng {round} đã được lưu.",
-      "submittedTitle": "Đã nộp bài Vòng {round}",
+      "success": "Bài nộp {roundLabel} đã được lưu.",
+      "submittedTitle": "Đã nộp bài {roundLabel}",
       "submittedAt": "Cập nhật gần nhất {date}",
       "attemptsUsed": "Đã dùng {used} / {max} lượt nộp",
-      "limitTitle": "Đã hết lượt nộp bài Vòng {round}",
+      "limitTitle": "Đã hết lượt nộp bài {roundLabel}",
       "limitDescription": "Đội của bạn đã dùng hết 3 lượt nộp bài cho vòng này.",
       "replace": "Nộp lại bài",
       "download": "Tải tệp",
@@ -404,10 +411,10 @@
       "feedbackTitle": "Nhận xét từ ban tổ chức",
       "scoreTitle": "Điểm số",
       "emptyTitle": "Chưa có bài nộp",
-      "unavailableTitle": "Chưa mở nộp bài Vòng {round}",
+      "unavailableTitle": "Chưa mở nộp bài {roundLabel}",
       "unavailableDescription": "Ban tổ chức sẽ mở vòng này khi bắt đầu nhận bài.",
       "errors": {
-        "loadTitle": "Không thể tải bài nộp Vòng {round}",
+        "loadTitle": "Không thể tải bài nộp {roundLabel}",
         "load": "Vui lòng kiểm tra kết nối và thử lại.",
         "descriptionLength": "Mô tả không được vượt quá 5.000 ký tự.",
         "fileRequired": "Hãy chọn tệp bài nộp.",
@@ -448,7 +455,7 @@
       "admissionMethods": {
         "direct": "Đăng ký trực tiếp",
         "cv_screening": "Sàng lọc CV",
-        "round_0_5_promotion": "Được chọn từ Vòng 0.5",
+        "round_0_5_promotion": "Được chọn từ Vòng sơ loại",
         "promotion": "Được Ban Tổ chức lựa chọn"
       }
     }
@@ -473,7 +480,7 @@
       "users": "Người dùng",
       "teams": "Đội thi",
       "mail": "Thư",
-      "round": "Vòng {round}"
+      "round": "{roundLabel}"
     },
     "stats": {
       "label": "Thống kê tổng quan",
@@ -494,7 +501,7 @@
       "description": "Kiểm soát trạng thái nộp bài và các tab vòng thi mà thí sinh có thể nhìn thấy.",
       "admissionSectionTitle": "Thời gian đăng ký",
       "admissionSectionDescription": "Mở hoặc đóng đăng ký trực tiếp độc lập với hiển thị vòng và thời gian nộp bài.",
-      "admissionRoundDescription": "Cho phép đăng ký trực tiếp vào Vòng {round}.",
+      "admissionRoundDescription": "Cho phép đăng ký trực tiếp vào {roundLabel}.",
       "openAdmission": "Mở đăng ký",
       "closeAdmission": "Đóng đăng ký",
       "admissionSuccess": "Đã cập nhật thời gian đăng ký.",
@@ -510,8 +517,8 @@
       "success": "Đã cập nhật trạng thái nộp bài.",
       "error": "Không thể cập nhật trạng thái nộp bài. Vui lòng thử lại.",
       "loadError": "Không thể tải trạng thái nộp bài. Hãy kiểm tra kết nối và thử lại.",
-      "roundTitle": "Vòng {round}",
-      "roundDescription": "Cho phép các thành viên trong đội nộp hoặc thay thế bài Vòng {round}."
+      "roundTitle": "{roundLabel}",
+      "roundDescription": "Cho phép các thành viên trong đội nộp hoặc thay thế bài {roundLabel}."
     },
     "announcements": {
       "title": "Thông báo",
@@ -557,9 +564,9 @@
       "title": "Đội thi",
       "description": "Xem các đội đã đăng ký, đội trưởng và trạng thái đăng ký.",
       "roundHubDescription": "Xét duyệt hồ sơ độc lập cho từng vòng thi.",
-      "roundTitle": "Đội thi Vòng {round}",
-      "roundDescription": "Xem hồ sơ, kết quả xét duyệt và thăng hạng của Vòng {round}.",
-      "openRound": "Mở hồ sơ Vòng {round}",
+      "roundTitle": "Đội thi {roundLabel}",
+      "roundDescription": "Xem hồ sơ, kết quả xét duyệt và thăng hạng của {roundLabel}.",
+      "openRound": "Mở hồ sơ {roundLabel}",
       "backToRounds": "Quay lại các vòng xét tuyển",
       "selectAll": "Chọn tất cả đội đã duyệt",
       "selectTeam": "Chọn đội {team}",
@@ -569,11 +576,11 @@
       "exportingExcel": "Đang xuất…",
       "exportSuccess": "Đã xuất {count} đội.",
       "exportError": "Không thể tạo tệp Excel. Vui lòng thử lại.",
-      "promoteSelected": "Chọn {count} đội vào Vòng {round}",
-      "promoteTo": "Chọn vào Vòng {round}",
+      "promoteSelected": "Chọn {count} đội vào {roundLabel}",
+      "promoteTo": "Chọn vào {roundLabel}",
       "promotionConfirmation": {
         "title": "{count, plural, =1 {Chọn đội này vào vòng tiếp theo?} other {Chọn # đội vào vòng tiếp theo?}}",
-        "description": "{count, plural, =1 {Đội đã chọn sẽ được thêm vào Vòng {round}.} other {# đội đã chọn sẽ được thêm vào Vòng {round}.}}",
+        "description": "{count, plural, =1 {Đội đã chọn sẽ được thêm vào {roundLabel}.} other {# đội đã chọn sẽ được thêm vào {roundLabel}.}}",
         "confirm": "{count, plural, =1 {Chọn đội} other {Chọn # đội}}"
       },
       "promotionResult": "Hoàn tất: {succeeded} thành công, {failed} thất bại.",
@@ -584,7 +591,7 @@
       "admissionMethods": {
         "direct": "Đăng ký trực tiếp",
         "cv_screening": "Sàng lọc CV",
-        "round_0_5_promotion": "Được chọn từ Vòng 0.5",
+        "round_0_5_promotion": "Được chọn từ Vòng sơ loại",
         "promotion": "Được lựa chọn"
       },
       "cv": "CV",
@@ -652,11 +659,11 @@
       "previewTitle": "Xem trước email gửi đến {recipient}"
     },
     "round": {
-      "title": "Vòng {round}",
-      "description": "Xem bài nộp Vòng {round} và thông tin các đội liên quan.",
-      "emptyTitle": "Chưa có bài nộp Vòng {round}",
+      "title": "{roundLabel}",
+      "description": "Xem bài nộp {roundLabel} và thông tin các đội liên quan.",
+      "emptyTitle": "Chưa có bài nộp {roundLabel}",
       "emptyDescription": "Bài nộp của các đội sẽ xuất hiện tại đây sau khi được tải lên.",
-      "detailEyebrow": "Bài nộp Vòng {round}",
+      "detailEyebrow": "Bài nộp {roundLabel}",
       "submission": "Thông tin bài nộp",
       "content": "Nội dung đã nộp",
       "notFoundTitle": "Không tìm thấy bài nộp",
@@ -740,7 +747,7 @@
       "viewTeam": "Xem {name}",
       "viewSubmission": "Xem bài nộp của {team}",
       "backToTeams": "Quay lại danh sách đội",
-      "backToRound": "Quay lại Vòng {round}",
+      "backToRound": "Quay lại {roundLabel}",
       "preview": "Xem trước",
       "download": "Tải xuống",
       "retry": "Thử lại",

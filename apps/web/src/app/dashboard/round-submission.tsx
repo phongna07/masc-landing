@@ -12,6 +12,7 @@ import { useFormatter, useTranslations } from "next-intl";
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import { toast } from "sonner";
 
+import { useRoundLabel } from "@/hooks/use-round-label";
 import { queryClient, trpc } from "@/utils/trpc";
 
 const MAX_FILE_SIZE = 20 * 1024 * 1024;
@@ -19,6 +20,7 @@ const mimeTypes: Record<string, string> = { pdf: "application/pdf" };
 
 export default function RoundSubmission({ round }: { round: RoundId }) {
   const t = useTranslations("Dashboard"); const format = useFormatter();
+  const roundLabel = useRoundLabel()(round);
   const input = { round };
   const submission = useQuery(trpc.roundSubmission.current.queryOptions(input));
   const [description, setDescription] = useState(""); const [file, setFile] = useState<File | null>(null);
@@ -26,7 +28,7 @@ export default function RoundSubmission({ round }: { round: RoundId }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const createUploadUrl = useMutation(trpc.roundSubmission.createUploadUrl.mutationOptions());
   const finalize = useMutation(trpc.roundSubmission.finalize.mutationOptions({ onSuccess: async () => {
-    toast.success(t("round.success", { round })); setEditing(false); setFile(null);
+    toast.success(t("round.success", { roundLabel })); setEditing(false); setFile(null);
     await Promise.all([
       queryClient.invalidateQueries({ queryKey: trpc.roundSubmission.current.queryKey(input) }),
       queryClient.invalidateQueries({ queryKey: trpc.roundSubmission.statuses.queryKey() }),
@@ -47,12 +49,12 @@ export default function RoundSubmission({ round }: { round: RoundId }) {
     ? attemptsUsed >= maxAttempts ? "limit" : "submitted"
     : !isOpen ? "unavailable" : "open";
   const statusTitle = status === "submitted"
-    ? t("round.submittedTitle", { round })
+    ? t("round.submittedTitle", { roundLabel })
     : status === "limit"
-      ? t("round.limitTitle", { round })
+      ? t("round.limitTitle", { roundLabel })
     : status === "unavailable"
-      ? t("round.unavailableTitle", { round })
-      : t(existing ? "round.replaceTitle" : "round.openTitle", { round });
+      ? t("round.unavailableTitle", { roundLabel })
+      : t(existing ? "round.replaceTitle" : "round.openTitle", { roundLabel });
   const statusDescription = status === "submitted"
     ? t("round.submittedAt", { date: format.dateTime(new Date(existing!.updatedAt), { dateStyle: "medium", timeStyle: "short" }) })
     : status === "limit"
@@ -68,7 +70,7 @@ export default function RoundSubmission({ round }: { round: RoundId }) {
     preview.mutate({ round });
   }, [previewKey, existing?.mimeType, showForm, round, preview.mutate]);
   if (submission.isPending) return <StateCard loading />;
-  if (submission.isError) return <StateCard title={t("round.errors.loadTitle", { round })} description={t("round.errors.load")} retry={() => submission.refetch()} />;
+  if (submission.isError) return <StateCard title={t("round.errors.loadTitle", { roundLabel })} description={t("round.errors.load")} retry={() => submission.refetch()} />;
 
   const submit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault(); setError(null); const cleanDescription = description.trim();
@@ -99,7 +101,7 @@ export default function RoundSubmission({ round }: { round: RoundId }) {
 
   return <div className="round-panel">
     <Card className={`dashboard-card round-status-card round-status-${status}`}>
-      <CardHeader className="round-status-header"><p className="dashboard-card-index">01 / {t("tabs.round", { round })}</p>
+      <CardHeader className="round-status-header"><p className="dashboard-card-index">01 / {t("tabs.round", { roundLabel })}</p>
         <div className="round-status-heading"><span className="round-status-icon" aria-hidden="true">{status === "submitted" ? <CheckCircle2Icon /> : <Clock3Icon />}</span>
           <div><CardTitle>{statusTitle}</CardTitle><p>{statusDescription}</p></div></div>
         <div className="round-status-actions"><p className="round-attempts">{t("round.attemptsUsed", { used: attemptsUsed, max: maxAttempts })}</p>
@@ -118,7 +120,7 @@ export default function RoundSubmission({ round }: { round: RoundId }) {
       <CardContent className="round-submission-fields"><Field label={t("round.descriptionLabel")}><Textarea value={description} maxLength={5000} rows={8} onChange={(event) => setDescription(event.target.value)} /><span className="field-hint">{t("round.characters", { count: description.length })}</span></Field>
       <Field label={t("round.fileLabel")}><Input type="file" accept=".pdf,application/pdf" onChange={(event) => setFile(event.target.files?.[0] ?? null)} /><span className="field-hint">{t("round.fileHint")}</span></Field></CardContent>
       {error && <p className="form-error" role="alert">{error}</p>}<div className="registration-submit">{editing ? <Button type="button" variant="outline" onClick={() => { setEditing(false); setError(null); }}>{t("round.cancel")}</Button> : <span />}
-      <Button type="submit" size="lg" disabled={isSubmitting} aria-busy={isSubmitting}><UploadIcon aria-hidden="true" />{isSubmitting ? t("round.uploading") : t("round.submit", { round })}</Button></div></form>}
+      <Button type="submit" size="lg" disabled={isSubmitting} aria-busy={isSubmitting}><UploadIcon aria-hidden="true" />{isSubmitting ? t("round.uploading") : t("round.submit", { roundLabel })}</Button></div></form>}
     </Card>
   </div>;
 }
