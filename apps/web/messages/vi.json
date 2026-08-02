@@ -341,6 +341,7 @@
       "university": "Trường đại học / Cơ quan"
     },
     "actions": {
+      "announcement": "Thông báo",
       "submit": "Gửi đăng ký",
       "submitting": "Đang gửi…",
       "loading": "Đang tải…",

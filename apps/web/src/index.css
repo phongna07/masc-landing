@@ -139,9 +139,28 @@ dialog[open]::backdrop {
   padding-block: clamp(54px, 8vw, 96px) 100px;
 }
 
+.dashboard-heading-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 32px;
+  margin-bottom: 46px;
+}
+
 .dashboard-heading {
   max-width: 760px;
-  margin-bottom: 46px;
+}
+
+.dashboard-announcement-jump {
+  min-width: max-content;
+  border-color: rgba(210, 166, 108, .35);
+  color: #f2d584;
+  background: rgba(210, 166, 108, .09);
+}
+
+.dashboard-announcement-jump:hover {
+  border-color: rgba(210, 166, 108, .55);
+  background: rgba(210, 166, 108, .16);
 }
 
 .dashboard-eyebrow,
@@ -1323,6 +1342,12 @@ dialog[open]::backdrop {
     padding-top: 48px;
   }
 
+  .dashboard-heading-row {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 22px;
+  }
+
   .dashboard-fields,
   .awareness-options,
   .overview-grid,
@@ -1593,6 +1618,7 @@ dialog[open]::backdrop {
   gap: 22px;
   margin-top: 10px;
   padding-top: clamp(28px, 5vw, 42px);
+  scroll-margin-top: 96px;
   border-top: 1px solid rgba(255, 255, 255, .14);
 }
 

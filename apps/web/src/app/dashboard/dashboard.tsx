@@ -24,7 +24,7 @@ import { Skeleton } from "@masc-landing/ui/components/skeleton";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import type { inferRouterOutputs } from "@trpc/server";
 import {
-  ArrowRightIcon, CheckCircle2Icon, ChevronDownIcon, MegaphoneIcon, MessageSquareQuoteIcon,
+  ArrowDownIcon, ArrowRightIcon, CheckCircle2Icon, ChevronDownIcon, MegaphoneIcon, MessageSquareQuoteIcon,
   RefreshCwIcon, TriangleAlertIcon
 } from "lucide-react";
 import type { Route } from "next";
@@ -105,10 +105,18 @@ export default function Dashboard({ session, activeTab, initialMemberships, init
       </header>
 
       <main className="dashboard-main">
-        <div className="dashboard-heading">
-          <p className="dashboard-eyebrow">{t("eyebrow")}</p>
-          <h1>{activeTab.startsWith("round-") ? t("hub.roundTitle", { roundLabel: roundLabel(activeTab.slice(6) as RoundId) }) : t("title")}</h1>
-          <p>{t("welcome", { name: session.user.name })}</p>
+        <div className="dashboard-heading-row">
+          <div className="dashboard-heading">
+            <p className="dashboard-eyebrow">{t("eyebrow")}</p>
+            <h1>{activeTab.startsWith("round-") ? t("hub.roundTitle", { roundLabel: roundLabel(activeTab.slice(6) as RoundId) }) : t("title")}</h1>
+            <p>{t("welcome", { name: session.user.name })}</p>
+          </div>
+          {activeTab === "overview" && <Button className="dashboard-announcement-jump" variant="outline"
+            nativeButton={false} render={<a href="#dashboard-announcements" />}>
+            <MegaphoneIcon aria-hidden="true" />
+            {t("actions.announcement")}
+            <ArrowDownIcon aria-hidden="true" />
+          </Button>}
         </div>
 
         {activeTab === "overview" && <PromotionAnnouncements initialAnnouncements={initialUserAnnouncements} />}
@@ -187,7 +195,7 @@ function RoundHub({ memberships, settings, submissionStatuses }: {
         </CardContent>
       </Card>;
     })}</div>
-    <section className="announcement-section" aria-labelledby="dashboard-announcements-title">
+    <section id="dashboard-announcements" className="announcement-section" aria-labelledby="dashboard-announcements-title">
       <div className="announcement-section-heading">
         <div className="announcement-section-icon"><MegaphoneIcon aria-hidden="true" /></div>
         <div><p className="dashboard-card-index">{t("tabs.announcements")}</p>
