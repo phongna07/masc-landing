@@ -8,6 +8,13 @@
     "english": "English",
     "vietnamese": "Tiếng Việt"
   },
+  "RoundLabels": {
+    "preliminary": "Preliminary Round",
+    "round1": "Round 1",
+    "round2": "Round 2",
+    "round3": "Round 3",
+    "numbered": "Round {round}"
+  },
   "Home": {
     "header": {
       "backToTop": "MASC 2026 - back to top",
@@ -34,9 +41,9 @@
       "scroll": "Scroll to discover"
     },
     "countdown": {
-      "applications": "Round 0.5 applications",
+      "applications": "Preliminary Round applications",
       "closesIn": "Applications close in",
-      "opensIn": "Round 0.5 opens in",
+      "opensIn": "Preliminary Round opens in",
       "closed": "Submissions closed",
       "aria": "{days} days, {hours} hours, {minutes} minutes, {seconds} seconds",
       "days": "Days",
@@ -231,8 +238,8 @@
     "promotionAnnouncements": {
       "label": "Your promotion announcements",
       "successLabel": "Promotion update",
-      "title": "Promoted to Round {round}",
-      "description": "Your team {team} has been promoted to Round {round}.",
+      "title": "Promoted to {roundLabel}",
+      "description": "Your team {team} has been promoted to {roundLabel}.",
       "errors": {
         "title": "Could not load your promotion announcements",
         "description": "Check your connection and try again.",
@@ -240,9 +247,9 @@
       }
     },
     "hub": {
-      "roundTitle": "Round {round}",
-      "apply": "Apply to Round {round}",
-      "go": "Go to Round {round} dashboard",
+      "roundTitle": "{roundLabel}",
+      "apply": "Apply to {roundLabel}",
+      "go": "Go to {roundLabel} dashboard",
       "open": "Applications open",
       "closed": "Applications closed",
       "notEligible": "Not eligible yet",
@@ -250,8 +257,8 @@
       "registeredTeam": "Registered team",
       "back": "Back to rounds",
       "closedDescription": "The organizers are not accepting applications for this round right now.",
-      "eligibilityDescription": "Round {round} is available only after an administrator promotes an eligible team.",
-      "roundOneAlternative": "Round 1 uses a separate CV-screening application. You can apply here even if your team already entered Round 0.5.",
+      "eligibilityDescription": "{roundLabel} is available only after an administrator promotes an eligible team.",
+      "roundOneAlternative": "Round 1 uses a separate CV-screening application. You can apply here even if your team already entered Preliminary Round.",
       "emptyTitle": "No rounds are available right now",
       "emptyDescription": "Your registered rounds and any open application routes will appear here when they become available.",
       "announcementsTitle": "Competition updates",
@@ -371,31 +378,31 @@
       "label": "Team dashboard sections",
       "overview": "Overview",
       "announcements": "Announcements",
-      "round": "Round {round}",
+      "round": "{roundLabel}",
       "round1": "Round 1",
       "round2": "Round 2",
       "round3": "Round 3"
     },
     "round": {
-      "title": "Round {round} submission",
+      "title": "{roundLabel} submission",
       "description": "Any team member can submit your team's written description and supporting document.",
       "formTitle": "Prepare your submission",
       "replaceTitle": "Replace your submission",
       "replaceDescription": "Update the description and choose the new file that will replace your current submission.",
-      "openTitle": "Round {round} submissions are open",
+      "openTitle": "{roundLabel} submissions are open",
       "openDescription": "Prepare your team's description and supporting document below.",
       "descriptionLabel": "Description",
       "fileLabel": "Submission file",
       "fileHint": "PDF only - maximum 20 MB.",
       "characters": "{count} / 5000 characters",
-      "submit": "Submit Round {round}",
+      "submit": "Submit {roundLabel}",
       "uploading": "Uploading…",
       "cancel": "Cancel",
-      "success": "Your Round {round} submission has been saved.",
-      "submittedTitle": "Round {round} submission received",
+      "success": "Your {roundLabel} submission has been saved.",
+      "submittedTitle": "{roundLabel} submission received",
       "submittedAt": "Last updated {date}",
       "attemptsUsed": "{used} / {max} attempts used",
-      "limitTitle": "Round {round} submission limit reached",
+      "limitTitle": "{roundLabel} submission limit reached",
       "limitDescription": "Your team has used all 3 submission attempts for this round.",
       "replace": "Resubmit",
       "download": "Download file",
@@ -404,10 +411,10 @@
       "feedbackTitle": "Admin feedback",
       "scoreTitle": "Score",
       "emptyTitle": "No submission yet",
-      "unavailableTitle": "Round {round} submissions are not available yet",
+      "unavailableTitle": "{roundLabel} submissions are not available yet",
       "unavailableDescription": "The organizers will open this round when submissions can begin.",
       "errors": {
-        "loadTitle": "We could not load the Round {round} submission",
+        "loadTitle": "We could not load the {roundLabel} submission",
         "load": "Check your connection and try again.",
         "descriptionLength": "The description must be 5,000 characters or fewer.",
         "fileRequired": "Choose a submission file.",
@@ -448,7 +455,7 @@
       "admissionMethods": {
         "direct": "Direct application",
         "cv_screening": "CV screening",
-        "round_0_5_promotion": "Promoted from Round 0.5",
+        "round_0_5_promotion": "Promoted from Preliminary Round",
         "promotion": "Promoted by the organizers"
       }
     }
@@ -473,7 +480,7 @@
       "users": "Users",
       "teams": "Teams",
       "mail": "Mail",
-      "round": "Round {round}"
+      "round": "{roundLabel}"
     },
     "stats": {
       "label": "Summary statistics",
@@ -494,7 +501,7 @@
       "description": "Control round submission availability and which round tabs participants can see.",
       "admissionSectionTitle": "Application availability",
       "admissionSectionDescription": "Open or close direct applications independently from round visibility and submissions.",
-      "admissionRoundDescription": "Allow direct applications to Round {round}.",
+      "admissionRoundDescription": "Allow direct applications to {roundLabel}.",
       "openAdmission": "Open applications",
       "closeAdmission": "Close applications",
       "admissionSuccess": "Application availability updated.",
@@ -510,8 +517,8 @@
       "success": "Submission availability updated.",
       "error": "Could not update submission availability. Please try again.",
       "loadError": "Could not load submission availability. Check your connection and try again.",
-      "roundTitle": "Round {round}",
-      "roundDescription": "Allow team members to submit or replace their Round {round} work."
+      "roundTitle": "{roundLabel}",
+      "roundDescription": "Allow team members to submit or replace their {roundLabel} work."
     },
     "announcements": {
       "title": "Announcements",
@@ -557,9 +564,9 @@
       "title": "Teams",
       "description": "Review submitted teams, captains, and registration status.",
       "roundHubDescription": "Review admissions independently for each competition round.",
-      "roundTitle": "Round {round} teams",
-      "roundDescription": "Review registrations, decisions, and advancement for Round {round}.",
-      "openRound": "Open Round {round} admissions",
+      "roundTitle": "{roundLabel} teams",
+      "roundDescription": "Review registrations, decisions, and advancement for {roundLabel}.",
+      "openRound": "Open {roundLabel} admissions",
       "backToRounds": "Back to admission rounds",
       "selectAll": "Select all approved teams",
       "selectTeam": "Select {team}",
@@ -569,11 +576,11 @@
       "exportingExcel": "Exporting…",
       "exportSuccess": "Exported {count} teams.",
       "exportError": "The Excel file could not be created. Please try again.",
-      "promoteSelected": "Promote {count} to Round {round}",
-      "promoteTo": "Promote to Round {round}",
+      "promoteSelected": "Promote {count} to {roundLabel}",
+      "promoteTo": "Promote to {roundLabel}",
       "promotionConfirmation": {
         "title": "{count, plural, =1 {Promote this team?} other {Promote # teams?}}",
-        "description": "{count, plural, =1 {The selected team will be added to Round {round}.} other {The # selected teams will be added to Round {round}.}}",
+        "description": "{count, plural, =1 {The selected team will be added to {roundLabel}.} other {The # selected teams will be added to {roundLabel}.}}",
         "confirm": "{count, plural, =1 {Promote team} other {Promote # teams}}"
       },
       "promotionResult": "Promotion finished: {succeeded} succeeded, {failed} failed.",
@@ -584,7 +591,7 @@
       "admissionMethods": {
         "direct": "Direct application",
         "cv_screening": "CV screening",
-        "round_0_5_promotion": "Promoted from Round 0.5",
+        "round_0_5_promotion": "Promoted from Preliminary Round",
         "promotion": "Promotion"
       },
       "cv": "CV",
@@ -652,11 +659,11 @@
       "previewTitle": "Email preview for {recipient}"
     },
     "round": {
-      "title": "Round {round}",
-      "description": "Review Round {round} submissions and their related teams.",
-      "emptyTitle": "No Round {round} submissions",
+      "title": "{roundLabel}",
+      "description": "Review {roundLabel} submissions and their related teams.",
+      "emptyTitle": "No {roundLabel} submissions",
       "emptyDescription": "Team submissions will appear here after they are uploaded.",
-      "detailEyebrow": "Round {round} submission",
+      "detailEyebrow": "{roundLabel} submission",
       "submission": "Submission details",
       "content": "Submitted work",
       "notFoundTitle": "Submission not found",
@@ -740,7 +747,7 @@
       "viewTeam": "View {name}",
       "viewSubmission": "View {team}'s submission",
       "backToTeams": "Back to teams",
-      "backToRound": "Back to Round {round}",
+      "backToRound": "Back to {roundLabel}",
       "preview": "Preview",
       "download": "Download",
       "retry": "Try again",

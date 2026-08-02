@@ -7,6 +7,7 @@ import type { inferRouterOutputs } from "@trpc/server";
 import { CheckCircle2Icon, RefreshCwIcon, TriangleAlertIcon } from "lucide-react";
 import { useFormatter, useTranslations } from "next-intl";
 
+import { useRoundLabel } from "@/hooks/use-round-label";
 import { trpc } from "@/utils/trpc";
 
 type UserAnnouncements = inferRouterOutputs<AppRouter>["userAnnouncements"]["listMine"];
@@ -15,6 +16,7 @@ export default function PromotionAnnouncements({ initialAnnouncements }: {
   initialAnnouncements: UserAnnouncements;
 }) {
   const t = useTranslations("Dashboard.promotionAnnouncements");
+  const roundLabel = useRoundLabel();
   const format = useFormatter();
   const announcements = useQuery({
     ...trpc.userAnnouncements.listMine.queryOptions(),
@@ -36,8 +38,8 @@ export default function PromotionAnnouncements({ initialAnnouncements }: {
       <CheckCircle2Icon aria-hidden="true" />
       <div className="promotion-announcement-copy">
         <span className="sr-only">{t("successLabel")}</span>
-        <strong>{t("title", { round: announcement.round })}</strong>
-        <p>{t("description", { team: announcement.teamName, round: announcement.round })}</p>
+        <strong>{t("title", { roundLabel: roundLabel(announcement.round) })}</strong>
+        <p>{t("description", { team: announcement.teamName, roundLabel: roundLabel(announcement.round) })}</p>
       </div>
       <time dateTime={new Date(announcement.createdAt).toISOString()}>
         {format.dateTime(new Date(announcement.createdAt), { dateStyle: "medium", timeStyle: "short" })}

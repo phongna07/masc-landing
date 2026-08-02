@@ -38,6 +38,7 @@ import { toast } from "sonner";
 import LanguageSwitcher from "@/components/language-switcher";
 import UserMenu from "@/components/user-menu";
 import { BrandLogo } from "@/components/hero-brand-logo";
+import { useRoundLabel } from "@/hooks/use-round-label";
 import { authClient } from "@/lib/auth-client";
 import { queryClient, trpc } from "@/utils/trpc";
 import AnnouncementsSkeleton from "./announcements-skeleton";
@@ -78,6 +79,7 @@ export default function Dashboard({ session, activeTab, initialMemberships, init
   initialUserAnnouncements: UserAnnouncements;
 }) {
   const t = useTranslations("Dashboard");
+  const roundLabel = useRoundLabel();
   const memberships = useQuery({ ...trpc.registration.memberships.queryOptions(), initialData: initialMemberships });
   const settings = useQuery({ ...trpc.registration.settings.queryOptions(), initialData: initialSettings });
   const submissionStatuses = useQuery({
@@ -105,7 +107,7 @@ export default function Dashboard({ session, activeTab, initialMemberships, init
       <main className="dashboard-main">
         <div className="dashboard-heading">
           <p className="dashboard-eyebrow">{t("eyebrow")}</p>
-          <h1>{activeTab.startsWith("round-") ? t("hub.roundTitle", { round: activeTab.slice(6) }) : t("title")}</h1>
+          <h1>{activeTab.startsWith("round-") ? t("hub.roundTitle", { roundLabel: roundLabel(activeTab.slice(6) as RoundId) }) : t("title")}</h1>
           <p>{t("welcome", { name: session.user.name })}</p>
         </div>
 
@@ -139,6 +141,7 @@ function RoundHub({ memberships, settings, submissionStatuses }: {
   submissionStatuses: SubmissionStatuses;
 }) {
   const t = useTranslations("Dashboard");
+  const roundLabel = useRoundLabel();
 
   return <div className="round-hub">
     <div className="round-entry-grid">{roundIds.map((round) => {
@@ -161,7 +164,7 @@ function RoundHub({ memberships, settings, submissionStatuses }: {
           <p>{t(`hub.submissionStatus.${submissionStatus}`)}</p>
         </div>}
         <CardHeader>
-          <div className="round-entry-topline"><p className="dashboard-card-index">{t("tabs.round", { round })}</p>
+          <div className="round-entry-topline"><p className="dashboard-card-index">{t("tabs.round", { roundLabel: roundLabel(round) })}</p>
             <span className={`status-badge status-${state}`}>{stateLabel}</span></div>
           <CardTitle>{t(`hub.names.${roundKey}`)}</CardTitle>
           <p>{description}</p>
@@ -173,13 +176,13 @@ function RoundHub({ memberships, settings, submissionStatuses }: {
                 <span>{t("hub.registeredTeam")}</span><strong>{membership.team.name}</strong>
               </div>
               <Button nativeButton={false} render={<Link href={`/dashboard/round-${round}` as Route} />}>
-                {t("hub.go", { round })}<ArrowRightIcon aria-hidden="true" /></Button>
+                {t("hub.go", { roundLabel: roundLabel(round) })}<ArrowRightIcon aria-hidden="true" /></Button>
             </div>
           </> : <>
             {!canApply && <p className="round-entry-unavailable">
-              {isDirectAdmissionRound ? t("hub.closedDescription") : t("hub.eligibilityDescription", { round })}</p>}
+              {isDirectAdmissionRound ? t("hub.closedDescription") : t("hub.eligibilityDescription", { roundLabel: roundLabel(round) })}</p>}
             {canApply && <Button nativeButton={false} render={<Link href={`/dashboard/round-${round}` as Route} />}>
-              {t("hub.apply", { round })}<ArrowRightIcon aria-hidden="true" /></Button>}
+              {t("hub.apply", { roundLabel: roundLabel(round) })}<ArrowRightIcon aria-hidden="true" /></Button>}
           </>}
         </CardContent>
       </Card>;
@@ -198,6 +201,7 @@ function RoundHub({ memberships, settings, submissionStatuses }: {
 
 function RoundDashboard({ round, session, settings }: { round: RoundId; session: Session; settings: Record<RoundId, boolean> }) {
   const t = useTranslations("Dashboard");
+  const roundLabel = useRoundLabel();
   const membership = useQuery(trpc.registration.current.queryOptions({ round }));
   if (membership.isPending) return <DashboardSkeleton />;
   if (membership.isError) return <StateCard title={t("errors.loadTitle")} description={t("errors.loadDescription")} retry={() => membership.refetch()} />;
@@ -205,7 +209,7 @@ function RoundDashboard({ round, session, settings }: { round: RoundId; session:
     {!membership.data.registered ? (round === "0.5" || round === "1")
       ? settings[round] ? <RegistrationForm session={session} round={round} />
         : <Card className="dashboard-state-card"><CardHeader><CardTitle>{t("hub.closed")}</CardTitle></CardHeader><CardContent><p>{t("hub.closedDescription")}</p></CardContent></Card>
-      : <Card className="dashboard-state-card"><CardHeader><CardTitle>{t("hub.notEligible")}</CardTitle></CardHeader><CardContent><p>{t("hub.eligibilityDescription", { round })}</p></CardContent></Card>
+      : <Card className="dashboard-state-card"><CardHeader><CardTitle>{t("hub.notEligible")}</CardTitle></CardHeader><CardContent><p>{t("hub.eligibilityDescription", { roundLabel: roundLabel(round) })}</p></CardContent></Card>
       : <><TeamOverview membership={membership.data} />{membership.data.team.status === "approved" && <RoundSubmission round={round} />}</>}
   </div>;
 }

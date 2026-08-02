@@ -7,12 +7,14 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 
+import { useRoundLabel } from "@/hooks/use-round-label";
 import { trpc } from "@/utils/trpc";
 
 import { AdminError, AdminHeading, AdminLoading } from "../admin-state";
 
 export default function AdminPage() {
 	const t = useTranslations("Admin");
+	const roundLabel = useRoundLabel();
 	const settings = useQuery(trpc.admin.getSubmissionSettings.queryOptions());
 	const admissionSettings = useQuery(trpc.admin.getAdmissionSettings.queryOptions());
 	const update = useMutation(trpc.admin.setRoundSubmissionOpen.mutationOptions({
@@ -35,8 +37,8 @@ export default function AdminPage() {
 				<p>{t("overview.admissionSectionDescription")}</p></div>
 			{admissionSettings.isPending ? <AdminLoading /> : admissionSettings.isError ?
 				<AdminError title={t("errors.loadTitle")} description={t("overview.admissionLoadError")} retry={() => admissionSettings.refetch()} retryLabel={t("actions.retry")} /> :
-				<div className="admin-round-settings">{(["0.5", "1"] as const).map((round) => { const isOpen = admissionSettings.data[round]; return <Card className="admin-round-setting" key={round}>
-					<CardHeader><div><CardTitle>{t("overview.roundTitle", { round })}</CardTitle><p>{t("overview.admissionRoundDescription", { round })}</p></div>
+				<div className="admin-round-settings">{(["0.5", "1"] as const).map((round) => { const displayRound = roundLabel(round); const isOpen = admissionSettings.data[round]; return <Card className="admin-round-setting" key={round}>
+					<CardHeader><div><CardTitle>{t("overview.roundTitle", { roundLabel: displayRound })}</CardTitle><p>{t("overview.admissionRoundDescription", { roundLabel: displayRound })}</p></div>
 						<span className={isOpen ? "is-open" : "is-closed"}>{t(isOpen ? "overview.open" : "overview.closed")}</span></CardHeader>
 					<CardContent><Button role="switch" aria-checked={isOpen} disabled={updateAdmission.isPending}
 						onClick={() => updateAdmission.mutate({ round, isOpen: !isOpen })}>{t(isOpen ? "overview.closeAdmission" : "overview.openAdmission")}</Button></CardContent>
@@ -51,10 +53,11 @@ export default function AdminPage() {
 				<AdminError title={t("errors.loadTitle")} description={t("overview.loadError")} retry={() => settings.refetch()} retryLabel={t("actions.retry")} />
 			) : <div className="admin-round-settings">
 				{roundIds.map((round) => {
+					const displayRound = roundLabel(round);
 					const isOpen = settings.data[round];
 					const isUpdating = update.isPending && update.variables?.round === round;
 					return <Card className="admin-round-setting" key={round}>
-						<CardHeader><div><CardTitle>{t("overview.roundTitle", { round })}</CardTitle><p>{t("overview.roundDescription", { round })}</p></div>
+						<CardHeader><div><CardTitle>{t("overview.roundTitle", { roundLabel: displayRound })}</CardTitle><p>{t("overview.roundDescription", { roundLabel: displayRound })}</p></div>
 							<span className={isOpen ? "is-open" : "is-closed"}>{t(isOpen ? "overview.open" : "overview.closed")}</span>
 						</CardHeader>
 						<CardContent><Button variant={isOpen ? "default" : "outline"} role="switch" aria-checked={isOpen}

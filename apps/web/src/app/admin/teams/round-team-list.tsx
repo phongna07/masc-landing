@@ -14,6 +14,7 @@ import { useLocale, useTranslations } from "next-intl";
 import { useState } from "react";
 import { toast } from "sonner";
 
+import { useRoundLabel } from "@/hooks/use-round-label";
 import { queryClient, trpc } from "@/utils/trpc";
 import { AdminEmpty, AdminError, AdminHeading, AdminLoading, AdminMetrics, formatDate } from "../admin-state";
 import { exportTeamsToExcel } from "./team-excel-export";
@@ -22,6 +23,7 @@ const targets: Record<RoundId, RoundId[]> = { "0.5": ["1", "2"], "1": ["2"], "2"
 
 export default function RoundTeamList({ round }: { round: RoundId }) {
   const t = useTranslations("Admin"); const locale = useLocale();
+  const roundLabel = useRoundLabel();
   const [selected, setSelected] = useState<string[]>([]);
   const [statusFilter, setStatusFilter] = useState<"all" | "pending" | "approved" | "rejected">("all");
   const [isExporting, setIsExporting] = useState(false);
@@ -71,7 +73,7 @@ export default function RoundTeamList({ round }: { round: RoundId }) {
     }
   };
   return <><Link className="admin-back-link" href="/admin/teams">← {t("teams.backToRounds")}</Link>
-    <AdminHeading eyebrow={t("eyebrow")} title={t("teams.roundTitle", { round })} description={t("teams.roundDescription", { round })} />
+    <AdminHeading eyebrow={t("eyebrow")} title={t("teams.roundTitle", { roundLabel: roundLabel(round) })} description={t("teams.roundDescription", { roundLabel: roundLabel(round) })} />
     <AdminMetrics label={t("stats.label")} isPending={stats.isPending} isError={stats.isError} errorLabel={t("stats.error")}
       retry={() => stats.refetch()} retryLabel={t("actions.retry")} locale={locale} metrics={[
         { label: t("stats.totalTeams"), value: stats.data?.totalTeams }, { label: t("stats.totalParticipants"), value: stats.data?.totalParticipants },
@@ -89,9 +91,9 @@ export default function RoundTeamList({ round }: { round: RoundId }) {
           key={targetRound}
           trigger={<Button aria-busy={promote.isPending} className="admin-promotion-button"
             disabled={!selected.length || promote.isPending}>
-            <ArrowUpRightIcon />{t("teams.promoteSelected", { round: targetRound, count: selected.length })}</Button>}
-          title={t("teams.promotionConfirmation.title", { count: selected.length, round: targetRound })}
-          description={t("teams.promotionConfirmation.description", { count: selected.length, round: targetRound })}
+            <ArrowUpRightIcon />{t("teams.promoteSelected", { roundLabel: roundLabel(targetRound), count: selected.length })}</Button>}
+          title={t("teams.promotionConfirmation.title", { count: selected.length, roundLabel: roundLabel(targetRound) })}
+          description={t("teams.promotionConfirmation.description", { count: selected.length, roundLabel: roundLabel(targetRound) })}
           confirmLabel={t("teams.promotionConfirmation.confirm", { count: selected.length })}
           cancelLabel={t("actions.cancel")}
           icon={<ArrowUpRightIcon />}
