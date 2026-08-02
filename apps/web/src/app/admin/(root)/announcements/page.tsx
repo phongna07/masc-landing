@@ -13,6 +13,7 @@ import { useEffect, useState, type FormEvent } from "react";
 import { toast } from "sonner";
 
 import { BrandLogo } from "@/components/hero-brand-logo";
+import { SafeLinkifiedText } from "@/components/safe-linkified-text";
 import { queryClient, trpc } from "@/utils/trpc";
 import { AdminError, AdminHeading, AdminLoading } from "../../admin-state";
 
@@ -124,6 +125,6 @@ function AnnouncementCard({ item, locale, organizer, deleteLabel, deleting, conf
       tone="destructive"
       onConfirm={onDelete}
     /></CardHeader>
-    <CardContent><p className="announcement-content">{item.content}</p>{item.imageUrl && <img className="announcement-image" src={item.imageUrl} alt="" />}</CardContent>
+    <CardContent><p className="announcement-content"><SafeLinkifiedText text={item.content} /></p>{item.imageUrl && <img className="announcement-image" src={item.imageUrl} alt="" />}</CardContent>
   </Card>;
 }

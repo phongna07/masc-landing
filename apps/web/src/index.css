@@ -1715,6 +1715,24 @@ dialog[open]::backdrop {
   line-height: 1.7;
 }
 
+.announcement-content-link {
+  color: #75dbff;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+  transition: color .2s ease;
+}
+
+.announcement-content-link:hover {
+  color: #b9eeff;
+}
+
+.announcement-content-link:focus-visible {
+  border-radius: 2px;
+  outline: 2px solid #75dbff;
+  outline-offset: 3px;
+}
+
 .announcement-image {
   max-height: 720px;
   margin-top: 18px;

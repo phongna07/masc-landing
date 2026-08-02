@@ -7,6 +7,7 @@ import { MegaphoneIcon, RefreshCwIcon } from "lucide-react";
 import { useFormatter, useTranslations } from "next-intl";
 
 import { BrandLogo } from "@/components/hero-brand-logo";
+import { SafeLinkifiedText } from "@/components/safe-linkified-text";
 import { trpc } from "@/utils/trpc";
 
 import AnnouncementsSkeleton from "./announcements-skeleton";
@@ -32,6 +33,6 @@ export default function AnnouncementsFeed() {
 			<CardTitle>{t("announcements.organizer")}</CardTitle>
 			<time dateTime={new Date(announcement.createdAt).toISOString()}>{format.dateTime(new Date(announcement.createdAt), { dateStyle: "medium", timeStyle: "short" })}</time>
 		</div></CardHeader>
-		<CardContent><p className="announcement-content">{announcement.content}</p>{announcement.imageUrl && <img className="announcement-image" src={announcement.imageUrl} alt="" />}</CardContent>
+		<CardContent><p className="announcement-content"><SafeLinkifiedText text={announcement.content} /></p>{announcement.imageUrl && <img className="announcement-image" src={announcement.imageUrl} alt="" />}</CardContent>
 	</Card>)}</div>;
 }
