@@ -17,7 +17,7 @@ export function renderTeamRegistrationRejected(teamName: string) {
 	const safeTeamName = escapeHtml(teamName);
 	const contentHtml = `
             <div class="greeting">Thân gửi đại diện đội thi,</div>
-            <p>Ban Tổ chức Marketing All-Star Challenge chân thành cảm ơn đội bạn đã quan tâm và đăng ký tham gia cuộc thi.</p>
+            <p>Ban Tổ chức Marketing All-Star Challenge 2026 chân thành cảm ơn đội bạn đã quan tâm và đăng ký tham gia cuộc thi.</p>
             <div class="info-block">
                 <div class="info-title">KẾT QUẢ ĐĂNG KÝ</div>
                 <strong>Tên đội:</strong> ${safeTeamName}<br>
@@ -27,7 +27,7 @@ export function renderTeamRegistrationRejected(teamName: string) {
 
 	const contentText = `Thân gửi đại diện đội thi,
 
-Ban Tổ chức Marketing All-Star Challenge chân thành cảm ơn đội bạn đã quan tâm và đăng ký tham gia cuộc thi.
+Ban Tổ chức Marketing All-Star Challenge 2026 chân thành cảm ơn đội bạn đã quan tâm và đăng ký tham gia cuộc thi.
 
 KẾT QUẢ ĐĂNG KÝ
 Tên đội: ${teamName}
