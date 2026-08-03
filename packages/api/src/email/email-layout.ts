@@ -1,19 +1,19 @@
-export const automatedEmailNotice = "Email này được gửi tự động nên không thể tiếp nhận phản hồi. Quý khách cần hỗ trợ vui lòng liên hệ qua Email: masc26.work@gmail.com";
+export const automatedEmailNotice = "Email này được gửi tự động nên không thể tiếp nhận phản hồi. Đội thi cần hỗ trợ vui lòng liên hệ qua Email: masc26.work@gmail.com";
 
 type EmailLayoutOptions = {
-	subject: string;
-	contentHtml: string;
-	contentText: string;
-	styles?: string;
+    subject: string;
+    contentHtml: string;
+    contentText: string;
+    styles?: string;
 };
 
 export function renderEmailLayout({
-	subject,
-	contentHtml,
-	contentText,
-	styles = "",
+    subject,
+    contentHtml,
+    contentText,
+    styles = "",
 }: EmailLayoutOptions) {
-	const html = `<!DOCTYPE html>
+    const html = `<!DOCTYPE html>
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
@@ -42,18 +42,18 @@ export function renderEmailLayout({
         <div class="content">
 ${contentHtml}
             <div class="footer">Trân trọng,<br><strong>Ban Tổ chức Marketing All-Star Challenge</strong></div>
-            <p class="automated-notice">Email này được gửi tự động nên không thể tiếp nhận phản hồi. Quý khách cần hỗ trợ vui lòng liên hệ qua Email: <a href="mailto:masc26.work@gmail.com">masc26.work@gmail.com</a></p>
+            <p class="automated-notice">Email này được gửi tự động nên không thể tiếp nhận phản hồi. Đội thi cần hỗ trợ vui lòng liên hệ qua Email: <a href="mailto:masc26.work@gmail.com">masc26.work@gmail.com</a></p>
         </div>
     </div>
 </body>
 </html>`;
 
-	const text = `${contentText}
+    const text = `${contentText}
 
 Trân trọng,
 Ban Tổ chức Marketing All-Star Challenge
 
 ${automatedEmailNotice}`;
 
-	return { html, text };
+    return { html, text };
 }
