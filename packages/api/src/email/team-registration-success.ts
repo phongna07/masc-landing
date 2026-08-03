@@ -29,7 +29,7 @@ export function renderTeamRegistrationSuccess(teamName: string, members: TeamMem
 
   const contentHtml = `
             <div class="greeting">Thân gửi đại diện đội thi,</div>
-            <p>Ban Tổ chức Marketing All-Star Challenge xin xác nhận thông tin đăng ký tham gia cuộc thi của đội bạn đã được hệ thống ghi nhận thành công.</p>
+            <p>Ban Tổ chức Marketing All-Star Challenge 2026 xin xác nhận thông tin đăng ký tham gia cuộc thi của đội bạn đã được hệ thống ghi nhận thành công.</p>
             <p>Để đảm bảo mọi thông tin hiển thị trên hệ thống và giấy chứng nhận sau này chính xác, vui lòng kiểm tra kỹ các thông tin chi tiết dưới đây:</p>
             <div class="info-block">
                 <div class="info-title">THÔNG TIN ĐỘI THI ĐÃ ĐĂNG KÝ</div>
@@ -50,7 +50,7 @@ export function renderTeamRegistrationSuccess(teamName: string, members: TeamMem
   ).join("\n");
   const contentText = `Thân gửi đại diện đội thi,
 
-Ban Tổ chức Marketing All-Star Challenge xin xác nhận thông tin đăng ký tham gia cuộc thi của đội bạn đã được hệ thống ghi nhận thành công.
+Ban Tổ chức Marketing All-Star Challenge 2026 xin xác nhận thông tin đăng ký tham gia cuộc thi của đội bạn đã được hệ thống ghi nhận thành công.
 
 Để đảm bảo mọi thông tin hiển thị trên hệ thống và giấy chứng nhận sau này chính xác, vui lòng kiểm tra kỹ các thông tin chi tiết dưới đây:
 

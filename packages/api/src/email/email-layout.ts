@@ -41,7 +41,7 @@ export function renderEmailLayout({
         <img src="https://marketingallstarchallenge.com/banner.jpg" alt="Marketing All-Star Challenge Banner" class="banner">
         <div class="content">
 ${contentHtml}
-            <div class="footer">Trân trọng,<br><strong>Ban Tổ chức Marketing All-Star Challenge</strong></div>
+            <div class="footer">Trân trọng,<br><strong>Ban Tổ chức Marketing All-Star Challenge 2026</strong></div>
             <p class="automated-notice">Email này được gửi tự động nên không thể tiếp nhận phản hồi. Đội thi cần hỗ trợ vui lòng liên hệ qua Email: <a href="mailto:masc26.work@gmail.com">masc26.work@gmail.com</a></p>
         </div>
     </div>
@@ -51,7 +51,7 @@ ${contentHtml}
     const text = `${contentText}
 
 Trân trọng,
-Ban Tổ chức Marketing All-Star Challenge
+Ban Tổ chức Marketing All-Star Challenge 2026
 
 ${automatedEmailNotice}`;
 
