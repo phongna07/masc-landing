@@ -26,6 +26,7 @@ import { getAdmissionSettings } from "../admission-settings";
 import { adminAreaProcedure, router } from "../index";
 import { awarenessSources, type AwarenessSource } from "../registration-schema";
 import { roundSchema, type RoundId } from "../rounds";
+import { attachmentContentDisposition } from "../submission-files";
 import { getSubmissionSettings } from "../submission-settings";
 
 const signedUrlExpirySeconds = 300;
@@ -571,9 +572,9 @@ export const adminRouter = router({
     if (!submission) throw new TRPCError({ code: "NOT_FOUND", message: "Submission not found" }); return { success: true };
   }),
   createRoundDownloadUrl: roundsProcedure.input(submissionInput).mutation(async ({ input }) => {
-    const submission = await findSubmissionFile(input); const safeFilename = submission.filename.replace(/[^a-zA-Z0-9._ -]/g, "_");
+    const submission = await findSubmissionFile(input);
     return { downloadUrl: await getSignedUrl(s3, new GetObjectCommand({ Bucket: env.R2_BUCKET, Key: submission.objectKey,
-      ResponseContentDisposition: `attachment; filename="${safeFilename}"` }), { expiresIn: signedUrlExpirySeconds }) };
+      ResponseContentDisposition: attachmentContentDisposition(submission.filename) }), { expiresIn: signedUrlExpirySeconds }) };
   }),
   createRoundPreviewUrl: roundsProcedure.input(submissionInput).mutation(async ({ input }) => {
     const submission = await findSubmissionFile(input);
