@@ -251,6 +251,7 @@
       "apply": "Đăng ký {roundLabel}",
       "go": "Đến dashboard {roundLabel}",
       "open": "Đang nhận hồ sơ",
+      "ongoing": "Đang diễn ra",
       "closed": "Đã đóng đăng ký",
       "notEligible": "Chưa đủ điều kiện",
       "registered": "Đã đăng ký với đội {team}",
