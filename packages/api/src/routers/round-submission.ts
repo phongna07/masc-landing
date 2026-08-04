@@ -11,6 +11,7 @@ import { z } from "zod";
 
 import { freshProtectedProcedure, protectedProcedure, router } from "../index";
 import { roundIds, roundSchema, type RoundId } from "../rounds";
+import { attachmentContentDisposition, roundSubmissionFilename } from "../submission-files";
 import { getSubmissionSettings, requireSubmissionOpen } from "../submission-settings";
 
 const MAX_FILE_SIZE = 20 * 1024 * 1024;
@@ -82,6 +83,7 @@ async function membershipFor(round: RoundId, userId: string, email: string) {
   const [membership] = await db.select({
     memberId: member.id,
     teamId: member.teamId,
+    teamName: team.teamName,
     registrationStatus: team.registrationStatus,
   }).from(member)
     .innerJoin(team, eq(member.teamId, team.id))
@@ -97,8 +99,8 @@ function requireApprovedTeam(registrationStatus: "pending" | "approved" | "rejec
     throw new TRPCError({ code: "FORBIDDEN", message: "TEAM_NOT_APPROVED" });
   }
 }
-function objectKey(round: string, teamId: string, uploadId: string, extension: string) {
-  return `round-${round}/${teamId}/${uploadId}${extension}`;
+function objectKey(round: RoundId, teamId: string, uploadId: string, filename: string) {
+  return `round-${round}/${teamId}/${uploadId}/${filename}`;
 }
 async function bestEffortDelete(key: string) {
   try { await s3.send(new DeleteObjectCommand({ Bucket: env.R2_BUCKET, Key: key })); } catch { /* persisted submissions survive cleanup failures */ }
@@ -154,8 +156,10 @@ export const roundSubmissionRouter = router({
       throw new TRPCError({ code: "CONFLICT", message: "ATTEMPT_LIMIT_REACHED" });
     }
     const uploadId = crypto.randomUUID();
+    validateFile(input);
+    const filename = roundSubmissionFilename(membership.teamName, input.round);
     const uploadUrl = await getSignedUrl(s3, new PutObjectCommand({ Bucket: env.R2_BUCKET,
-      Key: objectKey(input.round, membership.teamId, uploadId, validateFile(input)), ContentType: input.mimeType,
+      Key: objectKey(input.round, membership.teamId, uploadId, filename), ContentType: input.mimeType,
       ContentLength: input.fileSize }), { expiresIn: URL_EXPIRY_SECONDS });
     return { uploadId, uploadUrl, expiresIn: URL_EXPIRY_SECONDS };
   }),
@@ -164,7 +168,9 @@ export const roundSubmissionRouter = router({
       const { submission } = tablesForRound(input.round);
       const membership = await membershipFor(input.round, ctx.session.user.id, ctx.session.user.email);
       requireApprovedTeam(membership.registrationStatus);
-      const key = objectKey(input.round, membership.teamId, input.uploadId, validateFile(input));
+      validateFile(input);
+      const filename = roundSubmissionFilename(membership.teamName, input.round);
+      const key = objectKey(input.round, membership.teamId, input.uploadId, filename);
       try { await requireSubmissionOpen(input.round); } catch (error) {
         await bestEffortDelete(key); throw error;
       }
@@ -185,7 +191,7 @@ export const roundSubmissionRouter = router({
           insert into ${submission} (id, team_id, round, attempt_number, submitted_by_member_id, description,
             object_key, original_filename, mime_type, file_size)
           select ${submissionId}, ${membership.teamId}, ${input.round}, next_attempt.attempt_number,
-            ${membership.memberId}, ${input.description}, ${key}, ${input.filename}, ${input.mimeType}, ${input.fileSize}
+            ${membership.memberId}, ${input.description}, ${key}, ${filename}, ${input.mimeType}, ${input.fileSize}
           from next_attempt where next_attempt.attempt_number <= ${MAX_ATTEMPTS}
           returning attempt_number
         `);
@@ -207,9 +213,8 @@ export const roundSubmissionRouter = router({
       .from(submissionTable).where(submissionWhere(submissionTable, membership.teamId, input.round))
       .orderBy(desc(submissionTable.attemptNumber)).limit(1);
     if (!submission) throw new TRPCError({ code: "NOT_FOUND", message: "SUBMISSION_NOT_FOUND" });
-    const safeFilename = submission.filename.replace(/[^a-zA-Z0-9._ -]/g, "_");
     return { downloadUrl: await getSignedUrl(s3, new GetObjectCommand({ Bucket: env.R2_BUCKET, Key: submission.objectKey,
-      ResponseContentDisposition: `attachment; filename="${safeFilename}"` }), { expiresIn: URL_EXPIRY_SECONDS }) };
+      ResponseContentDisposition: attachmentContentDisposition(submission.filename) }), { expiresIn: URL_EXPIRY_SECONDS }) };
   }),
   createPreviewUrl: freshProtectedProcedure.input(roundInput).mutation(async ({ ctx, input }) => {
     const { submission: submissionTable } = tablesForRound(input.round);

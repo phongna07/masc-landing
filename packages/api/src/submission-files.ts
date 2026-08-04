@@ -1,0 +1,29 @@
+import type { RoundId } from "./rounds";
+
+const roundFilenameTokens: Record<RoundId, string> = {
+	"0.5": "VongSoLoai",
+	"1": "Vong1",
+	"2": "Vong2",
+	"3": "Vong3",
+};
+
+function sanitizeFilenameComponent(value: string) {
+	return value.trim().replace(/[<>:"/\\|?*\u0000-\u001F\u007F]/g, "_");
+}
+
+export function roundSubmissionFilename(teamName: string, round: RoundId) {
+	const safeTeamName = sanitizeFilenameComponent(teamName);
+	return `MASC'26_${safeTeamName}_${roundFilenameTokens[round]}.pdf`;
+}
+
+function encodeRfc5987Value(value: string) {
+	return encodeURIComponent(value).replace(/['()*]/g, (character) =>
+		`%${character.charCodeAt(0).toString(16).toUpperCase()}`,
+	);
+}
+
+export function attachmentContentDisposition(filename: string) {
+	const safeFilename = sanitizeFilenameComponent(filename);
+	const asciiFallback = safeFilename.replace(/[^\x20-\x7E]|["\\]/g, "_");
+	return `attachment; filename="${asciiFallback}"; filename*=UTF-8''${encodeRfc5987Value(safeFilename)}`;
+}
