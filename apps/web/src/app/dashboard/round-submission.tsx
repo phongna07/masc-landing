@@ -5,7 +5,6 @@ import { Button } from "@masc-landing/ui/components/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@masc-landing/ui/components/card";
 import { Input } from "@masc-landing/ui/components/input";
 import { Label } from "@masc-landing/ui/components/label";
-import { Textarea } from "@masc-landing/ui/components/textarea";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { CheckCircle2Icon, Clock3Icon, DownloadIcon, FileTextIcon, MessageSquareQuoteIcon, RefreshCwIcon, UploadIcon } from "lucide-react";
 import { useFormatter, useTranslations } from "next-intl";
@@ -74,7 +73,6 @@ export default function RoundSubmission({ round }: { round: RoundId }) {
 
   const submit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault(); setError(null); const cleanDescription = description.trim();
-    if (!cleanDescription) return setError(t("validation.required"));
     if (cleanDescription.length > 5000) return setError(t("round.errors.descriptionLength"));
     if (!file) return setError(t("round.errors.fileRequired"));
     const mimeType = mimeTypes[file.name.split(".").pop()?.toLowerCase() ?? ""];
@@ -107,7 +105,7 @@ export default function RoundSubmission({ round }: { round: RoundId }) {
         <div className="round-status-actions"><p className="round-attempts">{t("round.attemptsUsed", { used: attemptsUsed, max: maxAttempts })}</p>
           {status === "submitted" && canSubmit && <Button variant="outline" onClick={() => { setDescription(existing!.description); setEditing(true); }}>{t("round.replace")}</Button>}</div>
       </CardHeader>
-    {existing && !showForm && <CardContent className="submission-details"><div className="submission-description"><Label>{t("round.descriptionLabel")}</Label><p>{existing.description}</p></div>
+    {existing && !showForm && <CardContent className="submission-details"><div className="submission-description"><Label>{t("round.descriptionLabel")}</Label><p>{existing.description || t("round.noQuestionProvided")}</p></div>
       <div className="submission-file"><FileTextIcon aria-hidden="true" /><div><strong>{existing.originalFilename}</strong><span>{formatBytes(existing.fileSize)}</span></div>
         <Button variant="outline" disabled={download.isPending} onClick={() => download.mutate(input)}><DownloadIcon aria-hidden="true" />{t("round.download")}</Button></div>
       {existing.feedback && <section className="participant-feedback" aria-labelledby={`round-${round}-feedback-title`}>
@@ -117,15 +115,15 @@ export default function RoundSubmission({ round }: { round: RoundId }) {
       {existing.mimeType === "application/pdf" && preview.data?.previewUrl && <div className="submission-preview"><Label>{t("round.previewLabel")}</Label><iframe src={preview.data.previewUrl} title={t("round.previewTitle", { filename: existing.originalFilename })} /></div>}
     </CardContent>}
     {showForm && <form onSubmit={submit} className="round-submission-form" noValidate>
-      <CardContent className="round-submission-fields"><Field label={t("round.descriptionLabel")}><Textarea value={description} maxLength={5000} rows={8} onChange={(event) => setDescription(event.target.value)} /><span className="field-hint">{t("round.characters", { count: description.length })}</span></Field>
-      <Field label={t("round.fileLabel")}><Input type="file" accept=".pdf,application/pdf" onChange={(event) => setFile(event.target.files?.[0] ?? null)} /><span className="field-hint">{t("round.fileHint")}</span></Field></CardContent>
+      <CardContent className="round-submission-fields"><Field id="round-submission-file" label={t("round.fileLabel")}><Input id="round-submission-file" className="cv-file-input" type="file" accept=".pdf,application/pdf" onChange={(event) => setFile(event.target.files?.[0] ?? null)} /><span className="field-hint">{t("round.fileHint")}</span></Field>
+      <Field id="round-submission-question" label={t("round.descriptionLabel")}><Input id="round-submission-question" className="submission-question-input" type="text" value={description} maxLength={5000} onChange={(event) => setDescription(event.target.value)} /><span className="field-hint">{t("round.characters", { count: description.length })}</span></Field></CardContent>
       {error && <p className="form-error" role="alert">{error}</p>}<div className="registration-submit">{editing ? <Button type="button" variant="outline" onClick={() => { setEditing(false); setError(null); }}>{t("round.cancel")}</Button> : <span />}
       <Button type="submit" size="lg" disabled={isSubmitting} aria-busy={isSubmitting}><UploadIcon aria-hidden="true" />{isSubmitting ? t("round.uploading") : t("round.submit", { roundLabel })}</Button></div></form>}
     </Card>
   </div>;
 }
 
-function Field({ label, children }: { label: string; children: React.ReactNode }) { return <div className="dashboard-field field-full"><Label>{label}</Label>{children}</div>; }
+function Field({ id, label, children }: { id: string; label: string; children: React.ReactNode }) { return <div className="dashboard-field field-full"><Label htmlFor={id}>{label}</Label>{children}</div>; }
 function formatBytes(bytes: number) { return bytes < 1024 * 1024 ? `${Math.ceil(bytes / 1024)} KB` : `${(bytes / 1024 / 1024).toFixed(1)} MB`; }
 function StateCard({ loading, title, description, retry }: { loading?: boolean; title?: string; description?: string; retry?: () => void }) {
   const t = useTranslations("Dashboard");

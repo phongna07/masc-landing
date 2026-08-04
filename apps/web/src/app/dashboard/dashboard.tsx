@@ -425,7 +425,7 @@ function RegistrationForm({ session, round }: { session: Session; round: "0.5" |
           <p className="dashboard-card-index">03 / {t("registration.captainSection")}</p>
           <CardTitle>{t("registration.captainDetails")}</CardTitle>
         </CardHeader>
-        <CardContent className="dashboard-fields">
+        <CardContent className={`dashboard-fields${round === "1" ? " round-one-member-fields" : ""}`}>
           <Field label={t("fields.fullName")} error={errors.captainFullName}>
             <Input value={captainFullName} onChange={(event) => setCaptainFullName(event.target.value)} aria-invalid={!!errors.captainFullName} />
           </Field>
@@ -438,6 +438,14 @@ function RegistrationForm({ session, round }: { session: Session; round: "0.5" |
           <Field label={t("fields.university")} error={errors.captainUniversityName}>
             <Input value={captainUniversityName} onChange={(event) => setCaptainUniversityName(event.target.value)} aria-invalid={!!errors.captainUniversityName} />
           </Field>
+          {round === "1" && <Field
+            label={t("registration.cv.memberLabel", { name: captainFullName || t("roles.captain") })}
+            error={errors["cvs.0"]}>
+            <Input className="cv-file-input" type="file" accept=".pdf,application/pdf"
+              aria-invalid={!!errors["cvs.0"]}
+              onChange={(event) => setCvFiles((current) => current.map((file, fileIndex) =>
+                fileIndex === 0 ? event.target.files?.[0] ?? null : file))} />
+          </Field>}
         </CardContent>
       </Card>
 
@@ -458,7 +466,7 @@ function RegistrationForm({ session, round }: { session: Session; round: "0.5" |
               <div className="teammate-heading">
                 <h3 id={`${member.id}-title`}>{t("registration.memberNumber", { number: index + 2 })}</h3>
               </div>
-              <div className="dashboard-fields">
+              <div className={`dashboard-fields${round === "1" ? " round-one-member-fields" : ""}`}>
                 <Field label={t("fields.fullName")} error={errors[`teammates.${index}.fullName`]}>
                   <Input value={member.fullName} onChange={(event) => updateTeammate(member.id, "fullName", event.target.value)} aria-invalid={!!errors[`teammates.${index}.fullName`]} />
                 </Field>
@@ -471,27 +479,23 @@ function RegistrationForm({ session, round }: { session: Session; round: "0.5" |
                 <Field label={t("fields.university")} error={errors[`teammates.${index}.universityName`]}>
                   <Input value={member.universityName} onChange={(event) => updateTeammate(member.id, "universityName", event.target.value)} aria-invalid={!!errors[`teammates.${index}.universityName`]} />
                 </Field>
+                {round === "1" && <Field label={t("registration.cv.memberLabel", {
+                  name: member.fullName || t("registration.memberNumber", { number: index + 2 }),
+                })} error={errors[`cvs.${index + 1}`]}>
+                  <Input className="cv-file-input" type="file" accept=".pdf,application/pdf"
+                    aria-invalid={!!errors[`cvs.${index + 1}`]}
+                    onChange={(event) => setCvFiles((current) => current.map((file, fileIndex) =>
+                      fileIndex === index + 1 ? event.target.files?.[0] ?? null : file))} />
+                </Field>}
               </div>
             </section>
           ))}
         </CardContent>
       </Card>
 
-      {round === "1" && <Card className="dashboard-card">
-        <CardHeader><p className="dashboard-card-index">05 / {t("registration.cv.section")}</p>
-          <CardTitle>{t("registration.cv.title")}</CardTitle><p>{t("registration.cv.description")}</p></CardHeader>
-        <CardContent className="dashboard-fields">
-          {[captainFullName || t("roles.captain"), ...teammates.map((member) => member.fullName || t("registration.memberNumber", { number: teammates.indexOf(member) + 2 }))]
-            .map((name, index) => <Field key={index} label={t("registration.cv.memberLabel", { name })} error={errors[`cvs.${index}`]} full>
-              <Input className="cv-file-input" type="file" accept=".pdf,application/pdf" aria-invalid={!!errors[`cvs.${index}`]}
-                onChange={(event) => setCvFiles((current) => current.map((file, fileIndex) => fileIndex === index ? event.target.files?.[0] ?? null : file))} />
-            </Field>)}
-        </CardContent>
-      </Card>}
-
       <Card className="dashboard-card">
         <CardHeader>
-          <p className="dashboard-card-index">{round === "1" ? "06" : "05"} / {t("registration.awareness.section")}</p>
+          <p className="dashboard-card-index">05 / {t("registration.awareness.section")}</p>
           <CardTitle>{t("registration.awareness.title")}</CardTitle>
           {/* <p>{t("registration.awareness.description")}</p> */}
         </CardHeader>
