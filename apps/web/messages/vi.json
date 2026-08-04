@@ -9,7 +9,7 @@
     "vietnamese": "Tiếng Việt"
   },
   "RoundLabels": {
-    "preliminary": "Vòng sơ loại",
+    "preliminary": "Vòng Sơ loại",
     "round1": "Vòng 1",
     "round2": "Vòng 2",
     "round3": "Vòng 3",
@@ -37,13 +37,13 @@
       "participantDetails": "Thông tin thí sinh",
       "country": "Việt Nam",
       "age": "Độ tuổi 18-22",
-      "applications": "Vòng sơ loại (20/7 - 10/8)",
+      "applications": "Vòng Sơ loại (20/7 - 10/8)",
       "scroll": "Cuộn để khám phá"
     },
     "countdown": {
-      "applications": "Đơn đăng ký Vòng sơ loại",
+      "applications": "Đơn đăng ký Vòng Sơ loại",
       "closesIn": "Thời gian đóng đơn còn",
-      "opensIn": "Vòng sơ loại mở đơn sau",
+      "opensIn": "Vòng Sơ loại mở đơn sau",
       "closed": "Đã đóng đơn",
       "aria": "{days} ngày, {hours} giờ, {minutes} phút, {seconds} giây",
       "days": "Ngày",
@@ -259,7 +259,7 @@
       "back": "Quay lại các vòng",
       "closedDescription": "Ban Tổ chức hiện chưa nhận hồ sơ đăng ký cho vòng này.",
       "eligibilityDescription": "{roundLabel} chỉ dành cho các đội đủ điều kiện được quản trị viên lựa chọn.",
-      "roundOneAlternative": "Vòng 1 sử dụng hồ sơ sàng lọc CV riêng. Đội của bạn vẫn có thể đăng ký tại đây ngay cả khi đã tham gia Vòng sơ loại.",
+      "roundOneAlternative": "Vòng 1 sử dụng hồ sơ sàng lọc CV riêng. Đội của bạn vẫn có thể đăng ký tại đây ngay cả khi đã tham gia Vòng Sơ loại.",
       "emptyTitle": "Hiện chưa có vòng thi nào khả dụng",
       "emptyDescription": "Các vòng đội đã đăng ký và những vòng đang mở hồ sơ sẽ xuất hiện tại đây khi khả dụng.",
       "announcementsTitle": "Cập nhật cuộc thi",
@@ -458,7 +458,7 @@
       "admissionMethods": {
         "direct": "Đăng ký trực tiếp",
         "cv_screening": "Sàng lọc CV",
-        "round_0_5_promotion": "Được chọn từ Vòng sơ loại",
+        "round_0_5_promotion": "Được chọn từ Vòng Sơ loại",
         "promotion": "Được Ban Tổ chức lựa chọn"
       }
     }
@@ -594,7 +594,7 @@
       "admissionMethods": {
         "direct": "Đăng ký trực tiếp",
         "cv_screening": "Sàng lọc CV",
-        "round_0_5_promotion": "Được chọn từ Vòng sơ loại",
+        "round_0_5_promotion": "Được chọn từ Vòng Sơ loại",
         "promotion": "Được lựa chọn"
       },
       "cv": "CV",
