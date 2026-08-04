@@ -172,13 +172,18 @@ dialog[open]::backdrop {
   text-transform: uppercase;
 }
 
+.dashboard-eyebrow {
+  margin-bottom: 14px;
+}
+
 .dashboard-heading h1 {
-  margin: 10px 0 16px;
+  margin: 0 0 16px;
   font-family: var(--font-castela), Georgia, serif;
   font-size: clamp(42px, 5vw, 68px);
   font-weight: 400;
   line-height: 1;
   letter-spacing: -0.025em;
+  text-transform: uppercase;
 }
 
 .dashboard-heading>p:last-child,

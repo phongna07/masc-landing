@@ -71,13 +71,13 @@ const AnnouncementsFeed = dynamic(() => import("./announcements-feed"), {
 
 export default function Dashboard({ session, activeTab, initialMemberships, initialSettings, initialSubmissionStatuses,
   initialUserAnnouncements }: {
-  session: Session;
-  activeTab: DashboardTab;
-  initialMemberships: Memberships;
-  initialSettings: Record<RoundId, boolean>;
-  initialSubmissionStatuses: SubmissionStatuses;
-  initialUserAnnouncements: UserAnnouncements;
-}) {
+    session: Session;
+    activeTab: DashboardTab;
+    initialMemberships: Memberships;
+    initialSettings: Record<RoundId, boolean>;
+    initialSubmissionStatuses: SubmissionStatuses;
+    initialUserAnnouncements: UserAnnouncements;
+  }) {
   const t = useTranslations("Dashboard");
   const roundLabel = useRoundLabel();
   const memberships = useQuery({ ...trpc.registration.memberships.queryOptions(), initialData: initialMemberships });
@@ -172,9 +172,9 @@ function RoundHub({ memberships, settings, submissionStatuses }: {
           <p>{t(`hub.submissionStatus.${submissionStatus}`)}</p>
         </div>}
         <CardHeader>
-          <div className="round-entry-topline"><p className="dashboard-card-index">{t("tabs.round", { roundLabel: roundLabel(round) })}</p>
+          <div className="round-entry-topline"><p className="dashboard-card-index">{t(`hub.names.${roundKey}`)}</p>
             <span className={`status-badge status-${state}`}>{stateLabel}</span></div>
-          <CardTitle>{t(`hub.names.${roundKey}`)}</CardTitle>
+          <CardTitle className="uppercase">{t("tabs.round", { roundLabel: roundLabel(round) })}</CardTitle>
           <p>{description}</p>
         </CardHeader>
         <CardContent>
@@ -197,7 +197,6 @@ function RoundHub({ memberships, settings, submissionStatuses }: {
     })}</div>
     <section id="dashboard-announcements" className="announcement-section" aria-labelledby="dashboard-announcements-title">
       <div className="announcement-section-heading">
-        <div className="announcement-section-icon"><MegaphoneIcon aria-hidden="true" /></div>
         <div><p className="dashboard-card-index">{t("tabs.announcements")}</p>
           <h2 id="dashboard-announcements-title">{t("hub.announcementsTitle")}</h2>
           <p>{t("hub.announcementsDescription")}</p></div>
