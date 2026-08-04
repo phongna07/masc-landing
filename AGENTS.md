@@ -3,7 +3,7 @@
 ## Non-negotiable command rules
 
 - Run project commands from the repository root: **/home/phong/masc-landing**.
-- This is a pnpm workspace pinned to **pnpm 11.15.1** by the root package.json. Use pnpm; do not substitute npm, yarn, bun, or npx.
+- This is a pnpm workspace. Use pnpm; do not substitute npm, yarn, bun, or npx. The repository does not require a fixed pnpm version.
 - In WSL, use Linux installations of Node.js and pnpm. Do not invoke pnpm.cmd, pnpm.exe, Windows Node.js, PowerShell, or wsl.exe from an already-running WSL shell.
 - Do not guess package scripts. Read the root and owning package's package.json, then use one of the commands documented below.
 - Do not apply database changes merely to validate code. db:migrate and db:push alter the configured database and require confirmation of the target first.
@@ -25,9 +25,9 @@ Expected results:
 - pwd is **/home/phong/masc-landing**.
 - node and pnpm resolve to Linux paths, normally under /usr, ~/.local, or a WSL-side version manager directory.
 - Neither executable resolves under /mnt/c/.
-- pnpm --version reports **11.15.1**.
+- pnpm --version completes successfully.
 
-If node is missing or pnpm resolves to a Windows npm shim such as /mnt/c/Users/.../AppData/Roaming/npm/pnpm, stop and report the runtime problem. Do not work around it with a different package manager or install global tooling with sudo. The user must activate/install Node.js inside WSL using their chosen version manager, then activate the repository-pinned pnpm version (for example through Corepack, when available).
+If node is missing or pnpm resolves to a Windows npm shim such as /mnt/c/Users/.../AppData/Roaming/npm/pnpm, stop and report the runtime problem. Do not work around it with a different package manager or install global tooling with sudo. The user must activate/install Node.js and pnpm inside WSL using their chosen version manager or Corepack.
 
 ## Workspace map
 
