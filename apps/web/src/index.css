@@ -173,7 +173,7 @@ dialog[open]::backdrop {
 }
 
 .dashboard-eyebrow {
-  margin-bottom: 14px;
+  margin-bottom: 20px;
 }
 
 .dashboard-heading h1 {
@@ -1632,6 +1632,7 @@ dialog[open]::backdrop {
   max-width: 760px;
   align-items: center;
   gap: 18px;
+  margin-bottom: 20px;
 }
 
 .announcement-section-icon {
@@ -1662,6 +1663,10 @@ dialog[open]::backdrop {
   font-weight: 400;
   line-height: 1.1;
   letter-spacing: -.02em;
+}
+
+#dashboard-announcements-title {
+  text-transform: uppercase;
 }
 
 .announcement-section-heading>div:last-child>p:last-child {
