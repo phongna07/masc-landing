@@ -832,6 +832,18 @@ dialog[open]::backdrop {
   gap: 20px;
 }
 
+.round-one-member-fields {
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+}
+
+.round-one-member-fields>.dashboard-field:nth-child(-n+2) {
+  grid-column: span 3;
+}
+
+.round-one-member-fields>.dashboard-field:nth-child(n+3) {
+  grid-column: span 2;
+}
+
 .dashboard-field {
   display: grid;
   align-content: start;
@@ -1359,6 +1371,10 @@ dialog[open]::backdrop {
   .overview-grid,
   .dashboard-skeleton>div:nth-child(2) {
     grid-template-columns: 1fr;
+  }
+
+  .round-one-member-fields>.dashboard-field:nth-child(n) {
+    grid-column: 1 / -1;
   }
 
   .roster-form-header,
