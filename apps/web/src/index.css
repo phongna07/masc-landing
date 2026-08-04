@@ -672,18 +672,11 @@ dialog[open]::backdrop {
   gap: 22px;
 }
 
-.round-submission-fields [data-slot="textarea"] {
-  min-height: 180px;
-  resize: vertical;
+.round-submission-fields .submission-question-input {
+  height: 90px;
   border-color: rgba(255, 255, 255, 0.17);
   background: rgba(255, 255, 255, 0.035);
   padding: 14px;
-  line-height: 1.6;
-}
-
-.round-submission-fields input[type="file"] {
-  height: auto;
-  padding-block: 11px;
 }
 
 .field-hint {

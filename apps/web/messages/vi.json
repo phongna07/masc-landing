@@ -387,13 +387,14 @@
     },
     "round": {
       "title": "Bài nộp {roundLabel}",
-      "description": "Mọi thành viên trong đội đều có thể nộp phần mô tả và tài liệu của đội.",
+      "description": "Mọi thành viên trong đội đều có thể tải lên tệp bài nộp và đặt câu hỏi không bắt buộc cho Ban Tổ chức.",
       "formTitle": "Chuẩn bị bài nộp",
       "replaceTitle": "Nộp lại bài",
-      "replaceDescription": "Cập nhật phần mô tả và chọn tệp mới để thay thế bài nộp hiện tại.",
+      "replaceDescription": "Chọn tệp mới để thay thế bài nộp hiện tại và cập nhật câu hỏi nếu cần.",
       "openTitle": "Nộp bài {roundLabel}",
       "openDescription": "Hãy kiểm tra thật kĩ các thông tin trước khi ấn nút nộp bài",
-      "descriptionLabel": "Mô tả",
+      "descriptionLabel": "Bạn có câu hỏi gì cho Ban Tổ chức không?",
+      "noQuestionProvided": "Không có câu hỏi nào",
       "fileLabel": "Tệp bài nộp",
       "fileHint": "Chỉ hỗ trợ PDF - tối đa 20 MB.",
       "characters": "{count} / 5000 ký tự",
@@ -418,7 +419,7 @@
       "errors": {
         "loadTitle": "Không thể tải bài nộp {roundLabel}",
         "load": "Vui lòng kiểm tra kết nối và thử lại.",
-        "descriptionLength": "Mô tả không được vượt quá 5.000 ký tự.",
+        "descriptionLength": "Câu hỏi không bắt buộc không được vượt quá 5.000 ký tự.",
         "fileRequired": "Hãy chọn tệp bài nộp.",
         "fileType": "Hãy chọn tệp PDF.",
         "fileSize": "Tệp không được lớn hơn 20 MB.",
@@ -722,13 +723,14 @@
       "submitted": "Nộp gần nhất",
       "originalSubmission": "Nộp lần đầu",
       "fileType": "Loại tệp",
-      "description": "Mô tả",
+      "description": "Câu hỏi dành cho Ban Tổ chức",
       "awarenessSource": "Nguồn biết đến MASC"
     },
     "values": {
       "verified": "Đã xác minh",
       "unverified": "Chưa xác minh",
       "notProvided": "Chưa cung cấp",
+      "noQuestionProvided": "Không có câu hỏi nào",
       "captain": "Đội trưởng",
       "memberCount": "{count} / {required}",
       "awarenessSource": {

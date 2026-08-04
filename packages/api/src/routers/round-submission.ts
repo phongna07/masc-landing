@@ -163,7 +163,7 @@ export const roundSubmissionRouter = router({
       ContentLength: input.fileSize }), { expiresIn: URL_EXPIRY_SECONDS });
     return { uploadId, uploadUrl, expiresIn: URL_EXPIRY_SECONDS };
   }),
-  finalize: freshProtectedProcedure.input(fileInput.extend({ uploadId: z.uuid(), description: z.string().trim().min(1).max(5000) }))
+  finalize: freshProtectedProcedure.input(fileInput.extend({ uploadId: z.uuid(), description: z.string().trim().max(5000) }))
     .mutation(async ({ ctx, input }) => {
       const { submission } = tablesForRound(input.round);
       const membership = await membershipFor(input.round, ctx.session.user.id, ctx.session.user.email);
