@@ -69,15 +69,16 @@ const AnnouncementsFeed = dynamic(() => import("./announcements-feed"), {
   loading: () => <AnnouncementsSkeleton />,
 });
 
-export default function Dashboard({ session, activeTab, initialMemberships, initialSettings, initialSubmissionStatuses,
-  initialUserAnnouncements }: {
-  session: Session;
-  activeTab: DashboardTab;
-  initialMemberships: Memberships;
-  initialSettings: Record<RoundId, boolean>;
-  initialSubmissionStatuses: SubmissionStatuses;
-  initialUserAnnouncements: UserAnnouncements;
-}) {
+export default function Dashboard({ session, activeTab, initialMemberships, initialSettings, initialSubmissionSettings,
+  initialSubmissionStatuses, initialUserAnnouncements }: {
+    session: Session;
+    activeTab: DashboardTab;
+    initialMemberships: Memberships;
+    initialSettings: Record<RoundId, boolean>;
+    initialSubmissionSettings: Record<RoundId, boolean>;
+    initialSubmissionStatuses: SubmissionStatuses;
+    initialUserAnnouncements: UserAnnouncements;
+  }) {
   const t = useTranslations("Dashboard");
   const roundLabel = useRoundLabel();
   const memberships = useQuery({ ...trpc.registration.memberships.queryOptions(), initialData: initialMemberships });
@@ -136,6 +137,7 @@ export default function Dashboard({ session, activeTab, initialMemberships, init
             </CardContent>
           </Card>
         ) : activeTab === "overview" ? <RoundHub memberships={memberships.data!} settings={settings.data!}
+          submissionSettings={initialSubmissionSettings}
           submissionStatuses={submissionStatuses.data ?? initialSubmissionStatuses} />
           : <RoundDashboard round={activeTab.slice(6) as RoundId} session={session} settings={settings.data!} />}
       </main>
@@ -143,9 +145,10 @@ export default function Dashboard({ session, activeTab, initialMemberships, init
   );
 }
 
-function RoundHub({ memberships, settings, submissionStatuses }: {
+function RoundHub({ memberships, settings, submissionSettings, submissionStatuses }: {
   memberships: Memberships;
   settings: Record<RoundId, boolean>;
+  submissionSettings: Record<RoundId, boolean>;
   submissionStatuses: SubmissionStatuses;
 }) {
   const t = useTranslations("Dashboard");
@@ -162,8 +165,11 @@ function RoundHub({ memberships, settings, submissionStatuses }: {
         ? t("hub.roundOneAlternative") : t(`hub.description.${roundKey}`);
       const state = membership.registered ? membership.team.status : canApply ? "open"
         : isDirectAdmissionRound ? "closed" : "locked";
-      const stateLabel = membership.registered ? t(`status.${membership.team.status}`) : canApply ? t("hub.open")
-        : isDirectAdmissionRound ? t("hub.closed") : t("hub.notEligible");
+      const isSubmissionOngoing = membership.registered && membership.team.status === "approved"
+        && submissionSettings[round];
+      const stateLabel = isSubmissionOngoing ? t("hub.ongoing")
+        : membership.registered ? t(`status.${membership.team.status}`) : canApply ? t("hub.open")
+          : isDirectAdmissionRound ? t("hub.closed") : t("hub.notEligible");
       return <Card className={`dashboard-card round-entry-card round-entry-card-${state}`} key={round}>
         {membership.registered && submissionStatus && <div
           className={`round-entry-submission-status round-entry-submission-status-${submissionStatus}`}>
@@ -172,9 +178,9 @@ function RoundHub({ memberships, settings, submissionStatuses }: {
           <p>{t(`hub.submissionStatus.${submissionStatus}`)}</p>
         </div>}
         <CardHeader>
-          <div className="round-entry-topline"><p className="dashboard-card-index">{t("tabs.round", { roundLabel: roundLabel(round) })}</p>
+          <div className="round-entry-topline"><p className="dashboard-card-index">{t(`hub.names.${roundKey}`)}</p>
             <span className={`status-badge status-${state}`}>{stateLabel}</span></div>
-          <CardTitle>{t(`hub.names.${roundKey}`)}</CardTitle>
+          <CardTitle className="uppercase">{t("tabs.round", { roundLabel: roundLabel(round) })}</CardTitle>
           <p>{description}</p>
         </CardHeader>
         <CardContent>
@@ -197,7 +203,6 @@ function RoundHub({ memberships, settings, submissionStatuses }: {
     })}</div>
     <section id="dashboard-announcements" className="announcement-section" aria-labelledby="dashboard-announcements-title">
       <div className="announcement-section-heading">
-        <div className="announcement-section-icon"><MegaphoneIcon aria-hidden="true" /></div>
         <div><p className="dashboard-card-index">{t("tabs.announcements")}</p>
           <h2 id="dashboard-announcements-title">{t("hub.announcementsTitle")}</h2>
           <p>{t("hub.announcementsDescription")}</p></div>

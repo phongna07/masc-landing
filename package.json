@@ -21,6 +21,5 @@
     "@masc-landing/config": "workspace:*",
     "@types/node": "^22.13.14",
     "typescript": "catalog:"
-  },
-  "packageManager": "pnpm@11.15.1"
+  }
 }

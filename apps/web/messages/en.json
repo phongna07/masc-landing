@@ -251,6 +251,7 @@
       "apply": "Apply to {roundLabel}",
       "go": "Go to {roundLabel} dashboard",
       "open": "Applications open",
+      "ongoing": "Ongoing",
       "closed": "Applications closed",
       "notEligible": "Not eligible yet",
       "registered": "Registered as {team}",

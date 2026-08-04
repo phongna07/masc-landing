@@ -8,11 +8,12 @@ import { Label } from "@masc-landing/ui/components/label";
 import { Textarea } from "@masc-landing/ui/components/textarea";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { ImageIcon, MegaphoneIcon, SendIcon, Trash2Icon, XIcon } from "lucide-react";
+import Image from "next/image";
 import { useLocale, useTranslations } from "next-intl";
 import { useEffect, useState, type FormEvent } from "react";
 import { toast } from "sonner";
 
-import { BrandLogo } from "@/components/hero-brand-logo";
+import mascLogo from "@/assets/masc-logo-new.png";
 import { SafeLinkifiedText } from "@/components/safe-linkified-text";
 import { queryClient, trpc } from "@/utils/trpc";
 import { AdminError, AdminHeading, AdminLoading } from "../../admin-state";
@@ -115,7 +116,7 @@ export default function AdminAnnouncementsPage() {
 
 function AnnouncementCard({ item, locale, organizer, deleteLabel, deleting, confirmation, onDelete }: { item: { id: string; content: string; imageUrl: string | null; createdAt: string }; locale: string; organizer: string; deleteLabel: string; deleting: boolean; confirmation: { title: string; description: string; confirm: string; cancel: string }; onDelete: () => void }) {
   return <Card className="announcement-post">
-    <CardHeader className="announcement-post-header"><div className="announcement-avatar"><BrandLogo /></div><div><CardTitle>{organizer}</CardTitle><time dateTime={new Date(item.createdAt).toISOString()}>{new Intl.DateTimeFormat(locale, { dateStyle: "medium", timeStyle: "short" }).format(new Date(item.createdAt))}</time></div><ConfirmationDialog
+    <CardHeader className="announcement-post-header"><div className="announcement-avatar"><Image src={mascLogo} alt="" /></div><div><CardTitle>{organizer}</CardTitle><time dateTime={new Date(item.createdAt).toISOString()}>{new Intl.DateTimeFormat(locale, { dateStyle: "medium", timeStyle: "short" }).format(new Date(item.createdAt))}</time></div><ConfirmationDialog
       trigger={<Button type="button" variant="ghost" size="icon" disabled={deleting} aria-label={deleteLabel}><Trash2Icon aria-hidden="true" /></Button>}
       title={confirmation.title}
       description={confirmation.description}

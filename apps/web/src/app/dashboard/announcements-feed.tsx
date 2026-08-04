@@ -4,9 +4,10 @@ import { Button } from "@masc-landing/ui/components/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@masc-landing/ui/components/card";
 import { useQuery } from "@tanstack/react-query";
 import { MegaphoneIcon, RefreshCwIcon } from "lucide-react";
+import Image from "next/image";
 import { useFormatter, useTranslations } from "next-intl";
 
-import { BrandLogo } from "@/components/hero-brand-logo";
+import mascLogo from "@/assets/masc-logo-new.png";
 import { SafeLinkifiedText } from "@/components/safe-linkified-text";
 import { trpc } from "@/utils/trpc";
 
@@ -29,7 +30,7 @@ export default function AnnouncementsFeed() {
 	</Card>;
 
 	return <div className="announcement-feed">{announcements.data.map((announcement) => <Card className="announcement-post" key={announcement.id}>
-		<CardHeader className="announcement-post-header"><div className="announcement-avatar"><BrandLogo /></div><div>
+		<CardHeader className="announcement-post-header"><div className="announcement-avatar"><Image src={mascLogo} alt="" /></div><div>
 			<CardTitle>{t("announcements.organizer")}</CardTitle>
 			<time dateTime={new Date(announcement.createdAt).toISOString()}>{format.dateTime(new Date(announcement.createdAt), { dateStyle: "medium", timeStyle: "short" })}</time>
 		</div></CardHeader>
