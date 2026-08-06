@@ -1,7 +1,7 @@
 import { GetObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { db } from "@masc-landing/db";
-import { adminEmails, admissionSettings, emailQueue, members, roundOneMemberCvs,
+import { adminEmails, admissionSettings, dashboardTabSettings, emailQueue, members, roundOneMemberCvs,
   roundOneMembers, roundOneSubmissions, roundOneTeams, roundSubmissions, roundThreeMembers,
   roundThreeSubmissions, roundThreeTeams, roundTwoMembers, roundTwoSubmissions, roundTwoTeams,
   submissionSettings, teams, user, userAnnouncements } from "@masc-landing/db/schema/index";
@@ -23,6 +23,7 @@ import {
 import { sendMail } from "../email/send-mail";
 import { renderTeamRoundPromotion, teamRoundPromotionEvent } from "../email/team-round-promotion";
 import { getAdmissionSettings } from "../admission-settings";
+import { getDashboardTabSettings } from "../dashboard-tab-settings";
 import { adminAreaProcedure, router } from "../index";
 import { awarenessSources, type AwarenessSource } from "../registration-schema";
 import { roundSchema, type RoundId } from "../rounds";
@@ -265,6 +266,12 @@ async function promoteOne(input: PromotionInput, sourceTeamId: string) {
   return { sourceTeamId, targetTeamId, success: true as const };
 }
 export const adminRouter = router({
+  getDashboardTabSettings: overviewProcedure.query(getDashboardTabSettings),
+  setDashboardTabVisible: overviewProcedure.input(roundInput.extend({ isVisible: z.boolean() })).mutation(async ({ input }) => {
+    await db.insert(dashboardTabSettings).values({ round: input.round, isVisible: input.isVisible, updatedAt: new Date() })
+      .onConflictDoUpdate({ target: dashboardTabSettings.round, set: { isVisible: input.isVisible, updatedAt: new Date() } });
+    return getDashboardTabSettings();
+  }),
   getSubmissionSettings: overviewProcedure.query(getSubmissionSettings),
   setRoundSubmissionOpen: overviewProcedure.input(roundInput.extend({ isOpen: z.boolean() })).mutation(async ({ input }) => {
     await db.insert(submissionSettings).values({ round: input.round, isOpen: input.isOpen, updatedAt: new Date() })

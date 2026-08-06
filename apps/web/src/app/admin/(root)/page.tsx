@@ -15,8 +15,13 @@ import { AdminError, AdminHeading, AdminLoading } from "../admin-state";
 export default function AdminPage() {
 	const t = useTranslations("Admin");
 	const roundLabel = useRoundLabel();
+	const dashboardTabSettings = useQuery(trpc.admin.getDashboardTabSettings.queryOptions());
 	const settings = useQuery(trpc.admin.getSubmissionSettings.queryOptions());
 	const admissionSettings = useQuery(trpc.admin.getAdmissionSettings.queryOptions());
+	const updateDashboardTab = useMutation(trpc.admin.setDashboardTabVisible.mutationOptions({
+		onSuccess: async () => { await dashboardTabSettings.refetch(); toast.success(t("overview.visibilitySuccess")); },
+		onError: () => toast.error(t("overview.visibilityError")),
+	}));
 	const update = useMutation(trpc.admin.setRoundSubmissionOpen.mutationOptions({
 		onSuccess: async (data) => {
 			settings.refetch();
@@ -32,6 +37,24 @@ export default function AdminPage() {
 
 	return <>
 		<AdminHeading eyebrow={t("eyebrow")} title={t("overview.title")} description={t("overview.description")} />
+		<section className="admin-setting-section" aria-labelledby="dashboard-visibility-settings-title">
+			<div className="admin-setting-section-heading"><h2 id="dashboard-visibility-settings-title">{t("overview.visibilitySectionTitle")}</h2>
+				<p>{t("overview.visibilitySectionDescription")}</p></div>
+			{dashboardTabSettings.isPending ? <AdminLoading /> : dashboardTabSettings.isError ?
+				<AdminError title={t("errors.loadTitle")} description={t("overview.visibilityLoadError")} retry={() => dashboardTabSettings.refetch()} retryLabel={t("actions.retry")} /> :
+				<div className="admin-round-settings">{roundIds.map((round) => {
+					const displayRound = roundLabel(round);
+					const isVisible = dashboardTabSettings.data[round];
+					const isUpdating = updateDashboardTab.isPending && updateDashboardTab.variables?.round === round;
+					return <Card className="admin-round-setting" key={round}>
+						<CardHeader><div><CardTitle>{t("overview.roundTitle", { roundLabel: displayRound })}</CardTitle><p>{t("overview.visibilityRoundDescription", { roundLabel: displayRound })}</p></div>
+							<span className={isVisible ? "is-open" : "is-closed"}>{t(isVisible ? "overview.visible" : "overview.hidden")}</span></CardHeader>
+						<CardContent><Button variant={isVisible ? "default" : "outline"} role="switch" aria-checked={isVisible}
+							disabled={updateDashboardTab.isPending} onClick={() => updateDashboardTab.mutate({ round, isVisible: !isVisible })}
+						>{isUpdating ? t("overview.updating") : t(isVisible ? "overview.hideAction" : "overview.showAction")}</Button></CardContent>
+					</Card>;
+				})}</div>}
+		</section>
 		<section className="admin-setting-section" aria-labelledby="admission-settings-title">
 			<div className="admin-setting-section-heading"><h2 id="admission-settings-title">{t("overview.admissionSectionTitle")}</h2>
 				<p>{t("overview.admissionSectionDescription")}</p></div>
