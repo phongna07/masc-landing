@@ -181,7 +181,7 @@ function RoundHub({ memberships, settings, submissionSettings, submissionStatuse
           <div className="round-entry-topline"><p className="dashboard-card-index">{t(`hub.names.${roundKey}`)}</p>
             <span className={`status-badge status-${state}`}>{stateLabel}</span></div>
           <CardTitle className="uppercase">{t("tabs.round", { roundLabel: roundLabel(round) })}</CardTitle>
-          <p>{description}</p>
+          {!membership.registered && <p>{description}</p>}
         </CardHeader>
         <CardContent>
           {membership.registered ? <>
