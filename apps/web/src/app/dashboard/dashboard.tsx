@@ -69,12 +69,13 @@ const AnnouncementsFeed = dynamic(() => import("./announcements-feed"), {
   loading: () => <AnnouncementsSkeleton />,
 });
 
-export default function Dashboard({ session, activeTab, initialMemberships, initialSettings, initialSubmissionSettings,
+export default function Dashboard({ session, activeTab, initialMemberships, initialSettings, initialDashboardTabSettings, initialSubmissionSettings,
   initialSubmissionStatuses, initialUserAnnouncements }: {
     session: Session;
     activeTab: DashboardTab;
     initialMemberships: Memberships;
     initialSettings: Record<RoundId, boolean>;
+    initialDashboardTabSettings: Record<RoundId, boolean>;
     initialSubmissionSettings: Record<RoundId, boolean>;
     initialSubmissionStatuses: SubmissionStatuses;
     initialUserAnnouncements: UserAnnouncements;
@@ -137,6 +138,7 @@ export default function Dashboard({ session, activeTab, initialMemberships, init
             </CardContent>
           </Card>
         ) : activeTab === "overview" ? <RoundHub memberships={memberships.data!} settings={settings.data!}
+          dashboardTabSettings={initialDashboardTabSettings}
           submissionSettings={initialSubmissionSettings}
           submissionStatuses={submissionStatuses.data ?? initialSubmissionStatuses} />
           : <RoundDashboard round={activeTab.slice(6) as RoundId} session={session} settings={settings.data!} />}
@@ -145,9 +147,10 @@ export default function Dashboard({ session, activeTab, initialMemberships, init
   );
 }
 
-function RoundHub({ memberships, settings, submissionSettings, submissionStatuses }: {
+function RoundHub({ memberships, settings, dashboardTabSettings, submissionSettings, submissionStatuses }: {
   memberships: Memberships;
   settings: Record<RoundId, boolean>;
+  dashboardTabSettings: Record<RoundId, boolean>;
   submissionSettings: Record<RoundId, boolean>;
   submissionStatuses: SubmissionStatuses;
 }) {
@@ -155,7 +158,7 @@ function RoundHub({ memberships, settings, submissionSettings, submissionStatuse
   const roundLabel = useRoundLabel();
 
   return <div className="round-hub">
-    <div className="round-entry-grid">{roundIds.map((round) => {
+    <div className="round-entry-grid">{roundIds.filter((round) => dashboardTabSettings[round]).map((round) => {
       const membership = memberships[round];
       const submissionStatus = submissionStatuses[round];
       const isDirectAdmissionRound = round === "0.5" || round === "1";
