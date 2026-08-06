@@ -536,6 +536,15 @@
       "publish": "Publish announcement",
       "publishing": "Publishing…",
       "organizer": "Marketing All-Star Challenge organizers",
+      "edit": "Edit announcement",
+      "editDialog": {
+        "title": "Edit announcement",
+        "description": "Update the announcement text or image. Its original publication time will not change.",
+        "replaceImage": "Replace image",
+        "restoreImage": "Undo image change",
+        "save": "Save changes",
+        "saving": "Saving…"
+      },
       "delete": "Delete announcement",
       "deleteConfirmation": {
         "title": "Delete this announcement?",
@@ -546,6 +555,7 @@
       "emptyDescription": "Publish the first update for participants above.",
       "success": {
         "created": "Announcement published.",
+        "updated": "Announcement updated.",
         "deleted": "Announcement deleted."
       },
       "errors": {
@@ -554,6 +564,7 @@
         "imageType": "Choose a JPG, PNG, or WebP image.",
         "imageSize": "The image cannot exceed 10 MB.",
         "create": "Could not publish the announcement. Please try again.",
+        "update": "Could not update the announcement. Please try again.",
         "delete": "Could not delete the announcement. Please try again."
       }
     },
