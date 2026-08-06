@@ -2471,6 +2471,60 @@ dialog[open]::backdrop {
   margin-top: 24px;
 }
 
+.admin-announcement-actions {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.announcement-edit-form {
+  position: relative;
+  display: grid;
+  gap: 24px;
+  padding: 26px;
+}
+
+.announcement-edit-form [data-slot="dialog-header"] {
+  padding-right: 38px;
+}
+
+.announcement-edit-form [data-slot="dialog-description"] {
+  margin: 0;
+}
+
+.announcement-edit-close {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+}
+
+.announcement-edit-fields {
+  gap: 10px;
+}
+
+.announcement-edit-image-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 6px;
+}
+
+.announcement-edit-image-actions input[type="file"] {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  opacity: 0;
+}
+
+.announcement-edit-image-actions [data-slot="button"] {
+  margin-left: auto;
+}
+
+.announcement-edit-form [data-slot="dialog-footer"] [data-slot="button"] {
+  min-width: 132px;
+}
+
 .sr-only {
   position: absolute;
   width: 1px;
@@ -2589,6 +2643,22 @@ dialog[open]::backdrop {
   }
 
   .announcement-form-actions [data-slot="button"] {
+    width: 100%;
+    margin-left: 0;
+  }
+
+  .announcement-edit-form {
+    gap: 20px;
+    padding: 22px 18px;
+  }
+
+  .announcement-edit-image-actions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .announcement-edit-image-actions [data-slot="button"],
+  .announcement-edit-form [data-slot="dialog-footer"] [data-slot="button"] {
     width: 100%;
     margin-left: 0;
   }

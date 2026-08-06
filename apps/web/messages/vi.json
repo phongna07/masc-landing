@@ -536,6 +536,15 @@
       "publish": "Đăng thông báo",
       "publishing": "Đang đăng…",
       "organizer": "Ban tổ chức Marketing All-Star Challenge",
+      "edit": "Chỉnh sửa thông báo",
+      "editDialog": {
+        "title": "Chỉnh sửa thông báo",
+        "description": "Cập nhật nội dung hoặc hình ảnh của thông báo. Thời gian đăng ban đầu sẽ không thay đổi.",
+        "replaceImage": "Thay hình ảnh",
+        "restoreImage": "Hoàn tác thay đổi hình ảnh",
+        "save": "Lưu thay đổi",
+        "saving": "Đang lưu…"
+      },
       "delete": "Xóa thông báo",
       "deleteConfirmation": {
         "title": "Xóa thông báo này?",
@@ -546,6 +555,7 @@
       "emptyDescription": "Hãy đăng cập nhật đầu tiên cho các thí sinh ở phía trên.",
       "success": {
         "created": "Đã đăng thông báo.",
+        "updated": "Đã cập nhật thông báo.",
         "deleted": "Đã xóa thông báo."
       },
       "errors": {
@@ -554,6 +564,7 @@
         "imageType": "Vui lòng chọn hình JPG, PNG hoặc WebP.",
         "imageSize": "Hình ảnh không được vượt quá 10 MB.",
         "create": "Không thể đăng thông báo. Vui lòng thử lại.",
+        "update": "Không thể cập nhật thông báo. Vui lòng thử lại.",
         "delete": "Không thể xóa thông báo. Vui lòng thử lại."
       }
     },

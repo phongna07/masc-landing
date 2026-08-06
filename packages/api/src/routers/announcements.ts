@@ -37,6 +37,11 @@ const optionalImageInput = z.object({
   mimeType: imageInput.shape.mimeType,
   fileSize: imageInput.shape.fileSize,
 });
+const imageOperationInput = z.discriminatedUnion("action", [
+  z.object({ action: z.literal("keep") }),
+  z.object({ action: z.literal("remove") }),
+  z.object({ action: z.literal("replace"), image: optionalImageInput }),
+]);
 
 function extensionOf(filename: string) {
   const dot = filename.lastIndexOf(".");
@@ -116,6 +121,81 @@ export const announcementsRouter = router({
       return { id: created!.id };
     } catch (error) {
       if (image) await bestEffortDelete(image.objectKey);
+      throw error;
+    }
+  }),
+
+  update: announcementsAdminProcedure.input(z.object({
+    id: z.string().trim().min(1).max(128),
+    content: z.string().trim().min(1).max(5000),
+    image: imageOperationInput,
+  })).mutation(async ({ input }) => {
+    if (input.image.action === "keep") {
+      const [updated] = await db.update(announcements)
+        .set({ content: input.content })
+        .where(eq(announcements.id, input.id))
+        .returning({ id: announcements.id });
+      if (!updated) throw new TRPCError({ code: "NOT_FOUND", message: "ANNOUNCEMENT_NOT_FOUND" });
+      return { success: true };
+    }
+
+    if (input.image.action === "remove") {
+      const [existing] = await db.select({ objectKey: announcements.objectKey })
+        .from(announcements)
+        .where(eq(announcements.id, input.id))
+        .limit(1);
+      if (!existing) throw new TRPCError({ code: "NOT_FOUND", message: "ANNOUNCEMENT_NOT_FOUND" });
+      const [updated] = await db.update(announcements)
+        .set({
+          content: input.content,
+          objectKey: null,
+          originalFilename: null,
+          mimeType: null,
+          fileSize: null,
+        })
+        .where(eq(announcements.id, input.id))
+        .returning({ id: announcements.id });
+      if (!updated) throw new TRPCError({ code: "NOT_FOUND", message: "ANNOUNCEMENT_NOT_FOUND" });
+      if (existing.objectKey) await bestEffortDelete(existing.objectKey);
+      return { success: true };
+    }
+
+    const replacement = input.image.image;
+    const key = objectKey(replacement.uploadId, validateImage(replacement));
+    let object;
+    try {
+      object = await s3.send(new HeadObjectCommand({ Bucket: env.R2_BUCKET, Key: key }));
+    } catch {
+      throw new TRPCError({ code: "BAD_REQUEST", message: "UPLOAD_NOT_FOUND" });
+    }
+    if (object.ContentLength !== replacement.fileSize || object.ContentType !== replacement.mimeType) {
+      await bestEffortDelete(key);
+      throw new TRPCError({ code: "BAD_REQUEST", message: "UPLOAD_MISMATCH" });
+    }
+
+    try {
+      const [existing] = await db.select({ objectKey: announcements.objectKey })
+        .from(announcements)
+        .where(eq(announcements.id, input.id))
+        .limit(1);
+      if (!existing) throw new TRPCError({ code: "NOT_FOUND", message: "ANNOUNCEMENT_NOT_FOUND" });
+      const [updated] = await db.update(announcements)
+        .set({
+          content: input.content,
+          objectKey: key,
+          originalFilename: replacement.filename,
+          mimeType: replacement.mimeType,
+          fileSize: replacement.fileSize,
+        })
+        .where(eq(announcements.id, input.id))
+        .returning({ id: announcements.id });
+      if (!updated) throw new TRPCError({ code: "NOT_FOUND", message: "ANNOUNCEMENT_NOT_FOUND" });
+      if (existing.objectKey && existing.objectKey !== key) {
+        await bestEffortDelete(existing.objectKey);
+      }
+      return { success: true };
+    } catch (error) {
+      await bestEffortDelete(key);
       throw error;
     }
   }),
