@@ -1,10 +1,10 @@
 import type { RoundId } from "./rounds";
 
 const roundFilenameTokens: Record<RoundId, string> = {
-	"0.5": "VongSoLoai",
-	"1": "Vong1",
-	"2": "Vong2",
-	"3": "Vong3",
+	"0.5": "Preliminary Round Submission",
+	"1": "Round 1 Submission",
+	"2": "Round 2 Submission",
+	"3": "Round 3 Submission",
 };
 
 function sanitizeFilenameComponent(value: string) {
