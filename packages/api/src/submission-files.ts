@@ -16,6 +16,10 @@ export function roundSubmissionFilename(teamName: string, round: RoundId) {
 	return `MASC'26_${safeTeamName}_${roundFilenameTokens[round]}.pdf`;
 }
 
+export function roundSubmissionArchiveFilename(round: RoundId) {
+	return `MASC'26_${roundFilenameTokens[round]}s.zip`;
+}
+
 function encodeRfc5987Value(value: string) {
 	return encodeURIComponent(value).replace(/['()*]/g, (character) =>
 		`%${character.charCodeAt(0).toString(16).toUpperCase()}`,

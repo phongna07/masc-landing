@@ -73,6 +73,50 @@ Replace the example production origin with the deployed application origin.
 Downloads use short-lived server-authorized URLs and do not require a public
 bucket domain.
 
+## Bulk PDF exports on Render
+
+The admin page for each competition round can create a ZIP containing the
+latest PDF submission from every team. Export requests are stored in the
+existing PostgreSQL database. The `pdf-exporter` service claims those requests,
+streams the PDFs from R2 into a ZIP, and streams the ZIP back to R2 without
+holding the whole archive in memory. Completed archives expire after 24 hours
+by default.
+
+Before deploying the exporter, apply the generated database migration to the
+same database used by the web app:
+
+```bash
+pnpm db:migrate
+```
+
+The root `render.yaml` defines a Free web service with a `/health` endpoint.
+Create a Render Blueprint from the repository, then provide these secret values
+when prompted:
+
+- `DATABASE_URL`: the web app's existing PostgreSQL connection URL
+- `R2_ACCOUNT_ID`
+- `R2_ACCESS_KEY_ID`
+- `R2_SECRET_ACCESS_KEY`
+- `R2_BUCKET`
+
+The R2 credentials need read, write, and delete access to the same private
+bucket used for submissions. No Redis instance, persistent disk, or public R2
+bucket is required. Optional worker settings include `EXPORT_TTL_HOURS`,
+`POLL_INTERVAL_MS`, `JOB_STALE_AFTER_MINUTES`, and `JOB_MAX_ATTEMPTS`.
+
+Set `PDF_EXPORTER_URL` in the deployed web application's server environment to
+the Render service origin, for example
+`https://masc-pdf-exporter.onrender.com`. After an administrator queues a job,
+the browser requests this service's `/health` endpoint to wake a sleeping Free
+instance. The request can take about one minute after an idle spin-down.
+
+For a local worker run, load the same variables into the shell and run:
+
+```bash
+pnpm --filter pdf-exporter build
+pnpm --filter pdf-exporter start
+```
+
 Then, run the development server:
 
 ```bash
@@ -112,7 +156,8 @@ If you want to add app-specific blocks instead of shared primitives, run the sha
 ```
 masc-landing/
 ├── apps/
-│   └── web/         # Fullstack application (Next.js)
+│   ├── pdf-exporter/ # PostgreSQL-backed bulk PDF export service
+│   └── web/          # Fullstack application (Next.js)
 ├── packages/
 │   ├── ui/          # Shared shadcn/ui components and styles
 │   ├── api/         # API layer / business logic

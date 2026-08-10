@@ -1,0 +1,25 @@
+services:
+  - type: web
+    name: masc-pdf-exporter
+    runtime: node
+    plan: free
+    buildCommand: corepack enable && pnpm install --frozen-lockfile && pnpm --filter pdf-exporter build
+    startCommand: node apps/pdf-exporter/dist/index.cjs
+    healthCheckPath: /health
+    maxShutdownDelaySeconds: 300
+    autoDeployTrigger: commit
+    envVars:
+      - key: NODE_VERSION
+        value: 24
+      - key: DATABASE_URL
+        sync: false
+      - key: R2_ACCOUNT_ID
+        sync: false
+      - key: R2_ACCESS_KEY_ID
+        sync: false
+      - key: R2_SECRET_ACCESS_KEY
+        sync: false
+      - key: R2_BUCKET
+        sync: false
+      - key: EXPORT_TTL_HOURS
+        value: 24

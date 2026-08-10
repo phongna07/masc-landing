@@ -12,6 +12,7 @@ export const env = createEnv({
     R2_ACCESS_KEY_ID: z.string().min(1),
     R2_SECRET_ACCESS_KEY: z.string().min(1),
     R2_BUCKET: z.string().min(1),
+    PDF_EXPORTER_URL: z.url().optional(),
     MAIL_USERNAME: z.string().email(),
     MAILEROO_SENDING_KEY: z.string().min(1),
     PRIMARY_EMAIL_SERVICE: z.enum(["zeptomail", "maileroo"]).default("zeptomail"),

@@ -1,0 +1,25 @@
+{
+	"name": "pdf-exporter",
+	"version": "0.1.0",
+	"private": true,
+	"type": "module",
+	"scripts": {
+		"build": "esbuild src/index.ts --bundle --platform=node --format=cjs --target=node22 --outfile=dist/index.cjs",
+		"check-types": "tsc --noEmit",
+		"start": "node dist/index.cjs"
+	},
+	"dependencies": {
+		"@aws-sdk/client-s3": "^3.1085.0",
+		"@aws-sdk/lib-storage": "^3.1085.0",
+		"@masc-landing/db": "workspace:*",
+		"archiver": "^7.0.1",
+		"drizzle-orm": "^0.45.2"
+	},
+	"devDependencies": {
+		"@masc-landing/config": "workspace:*",
+		"@types/archiver": "^7.0.0",
+		"@types/node": "^22.13.14",
+		"esbuild": "^0.25.0",
+		"typescript": "catalog:"
+	}
+}
