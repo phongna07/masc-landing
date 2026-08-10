@@ -3,7 +3,7 @@ services:
     name: masc-pdf-exporter
     runtime: node
     plan: free
-    buildCommand: corepack enable && pnpm install --frozen-lockfile && pnpm --filter pdf-exporter build
+    buildCommand: pnpm install --frozen-lockfile && pnpm --filter pdf-exporter build
     startCommand: node apps/pdf-exporter/dist/index.cjs
     healthCheckPath: /health
     maxShutdownDelaySeconds: 300
