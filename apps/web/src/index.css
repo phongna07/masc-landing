@@ -1947,6 +1947,32 @@ dialog[open]::backdrop {
   letter-spacing: -.02em;
 }
 
+.admin-heading-title {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin: 0 0 12px;
+}
+
+.admin-heading-title h1 {
+  margin: 0;
+}
+
+.admin-heading .admin-heading-badge {
+  display: inline-flex;
+  width: fit-content;
+  padding: 6px 10px;
+  color: #d8d0ff;
+  border: 1px solid rgba(123, 102, 255, .4);
+  background: rgba(123, 102, 255, .12);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .08em;
+  line-height: 1.5;
+  text-transform: uppercase;
+}
+
 .admin-heading span {
   color: var(--muted);
   font-size: 15px;
@@ -1996,6 +2022,21 @@ dialog[open]::backdrop {
 .admin-pdf-export-copy span {
   color: rgba(255, 255, 255, .76);
   font-size: 13px;
+}
+
+.admin-pdf-export-copy .admin-pdf-export-count {
+  display: inline-flex;
+  width: fit-content;
+  margin: 0 0 8px;
+  padding: 6px 10px;
+  color: #e1dbff;
+  border: 1px solid rgba(123, 102, 255, .45);
+  background: rgba(123, 102, 255, .16);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: .06em;
+  line-height: 1.5;
+  text-transform: uppercase;
 }
 
 .admin-pdf-export-actions {

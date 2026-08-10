@@ -3,8 +3,14 @@ import { Card, CardContent, CardHeader, CardTitle } from "@masc-landing/ui/compo
 import { Skeleton } from "@masc-landing/ui/components/skeleton";
 import { RefreshCwIcon } from "lucide-react";
 
-export function AdminHeading({ eyebrow, title, description }: { eyebrow: string; title: string; description: string }) {
-  return <div className="admin-heading"><p>{eyebrow}</p><h1>{title}</h1><span>{description}</span></div>;
+export function AdminHeading({ eyebrow, title, description, badge }: {
+  eyebrow: string;
+  title: string;
+  description: string;
+  badge?: string;
+}) {
+  return <div className="admin-heading"><p>{eyebrow}</p><div className="admin-heading-title"><h1>{title}</h1>
+    {badge && <span className="admin-heading-badge">{badge}</span>}</div><span>{description}</span></div>;
 }
 
 export function AdminMetrics({ label, metrics, isPending, isError, errorLabel, retry, retryLabel, locale }: {

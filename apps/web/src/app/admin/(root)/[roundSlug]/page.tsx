@@ -20,7 +20,11 @@ export default function AdminRoundPage() {
   const t = useTranslations("Admin"); const locale = useLocale();
   const roundLabel = useRoundLabel()(round);
   const submissions = useQuery(trpc.admin.listRoundSubmissions.queryOptions({ round }));
-  return <><AdminHeading eyebrow={t("eyebrow")} title={t("round.title", { roundLabel })} description={t("round.description", { roundLabel })} />
+  const submissionCount = submissions.data
+    ? t("round.submissionCount", { count: submissions.data.length })
+    : undefined;
+  return <><AdminHeading eyebrow={t("eyebrow")} title={t("round.title", { roundLabel })}
+    description={t("round.description", { roundLabel })} badge={submissionCount} />
     <RoundPdfExport round={round} disabled={!submissions.data?.length} />
     {submissions.isPending ? <AdminLoading /> : submissions.isError ? <AdminError title={t("errors.loadTitle")} description={t("errors.round")} retry={() => submissions.refetch()} retryLabel={t("actions.retry")} />
     : submissions.data.length === 0 ? <AdminEmpty title={t("round.emptyTitle", { roundLabel })} description={t("round.emptyDescription")} />
