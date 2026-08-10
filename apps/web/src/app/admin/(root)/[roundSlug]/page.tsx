@@ -12,6 +12,7 @@ import { useLocale, useTranslations } from "next-intl";
 import { useRoundLabel } from "@/hooks/use-round-label";
 import { trpc } from "@/utils/trpc";
 import { AdminEmpty, AdminError, AdminHeading, AdminLoading, formatDate } from "../../admin-state";
+import { RoundPdfExport } from "./round-pdf-export";
 
 export default function AdminRoundPage() {
   const { roundSlug } = useParams<{ roundSlug: string }>();
@@ -20,6 +21,7 @@ export default function AdminRoundPage() {
   const roundLabel = useRoundLabel()(round);
   const submissions = useQuery(trpc.admin.listRoundSubmissions.queryOptions({ round }));
   return <><AdminHeading eyebrow={t("eyebrow")} title={t("round.title", { roundLabel })} description={t("round.description", { roundLabel })} />
+    <RoundPdfExport round={round} disabled={!submissions.data?.length} />
     {submissions.isPending ? <AdminLoading /> : submissions.isError ? <AdminError title={t("errors.loadTitle")} description={t("errors.round")} retry={() => submissions.refetch()} retryLabel={t("actions.retry")} />
     : submissions.data.length === 0 ? <AdminEmpty title={t("round.emptyTitle", { roundLabel })} description={t("round.emptyDescription")} />
     : <Card className="admin-table-card"><CardContent className="admin-table-scroll"><table className="admin-table admin-round-table">

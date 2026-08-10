@@ -2,12 +2,12 @@ import { GetObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { db } from "@masc-landing/db";
 import { adminEmails, admissionSettings, dashboardTabSettings, emailQueue, members, roundOneMemberCvs,
-  roundOneMembers, roundOneSubmissions, roundOneTeams, roundSubmissions, roundThreeMembers,
+  pdfExportJobs, roundOneMembers, roundOneSubmissions, roundOneTeams, roundSubmissions, roundThreeMembers,
   roundThreeSubmissions, roundThreeTeams, roundTwoMembers, roundTwoSubmissions, roundTwoTeams,
   submissionSettings, teams, user, userAnnouncements } from "@masc-landing/db/schema/index";
 import { env } from "@masc-landing/env/server";
 import { TRPCError } from "@trpc/server";
-import { and, asc, count, desc, eq, getTableName, inArray, isNotNull, or, sql } from "drizzle-orm";
+import { and, asc, count, desc, eq, getTableName, gt, inArray, isNotNull, or, sql } from "drizzle-orm";
 import { z } from "zod";
 
 import {
@@ -27,7 +27,7 @@ import { getDashboardTabSettings } from "../dashboard-tab-settings";
 import { adminAreaProcedure, router } from "../index";
 import { awarenessSources, type AwarenessSource } from "../registration-schema";
 import { roundSchema, type RoundId } from "../rounds";
-import { attachmentContentDisposition } from "../submission-files";
+import { attachmentContentDisposition, roundSubmissionArchiveFilename } from "../submission-files";
 import { getSubmissionSettings } from "../submission-settings";
 
 const signedUrlExpirySeconds = 300;
@@ -38,6 +38,7 @@ const mailProcedure = adminAreaProcedure("mail");
 const roundsProcedure = adminAreaProcedure("rounds");
 const roundInput = z.object({ round: roundSchema });
 const submissionInput = roundInput.extend({ submissionId: z.string().trim().min(1).max(128) });
+const pdfExportInput = roundInput.extend({ exportId: z.string().trim().min(1).max(128) });
 const feedbackInput = submissionInput.extend({
   feedback: z.string().trim().min(1).max(5000),
   score: z.number().finite().nonnegative(),
@@ -88,6 +89,9 @@ function isUniqueViolation(error: unknown) {
 
 const s3 = new S3Client({ region: "auto", endpoint: `https://${env.R2_ACCOUNT_ID}.r2.cloudflarestorage.com`,
   credentials: { accessKeyId: env.R2_ACCESS_KEY_ID, secretAccessKey: env.R2_SECRET_ACCESS_KEY } });
+const pdfExporterHealthUrl = env.PDF_EXPORTER_URL
+  ? new URL("/health", env.PDF_EXPORTER_URL).toString()
+  : null;
 function identifiedSubmission(input: z.infer<typeof submissionInput>) {
   const { submission } = submissionTables(input.round);
   return and(eq(submission.id, input.submissionId), eq(submission.round, input.round), latestSubmission(submission));
@@ -534,6 +538,43 @@ export const adminRouter = router({
       attemptCount: sql`${emailQueue.attemptCount} + 1` }).where(eq(emailQueue.id, mail.id))
       .returning({ id: emailQueue.id, status: emailQueue.status });
     return sent!;
+  }),
+  getLatestRoundPdfExport: roundsProcedure.input(roundInput).query(async ({ input }) => {
+    const [job] = await db.select({ id: pdfExportJobs.id, status: pdfExportJobs.status,
+      fileCount: pdfExportJobs.fileCount, totalSourceBytes: pdfExportJobs.totalSourceBytes,
+      archiveBytes: pdfExportJobs.archiveBytes, createdAt: pdfExportJobs.createdAt, startedAt: pdfExportJobs.startedAt,
+      completedAt: pdfExportJobs.completedAt, expiresAt: pdfExportJobs.expiresAt })
+      .from(pdfExportJobs).where(eq(pdfExportJobs.round, input.round))
+      .orderBy(desc(pdfExportJobs.createdAt)).limit(1);
+    return job ? { ...job, wakeUrl: pdfExporterHealthUrl } : null;
+  }),
+  createRoundPdfExport: roundsProcedure.input(roundInput).mutation(async ({ ctx, input }) => {
+    const [created] = await db.insert(pdfExportJobs).values({
+      id: crypto.randomUUID(), round: input.round, requestedByUserId: ctx.session.user.id,
+    }).onConflictDoNothing().returning({ id: pdfExportJobs.id, status: pdfExportJobs.status });
+    if (created) return { ...created, wakeUrl: pdfExporterHealthUrl };
+
+    const [active] = await db.select({ id: pdfExportJobs.id, status: pdfExportJobs.status })
+      .from(pdfExportJobs).where(and(eq(pdfExportJobs.round, input.round),
+        inArray(pdfExportJobs.status, ["pending", "processing"])))
+      .orderBy(desc(pdfExportJobs.createdAt)).limit(1);
+    if (active) return { ...active, wakeUrl: pdfExporterHealthUrl };
+    throw new TRPCError({ code: "CONFLICT", message: "PDF_EXPORT_CONFLICT" });
+  }),
+  createRoundPdfExportDownloadUrl: roundsProcedure.input(pdfExportInput).mutation(async ({ input }) => {
+    const [job] = await db.select({ objectKey: pdfExportJobs.archiveObjectKey,
+      filename: pdfExportJobs.archiveFilename }).from(pdfExportJobs).where(and(
+      eq(pdfExportJobs.id, input.exportId), eq(pdfExportJobs.round, input.round),
+      eq(pdfExportJobs.status, "completed"), gt(pdfExportJobs.expiresAt, new Date()),
+    )).limit(1);
+    if (!job?.objectKey) {
+      throw new TRPCError({ code: "NOT_FOUND", message: "PDF_EXPORT_NOT_AVAILABLE" });
+    }
+    const filename = job.filename ?? roundSubmissionArchiveFilename(input.round);
+    return { downloadUrl: await getSignedUrl(s3, new GetObjectCommand({ Bucket: env.R2_BUCKET,
+      Key: job.objectKey, ResponseContentType: "application/zip",
+      ResponseContentDisposition: attachmentContentDisposition(filename) }),
+    { expiresIn: signedUrlExpirySeconds }) };
   }),
   listRoundSubmissions: roundsProcedure.input(roundInput).query(async ({ input }) => {
     const { team, member, submission } = submissionTables(input.round);

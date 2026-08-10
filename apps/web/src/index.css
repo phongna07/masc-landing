@@ -1953,6 +1953,57 @@ dialog[open]::backdrop {
   line-height: 1.65;
 }
 
+.admin-pdf-export-card {
+  margin-bottom: 18px;
+  border-color: rgba(123, 102, 255, .28);
+  background: rgba(123, 102, 255, .07);
+}
+
+.admin-pdf-export-card [data-slot="card-content"] {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 18px;
+}
+
+.admin-pdf-export-copy {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  min-width: min(100%, 340px);
+}
+
+.admin-pdf-export-copy>svg {
+  flex: 0 0 auto;
+  width: 22px;
+  margin-top: 2px;
+  color: #9d8fff;
+}
+
+.admin-pdf-export-copy strong,
+.admin-pdf-export-copy p,
+.admin-pdf-export-copy span {
+  display: block;
+}
+
+.admin-pdf-export-copy p {
+  margin: 4px 0 7px;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.admin-pdf-export-copy span {
+  color: rgba(255, 255, 255, .76);
+  font-size: 13px;
+}
+
+.admin-pdf-export-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
 .admin-metrics,
 .admin-metrics-error {
   margin-bottom: 24px;
@@ -2625,6 +2676,12 @@ dialog[open]::backdrop {
   }
 
   .admin-file-actions {
+    display: grid;
+    width: 100%;
+  }
+
+  .admin-pdf-export-actions,
+  .admin-pdf-export-actions [data-slot="button"] {
     display: grid;
     width: 100%;
   }

@@ -692,7 +692,30 @@
       "content": "Nội dung đã nộp",
       "notFoundTitle": "Không tìm thấy bài nộp",
       "notFoundDescription": "Bài nộp này không tồn tại hoặc có thể đã bị xóa.",
-      "previewTitle": "Xem trước {filename}"
+      "previewTitle": "Xem trước {filename}",
+      "bulkExport": {
+        "title": "Tải tất cả tệp PDF",
+        "description": "Tạo một tệp ZIP chứa bản PDF mới nhất của mỗi đội trong vòng này.",
+        "idle": "Chưa có tệp lưu trữ nào được tạo.",
+        "pending": "Yêu cầu đang chờ và sẽ sớm được xử lý.",
+        "waking": "Đang khởi động dịch vụ xuất tệp miễn phí… Quá trình này có thể mất khoảng một phút.",
+        "processing": "Hệ thống đang thu thập các tệp PDF. Bạn có thể rời trang và quay lại sau.",
+        "ready": "Đã sẵn sàng: {count} tệp PDF, {size}. Có thể tải đến {expires}.",
+        "failed": "Không thể tạo tệp lưu trữ. Bạn có thể thử lại an toàn.",
+        "expired": "Tệp lưu trữ trước đã hết hạn. Hãy tạo tệp mới để tải các bài nộp hiện tại.",
+        "statusError": "Không thể tải trạng thái tệp lưu trữ.",
+        "create": "Tạo tệp ZIP",
+        "creating": "Đang đưa vào hàng chờ…",
+        "recreate": "Tạo tệp ZIP mới",
+        "retry": "Thử lại",
+        "download": "Tải tệp ZIP",
+        "downloading": "Đang chuẩn bị tải…",
+        "wakeRetry": "Khởi động lại dịch vụ",
+        "wakeError": "Yêu cầu đã được lưu nhưng dịch vụ miễn phí chưa khởi động. Hãy thử khởi động lại.",
+        "wakeNotConfigured": "Yêu cầu đã được lưu nhưng URL dịch vụ xuất tệp chưa được cấu hình trong ứng dụng web.",
+        "createError": "Không thể đưa yêu cầu tạo ZIP vào hàng chờ. Vui lòng thử lại.",
+        "downloadError": "Không thể tạo liên kết tải ZIP. Tệp có thể đã hết hạn."
+      }
     },
     "detail": {
       "eyebrow": "Chi tiết đội thi",

@@ -1,12 +1,11 @@
 import { env } from "@masc-landing/env/server";
-import { neon } from "@neondatabase/serverless";
-import { drizzle } from "drizzle-orm/neon-http";
 
-import * as schema from "./schema";
+import { createDbForUrl } from "./client";
+
+export { createDbForUrl } from "./client";
 
 export function createDb() {
-  const sql = neon(env.DATABASE_URL);
-  return drizzle(sql, { schema });
+	return createDbForUrl(env.DATABASE_URL);
 }
 
 export const db = createDb();

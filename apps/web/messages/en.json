@@ -692,7 +692,30 @@
       "content": "Submitted work",
       "notFoundTitle": "Submission not found",
       "notFoundDescription": "This submission does not exist or may have been removed.",
-      "previewTitle": "Preview of {filename}"
+      "previewTitle": "Preview of {filename}",
+      "bulkExport": {
+        "title": "Download all PDFs",
+        "description": "Create one ZIP containing the latest PDF from every team in this round.",
+        "idle": "No archive has been created yet.",
+        "pending": "The export is queued and will start shortly.",
+        "waking": "Starting the free export service… This can take about one minute.",
+        "processing": "The PDFs are being collected. You can leave this page and come back later.",
+        "ready": "Ready: {count} PDFs, {size}. Available until {expires}.",
+        "failed": "The archive could not be created. You can safely try again.",
+        "expired": "The previous archive has expired. Create a new one to download the current submissions.",
+        "statusError": "The archive status could not be loaded.",
+        "create": "Create ZIP",
+        "creating": "Queuing…",
+        "recreate": "Create fresh ZIP",
+        "retry": "Try again",
+        "download": "Download ZIP",
+        "downloading": "Preparing download…",
+        "wakeRetry": "Wake service again",
+        "wakeError": "The export is queued, but the free service did not start. Try waking it again.",
+        "wakeNotConfigured": "The export is queued, but the exporter URL is not configured in the web app.",
+        "createError": "The ZIP export could not be queued. Please try again.",
+        "downloadError": "The ZIP download could not be created. It may have expired."
+      }
     },
     "detail": {
       "eyebrow": "Team details",
