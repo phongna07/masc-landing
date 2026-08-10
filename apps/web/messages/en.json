@@ -693,6 +693,7 @@
       "notFoundTitle": "Submission not found",
       "notFoundDescription": "This submission does not exist or may have been removed.",
       "previewTitle": "Preview of {filename}",
+      "submissionCount": "{count, plural, one {# submission} other {# submissions}}",
       "bulkExport": {
         "title": "Download all PDFs",
         "description": "Create one ZIP containing the latest PDF from every team in this round.",
@@ -700,7 +701,8 @@
         "pending": "The export is queued and will start shortly.",
         "waking": "Starting the free export service… This can take about one minute.",
         "processing": "The PDFs are being collected. You can leave this page and come back later.",
-        "ready": "Ready: {count} PDFs, {size}. Available until {expires}.",
+        "ready": "Archive size: {size}. Available until {expires}.",
+        "fileCount": "{count, plural, one {# PDF in ZIP} other {# PDFs in ZIP}}",
         "failed": "The archive could not be created. You can safely try again.",
         "expired": "The previous archive has expired. Create a new one to download the current submissions.",
         "statusError": "The archive status could not be loaded.",

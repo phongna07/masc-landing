@@ -84,7 +84,6 @@ export function RoundPdfExport({ round, disabled }: { round: RoundId; disabled: 
 						? t(data.status)
 						: isReady
 							? t("ready", {
-								count: data.fileCount ?? 0,
 								size: formatBytes(data.archiveBytes ?? data.totalSourceBytes ?? 0, locale),
 								expires: formatDate(data.expiresAt!, locale),
 							})
@@ -93,7 +92,9 @@ export function RoundPdfExport({ round, disabled }: { round: RoundId; disabled: 
 								: t("expired");
 
 	return <Card className="admin-pdf-export-card"><CardContent>
-		<div className="admin-pdf-export-copy"><ArchiveIcon aria-hidden="true" /><div><strong>{t("title")}</strong><p>{t("description")}</p><span>{status}</span></div></div>
+		<div className="admin-pdf-export-copy"><ArchiveIcon aria-hidden="true" /><div><strong>{t("title")}</strong><p>{t("description")}</p>
+			{isReady && <span className="admin-pdf-export-count">{t("fileCount", { count: data.fileCount ?? 0 })}</span>}
+			<span>{status}</span></div></div>
 		<div className="admin-pdf-export-actions">
 			{isReady && <Button variant="outline" disabled={download.isPending} onClick={() => download.mutate({ round, exportId: data.id })}>
 				<DownloadIcon aria-hidden="true" />{t(download.isPending ? "downloading" : "download")}

@@ -693,6 +693,7 @@
       "notFoundTitle": "Không tìm thấy bài nộp",
       "notFoundDescription": "Bài nộp này không tồn tại hoặc có thể đã bị xóa.",
       "previewTitle": "Xem trước {filename}",
+      "submissionCount": "{count} bài nộp",
       "bulkExport": {
         "title": "Tải tất cả tệp PDF",
         "description": "Tạo một tệp ZIP chứa bản PDF mới nhất của mỗi đội trong vòng này.",
@@ -700,7 +701,8 @@
         "pending": "Yêu cầu đang chờ và sẽ sớm được xử lý.",
         "waking": "Đang khởi động dịch vụ xuất tệp miễn phí… Quá trình này có thể mất khoảng một phút.",
         "processing": "Hệ thống đang thu thập các tệp PDF. Bạn có thể rời trang và quay lại sau.",
-        "ready": "Đã sẵn sàng: {count} tệp PDF, {size}. Có thể tải đến {expires}.",
+        "ready": "Dung lượng tệp: {size}. Có thể tải đến {expires}.",
+        "fileCount": "{count} tệp PDF trong ZIP",
         "failed": "Không thể tạo tệp lưu trữ. Bạn có thể thử lại an toàn.",
         "expired": "Tệp lưu trữ trước đã hết hạn. Hãy tạo tệp mới để tải các bài nộp hiện tại.",
         "statusError": "Không thể tải trạng thái tệp lưu trữ.",
