@@ -18,16 +18,21 @@ import { freshProtectedProcedure, protectedProcedure, router } from "../index";
 import { getRoundMembership, getRoundMemberships } from "../registration-memberships";
 import { roundSchema } from "../rounds";
 import { awarenessSourcesRequiringDetail, createTeamInputSchema } from "../registration-schema";
+import {
+  getUploadLimits,
+  MAX_UPLOAD_LIMIT_BYTES,
+  requireCurrentUploadLimit,
+  requireFileWithinUploadLimit,
+} from "../upload-limits";
 
 export { createTeamInputSchema } from "../registration-schema";
 
-const CV_MAX_FILE_SIZE = 10 * 1024 * 1024;
 const URL_EXPIRY_SECONDS = 300;
 const cvFileSchema = z.object({
   uploadId: z.uuid(),
   filename: z.string().trim().min(1).max(255),
   mimeType: z.literal("application/pdf"),
-  fileSize: z.number().int().positive().max(CV_MAX_FILE_SIZE),
+  fileSize: z.number().int().positive().max(MAX_UPLOAD_LIMIT_BYTES),
 });
 const createRoundOneTeamInputSchema = createTeamInputSchema.extend({ cvs: z.array(cvFileSchema).length(3) });
 
@@ -101,6 +106,7 @@ export const registrationRouter = router({
   createTeam: createRoundHalfTeam,
   createRoundOneCvUploadUrl: freshProtectedProcedure.input(cvFileSchema.omit({ uploadId: true })).mutation(async ({ ctx, input }) => {
     await requireAdmissionOpen("1"); validateCvFilename(input.filename);
+    await requireCurrentUploadLimit("participantCv", input.fileSize);
     const uploadId = crypto.randomUUID();
     const uploadUrl = await getSignedUrl(s3, new PutObjectCommand({ Bucket: env.R2_BUCKET,
       Key: cvObjectKey(ctx.session.user.id, uploadId), ContentType: input.mimeType, ContentLength: input.fileSize }),
@@ -110,6 +116,13 @@ export const registrationRouter = router({
   createRoundOneTeam: freshProtectedProcedure.input(createRoundOneTeamInputSchema).mutation(async ({ ctx, input }) => {
     await requireAdmissionOpen("1"); input.cvs.forEach((cv) => validateCvFilename(cv.filename));
     const keys = input.cvs.map((cv) => cvObjectKey(ctx.session.user.id, cv.uploadId));
+    try {
+      const limits = await getUploadLimits();
+      input.cvs.forEach((cv) => requireFileWithinUploadLimit(cv.fileSize, limits.participantCv));
+    } catch (error) {
+      await bestEffortDelete(keys);
+      throw error;
+    }
     const captainEmail = ctx.session.user.email.trim().toLowerCase();
     const allEmails = [captainEmail, ...input.teammates.map((member) => member.email)];
     if (new Set(allEmails).size !== allEmails.length) {

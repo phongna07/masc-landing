@@ -300,10 +300,10 @@
       "cv": {
         "section": "Sàng lọc CV",
         "title": "CV thành viên",
-        "description": "Tải lên một CV định dạng PDF cho mỗi thành viên. Mỗi tệp tối đa 10 MB.",
+        "description": "Chỉ hỗ trợ PDF - tối đa {maxSize} cho mỗi tệp.",
         "memberLabel": "CV của {name}",
         "fileType": "Vui lòng chọn tệp PDF.",
-        "fileSize": "Tệp không được lớn hơn 10 MB.",
+        "fileSize": "Tệp không được lớn hơn {maxSize}.",
         "uploadError": "Không thể tải CV lên. Vui lòng kiểm tra tệp và thử lại.",
         "download": "Tải CV",
         "downloadError": "Không thể tải CV xuống."
@@ -396,7 +396,7 @@
       "descriptionLabel": "Bạn có câu hỏi gì cho Ban Tổ chức không?",
       "noQuestionProvided": "Không có câu hỏi nào",
       "fileLabel": "Tệp bài nộp",
-      "fileHint": "Chỉ hỗ trợ PDF - tối đa 20 MB.",
+      "fileHint": "Chỉ hỗ trợ PDF - tối đa {maxSize}.",
       "characters": "{count} / 5000 ký tự",
       "submit": "Nộp bài {roundLabel}",
       "uploading": "Đang tải lên…",
@@ -422,7 +422,7 @@
         "descriptionLength": "Câu hỏi không bắt buộc không được vượt quá 5.000 ký tự.",
         "fileRequired": "Hãy chọn tệp bài nộp.",
         "fileType": "Hãy chọn tệp PDF.",
-        "fileSize": "Tệp không được lớn hơn 20 MB.",
+        "fileSize": "Tệp không được lớn hơn {maxSize}.",
         "submit": "Không thể tải bài nộp lên. Hãy kiểm tra tệp và thử lại.",
         "limit": "Đội của bạn đã dùng hết 3 lượt nộp bài.",
         "conflict": "Một thành viên khác vừa nộp bài cùng lúc. Bài mới nhất đã được tải lại; hãy thử lại nếu đội vẫn còn lượt nộp.",
@@ -501,7 +501,7 @@
     },
     "overview": {
       "title": "Tổng quan",
-      "description": "Kiểm soát trạng thái nộp bài và các tab vòng thi mà thí sinh có thể nhìn thấy.",
+      "description": "Kiểm soát quyền truy cập, trạng thái nộp bài và giới hạn tải tệp PDF của thí sinh.",
       "visibilitySectionTitle": "Hiển thị vòng thi trên bảng điều khiển",
       "visibilitySectionDescription": "Chọn các thẻ vòng thi mà thí sinh có thể nhìn thấy trên bảng điều khiển, độc lập với trạng thái đăng ký và nộp bài.",
       "visibilityRoundDescription": "Hiển thị hoặc ẩn thẻ {roundLabel} trên bảng điều khiển của thí sinh.",
@@ -531,7 +531,30 @@
       "error": "Không thể cập nhật trạng thái nộp bài. Vui lòng thử lại.",
       "loadError": "Không thể tải trạng thái nộp bài. Hãy kiểm tra kết nối và thử lại.",
       "roundTitle": "{roundLabel}",
-      "roundDescription": "Cho phép các thành viên trong đội nộp hoặc thay thế bài {roundLabel}."
+      "roundDescription": "Cho phép các thành viên trong đội nộp hoặc thay thế bài {roundLabel}.",
+      "uploadLimits": {
+        "title": "Giới hạn tệp tải lên của thí sinh",
+        "description": "Đặt kích thước tối đa cho từng tệp PDF do thí sinh tải lên. Thay đổi áp dụng cho các lượt tải lên mới ở mọi vòng.",
+        "participantCv": {
+          "title": "Tệp PDF CV của thí sinh",
+          "description": "Kích thước tối đa của từng CV thành viên được tải lên khi đăng ký Vòng 1."
+        },
+        "roundSubmission": {
+          "title": "Tệp PDF bài nộp",
+          "description": "Kích thước tối đa của từng tệp bài nộp ở tất cả các vòng thi."
+        },
+        "inputLabel": "Kích thước tệp tối đa",
+        "save": "Lưu giới hạn",
+        "saving": "Đang lưu…",
+        "success": "Đã cập nhật giới hạn kích thước tệp.",
+        "error": "Không thể cập nhật giới hạn kích thước tệp. Vui lòng thử lại.",
+        "loadError": "Không thể tải giới hạn tệp của thí sinh.",
+        "validation": {
+          "required": "Vui lòng nhập giới hạn kích thước tệp.",
+          "integer": "Vui lòng nhập số MiB nguyên.",
+          "range": "Vui lòng nhập giá trị từ 1 đến 100 MiB."
+        }
+      }
     },
     "announcements": {
       "title": "Thông báo",

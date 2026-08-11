@@ -300,10 +300,10 @@
       "cv": {
         "section": "CV screening",
         "title": "Member CVs",
-        "description": "Upload one PDF CV for each team member. Each file can be up to 10 MB.",
+        "description": "PDF only - maximum {maxSize} per file.",
         "memberLabel": "CV for {name}",
         "fileType": "Choose a PDF file.",
-        "fileSize": "The file must be no larger than 10 MB.",
+        "fileSize": "The file must be no larger than {maxSize}.",
         "uploadError": "The CV files could not be uploaded. Check the files and try again.",
         "download": "Download CV",
         "downloadError": "The CV could not be downloaded."
@@ -396,7 +396,7 @@
       "descriptionLabel": "Do you have any questions for the Organizing Committee?",
       "noQuestionProvided": "No question provided",
       "fileLabel": "Submission file",
-      "fileHint": "PDF only - maximum 20 MB.",
+      "fileHint": "PDF only - maximum {maxSize}.",
       "characters": "{count} / 5000 characters",
       "submit": "Submit {roundLabel}",
       "uploading": "Uploading…",
@@ -422,7 +422,7 @@
         "descriptionLength": "The optional question must be 5,000 characters or fewer.",
         "fileRequired": "Choose a submission file.",
         "fileType": "Choose a PDF file.",
-        "fileSize": "The file must be no larger than 20 MB.",
+        "fileSize": "The file must be no larger than {maxSize}.",
         "submit": "The submission could not be uploaded. Check the file and try again.",
         "limit": "Your team has already used all 3 submission attempts.",
         "conflict": "Another team member submitted at the same time. The latest submission has been loaded; try again if attempts remain.",
@@ -501,7 +501,7 @@
     },
     "overview": {
       "title": "Overview",
-      "description": "Control round submission availability and which round tabs participants can see.",
+      "description": "Control participant access, submission availability, and PDF upload limits.",
       "visibilitySectionTitle": "Dashboard round visibility",
       "visibilitySectionDescription": "Choose which round cards participants can see on the dashboard, independently from applications and submissions.",
       "visibilityRoundDescription": "Show or hide the {roundLabel} card on the participant dashboard.",
@@ -531,7 +531,30 @@
       "error": "Could not update submission availability. Please try again.",
       "loadError": "Could not load submission availability. Check your connection and try again.",
       "roundTitle": "{roundLabel}",
-      "roundDescription": "Allow team members to submit or replace their {roundLabel} work."
+      "roundDescription": "Allow team members to submit or replace their {roundLabel} work.",
+      "uploadLimits": {
+        "title": "Participant upload size limits",
+        "description": "Set the maximum size of each PDF uploaded by participants. Changes apply to new uploads across all rounds.",
+        "participantCv": {
+          "title": "Participant CV PDFs",
+          "description": "Maximum size of each member CV uploaded with a Round 1 application."
+        },
+        "roundSubmission": {
+          "title": "Round-submission PDFs",
+          "description": "Maximum size of each team submission PDF in every competition round."
+        },
+        "inputLabel": "Maximum file size",
+        "save": "Save limit",
+        "saving": "Saving…",
+        "success": "Upload size limit updated.",
+        "error": "Could not update the upload size limit. Please try again.",
+        "loadError": "Could not load participant upload size limits.",
+        "validation": {
+          "required": "Enter a file size limit.",
+          "integer": "Enter a whole number of MiB.",
+          "range": "Enter a value from 1 to 100 MiB."
+        }
+      }
     },
     "announcements": {
       "title": "Announcements",

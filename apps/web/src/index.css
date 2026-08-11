@@ -2105,6 +2105,100 @@ dialog[open]::backdrop {
   gap: 18px;
 }
 
+.admin-upload-limit-settings {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 18px;
+}
+
+.admin-upload-limit-card {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(410px, .8fr);
+  align-items: center;
+  gap: 0;
+}
+
+.admin-upload-limit-card [data-slot="card-header"] {
+  min-width: 0;
+  min-height: 0;
+  padding-right: 32px;
+}
+
+.admin-upload-limit-card [data-slot="card-content"] {
+  min-width: 0;
+}
+
+.admin-upload-limit-form {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+  gap: 10px;
+}
+
+.admin-upload-limit-field {
+  display: grid;
+  min-width: 0;
+  gap: 8px;
+}
+
+.admin-upload-limit-form [data-slot="label"] {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.admin-upload-limit-input {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: stretch;
+  min-width: 0;
+}
+
+.admin-upload-limit-input [data-slot="input"] {
+  border-right: 0;
+}
+
+.admin-upload-limit-input>span {
+  display: grid;
+  min-width: 58px;
+  place-items: center;
+  color: var(--muted);
+  border: 1px solid var(--line);
+  background: rgba(255, 255, 255, .04);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.admin-upload-limit-form .admin-file-error {
+  grid-column: 1 / -1;
+  margin: 0;
+}
+
+.admin-upload-limit-card .admin-upload-limit-form [data-slot="button"] {
+  width: auto;
+  min-width: 124px;
+}
+
+@media (max-width: 1100px) {
+  .admin-upload-limit-card {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 18px;
+  }
+
+  .admin-upload-limit-card [data-slot="card-header"] {
+    padding-right: var(--card-spacing);
+  }
+}
+
+@media (max-width: 640px) {
+  .admin-upload-limit-form {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .admin-upload-limit-card .admin-upload-limit-form [data-slot="button"] {
+    width: 100%;
+  }
+}
+
 .admin-setting-section+.admin-setting-section {
   margin-top: 48px;
 }
@@ -2680,6 +2774,10 @@ dialog[open]::backdrop {
   }
 
   .admin-round-settings {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-upload-limit-settings {
     grid-template-columns: 1fr;
   }
 

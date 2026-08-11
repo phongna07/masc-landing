@@ -4,7 +4,7 @@ import { db } from "@masc-landing/db";
 import { adminEmails, admissionSettings, dashboardTabSettings, emailQueue, members, roundOneMemberCvs,
   pdfExportJobs, roundOneMembers, roundOneSubmissions, roundOneTeams, roundSubmissions, roundThreeMembers,
   roundThreeSubmissions, roundThreeTeams, roundTwoMembers, roundTwoSubmissions, roundTwoTeams,
-  submissionSettings, teams, user, userAnnouncements } from "@masc-landing/db/schema/index";
+  submissionSettings, teams, uploadLimitSettings, user, userAnnouncements } from "@masc-landing/db/schema/index";
 import { env } from "@masc-landing/env/server";
 import { TRPCError } from "@trpc/server";
 import { and, asc, count, desc, eq, getTableName, gt, inArray, isNotNull, or, sql } from "drizzle-orm";
@@ -29,6 +29,12 @@ import { awarenessSources, type AwarenessSource } from "../registration-schema";
 import { roundSchema, type RoundId } from "../rounds";
 import { attachmentContentDisposition, roundSubmissionArchiveFilename } from "../submission-files";
 import { getSubmissionSettings } from "../submission-settings";
+import {
+  getUploadLimits,
+  MEBIBYTE,
+  uploadLimitDatabaseKinds,
+  uploadLimitKinds,
+} from "../upload-limits";
 
 const signedUrlExpirySeconds = 300;
 const overviewProcedure = adminAreaProcedure("overview");
@@ -290,6 +296,22 @@ export const adminRouter = router({
     await db.insert(admissionSettings).values({ round: input.round, isOpen: input.isOpen, updatedAt: new Date() })
       .onConflictDoUpdate({ target: admissionSettings.round, set: { isOpen: input.isOpen, updatedAt: new Date() } });
     return getAdmissionSettings();
+  }),
+  getUploadLimits: overviewProcedure.query(getUploadLimits),
+  setUploadLimit: overviewProcedure.input(z.object({
+    kind: z.enum(uploadLimitKinds),
+    maxFileSizeMiB: z.number().int().min(1).max(100),
+  })).mutation(async ({ input }) => {
+    const kind = uploadLimitDatabaseKinds[input.kind];
+    await db.insert(uploadLimitSettings).values({
+      kind,
+      maxFileSize: input.maxFileSizeMiB * MEBIBYTE,
+      updatedAt: new Date(),
+    }).onConflictDoUpdate({
+      target: uploadLimitSettings.kind,
+      set: { maxFileSize: input.maxFileSizeMiB * MEBIBYTE, updatedAt: new Date() },
+    });
+    return getUploadLimits();
   }),
   listUsers: usersProcedure.query(async () => {
     const users = await db.select({ id: user.id, name: user.name, email: user.email,

@@ -13,15 +13,15 @@ import { freshProtectedProcedure, protectedProcedure, router } from "../index";
 import { roundIds, roundSchema, type RoundId } from "../rounds";
 import { attachmentContentDisposition, roundSubmissionFilename } from "../submission-files";
 import { getSubmissionSettings, requireSubmissionOpen } from "../submission-settings";
+import { MAX_UPLOAD_LIMIT_BYTES, requireCurrentUploadLimit } from "../upload-limits";
 
-const MAX_FILE_SIZE = 20 * 1024 * 1024;
 const MAX_ATTEMPTS = 3;
 const URL_EXPIRY_SECONDS = 300;
 const allowedFiles: Record<string, string> = { ".pdf": "application/pdf" };
 const roundInput = z.object({ round: roundSchema });
 const fileInput = roundInput.extend({
   filename: z.string().trim().min(1).max(255), mimeType: z.string().trim().min(1).max(160),
-  fileSize: z.number().int().positive().max(MAX_FILE_SIZE),
+  fileSize: z.number().int().positive().max(MAX_UPLOAD_LIMIT_BYTES),
 });
 
 const s3 = new S3Client({
@@ -152,6 +152,7 @@ export const roundSubmissionRouter = router({
     const membership = await membershipFor(input.round, ctx.session.user.id, ctx.session.user.email);
     requireApprovedTeam(membership.registrationStatus);
     await requireSubmissionOpen(input.round);
+    await requireCurrentUploadLimit("roundSubmission", input.fileSize);
     if (await attemptsUsed(submission, membership.teamId, input.round) >= MAX_ATTEMPTS) {
       throw new TRPCError({ code: "CONFLICT", message: "ATTEMPT_LIMIT_REACHED" });
     }
@@ -171,7 +172,10 @@ export const roundSubmissionRouter = router({
       validateFile(input);
       const filename = roundSubmissionFilename(membership.teamName, input.round);
       const key = objectKey(input.round, membership.teamId, input.uploadId, filename);
-      try { await requireSubmissionOpen(input.round); } catch (error) {
+      try {
+        await requireSubmissionOpen(input.round);
+        await requireCurrentUploadLimit("roundSubmission", input.fileSize);
+      } catch (error) {
         await bestEffortDelete(key); throw error;
       }
       let object;

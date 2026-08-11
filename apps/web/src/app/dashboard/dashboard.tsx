@@ -49,6 +49,7 @@ type Session = typeof authClient.$Infer.Session;
 type Membership = inferRouterOutputs<AppRouter>["registration"]["current"];
 type Memberships = inferRouterOutputs<AppRouter>["registration"]["memberships"];
 type SubmissionStatuses = inferRouterOutputs<AppRouter>["roundSubmission"]["statuses"];
+type UploadLimits = inferRouterOutputs<AppRouter>["uploadLimits"];
 type UserAnnouncements = inferRouterOutputs<AppRouter>["userAnnouncements"]["listMine"];
 type Teammate = { id: string; fullName: string; email: string; birthdate: string; universityName: string };
 type FormErrors = Record<string, string>;
@@ -70,7 +71,7 @@ const AnnouncementsFeed = dynamic(() => import("./announcements-feed"), {
 });
 
 export default function Dashboard({ session, activeTab, initialMemberships, initialSettings, initialDashboardTabSettings, initialSubmissionSettings,
-  initialSubmissionStatuses, initialUserAnnouncements }: {
+  initialSubmissionStatuses, initialUploadLimits, initialUserAnnouncements }: {
     session: Session;
     activeTab: DashboardTab;
     initialMemberships: Memberships;
@@ -78,6 +79,7 @@ export default function Dashboard({ session, activeTab, initialMemberships, init
     initialDashboardTabSettings: Record<RoundId, boolean>;
     initialSubmissionSettings: Record<RoundId, boolean>;
     initialSubmissionStatuses: SubmissionStatuses;
+    initialUploadLimits: UploadLimits;
     initialUserAnnouncements: UserAnnouncements;
   }) {
   const t = useTranslations("Dashboard");
@@ -88,6 +90,7 @@ export default function Dashboard({ session, activeTab, initialMemberships, init
     ...trpc.roundSubmission.statuses.queryOptions(),
     initialData: initialSubmissionStatuses,
   });
+  const uploadLimits = useQuery({ ...trpc.uploadLimits.queryOptions(), initialData: initialUploadLimits });
 
   return (
     <div className="dashboard-page">
@@ -123,16 +126,16 @@ export default function Dashboard({ session, activeTab, initialMemberships, init
 
         {activeTab === "overview" && <PromotionAnnouncements initialAnnouncements={initialUserAnnouncements} />}
 
-        {memberships.isPending || settings.isPending ? (
+        {memberships.isPending || settings.isPending || uploadLimits.isPending ? (
           <DashboardSkeleton />
-        ) : memberships.isError || settings.isError ? (
+        ) : memberships.isError || settings.isError || uploadLimits.isError ? (
           <Card className="dashboard-state-card">
             <CardHeader>
               <CardTitle>{t("errors.loadTitle")}</CardTitle>
             </CardHeader>
             <CardContent>
               <p>{t("errors.loadDescription")}</p>
-              <Button onClick={() => { memberships.refetch(); settings.refetch(); }}>
+              <Button onClick={() => { memberships.refetch(); settings.refetch(); uploadLimits.refetch(); }}>
                 <RefreshCwIcon aria-hidden="true" /> {t("actions.retry")}
               </Button>
             </CardContent>
@@ -141,7 +144,8 @@ export default function Dashboard({ session, activeTab, initialMemberships, init
           dashboardTabSettings={initialDashboardTabSettings}
           submissionSettings={initialSubmissionSettings}
           submissionStatuses={submissionStatuses.data ?? initialSubmissionStatuses} />
-          : <RoundDashboard round={activeTab.slice(6) as RoundId} session={session} settings={settings.data!} />}
+          : <RoundDashboard round={activeTab.slice(6) as RoundId} session={session} settings={settings.data!}
+            uploadLimits={uploadLimits.data!} />}
       </main>
     </div>
   );
@@ -215,7 +219,12 @@ function RoundHub({ memberships, settings, dashboardTabSettings, submissionSetti
   </div>;
 }
 
-function RoundDashboard({ round, session, settings }: { round: RoundId; session: Session; settings: Record<RoundId, boolean> }) {
+function RoundDashboard({ round, session, settings, uploadLimits }: {
+  round: RoundId;
+  session: Session;
+  settings: Record<RoundId, boolean>;
+  uploadLimits: UploadLimits;
+}) {
   const t = useTranslations("Dashboard");
   const roundLabel = useRoundLabel();
   const membership = useQuery(trpc.registration.current.queryOptions({ round }));
@@ -223,10 +232,11 @@ function RoundDashboard({ round, session, settings }: { round: RoundId; session:
   if (membership.isError) return <StateCard title={t("errors.loadTitle")} description={t("errors.loadDescription")} retry={() => membership.refetch()} />;
   return <div className="team-dashboard"><Link className="admin-back-link" href="/dashboard">← {t("hub.back")}</Link>
     {!membership.data.registered ? (round === "0.5" || round === "1")
-      ? settings[round] ? <RegistrationForm session={session} round={round} />
+      ? settings[round] ? <RegistrationForm session={session} round={round} maxCvFileSize={uploadLimits.participantCv} />
         : <Card className="dashboard-state-card"><CardHeader><CardTitle>{t("hub.closed")}</CardTitle></CardHeader><CardContent><p>{t("hub.closedDescription")}</p></CardContent></Card>
       : <Card className="dashboard-state-card"><CardHeader><CardTitle>{t("hub.notEligible")}</CardTitle></CardHeader><CardContent><p>{t("hub.eligibilityDescription", { roundLabel: roundLabel(round) })}</p></CardContent></Card>
-      : <><TeamOverview membership={membership.data} />{membership.data.team.status === "approved" && <RoundSubmission round={round} />}</>}
+      : <><TeamOverview membership={membership.data} />{membership.data.team.status === "approved" &&
+        <RoundSubmission round={round} maxFileSize={uploadLimits.roundSubmission} />}</>}
   </div>;
 }
 
@@ -235,7 +245,11 @@ function StateCard({ title, description, retry }: { title: string; description: 
   return <Card className="dashboard-state-card"><CardHeader><CardTitle>{title}</CardTitle></CardHeader><CardContent><p>{description}</p><Button onClick={retry}><RefreshCwIcon aria-hidden="true" />{t("actions.retry")}</Button></CardContent></Card>;
 }
 
-function RegistrationForm({ session, round }: { session: Session; round: "0.5" | "1" }) {
+function RegistrationForm({ session, round, maxCvFileSize }: {
+  session: Session;
+  round: "0.5" | "1";
+  maxCvFileSize: number;
+}) {
   const t = useTranslations("Dashboard");
   const [teamName, setTeamName] = useState("");
   const [captainFullName, setCaptainFullName] = useState(session.user.name);
@@ -346,7 +360,9 @@ function RegistrationForm({ session, round }: { session: Session; round: "0.5" |
     if (round === "1") cvFiles.forEach((file, index) => {
       if (!file) next[`cvs.${index}`] = t("validation.required");
       else if (!file.name.toLowerCase().endsWith(".pdf")) next[`cvs.${index}`] = t("registration.cv.fileType");
-      else if (file.size === 0 || file.size > 10 * 1024 * 1024) next[`cvs.${index}`] = t("registration.cv.fileSize");
+      else if (file.size === 0 || file.size > maxCvFileSize) {
+        next[`cvs.${index}`] = t("registration.cv.fileSize", { maxSize: formatUploadLimit(maxCvFileSize) });
+      }
     });
     setErrors(next);
     return Object.keys(next).length === 0;
@@ -383,7 +399,12 @@ function RegistrationForm({ session, round }: { session: Session; round: "0.5" |
       await createRoundOneTeam.mutateAsync({ ...registration, cvs });
     } catch (cause) {
       const message = cause instanceof Error ? cause.message : "";
-      if (message !== "EMAIL_ALREADY_REGISTERED" && message !== "DUPLICATE_EMAILS") {
+      if (message === "FILE_TOO_LARGE") {
+        const latest = await queryClient.fetchQuery(trpc.uploadLimits.queryOptions());
+        setErrors((current) => ({ ...current, form: t("registration.cv.fileSize", {
+          maxSize: formatUploadLimit(latest.participantCv),
+        }) }));
+      } else if (message !== "EMAIL_ALREADY_REGISTERED" && message !== "DUPLICATE_EMAILS") {
         setErrors((current) => ({ ...current, form: t("registration.cv.uploadError") }));
       }
     } finally { setUploading(false); }
@@ -444,10 +465,13 @@ function RegistrationForm({ session, round }: { session: Session; round: "0.5" |
           {round === "1" && <Field
             label={t("registration.cv.memberLabel", { name: captainFullName || t("roles.captain") })}
             error={errors["cvs.0"]}>
-            <Input className="cv-file-input" type="file" accept=".pdf,application/pdf"
-              aria-invalid={!!errors["cvs.0"]}
-              onChange={(event) => setCvFiles((current) => current.map((file, fileIndex) =>
-                fileIndex === 0 ? event.target.files?.[0] ?? null : file))} />
+            <><Input className="cv-file-input" type="file" accept=".pdf,application/pdf"
+                aria-invalid={!!errors["cvs.0"]}
+                onChange={(event) => setCvFiles((current) => current.map((file, fileIndex) =>
+                  fileIndex === 0 ? event.target.files?.[0] ?? null : file))} />
+              <span className="field-hint">{t("registration.cv.description", {
+                maxSize: formatUploadLimit(maxCvFileSize),
+              })}</span></>
           </Field>}
         </CardContent>
       </Card>
@@ -485,10 +509,13 @@ function RegistrationForm({ session, round }: { session: Session; round: "0.5" |
                 {round === "1" && <Field label={t("registration.cv.memberLabel", {
                   name: member.fullName || t("registration.memberNumber", { number: index + 2 }),
                 })} error={errors[`cvs.${index + 1}`]}>
-                  <Input className="cv-file-input" type="file" accept=".pdf,application/pdf"
-                    aria-invalid={!!errors[`cvs.${index + 1}`]}
-                    onChange={(event) => setCvFiles((current) => current.map((file, fileIndex) =>
-                      fileIndex === index + 1 ? event.target.files?.[0] ?? null : file))} />
+                  <><Input className="cv-file-input" type="file" accept=".pdf,application/pdf"
+                      aria-invalid={!!errors[`cvs.${index + 1}`]}
+                      onChange={(event) => setCvFiles((current) => current.map((file, fileIndex) =>
+                        fileIndex === index + 1 ? event.target.files?.[0] ?? null : file))} />
+                    <span className="field-hint">{t("registration.cv.description", {
+                      maxSize: formatUploadLimit(maxCvFileSize),
+                    })}</span></>
                 </Field>}
               </div>
             </section>
@@ -641,6 +668,10 @@ function Field({ label, error, full = false, children }: { label: string; error?
 
 function Detail({ label, value }: { label: string; value: string }) {
   return <div><dt>{label}</dt><dd>{value}</dd></div>;
+}
+
+function formatUploadLimit(bytes: number) {
+  return `${bytes / 1024 / 1024} MiB`;
 }
 
 function DashboardSkeleton() {

@@ -1,4 +1,5 @@
 import { protectedProcedure, publicProcedure, router } from "../index";
+import { getUploadLimits } from "../upload-limits";
 import { announcementsRouter } from "./announcements";
 import { adminRouter } from "./admin";
 import { registrationRouter } from "./registration";
@@ -11,6 +12,7 @@ export const appRouter = router({
   registration: registrationRouter,
   roundSubmission: roundSubmissionRouter,
   userAnnouncements: userAnnouncementsRouter,
+  uploadLimits: protectedProcedure.query(getUploadLimits),
   healthCheck: publicProcedure.query(() => {
     return "OK";
   }),
