@@ -694,6 +694,12 @@
       "notFoundDescription": "This submission does not exist or may have been removed.",
       "previewTitle": "Preview of {filename}",
       "submissionCount": "{count, plural, one {# submission} other {# submissions}}",
+      "excelExport": {
+        "exportExcel": "Export Excel",
+        "exportingExcel": "Exporting…",
+        "exportSuccess": "Exported {count, plural, one {# submission} other {# submissions}}.",
+        "exportError": "The Excel file could not be created. Please try again."
+      },
       "bulkExport": {
         "title": "Download all PDFs",
         "description": "Create one ZIP containing the latest PDF from every team in this round.",

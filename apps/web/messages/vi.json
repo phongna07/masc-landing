@@ -694,6 +694,12 @@
       "notFoundDescription": "Bài nộp này không tồn tại hoặc có thể đã bị xóa.",
       "previewTitle": "Xem trước {filename}",
       "submissionCount": "{count} bài nộp",
+      "excelExport": {
+        "exportExcel": "Xuất Excel",
+        "exportingExcel": "Đang xuất…",
+        "exportSuccess": "Đã xuất {count} bài nộp.",
+        "exportError": "Không thể tạo tệp Excel. Vui lòng thử lại."
+      },
       "bulkExport": {
         "title": "Tải tất cả tệp PDF",
         "description": "Tạo một tệp ZIP chứa bản PDF mới nhất của mỗi đội trong vòng này.",
