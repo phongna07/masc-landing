@@ -1,31 +1,58 @@
 "use client";
 
 import { roundFromSlug } from "@masc-landing/api/rounds";
+import { Button } from "@masc-landing/ui/components/button";
 import { Card, CardContent } from "@masc-landing/ui/components/card";
 import { useQuery } from "@tanstack/react-query";
-import { ChevronRightIcon } from "lucide-react";
+import { ChevronRightIcon, FileSpreadsheetIcon } from "lucide-react";
 import Link from "next/link";
 import type { Route } from "next";
 import { notFound, useParams } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
+import { useState } from "react";
+import { toast } from "sonner";
 
 import { useRoundLabel } from "@/hooks/use-round-label";
-import { trpc } from "@/utils/trpc";
+import { queryClient, trpc } from "@/utils/trpc";
 import { AdminEmpty, AdminError, AdminHeading, AdminLoading, formatDate } from "../../admin-state";
 import { RoundPdfExport } from "./round-pdf-export";
+import { exportRoundSubmissionsToExcel } from "./round-submission-excel-export";
 
 export default function AdminRoundPage() {
   const { roundSlug } = useParams<{ roundSlug: string }>();
   const round = roundFromSlug(roundSlug); if (!round) notFound();
   const t = useTranslations("Admin"); const locale = useLocale();
   const roundLabel = useRoundLabel()(round);
+  const [isExporting, setIsExporting] = useState(false);
   const submissions = useQuery(trpc.admin.listRoundSubmissions.queryOptions({ round }));
   const submissionCount = submissions.data
     ? t("round.submissionCount", { count: submissions.data.length })
     : undefined;
+  const runExport = async () => {
+    if (isExporting) return;
+    setIsExporting(true);
+    try {
+      const exportedSubmissions = await queryClient.fetchQuery({
+        ...trpc.admin.listRoundSubmissions.queryOptions({ round }),
+        staleTime: 0,
+      });
+      await exportRoundSubmissionsToExcel(round, exportedSubmissions);
+      toast.success(t("round.excelExport.exportSuccess", { count: exportedSubmissions.length }));
+    } catch {
+      toast.error(t("round.excelExport.exportError"));
+    } finally {
+      setIsExporting(false);
+    }
+  };
   return <><AdminHeading eyebrow={t("eyebrow")} title={t("round.title", { roundLabel })}
     description={t("round.description", { roundLabel })} badge={submissionCount} />
     <RoundPdfExport round={round} disabled={!submissions.data?.length} />
+    <div className="admin-team-toolbar"><div className="admin-status-actions admin-team-actions">
+      <Button aria-busy={isExporting} disabled={submissions.isPending || !submissions.data?.length || isExporting}
+        variant="outline" onClick={runExport}>
+        <FileSpreadsheetIcon />{t(isExporting ? "round.excelExport.exportingExcel" : "round.excelExport.exportExcel")}
+      </Button>
+    </div></div>
     {submissions.isPending ? <AdminLoading /> : submissions.isError ? <AdminError title={t("errors.loadTitle")} description={t("errors.round")} retry={() => submissions.refetch()} retryLabel={t("actions.retry")} />
     : submissions.data.length === 0 ? <AdminEmpty title={t("round.emptyTitle", { roundLabel })} description={t("round.emptyDescription")} />
     : <Card className="admin-table-card"><CardContent className="admin-table-scroll"><table className="admin-table admin-round-table">
