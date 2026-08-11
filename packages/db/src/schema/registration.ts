@@ -140,7 +140,7 @@ export const roundOneMemberCvs = pgTable(
     fileSize: bigint("file_size", { mode: "number" }).notNull(),
     createdAt: timestamp("created_at").defaultNow().notNull(),
   },
-  (table) => [check("round_1_member_cvs_file_size_check", sql`${table.fileSize} between 1 and 10485760`)],
+  (table) => [check("round_1_member_cvs_file_size_check", sql`${table.fileSize} > 0`)],
 );
 
 export const roundTwoTeams = pgTable(

@@ -7,4 +7,5 @@ export * from "./email";
 export * from "./pdf-exports";
 export * from "./registration";
 export * from "./submission-settings";
+export * from "./upload-limit-settings";
 export * from "./user-announcements";
