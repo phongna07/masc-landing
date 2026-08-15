@@ -3,8 +3,9 @@
 import { roundFromSlug } from "@masc-landing/api/rounds";
 import { Button } from "@masc-landing/ui/components/button";
 import { Card, CardContent } from "@masc-landing/ui/components/card";
-import { useQuery } from "@tanstack/react-query";
-import { ChevronRightIcon, FileSpreadsheetIcon } from "lucide-react";
+import { ConfirmationDialog } from "@masc-landing/ui/components/confirmation-dialog";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { ChevronRightIcon, FileSpreadsheetIcon, SendIcon } from "lucide-react";
 import Link from "next/link";
 import type { Route } from "next";
 import { notFound, useParams } from "next/navigation";
@@ -25,6 +26,14 @@ export default function AdminRoundPage() {
   const roundLabel = useRoundLabel()(round);
   const [isExporting, setIsExporting] = useState(false);
   const submissions = useQuery(trpc.admin.listRoundSubmissions.queryOptions({ round }));
+  const draftedFeedbackCount = submissions.data?.filter((submission) => submission.feedbackDrafted).length ?? 0;
+  const publishAllFeedback = useMutation(trpc.admin.publishAllRoundFeedbackDrafts.mutationOptions({
+    onSuccess: async ({ publishedCount }) => {
+      toast.success(t("round.bulkFeedback.success", { count: publishedCount }));
+      await queryClient.invalidateQueries({ queryKey: trpc.admin.listRoundSubmissions.queryKey({ round }) });
+    },
+    onError: () => toast.error(t("round.bulkFeedback.error")),
+  }));
   const submissionCount = submissions.data
     ? t("round.submissionCount", { count: submissions.data.length })
     : undefined;
@@ -52,6 +61,19 @@ export default function AdminRoundPage() {
         variant="outline" onClick={runExport}>
         <FileSpreadsheetIcon />{t(isExporting ? "round.excelExport.exportingExcel" : "round.excelExport.exportExcel")}
       </Button>
+      <ConfirmationDialog
+        trigger={<Button aria-busy={publishAllFeedback.isPending}
+          disabled={submissions.isPending || draftedFeedbackCount === 0 || publishAllFeedback.isPending}>
+          <SendIcon />{t(publishAllFeedback.isPending ? "round.bulkFeedback.publishing" : "round.bulkFeedback.publishAll")}
+        </Button>}
+        title={t("round.bulkFeedback.confirmationTitle")}
+        description={t("round.bulkFeedback.confirmationDescription", { count: draftedFeedbackCount, roundLabel })}
+        confirmLabel={t("round.bulkFeedback.confirm", { count: draftedFeedbackCount })}
+        cancelLabel={t("round.bulkFeedback.cancel")}
+        icon={<SendIcon />}
+        tone="success"
+        onConfirm={() => publishAllFeedback.mutate({ round })}
+      />
     </div></div>
     {submissions.isPending ? <AdminLoading /> : submissions.isError ? <AdminError title={t("errors.loadTitle")} description={t("errors.round")} retry={() => submissions.refetch()} retryLabel={t("actions.retry")} />
     : submissions.data.length === 0 ? <AdminEmpty title={t("round.emptyTitle", { roundLabel })} description={t("round.emptyDescription")} />

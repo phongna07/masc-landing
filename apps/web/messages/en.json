@@ -723,6 +723,16 @@
         "exportSuccess": "Exported {count, plural, one {# submission} other {# submissions}}.",
         "exportError": "The Excel file could not be created. Please try again."
       },
+      "bulkFeedback": {
+        "publishAll": "Publish all drafted feedback",
+        "publishing": "Publishing…",
+        "confirmationTitle": "Publish all drafted feedback?",
+        "confirmationDescription": "Publish {count, plural, one {# drafted feedback entry} other {# drafted feedback entries}} for {roundLabel}. Only drafted feedback in this round will become visible to teams.",
+        "confirm": "Publish {count, plural, one {# draft} other {# drafts}}",
+        "cancel": "Cancel",
+        "success": "Published {count, plural, one {# drafted feedback entry} other {# drafted feedback entries}}.",
+        "error": "Drafted feedback could not be published. Please try again."
+      },
       "bulkExport": {
         "title": "Download all PDFs",
         "description": "Create one ZIP containing the latest PDF from every team in this round.",
