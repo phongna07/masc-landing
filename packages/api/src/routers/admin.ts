@@ -604,7 +604,8 @@ export const adminRouter = router({
     return db.select({ id: submission.id, teamId: team.id, teamName: team.teamName,
       teamStatus: team.registrationStatus, captainName, captainEmail,
       originalFilename: submission.originalFilename, mimeType: submission.mimeType,
-      fileSize: submission.fileSize, createdAt: submission.createdAt, updatedAt: submission.updatedAt })
+      fileSize: submission.fileSize, createdAt: submission.createdAt, updatedAt: submission.updatedAt,
+      feedbackDrafted: sql<boolean>`${submission.feedback} is not null and ${submission.feedbackPublished} = false` })
       .from(submission).innerJoin(team, eq(submission.teamId, team.id))
       .where(and(eq(submission.round, input.round), latestSubmission(submission)))
       .orderBy(desc(submission.updatedAt), asc(team.teamName));
@@ -640,6 +641,16 @@ export const adminRouter = router({
       .set({ feedback: input.feedback, score: input.score, feedbackPublished: true })
       .where(identifiedSubmission(input)).returning({ id: table.id });
     if (!submission) throw new TRPCError({ code: "NOT_FOUND", message: "Submission not found" }); return { success: true };
+  }),
+  publishAllRoundFeedbackDrafts: roundsProcedure.input(roundInput).mutation(async ({ input }) => {
+    const { submission: table } = submissionTables(input.round);
+    const published = await db.update(table).set({ feedbackPublished: true }).where(and(
+      eq(table.round, input.round),
+      eq(table.feedbackPublished, false),
+      isNotNull(table.feedback),
+      latestSubmission(table),
+    )).returning({ id: table.id });
+    return { publishedCount: published.length };
   }),
   createRoundDownloadUrl: roundsProcedure.input(submissionInput).mutation(async ({ input }) => {
     const submission = await findSubmissionFile(input);

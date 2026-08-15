@@ -723,6 +723,16 @@
         "exportSuccess": "Đã xuất {count} bài nộp.",
         "exportError": "Không thể tạo tệp Excel. Vui lòng thử lại."
       },
+      "bulkFeedback": {
+        "publishAll": "Công bố tất cả nhận xét bản nháp",
+        "publishing": "Đang công bố…",
+        "confirmationTitle": "Công bố tất cả nhận xét bản nháp?",
+        "confirmationDescription": "Công bố {count} nhận xét bản nháp cho {roundLabel}. Chỉ những nhận xét bản nháp trong vòng này mới hiển thị cho các đội.",
+        "confirm": "Công bố {count} bản nháp",
+        "cancel": "Hủy",
+        "success": "Đã công bố {count} nhận xét bản nháp.",
+        "error": "Không thể công bố nhận xét bản nháp. Vui lòng thử lại."
+      },
       "bulkExport": {
         "title": "Tải tất cả tệp PDF",
         "description": "Tạo một tệp ZIP chứa bản PDF mới nhất của mỗi đội trong vòng này.",
