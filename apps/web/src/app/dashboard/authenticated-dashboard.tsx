@@ -5,6 +5,7 @@ import { getRoundSubmissionStatuses } from "@masc-landing/api/routers/round-subm
 import { getSubmissionSettings } from "@masc-landing/api/submission-settings";
 import { getUploadLimits } from "@masc-landing/api/upload-limits";
 import { getUserAnnouncements } from "@masc-landing/api/routers/user-announcements";
+import { getRoundOnePreferenceSettings } from "@masc-landing/api/round-one-preferences";
 import { redirect } from "next/navigation";
 
 import { getServerSession } from "@/lib/server-session";
@@ -19,11 +20,12 @@ export default async function AuthenticatedDashboard({ activeTab }: { activeTab:
   }
 
   const user = { id: session.user.id, email: session.user.email };
-  const [admissionSettings, dashboardTabSettings, memberships, submissionSettings, submissionStatuses, uploadLimits,
+  const [admissionSettings, dashboardTabSettings, memberships, roundOnePreferenceSettings, submissionSettings, submissionStatuses, uploadLimits,
     userAnnouncements] = await Promise.all([
     getAdmissionSettings(),
     getDashboardTabSettings(),
     getRoundMemberships(user),
+    getRoundOnePreferenceSettings(true),
     getSubmissionSettings(),
     getRoundSubmissionStatuses(user),
     getUploadLimits(),
@@ -33,6 +35,7 @@ export default async function AuthenticatedDashboard({ activeTab }: { activeTab:
   return <Dashboard session={session} activeTab={activeTab}
     initialMemberships={memberships} initialSettings={admissionSettings}
     initialDashboardTabSettings={dashboardTabSettings}
+    initialRoundOnePreferenceSettings={roundOnePreferenceSettings}
     initialSubmissionSettings={submissionSettings}
     initialSubmissionStatuses={submissionStatuses} initialUploadLimits={uploadLimits}
     initialUserAnnouncements={userAnnouncements} />;

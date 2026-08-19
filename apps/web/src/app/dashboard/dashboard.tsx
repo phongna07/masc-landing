@@ -24,7 +24,7 @@ import { Skeleton } from "@masc-landing/ui/components/skeleton";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import type { inferRouterOutputs } from "@trpc/server";
 import {
-  ArrowDownIcon, ArrowRightIcon, CheckCircle2Icon, ChevronDownIcon, MegaphoneIcon, MessageSquareQuoteIcon,
+  ArrowDownIcon, ArrowRightIcon, CheckCircle2Icon, ChevronDownIcon, ListChecksIcon, MegaphoneIcon, MessageSquareQuoteIcon,
   RefreshCwIcon, TriangleAlertIcon
 } from "lucide-react";
 import type { Route } from "next";
@@ -47,9 +47,11 @@ import RoundSubmission from "./round-submission";
 
 type Session = typeof authClient.$Infer.Session;
 type Membership = inferRouterOutputs<AppRouter>["registration"]["current"];
+type RoundOneMembership = Extract<Membership, { registered: true; round: "1" }>;
 type Memberships = inferRouterOutputs<AppRouter>["registration"]["memberships"];
 type SubmissionStatuses = inferRouterOutputs<AppRouter>["roundSubmission"]["statuses"];
 type UploadLimits = inferRouterOutputs<AppRouter>["uploadLimits"];
+type RoundOnePreferenceSettings = inferRouterOutputs<AppRouter>["registration"]["roundOnePreferenceSettings"];
 type UserAnnouncements = inferRouterOutputs<AppRouter>["userAnnouncements"]["listMine"];
 type Teammate = { id: string; fullName: string; email: string; birthdate: string; universityName: string };
 type FormErrors = Record<string, string>;
@@ -71,12 +73,13 @@ const AnnouncementsFeed = dynamic(() => import("./announcements-feed"), {
 });
 
 export default function Dashboard({ session, activeTab, initialMemberships, initialSettings, initialDashboardTabSettings, initialSubmissionSettings,
-  initialSubmissionStatuses, initialUploadLimits, initialUserAnnouncements }: {
+  initialRoundOnePreferenceSettings, initialSubmissionStatuses, initialUploadLimits, initialUserAnnouncements }: {
     session: Session;
     activeTab: DashboardTab;
     initialMemberships: Memberships;
     initialSettings: Record<RoundId, boolean>;
     initialDashboardTabSettings: Record<RoundId, boolean>;
+    initialRoundOnePreferenceSettings: RoundOnePreferenceSettings;
     initialSubmissionSettings: Record<RoundId, boolean>;
     initialSubmissionStatuses: SubmissionStatuses;
     initialUploadLimits: UploadLimits;
@@ -89,6 +92,10 @@ export default function Dashboard({ session, activeTab, initialMemberships, init
   const submissionStatuses = useQuery({
     ...trpc.roundSubmission.statuses.queryOptions(),
     initialData: initialSubmissionStatuses,
+  });
+  const roundOnePreferenceSettings = useQuery({
+    ...trpc.registration.roundOnePreferenceSettings.queryOptions(),
+    initialData: initialRoundOnePreferenceSettings,
   });
   const uploadLimits = useQuery({ ...trpc.uploadLimits.queryOptions(), initialData: initialUploadLimits });
 
@@ -126,16 +133,16 @@ export default function Dashboard({ session, activeTab, initialMemberships, init
 
         {activeTab === "overview" && <PromotionAnnouncements initialAnnouncements={initialUserAnnouncements} />}
 
-        {memberships.isPending || settings.isPending || uploadLimits.isPending ? (
+        {memberships.isPending || settings.isPending || uploadLimits.isPending || roundOnePreferenceSettings.isPending ? (
           <DashboardSkeleton />
-        ) : memberships.isError || settings.isError || uploadLimits.isError ? (
+        ) : memberships.isError || settings.isError || uploadLimits.isError || roundOnePreferenceSettings.isError ? (
           <Card className="dashboard-state-card">
             <CardHeader>
               <CardTitle>{t("errors.loadTitle")}</CardTitle>
             </CardHeader>
             <CardContent>
               <p>{t("errors.loadDescription")}</p>
-              <Button onClick={() => { memberships.refetch(); settings.refetch(); uploadLimits.refetch(); }}>
+              <Button onClick={() => { memberships.refetch(); settings.refetch(); uploadLimits.refetch(); roundOnePreferenceSettings.refetch(); }}>
                 <RefreshCwIcon aria-hidden="true" /> {t("actions.retry")}
               </Button>
             </CardContent>
@@ -145,7 +152,7 @@ export default function Dashboard({ session, activeTab, initialMemberships, init
           submissionSettings={initialSubmissionSettings}
           submissionStatuses={submissionStatuses.data ?? initialSubmissionStatuses} />
           : <RoundDashboard round={activeTab.slice(6) as RoundId} session={session} settings={settings.data!}
-            uploadLimits={uploadLimits.data!} />}
+            uploadLimits={uploadLimits.data!} preferenceSettings={roundOnePreferenceSettings.data!} />}
       </main>
     </div>
   );
@@ -174,10 +181,18 @@ function RoundHub({ memberships, settings, dashboardTabSettings, submissionSetti
         : isDirectAdmissionRound ? "closed" : "locked";
       const isSubmissionOngoing = membership.registered && membership.team.status === "approved"
         && submissionSettings[round];
+      const needsRoundOnePreferences = round === "1" && membership.registered
+        && membership.team.admissionMethod === "round_0_5_promotion"
+        && "preferenceStatus" in membership.team
+        && membership.team.preferenceStatus === "not_submitted";
       const stateLabel = isSubmissionOngoing ? t("hub.ongoing")
         : membership.registered ? t(`status.${membership.team.status}`) : canApply ? t("hub.open")
           : isDirectAdmissionRound ? t("hub.closed") : t("hub.notEligible");
       return <Card className={`dashboard-card round-entry-card round-entry-card-${state}`} key={round}>
+        {needsRoundOnePreferences && <div className="round-entry-submission-status round-entry-submission-status-feedback">
+          <ListChecksIcon aria-hidden="true" />
+          <p>{t("hub.preferenceReminder")}</p>
+        </div>}
         {membership.registered && submissionStatus && <div
           className={`round-entry-submission-status round-entry-submission-status-${submissionStatus}`}>
           {submissionStatus === "feedback" ? <MessageSquareQuoteIcon aria-hidden="true" />
@@ -219,11 +234,12 @@ function RoundHub({ memberships, settings, dashboardTabSettings, submissionSetti
   </div>;
 }
 
-function RoundDashboard({ round, session, settings, uploadLimits }: {
+function RoundDashboard({ round, session, settings, uploadLimits, preferenceSettings }: {
   round: RoundId;
   session: Session;
   settings: Record<RoundId, boolean>;
   uploadLimits: UploadLimits;
+  preferenceSettings: RoundOnePreferenceSettings;
 }) {
   const t = useTranslations("Dashboard");
   const roundLabel = useRoundLabel();
@@ -232,11 +248,17 @@ function RoundDashboard({ round, session, settings, uploadLimits }: {
   if (membership.isError) return <StateCard title={t("errors.loadTitle")} description={t("errors.loadDescription")} retry={() => membership.refetch()} />;
   return <div className="team-dashboard"><Link className="admin-back-link" href="/dashboard">← {t("hub.back")}</Link>
     {!membership.data.registered ? (round === "0.5" || round === "1")
-      ? settings[round] ? <RegistrationForm session={session} round={round} maxCvFileSize={uploadLimits.participantCv} />
+      ? settings[round] ? <RegistrationForm session={session} round={round} maxCvFileSize={uploadLimits.participantCv}
+          preferenceSettings={preferenceSettings} />
         : <Card className="dashboard-state-card"><CardHeader><CardTitle>{t("hub.closed")}</CardTitle></CardHeader><CardContent><p>{t("hub.closedDescription")}</p></CardContent></Card>
       : <Card className="dashboard-state-card"><CardHeader><CardTitle>{t("hub.notEligible")}</CardTitle></CardHeader><CardContent><p>{t("hub.eligibilityDescription", { roundLabel: roundLabel(round) })}</p></CardContent></Card>
-      : <><TeamOverview membership={membership.data} />{membership.data.team.status === "approved" &&
-        <RoundSubmission round={round} maxFileSize={uploadLimits.roundSubmission} />}</>}
+      : <><TeamOverview membership={membership.data} />
+        {membership.data.round === "1" && <RoundOnePreferences membership={membership.data}
+          preferenceSettings={preferenceSettings} />}
+        {membership.data.team.status === "approved"
+          && (membership.data.round !== "1" || membership.data.team.preferenceStatus === "assigned")
+          && <RoundSubmission round={round} maxFileSize={uploadLimits.roundSubmission}
+            sectionNumber={round === "1" ? "03" : "01"} />}</>}
   </div>;
 }
 
@@ -245,10 +267,11 @@ function StateCard({ title, description, retry }: { title: string; description: 
   return <Card className="dashboard-state-card"><CardHeader><CardTitle>{title}</CardTitle></CardHeader><CardContent><p>{description}</p><Button onClick={retry}><RefreshCwIcon aria-hidden="true" />{t("actions.retry")}</Button></CardContent></Card>;
 }
 
-function RegistrationForm({ session, round, maxCvFileSize }: {
+function RegistrationForm({ session, round, maxCvFileSize, preferenceSettings }: {
   session: Session;
   round: "0.5" | "1";
   maxCvFileSize: number;
+  preferenceSettings: RoundOnePreferenceSettings;
 }) {
   const t = useTranslations("Dashboard");
   const [teamName, setTeamName] = useState("");
@@ -265,6 +288,7 @@ function RegistrationForm({ session, round, maxCvFileSize }: {
   const [errors, setErrors] = useState<FormErrors>({});
   const [cvFiles, setCvFiles] = useState<(File | null)[]>([null, null, null]);
   const [uploading, setUploading] = useState(false);
+  const [preferenceIds, setPreferenceIds] = useState(["", "", ""]);
   const birthdateRange = getEligibleBirthdateRange();
 
   const onCreated = async () => {
@@ -364,6 +388,9 @@ function RegistrationForm({ session, round, maxCvFileSize }: {
         next[`cvs.${index}`] = t("registration.cv.fileSize", { maxSize: formatUploadLimit(maxCvFileSize) });
       }
     });
+    if (round === "1" && (preferenceIds.some((id) => !id) || new Set(preferenceIds).size !== 3)) {
+      next.preferences = t("preferences.validation");
+    }
     setErrors(next);
     return Object.keys(next).length === 0;
   };
@@ -396,7 +423,7 @@ function RegistrationForm({ session, round, maxCvFileSize }: {
         if (!response.ok) throw new Error("UPLOAD_FAILED");
         return { ...metadata, uploadId: signed.uploadId };
       }));
-      await createRoundOneTeam.mutateAsync({ ...registration, cvs });
+      await createRoundOneTeam.mutateAsync({ ...registration, cvs, preferenceIds });
     } catch (cause) {
       const message = cause instanceof Error ? cause.message : "";
       if (message === "FILE_TOO_LARGE") {
@@ -523,9 +550,21 @@ function RegistrationForm({ session, round, maxCvFileSize }: {
         </CardContent>
       </Card>
 
+      {round === "1" && <Card className="dashboard-card">
+        <CardHeader>
+          <p className="dashboard-card-index">05 / {t("preferences.section")}</p>
+          <CardTitle>{t("preferences.title")}</CardTitle>
+          <p>{t("preferences.description")}</p>
+        </CardHeader>
+        <CardContent>
+          <PreferenceSelects settings={preferenceSettings} values={preferenceIds}
+            onChange={setPreferenceIds} error={errors.preferences} disabled={isSubmitting} />
+        </CardContent>
+      </Card>}
+
       <Card className="dashboard-card">
         <CardHeader>
-          <p className="dashboard-card-index">05 / {t("registration.awareness.section")}</p>
+          <p className="dashboard-card-index">{round === "1" ? "06" : "05"} / {t("registration.awareness.section")}</p>
           <CardTitle>{t("registration.awareness.title")}</CardTitle>
           {/* <p>{t("registration.awareness.description")}</p> */}
         </CardHeader>
@@ -569,6 +608,87 @@ function RegistrationForm({ session, round, maxCvFileSize }: {
       </div>
     </form>
   );
+}
+
+function PreferenceSelects({ settings, values, onChange, error, disabled = false }: {
+  settings: RoundOnePreferenceSettings;
+  values: string[];
+  onChange: (values: string[]) => void;
+  error?: string;
+  disabled?: boolean;
+}) {
+  const t = useTranslations("Dashboard");
+  return <div className="preference-select-group">
+    {values.map((value, index) => <Field key={index} label={t("preferences.rank", { rank: index + 1 })}>
+      <select className="preference-select" value={value} disabled={disabled}
+        aria-invalid={!!error} onChange={(event) => onChange(values.map((item, itemIndex) =>
+          itemIndex === index ? event.target.value : item))}>
+        <option value="">{t("preferences.selectPlaceholder")}</option>
+        {settings.map((setting) => <option key={setting.id} value={setting.id}
+          disabled={value !== setting.id && values.includes(setting.id)}>{setting.name}</option>)}
+      </select>
+    </Field>)}
+    {error && <p className="field-error preference-error" role="alert">{error}</p>}
+  </div>;
+}
+
+function RoundOnePreferences({ membership, preferenceSettings }: {
+  membership: RoundOneMembership;
+  preferenceSettings: RoundOnePreferenceSettings;
+}) {
+  const t = useTranslations("Dashboard");
+  const [values, setValues] = useState(["", "", ""]);
+  const [error, setError] = useState<string | undefined>();
+  const submitPreferences = useMutation(trpc.registration.submitRoundOnePreferences.mutationOptions({
+    onSuccess: async () => {
+      toast.success(t("preferences.submitSuccess"));
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: trpc.registration.current.queryKey({ round: "1" }) }),
+        queryClient.invalidateQueries({ queryKey: trpc.registration.memberships.queryKey() }),
+      ]);
+    },
+    onError: (cause) => setError(cause.data?.code === "CONFLICT"
+      ? t("preferences.alreadySubmitted") : t("preferences.submitError")),
+  }));
+  const submit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (values.some((id) => !id) || new Set(values).size !== 3) {
+      setError(t("preferences.validation"));
+      return;
+    }
+    setError(undefined);
+    submitPreferences.mutate({ preferenceIds: values });
+  };
+  return <Card className="dashboard-card preference-card">
+    <CardHeader>
+      <div className="preference-heading-row">
+        <div><p className="dashboard-card-index">02 / {t("preferences.section")}</p>
+          <CardTitle>{t("preferences.title")}</CardTitle></div>
+        <span className={`preference-status preference-status-${membership.team.preferenceStatus}`}>
+          {t(`preferences.status.${membership.team.preferenceStatus}`)}
+        </span>
+      </div>
+      <p>{t("preferences.description")}</p>
+    </CardHeader>
+    <CardContent>
+      {membership.team.preferenceStatus === "not_submitted" ? membership.role === "captain" ?
+        <form className="preference-form" onSubmit={submit} noValidate>
+          {preferenceSettings.length < 3 ? <p className="form-error" role="alert">{t("preferences.unavailable")}</p> :
+            <PreferenceSelects settings={preferenceSettings} values={values} onChange={setValues}
+              error={error} disabled={submitPreferences.isPending} />}
+          <Button type="submit" disabled={submitPreferences.isPending || preferenceSettings.length < 3}>
+            {submitPreferences.isPending ? t("preferences.submitting") : t("preferences.submit")}
+          </Button>
+        </form> : <p className="preference-message">{t("preferences.captainRequired")}</p>
+        : <div className="preference-summary">
+          <ol>{membership.team.preferences.map((preference) => <li key={preference.id}>{preference.name}</li>)}</ol>
+          {membership.team.preferenceStatus === "assigned" && membership.team.assignedTrack
+            ? <div className="assigned-track"><span>{t("preferences.assignedTrack")}</span>
+              <strong>{membership.team.assignedTrack.name}</strong></div>
+            : <p className="preference-message">{t("preferences.waitingAssignment")}</p>}
+        </div>}
+    </CardContent>
+  </Card>;
 }
 
 function TeamOverview({ membership }: { membership: Extract<Membership, { registered: true }> }) {

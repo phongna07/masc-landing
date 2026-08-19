@@ -49,7 +49,7 @@ export default function RoundTeamDetail({ round, teamId }: { round: RoundId; tea
     <div className="admin-detail-heading"><div><p>{t("teams.roundTitle", { roundLabel: roundLabel(round) })}</p><h1>{team.data.name}</h1></div>
       <span className={`status-badge status-${team.data.status}`}>{t(`values.status.${team.data.status}`)}</span></div>
     <div className="admin-status-actions">
-      {team.data.status !== "approved" && <ConfirmationDialog
+      {round !== "1" && team.data.status !== "approved" && <ConfirmationDialog
         trigger={<Button disabled={update.isPending}><CheckIcon />{t("teams.approve")}</Button>}
         title={t("teams.confirmation.approved.title")}
         description={t("teams.confirmation.approved.description", { team: team.data.name })}
@@ -59,7 +59,7 @@ export default function RoundTeamDetail({ round, teamId }: { round: RoundId; tea
         tone="success"
         onConfirm={() => decide("approved")}
       />}
-      {team.data.status !== "rejected" && <ConfirmationDialog
+      {round !== "1" && team.data.status !== "rejected" && <ConfirmationDialog
         trigger={<Button variant="destructive" disabled={update.isPending}><XIcon />{t("teams.reject")}</Button>}
         title={t("teams.confirmation.rejected.title")}
         description={t("teams.confirmation.rejected.description", { team: team.data.name })}
@@ -82,7 +82,12 @@ export default function RoundTeamDetail({ round, teamId }: { round: RoundId; tea
     </div>
     <div className="admin-detail-grid"><Card className="dashboard-card"><CardHeader><CardTitle>{t("detail.registration")}</CardTitle></CardHeader><CardContent className="detail-list">
       <Detail label={t("fields.created")} value={formatDate(team.data.createdAt, locale)} /><Detail label={t("fields.members")} value={t("values.memberCount", { count: team.data.members.length, required: TEAM_SIZE })} />
-      <Detail label={t("teams.admissionMethod")} value={t(`teams.admissionMethods.${team.data.admissionMethod}`)} /></CardContent></Card>
+      <Detail label={t("teams.admissionMethod")} value={t(`teams.admissionMethods.${team.data.admissionMethod}`)} />
+      {round === "1" && <><Detail label={t("fields.preferenceStatus")} value={team.data.preferenceStatus
+        ? t(`values.preferenceStatus.${team.data.preferenceStatus}`) : "—"} />
+        <Detail label={t("fields.preferences")} value={team.data.preferences.map((preference, index) => `${index + 1}. ${preference.name}`).join(" · ") || "—"} />
+        <Detail label={t("fields.assignedTrack")} value={team.data.assignedTrack?.name ?? "—"} /></>}
+      </CardContent></Card>
       <Card className="dashboard-card"><CardHeader><CardTitle>{t("detail.captainContact")}</CardTitle></CardHeader><CardContent className="detail-list">
         <Detail label={t("fields.name")} value={team.data.captainName} /><Detail label={t("fields.email")} value={team.data.captainEmail} /><Detail label={t("fields.phone")} value={team.data.captainPhone} />
       </CardContent></Card></div>

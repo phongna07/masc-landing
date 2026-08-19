@@ -19,6 +19,11 @@ import { getRoundMembership, getRoundMemberships } from "../registration-members
 import { roundSchema } from "../rounds";
 import { awarenessSourcesRequiringDetail, createTeamInputSchema } from "../registration-schema";
 import {
+  getRoundOnePreferenceSettings,
+  requireActiveRoundOnePreferences,
+  ROUND_ONE_PREFERENCE_COUNT,
+} from "../round-one-preferences";
+import {
   getUploadLimits,
   MAX_UPLOAD_LIMIT_BYTES,
   requireCurrentUploadLimit,
@@ -34,7 +39,11 @@ const cvFileSchema = z.object({
   mimeType: z.literal("application/pdf"),
   fileSize: z.number().int().positive().max(MAX_UPLOAD_LIMIT_BYTES),
 });
-const createRoundOneTeamInputSchema = createTeamInputSchema.extend({ cvs: z.array(cvFileSchema).length(3) });
+const preferenceIdsSchema = z.array(z.string().trim().min(1).max(128)).length(ROUND_ONE_PREFERENCE_COUNT);
+const createRoundOneTeamInputSchema = createTeamInputSchema.extend({
+  cvs: z.array(cvFileSchema).length(3),
+  preferenceIds: preferenceIdsSchema,
+});
 
 const s3 = new S3Client({
   region: "auto",
@@ -94,6 +103,7 @@ const createRoundHalfTeam = freshProtectedProcedure.input(createTeamInputSchema)
 
 export const registrationRouter = router({
   settings: protectedProcedure.query(getAdmissionSettings),
+  roundOnePreferenceSettings: protectedProcedure.query(() => getRoundOnePreferenceSettings(true)),
   memberships: protectedProcedure.query(async ({ ctx }) => {
     const user = { id: ctx.session.user.id, email: ctx.session.user.email };
     return getRoundMemberships(user);
@@ -117,6 +127,7 @@ export const registrationRouter = router({
     await requireAdmissionOpen("1"); input.cvs.forEach((cv) => validateCvFilename(cv.filename));
     const keys = input.cvs.map((cv) => cvObjectKey(ctx.session.user.id, cv.uploadId));
     try {
+      await requireActiveRoundOnePreferences(input.preferenceIds);
       const limits = await getUploadLimits();
       input.cvs.forEach((cv) => requireFileWithinUploadLimit(cv.fileSize, limits.participantCv));
     } catch (error) {
@@ -156,7 +167,8 @@ export const registrationRouter = router({
       await db.batch([
         db.insert(roundOneTeams).values({ id: teamId, teamName: input.teamName, captainId: ctx.session.user.id,
           captainPhone: input.captainPhone, awarenessSource: input.awarenessSource, admissionMethod: "cv_screening",
-          awarenessSourceDetail: awarenessSourcesRequiringDetail.includes(input.awarenessSource) ? input.awarenessSourceDetail : null }),
+          awarenessSourceDetail: awarenessSourcesRequiringDetail.includes(input.awarenessSource) ? input.awarenessSourceDetail : null,
+          preferenceStatus: "submitted", preferences: input.preferenceIds, preferenceSubmittedAt: new Date() }),
         db.insert(roundOneMembers).values(roster),
         db.insert(roundOneMemberCvs).values(roster.map((member, index) => ({ memberId: member.id,
           objectKey: keys[index]!, originalFilename: input.cvs[index]!.filename,
@@ -169,6 +181,30 @@ export const registrationRouter = router({
     }
     return { teamId };
   }),
+  submitRoundOnePreferences: freshProtectedProcedure.input(z.object({ preferenceIds: preferenceIdsSchema }))
+    .mutation(async ({ ctx, input }) => {
+      const membership = await getRoundMembership({ id: ctx.session.user.id, email: ctx.session.user.email }, "1");
+      if (!membership.registered) throw new TRPCError({ code: "NOT_FOUND", message: "ROUND_ONE_TEAM_NOT_FOUND" });
+      if (membership.role !== "captain") throw new TRPCError({ code: "FORBIDDEN", message: "CAPTAIN_REQUIRED" });
+      if (!("preferenceStatus" in membership.team)) {
+        throw new TRPCError({ code: "NOT_FOUND", message: "ROUND_ONE_TEAM_NOT_FOUND" });
+      }
+      if (membership.team.preferenceStatus !== "not_submitted") {
+        throw new TRPCError({ code: "CONFLICT", message: "PREFERENCES_ALREADY_SUBMITTED" });
+      }
+      await requireActiveRoundOnePreferences(input.preferenceIds);
+      const [updated] = await db.update(roundOneTeams).set({
+        preferences: input.preferenceIds,
+        preferenceStatus: "submitted",
+        preferenceSubmittedAt: new Date(),
+      }).where(and(
+        eq(roundOneTeams.id, membership.team.id),
+        eq(roundOneTeams.captainId, ctx.session.user.id),
+        eq(roundOneTeams.preferenceStatus, "not_submitted"),
+      )).returning({ id: roundOneTeams.id });
+      if (!updated) throw new TRPCError({ code: "CONFLICT", message: "PREFERENCES_ALREADY_SUBMITTED" });
+      return { teamId: updated.id, preferenceStatus: "submitted" as const };
+    }),
   createRoundOneCvDownloadUrl: freshProtectedProcedure.input(z.object({ memberId: z.string().min(1).max(128) }))
     .mutation(async ({ ctx, input }) => {
       const [cv] = await db.select({ objectKey: roundOneMemberCvs.objectKey,

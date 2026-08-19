@@ -10,6 +10,7 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
 import { useEffect, useState, type FormEvent } from "react";
 import { toast } from "sonner";
+import { ArrowDownIcon, ArrowUpIcon, PlusIcon } from "lucide-react";
 
 import { useRoundLabel } from "@/hooks/use-round-label";
 import { trpc } from "@/utils/trpc";
@@ -44,6 +45,7 @@ export default function AdminPage() {
 
 	return <>
 		<AdminHeading eyebrow={t("eyebrow")} title={t("overview.title")} description={t("overview.description")} />
+		<PreferenceSettingsSection />
 		<section className="admin-setting-section" aria-labelledby="dashboard-visibility-settings-title">
 			<div className="admin-setting-section-heading"><h2 id="dashboard-visibility-settings-title">{t("overview.visibilitySectionTitle")}</h2>
 				<p>{t("overview.visibilitySectionDescription")}</p></div>
@@ -110,6 +112,85 @@ export default function AdminPage() {
 				</div>}
 		</section>
 	</>;
+}
+
+function PreferenceSettingsSection() {
+	const t = useTranslations("Admin");
+	const settings = useQuery(trpc.admin.getRoundOnePreferenceSettings.queryOptions());
+	const [newName, setNewName] = useState("");
+	const create = useMutation(trpc.admin.createRoundOnePreferenceSetting.mutationOptions({
+		onSuccess: async () => { setNewName(""); await settings.refetch(); toast.success(t("overview.preferences.success")); },
+		onError: () => toast.error(t("overview.preferences.error")),
+	}));
+	const update = useMutation(trpc.admin.updateRoundOnePreferenceSetting.mutationOptions({
+		onSuccess: async () => { await settings.refetch(); toast.success(t("overview.preferences.success")); },
+		onError: () => toast.error(t("overview.preferences.error")),
+	}));
+	const reorder = useMutation(trpc.admin.reorderRoundOnePreferenceSettings.mutationOptions({
+		onSuccess: async () => { await settings.refetch(); toast.success(t("overview.preferences.success")); },
+		onError: () => toast.error(t("overview.preferences.error")),
+	}));
+	const move = (index: number, direction: -1 | 1) => {
+		if (!settings.data) return;
+		const target = index + direction;
+		if (target < 0 || target >= settings.data.length) return;
+		const orderedIds = settings.data.map((setting) => setting.id);
+		[orderedIds[index], orderedIds[target]] = [orderedIds[target]!, orderedIds[index]!];
+		reorder.mutate({ orderedIds });
+	};
+	const add = (event: FormEvent<HTMLFormElement>) => {
+		event.preventDefault();
+		const name = newName.trim();
+		if (name) create.mutate({ name });
+	};
+	return <section className="admin-setting-section" aria-labelledby="preference-settings-title">
+		<div className="admin-setting-section-heading"><h2 id="preference-settings-title">{t("overview.preferences.title")}</h2>
+			<p>{t("overview.preferences.description")}</p></div>
+		{settings.isPending ? <AdminLoading /> : settings.isError ? <AdminError title={t("errors.loadTitle")}
+			description={t("overview.preferences.loadError")} retry={() => settings.refetch()} retryLabel={t("actions.retry")} /> : <>
+			<div className="admin-preference-settings">{settings.data.map((setting, index) => <PreferenceSettingRow key={setting.id}
+				setting={setting} disabled={update.isPending || reorder.isPending}
+				onSave={(name) => update.mutate({ id: setting.id, name })}
+				onToggle={() => update.mutate({ id: setting.id, isActive: !setting.isActive })}
+				onMoveUp={() => move(index, -1)} onMoveDown={() => move(index, 1)}
+				first={index === 0} last={index === settings.data.length - 1} />)}</div>
+			<form className="admin-preference-add" onSubmit={add}><Label htmlFor="new-preference-name">{t("overview.preferences.newLabel")}</Label>
+				<div><Input id="new-preference-name" value={newName} maxLength={160} onChange={(event) => setNewName(event.target.value)}
+					placeholder={t("overview.preferences.newPlaceholder")} />
+					<Button type="submit" disabled={!newName.trim() || create.isPending}><PlusIcon />{t("overview.preferences.add")}</Button></div>
+			</form>
+		</>}
+	</section>;
+}
+
+function PreferenceSettingRow({ setting, disabled, onSave, onToggle, onMoveUp, onMoveDown, first, last }: {
+	setting: { id: string; name: string; isActive: boolean };
+	disabled: boolean;
+	onSave: (name: string) => void;
+	onToggle: () => void;
+	onMoveUp: () => void;
+	onMoveDown: () => void;
+	first: boolean;
+	last: boolean;
+}) {
+	const t = useTranslations("Admin");
+	const [name, setName] = useState(setting.name);
+	useEffect(() => setName(setting.name), [setting.name]);
+	return <form className="admin-preference-setting-row" onSubmit={(event) => {
+		event.preventDefault(); const value = name.trim(); if (value && value !== setting.name) onSave(value);
+	}}>
+		<div className="admin-preference-order-actions">
+			<Button type="button" size="icon-sm" variant="outline" aria-label={t("overview.preferences.moveUp")}
+				disabled={disabled || first} onClick={onMoveUp}><ArrowUpIcon /></Button>
+			<Button type="button" size="icon-sm" variant="outline" aria-label={t("overview.preferences.moveDown")}
+				disabled={disabled || last} onClick={onMoveDown}><ArrowDownIcon /></Button>
+		</div>
+		<Input value={name} maxLength={160} disabled={disabled} onChange={(event) => setName(event.target.value)} />
+		<span className={setting.isActive ? "is-open" : "is-closed"}>{t(setting.isActive ? "overview.preferences.active" : "overview.preferences.inactive")}</span>
+		<Button type="submit" variant="outline" disabled={disabled || !name.trim() || name.trim() === setting.name}>{t("overview.preferences.save")}</Button>
+		<Button type="button" variant={setting.isActive ? "destructive" : "outline"} disabled={disabled} onClick={onToggle}>
+			{t(setting.isActive ? "overview.preferences.deactivate" : "overview.preferences.activate")}</Button>
+	</form>;
 }
 
 function UploadLimitCard({ kind, maxFileSize, onSaved }: {

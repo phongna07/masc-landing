@@ -16,7 +16,11 @@ import { queryClient, trpc } from "@/utils/trpc";
 
 const mimeTypes: Record<string, string> = { pdf: "application/pdf" };
 
-export default function RoundSubmission({ round, maxFileSize }: { round: RoundId; maxFileSize: number }) {
+export default function RoundSubmission({ round, maxFileSize, sectionNumber = "01" }: {
+  round: RoundId;
+  maxFileSize: number;
+  sectionNumber?: string;
+}) {
   const t = useTranslations("Dashboard"); const format = useFormatter();
   const roundLabel = useRoundLabel()(round);
   const input = { round };
@@ -103,7 +107,7 @@ export default function RoundSubmission({ round, maxFileSize }: { round: RoundId
 
   return <div className="round-panel">
     <Card className={`dashboard-card round-status-card round-status-${status}`}>
-      <CardHeader className="round-status-header"><p className="dashboard-card-index">01 / {t("tabs.round", { roundLabel })}</p>
+      <CardHeader className="round-status-header"><p className="dashboard-card-index">{sectionNumber} / {t("tabs.round", { roundLabel })}</p>
         <div className="round-status-heading"><span className="round-status-icon" aria-hidden="true">{status === "submitted" ? <CheckCircle2Icon /> : <Clock3Icon />}</span>
           <div><CardTitle>{statusTitle}</CardTitle><p>{statusDescription}</p></div></div>
         <div className="round-status-actions"><p className="round-attempts">{t("round.attemptsUsed", { used: attemptsUsed, max: maxAttempts })}</p>

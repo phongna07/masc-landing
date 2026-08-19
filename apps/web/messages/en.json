@@ -260,6 +260,7 @@
       "closedDescription": "The organizers are not accepting applications for this round right now.",
       "eligibilityDescription": "{roundLabel} is available only after an administrator promotes an eligible team.",
       "roundOneAlternative": "Round 1 uses a separate CV-screening application. You can apply here even if your team already entered Preliminary Round.",
+      "preferenceReminder": "Please register for your desired track for Round 1.",
       "emptyTitle": "No rounds are available right now",
       "emptyDescription": "Your registered rounds and any open application routes will appear here when they become available.",
       "announcementsTitle": "Competition updates",
@@ -332,6 +333,28 @@
       },
       "submitNote": "Review all names and email addresses carefully before submitting.",
       "sectionLabel": "Team registration form"
+    },
+    "preferences": {
+      "section": "Register your desired track",
+      "title": "Register your desired track",
+      "description": "Rank three different Round 1 tracks in order of preference. Your ranking cannot be changed after submission.",
+      "rank": "Preference {rank}",
+      "selectPlaceholder": "Select a track",
+      "validation": "Select three different tracks in preference order.",
+      "status": {
+        "not_submitted": "Not submitted",
+        "submitted": "Submitted",
+        "assigned": "Assigned"
+      },
+      "submit": "Submit preferences",
+      "submitting": "Submitting…",
+      "submitSuccess": "Your Round 1 preferences have been submitted.",
+      "submitError": "Your preferences could not be submitted. Please try again.",
+      "alreadySubmitted": "Preferences have already been submitted for this team.",
+      "captainRequired": "The team captain must submit the track preferences.",
+      "waitingAssignment": "Your preferences were received. The organizers will assign your track.",
+      "assignedTrack": "Assigned track",
+      "unavailable": "At least three active tracks are required. Please contact the organizers."
     },
     "fields": {
       "teamName": "Team name",
@@ -482,6 +505,7 @@
       "announcements": "Announcements",
       "users": "Users",
       "teams": "Teams",
+      "roundOneCvScreening": "CV Screening Round 1",
       "mail": "Mail",
       "round": "{roundLabel}"
     },
@@ -554,6 +578,23 @@
           "integer": "Enter a whole number of MiB.",
           "range": "Enter a value from 1 to 100 MiB."
         }
+      },
+      "preferences": {
+        "title": "Round 1 track settings",
+        "description": "Configure the tracks available for participant rankings. At least three tracks must remain active.",
+        "active": "Active",
+        "inactive": "Inactive",
+        "save": "Save name",
+        "activate": "Activate",
+        "deactivate": "Deactivate",
+        "moveUp": "Move track up",
+        "moveDown": "Move track down",
+        "newLabel": "New track",
+        "newPlaceholder": "Enter the exact track name",
+        "add": "Add track",
+        "success": "Round 1 track settings updated.",
+        "error": "Could not update the track settings. Check for duplicate names and keep at least three active tracks.",
+        "loadError": "Could not load Round 1 track settings."
       }
     },
     "announcements": {
@@ -606,6 +647,42 @@
       "description": "Review every account registered with MASC.",
       "emptyTitle": "No users found",
       "emptyDescription": "User accounts will appear here after registration."
+    },
+    "screening": {
+      "title": "CV Screening Round 1",
+      "description": "Review Round 1 CV applications, participant preferences, and manually assign a submitted track.",
+      "summaryLabel": "CV screening summary",
+      "stats": {
+        "waitingForPreferences": "Waiting for preferences",
+        "pendingScreening": "Pending screening",
+        "assignedTeams": "Teams assigned"
+      },
+      "trackDistribution": {
+        "title": "Assigned track distribution",
+        "description": "Share of assigned teams across active Round 1 tracks.",
+        "ariaLabel": "Assigned track distribution. {summary}",
+        "teamCount": "{count, plural, =0 {0 teams} =1 {1 team} other {# teams}}",
+        "zeroAssignments": "No teams have been assigned yet. Active tracks are displayed equally.",
+        "unavailable": "Track distribution is unavailable because no active tracks are configured."
+      },
+      "previewTitle": "CV preview — {name}",
+      "previewFrameTitle": "Preview of {filename}",
+      "actions": "Decision / assignment",
+      "selectTrack": "Select an assigned track",
+      "assign": "Assign track",
+      "reassign": "Change assignment",
+      "waitingPreferences": "Waiting for the captain to submit preferences.",
+      "finalDecision": "Final decision",
+      "approveTitle": "Approve and assign this team?",
+      "approveDescription": "Approve {team}, assign the selected track, and queue an approval email.",
+      "rejectTitle": "Reject this team?",
+      "rejectDescription": "Reject {team} and queue a rejection email. This decision is final.",
+      "decisionSuccess": "The screening decision was saved.",
+      "assignmentSuccess": "The assigned track was saved.",
+      "conflict": "This team changed while you were working. The latest data has been loaded.",
+      "loadError": "Could not load the Round 1 screening queue.",
+      "emptyTitle": "No teams are ready for screening",
+      "emptyDescription": "CV applications and promoted teams with submitted preferences will appear here."
     },
     "teams": {
       "title": "Teams",
@@ -809,12 +886,16 @@
       "originalSubmission": "First submitted",
       "fileType": "File type",
       "description": "Question for the Organizing Committee",
-      "awarenessSource": "How they heard about MASC"
+      "awarenessSource": "How they heard about MASC",
+      "preferenceStatus": "Preference status",
+      "preferences": "Preferences",
+      "assignedTrack": "Assigned track"
     },
     "values": {
       "verified": "Verified",
       "unverified": "Unverified",
       "notProvided": "Not provided",
+      "notApplicable": "Not applicable",
       "noQuestionProvided": "No question provided",
       "captain": "Captain",
       "memberCount": "{count} / {required}",
@@ -829,6 +910,11 @@
         "pending": "Pending review",
         "approved": "Approved",
         "rejected": "Rejected"
+      },
+      "preferenceStatus": {
+        "not_submitted": "Not submitted",
+        "submitted": "Submitted",
+        "assigned": "Assigned"
       }
     },
     "actions": {

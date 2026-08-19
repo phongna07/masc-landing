@@ -260,6 +260,7 @@
       "closedDescription": "Ban Tổ chức hiện chưa nhận hồ sơ đăng ký cho vòng này.",
       "eligibilityDescription": "{roundLabel} chỉ dành cho các đội đủ điều kiện được quản trị viên lựa chọn.",
       "roundOneAlternative": "Vòng 1 sử dụng hồ sơ sàng lọc CV riêng. Đội của bạn vẫn có thể đăng ký tại đây ngay cả khi đã tham gia Vòng Sơ loại.",
+      "preferenceReminder": "Vui lòng đăng ký track mong muốn cho Vòng 1.",
       "emptyTitle": "Hiện chưa có vòng thi nào khả dụng",
       "emptyDescription": "Các vòng đội đã đăng ký và những vòng đang mở hồ sơ sẽ xuất hiện tại đây khi khả dụng.",
       "announcementsTitle": "Cập nhật cuộc thi",
@@ -332,6 +333,28 @@
       },
       "submitNote": "Vui lòng kiểm tra lại các thông tin trước khi hoàn tất đăng ký.",
       "sectionLabel": "Biểu mẫu đăng ký đội thi"
+    },
+    "preferences": {
+      "section": "Đăng ký track mong muốn",
+      "title": "Đăng ký track mong muốn",
+      "description": "Xếp hạng ba track Vòng 1 khác nhau theo thứ tự ưu tiên. Thứ tự không thể thay đổi sau khi gửi.",
+      "rank": "Nguyện vọng {rank}",
+      "selectPlaceholder": "Chọn một track",
+      "validation": "Hãy chọn ba track khác nhau theo thứ tự ưu tiên.",
+      "status": {
+        "not_submitted": "Chưa gửi",
+        "submitted": "Đã gửi",
+        "assigned": "Đã chỉ định"
+      },
+      "submit": "Gửi nguyện vọng",
+      "submitting": "Đang gửi…",
+      "submitSuccess": "Đã gửi nguyện vọng Vòng 1 của đội.",
+      "submitError": "Không thể gửi nguyện vọng. Vui lòng thử lại.",
+      "alreadySubmitted": "Đội đã gửi nguyện vọng trước đó.",
+      "captainRequired": "Đội trưởng cần gửi nguyện vọng track cho đội.",
+      "waitingAssignment": "Ban Tổ chức đã nhận nguyện vọng và sẽ chỉ định track cho đội.",
+      "assignedTrack": "Track được chỉ định",
+      "unavailable": "Hệ thống cần ít nhất ba track đang hoạt động. Vui lòng liên hệ Ban Tổ chức."
     },
     "fields": {
       "teamName": "Tên đội",
@@ -482,6 +505,7 @@
       "announcements": "Thông báo",
       "users": "Người dùng",
       "teams": "Đội thi",
+      "roundOneCvScreening": "Sàng lọc CV Vòng 1",
       "mail": "Thư",
       "round": "{roundLabel}"
     },
@@ -554,6 +578,23 @@
           "integer": "Vui lòng nhập số MiB nguyên.",
           "range": "Vui lòng nhập giá trị từ 1 đến 100 MiB."
         }
+      },
+      "preferences": {
+        "title": "Cài đặt track Vòng 1",
+        "description": "Cấu hình các track để thí sinh xếp hạng nguyện vọng. Luôn phải có ít nhất ba track đang hoạt động.",
+        "active": "Đang hoạt động",
+        "inactive": "Ngừng hoạt động",
+        "save": "Lưu tên",
+        "activate": "Kích hoạt",
+        "deactivate": "Ngừng kích hoạt",
+        "moveUp": "Đưa track lên",
+        "moveDown": "Đưa track xuống",
+        "newLabel": "Track mới",
+        "newPlaceholder": "Nhập chính xác tên track",
+        "add": "Thêm track",
+        "success": "Đã cập nhật cài đặt track Vòng 1.",
+        "error": "Không thể cập nhật track. Hãy kiểm tra tên bị trùng và duy trì ít nhất ba track hoạt động.",
+        "loadError": "Không thể tải cài đặt track Vòng 1."
       }
     },
     "announcements": {
@@ -606,6 +647,42 @@
       "description": "Xem tất cả tài khoản đã đăng ký với MASC.",
       "emptyTitle": "Chưa có người dùng",
       "emptyDescription": "Tài khoản người dùng sẽ xuất hiện tại đây sau khi đăng ký."
+    },
+    "screening": {
+      "title": "Sàng lọc CV Vòng 1",
+      "description": "Xét duyệt hồ sơ CV Vòng 1, nguyện vọng và chỉ định thủ công một track đội đã lựa chọn.",
+      "summaryLabel": "Tổng quan sàng lọc CV",
+      "stats": {
+        "waitingForPreferences": "Chờ gửi nguyện vọng",
+        "pendingScreening": "Chờ sàng lọc",
+        "assignedTeams": "Đội đã được chỉ định"
+      },
+      "trackDistribution": {
+        "title": "Phân bổ track đã chỉ định",
+        "description": "Tỷ lệ đội được chỉ định vào các track Vòng 1 đang hoạt động.",
+        "ariaLabel": "Phân bổ track đã chỉ định. {summary}",
+        "teamCount": "{count} đội",
+        "zeroAssignments": "Chưa có đội nào được chỉ định. Các track đang hoạt động được hiển thị với tỷ lệ bằng nhau.",
+        "unavailable": "Không thể hiển thị phân bổ track vì chưa có track nào đang hoạt động."
+      },
+      "previewTitle": "Xem trước CV — {name}",
+      "previewFrameTitle": "Bản xem trước {filename}",
+      "actions": "Quyết định / chỉ định",
+      "selectTrack": "Chỉ định track",
+      "assign": "Chỉ định track",
+      "reassign": "Đổi track",
+      "waitingPreferences": "Đang chờ đội trưởng gửi nguyện vọng.",
+      "finalDecision": "Quyết định cuối cùng",
+      "approveTitle": "Phê duyệt và chỉ định đội này?",
+      "approveDescription": "Phê duyệt đội {team}, chỉ định track đã chọn và đưa email thông báo vào hàng chờ.",
+      "rejectTitle": "Từ chối đội này?",
+      "rejectDescription": "Từ chối đội {team} và đưa email thông báo vào hàng chờ. Quyết định này là cuối cùng.",
+      "decisionSuccess": "Đã lưu kết quả sàng lọc.",
+      "assignmentSuccess": "Đã lưu track được chỉ định.",
+      "conflict": "Dữ liệu đội đã thay đổi. Hệ thống đã tải thông tin mới nhất.",
+      "loadError": "Không thể tải danh sách sàng lọc Vòng 1.",
+      "emptyTitle": "Chưa có đội sẵn sàng sàng lọc",
+      "emptyDescription": "Hồ sơ CV và đội được thăng hạng đã gửi nguyện vọng sẽ xuất hiện tại đây."
     },
     "teams": {
       "title": "Đội thi",
@@ -809,12 +886,16 @@
       "originalSubmission": "Nộp lần đầu",
       "fileType": "Loại tệp",
       "description": "Câu hỏi dành cho Ban Tổ chức",
-      "awarenessSource": "Nguồn biết đến MASC"
+      "awarenessSource": "Nguồn biết đến MASC",
+      "preferenceStatus": "Trạng thái nguyện vọng",
+      "preferences": "Nguyện vọng",
+      "assignedTrack": "Track được chỉ định"
     },
     "values": {
       "verified": "Đã xác minh",
       "unverified": "Chưa xác minh",
       "notProvided": "Chưa cung cấp",
+      "notApplicable": "Không áp dụng",
       "noQuestionProvided": "Không có câu hỏi nào",
       "captain": "Đội trưởng",
       "memberCount": "{count} / {required}",
@@ -829,6 +910,11 @@
         "pending": "Chờ xét duyệt",
         "approved": "Đã duyệt",
         "rejected": "Bị từ chối"
+      },
+      "preferenceStatus": {
+        "not_submitted": "Chưa gửi",
+        "submitted": "Đã gửi",
+        "assigned": "Đã chỉ định"
       }
     },
     "actions": {
