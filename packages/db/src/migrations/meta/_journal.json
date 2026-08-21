@@ -43,6 +43,13 @@
       "when": 1787111871035,
       "tag": "0005_living_stryfe",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1787307767181,
+      "tag": "0006_gray_vin_gonzales",
+      "breakpoints": true
     }
   ]
 }

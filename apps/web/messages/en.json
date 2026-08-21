@@ -261,6 +261,10 @@
       "eligibilityDescription": "{roundLabel} is available only after an administrator promotes an eligible team.",
       "roundOneAlternative": "Round 1 uses a separate CV-screening application. You can apply here even if your team already entered Preliminary Round.",
       "preferenceReminder": "Please register for your desired track for Round 1.",
+      "elimination": {
+        "roundHalf": "Your team is not qualified to go to the next round, but you can still apply to Round 1 through CVs Screening.",
+        "default": "Your team is not qualified to go to the next round."
+      },
       "emptyTitle": "No rounds are available right now",
       "emptyDescription": "Your registered rounds and any open application routes will appear here when they become available.",
       "announcementsTitle": "Competition updates",
@@ -700,6 +704,25 @@
       "exportingExcel": "Exporting…",
       "exportSuccess": "Exported {count} teams.",
       "exportError": "The Excel file could not be created. Please try again.",
+      "elimination": {
+        "button": "Mark as eliminated",
+        "mark": "Mark {count, plural, =1 {# team} other {# teams}} as eliminated",
+        "restore": "Mark {count, plural, =1 {# team} other {# teams}} as not eliminated",
+        "markSuccess": "Marked {count, plural, =1 {# team} other {# teams}} as eliminated.",
+        "restoreSuccess": "Marked {count, plural, =1 {# team} other {# teams}} as not eliminated.",
+        "error": "The elimination value could not be updated. Reload the teams and try again.",
+        "promotionBlocked": "Eliminated teams cannot be promoted. Mark them as not eliminated first.",
+        "markConfirmation": {
+          "title": "Mark selected teams as eliminated?",
+          "description": "Set Is Eliminated to True for {count, plural, =1 {the selected team} other {the # selected teams}}.",
+          "confirm": "Mark {count, plural, =1 {team} other {# teams}} eliminated"
+        },
+        "restoreConfirmation": {
+          "title": "Mark selected teams as not eliminated?",
+          "description": "Set Is Eliminated to False for {count, plural, =1 {the selected team} other {the # selected teams}}.",
+          "confirm": "Restore {count, plural, =1 {team} other {# teams}}"
+        }
+      },
       "promoteSelected": "Promote {count} to {roundLabel}",
       "promoteTo": "Promote to {roundLabel}",
       "promotionConfirmation": {
@@ -889,7 +912,8 @@
       "awarenessSource": "How they heard about MASC",
       "preferenceStatus": "Preference status",
       "preferences": "Preferences",
-      "assignedTrack": "Assigned track"
+      "assignedTrack": "Assigned track",
+      "isEliminated": "Is Eliminated"
     },
     "values": {
       "verified": "Verified",
@@ -910,6 +934,10 @@
         "pending": "Pending review",
         "approved": "Approved",
         "rejected": "Rejected"
+      },
+      "boolean": {
+        "true": "True",
+        "false": "False"
       },
       "preferenceStatus": {
         "not_submitted": "Not submitted",

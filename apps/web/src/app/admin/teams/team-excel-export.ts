@@ -46,6 +46,10 @@ function textCell(value: string | null | undefined): Cell {
   return value ? { value, type: String } : null;
 }
 
+function booleanCell(value: boolean): Cell {
+  return { value, type: Boolean };
+}
+
 function dateCell(value: string | Date, format: string): Cell {
   const date = new Date(value);
   return Number.isNaN(date.getTime()) ? null : { value: date, type: Date, format };
@@ -74,12 +78,12 @@ function localDateStamp(date = new Date()) {
 export async function exportTeamsToExcel(round: RoundId, teams: ExportTeams) {
   const memberSlots = Math.max(TEAM_SIZE, ...teams.map((team) => team.members.length));
   const headers = [
-    "Team ID", "Team Name", "Round", "Registration Status", "Registered At", "Admission Method",
+    "Team ID", "Team Name", "Round", "Registration Status", "Is Eliminated", "Registered At", "Admission Method",
     "Source Round", "Source Team ID", "Source Team Name", "Captain Phone", "Awareness Source",
     "Awareness Source Detail",
   ];
   const columns = [
-    { width: 38 }, { width: 28 }, { width: 10 }, { width: 20 }, { width: 22 }, { width: 26 },
+    { width: 38 }, { width: 28 }, { width: 10 }, { width: 20 }, { width: 16 }, { width: 22 }, { width: 26 },
     { width: 12 }, { width: 38 }, { width: 28 }, { width: 18 }, { width: 30 }, { width: 36 },
   ];
   if (round === "1") {
@@ -100,6 +104,7 @@ export async function exportTeamsToExcel(round: RoundId, teams: ExportTeams) {
         textCell(team.name),
         textCell(round),
         textCell(statusLabels[team.status]),
+        booleanCell(team.isEliminated),
         dateCell(team.createdAt, "yyyy-mm-dd hh:mm"),
         textCell(admissionMethodLabels[team.admissionMethod]),
         textCell(team.sourceRound),

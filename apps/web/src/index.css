@@ -352,6 +352,12 @@ dialog[open]::backdrop {
   background: rgba(210, 166, 108, 0.08);
 }
 
+.round-entry-submission-status-eliminated {
+  border-color: rgba(248, 113, 113, 0.36);
+  color: #fca5a5;
+  background: rgba(239, 68, 68, 0.09);
+}
+
 .round-entry-submission-status svg {
   width: 18px;
   height: 18px;
@@ -1624,6 +1630,14 @@ dialog[open]::backdrop {
   transform: translateY(-1px);
 }
 
+.admin-promotion-blocked {
+  align-self: center;
+  max-width: 360px;
+  color: #fca5a5;
+  font-size: 12px;
+  line-height: 1.45;
+}
+
 .admin-promotion-button:focus-visible {
   border-color: #d1c9ff;
   box-shadow: 0 0 0 3px rgba(123, 102, 255, .32), 0 8px 24px rgba(82, 58, 214, .24);
@@ -2775,6 +2789,25 @@ dialog[open]::backdrop {
   margin-top: 4px;
   color: var(--muted);
   font-size: 13px;
+}
+
+.elimination-badge {
+  display: inline-flex !important;
+  width: fit-content;
+  padding: 5px 8px;
+  border: 1px solid rgba(255, 255, 255, .18);
+  color: var(--muted);
+  background: rgba(255, 255, 255, .04);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.elimination-badge[data-eliminated="true"] {
+  border-color: rgba(248, 113, 113, .36);
+  color: #fca5a5;
+  background: rgba(239, 68, 68, .09);
 }
 
 .admin-badge {

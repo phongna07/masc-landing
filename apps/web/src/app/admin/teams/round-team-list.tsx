@@ -6,8 +6,14 @@ import { awarenessSources } from "@masc-landing/api/registration-schema";
 import { Button } from "@masc-landing/ui/components/button";
 import { Card, CardContent } from "@masc-landing/ui/components/card";
 import { ConfirmationDialog } from "@masc-landing/ui/components/confirmation-dialog";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@masc-landing/ui/components/dropdown-menu";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { ArrowUpRightIcon, ChevronRightIcon, FileSpreadsheetIcon } from "lucide-react";
+import { ArrowUpRightIcon, BanIcon, ChevronDownIcon, ChevronRightIcon, FileSpreadsheetIcon, RotateCcwIcon } from "lucide-react";
 import Link from "next/link";
 import type { Route } from "next";
 import { useLocale, useTranslations } from "next-intl";
@@ -25,6 +31,7 @@ export default function RoundTeamList({ round }: { round: RoundId }) {
   const t = useTranslations("Admin"); const locale = useLocale();
   const roundLabel = useRoundLabel();
   const [selected, setSelected] = useState<string[]>([]);
+  const [eliminationTarget, setEliminationTarget] = useState<boolean | null>(null);
   const [statusFilter, setStatusFilter] = useState<"all" | "pending" | "approved" | "rejected">("all");
   const [isExporting, setIsExporting] = useState(false);
   const teams = useQuery(trpc.admin.listTeams.queryOptions({ round }));
@@ -39,6 +46,19 @@ export default function RoundTeamList({ round }: { round: RoundId }) {
     await Promise.all([queryClient.invalidateQueries({ queryKey: trpc.admin.listTeams.queryKey({ round }) }),
       ...targets[round].map((targetRound) => queryClient.invalidateQueries({ queryKey: trpc.admin.listTeams.queryKey({ round: targetRound }) }))]);
   }, onError: () => toast.error(t("teams.promotionError")) }));
+  const setEliminated = useMutation(trpc.admin.setTeamsEliminated.mutationOptions({
+    onSuccess: async ({ updatedCount, isEliminated }, variables) => {
+      toast.success(t(isEliminated ? "teams.elimination.markSuccess" : "teams.elimination.restoreSuccess", { count: updatedCount }));
+      setSelected([]);
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: trpc.admin.listTeams.queryKey({ round }) }),
+        ...variables.teamIds.map((teamId) => queryClient.invalidateQueries({
+          queryKey: trpc.admin.getTeam.queryKey({ round, teamId }),
+        })),
+      ]);
+    },
+    onError: () => toast.error(t("teams.elimination.error")),
+  }));
   const visibleTeams = teams.data?.filter((team) => statusFilter === "all" || team.status === statusFilter) ?? [];
   const showAwarenessSource = round === "0.5" && (teams.data?.some((team) => team.awarenessSource !== null) ?? false);
   const awarenessSourceCounts = stats.data?.awarenessSourceCounts;
@@ -49,6 +69,8 @@ export default function RoundTeamList({ round }: { round: RoundId }) {
     }))
     : [];
   const approvedIds = visibleTeams.filter((team) => team.status === "approved").map((team) => team.id);
+  const selectedTeams = teams.data?.filter((team) => selected.includes(team.id)) ?? [];
+  const hasEliminatedSelection = selectedTeams.some((team) => team.isEliminated);
   const toggleAll = () => setSelected(selected.length === approvedIds.length ? [] : approvedIds);
   const runPromotion = (targetRound: RoundId) => {
     if (!selected.length) return;
@@ -72,6 +94,10 @@ export default function RoundTeamList({ round }: { round: RoundId }) {
       setIsExporting(false);
     }
   };
+  const runEliminationUpdate = () => {
+    if (!selected.length || eliminationTarget === null) return;
+    setEliminated.mutate({ round, teamIds: selected, isEliminated: eliminationTarget });
+  };
   return <><Link className="admin-back-link" href="/admin/teams">← {t("teams.backToRounds")}</Link>
     <AdminHeading eyebrow={t("eyebrow")} title={t("teams.roundTitle", { roundLabel: roundLabel(round) })} description={t("teams.roundDescription", { roundLabel: roundLabel(round) })} />
     <AdminMetrics label={t("stats.label")} isPending={stats.isPending} isError={stats.isError} errorLabel={t("stats.error")}
@@ -87,10 +113,26 @@ export default function RoundTeamList({ round }: { round: RoundId }) {
           variant="outline" onClick={runExport}>
           <FileSpreadsheetIcon />{isExporting ? t("teams.exportingExcel") : t("teams.exportExcel")}
         </Button>
+        <DropdownMenu>
+          <DropdownMenuTrigger render={<Button aria-busy={setEliminated.isPending}
+            disabled={!selected.length || setEliminated.isPending} variant="outline" />}>
+            <BanIcon />{t("teams.elimination.button")}<ChevronDownIcon />
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="start">
+            <DropdownMenuItem onClick={() => setEliminationTarget(true)} variant="destructive">
+              <BanIcon />{t("teams.elimination.mark", { count: selected.length })}
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => setEliminationTarget(false)}>
+              <RotateCcwIcon />{t("teams.elimination.restore", { count: selected.length })}
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
         {targets[round].map((targetRound) => <ConfirmationDialog
           key={targetRound}
           trigger={<Button aria-busy={promote.isPending} className="admin-promotion-button"
-            disabled={!selected.length || promote.isPending}>
+            disabled={!selected.length || promote.isPending || hasEliminatedSelection}
+            aria-describedby={hasEliminatedSelection ? "promotion-elimination-blocked" : undefined}
+            title={hasEliminatedSelection ? t("teams.elimination.promotionBlocked") : undefined}>
             <ArrowUpRightIcon />{t("teams.promoteSelected", { roundLabel: roundLabel(targetRound), count: selected.length })}</Button>}
           title={t("teams.promotionConfirmation.title", { count: selected.length, roundLabel: roundLabel(targetRound) })}
           description={t("teams.promotionConfirmation.description", { count: selected.length, roundLabel: roundLabel(targetRound) })}
@@ -99,6 +141,10 @@ export default function RoundTeamList({ round }: { round: RoundId }) {
           icon={<ArrowUpRightIcon />}
           onConfirm={() => runPromotion(targetRound)}
         />)}
+        {hasEliminatedSelection && targets[round].length > 0 && <span
+          className="admin-promotion-blocked" id="promotion-elimination-blocked" role="status">
+          {t("teams.elimination.promotionBlocked")}
+        </span>}
       </div>
       <div className="admin-status-actions admin-status-filter" role="group" aria-label={t("teams.statusFilter")}>
         {(["all", "pending", "approved", "rejected"] as const).map((status) => <Button
@@ -116,7 +162,7 @@ export default function RoundTeamList({ round }: { round: RoundId }) {
           {showAwarenessSource && <th>{t("fields.awarenessSource")}</th>}
           {round === "1" && <><th>{t("fields.preferenceStatus")}</th><th>{t("fields.preferences")}</th>
             <th>{t("fields.assignedTrack")}</th></>}
-          <th>{t("fields.status")}</th><th>{t("fields.created")}</th><th /></tr></thead>
+          <th>{t("fields.status")}</th><th>{t("fields.isEliminated")}</th><th>{t("fields.created")}</th><th /></tr></thead>
         <tbody>{visibleTeams.map((team) => {
           const awarenessSource = team.awarenessSource
             ? `${t(`values.awarenessSource.${team.awarenessSource}`)}${team.awarenessSourceDetail ? ` — ${team.awarenessSourceDetail}` : ""}`
@@ -131,9 +177,28 @@ export default function RoundTeamList({ round }: { round: RoundId }) {
               <td>{team.preferences.length ? <ol className="admin-preference-list">{team.preferences.map((preference) =>
                 <li key={preference.id}>{preference.name}</li>)}</ol> : "—"}</td>
               <td>{team.assignedTrack?.name ?? "—"}</td></>}
-            <td><span className={`status-badge status-${team.status}`}>{t(`values.status.${team.status}`)}</span></td><td>{formatDate(team.createdAt, locale)}</td>
+            <td><span className={`status-badge status-${team.status}`}>{t(`values.status.${team.status}`)}</span></td>
+            <td><span className="elimination-badge" data-eliminated={team.isEliminated}>
+              {t(`values.boolean.${team.isEliminated}`)}</span></td><td>{formatDate(team.createdAt, locale)}</td>
             <td><Link className="admin-view-link" href={`/admin/teams/round-${round}/${team.id}` as Route}><ChevronRightIcon /></Link></td></tr>;
         })}</tbody>
       </table></CardContent></Card>}
+    <ConfirmationDialog
+      open={eliminationTarget !== null}
+      onOpenChange={(open) => { if (!open) setEliminationTarget(null); }}
+      title={eliminationTarget
+        ? t("teams.elimination.markConfirmation.title", { count: selected.length })
+        : t("teams.elimination.restoreConfirmation.title", { count: selected.length })}
+      description={eliminationTarget
+        ? t("teams.elimination.markConfirmation.description", { count: selected.length })
+        : t("teams.elimination.restoreConfirmation.description", { count: selected.length })}
+      confirmLabel={eliminationTarget
+        ? t("teams.elimination.markConfirmation.confirm", { count: selected.length })
+        : t("teams.elimination.restoreConfirmation.confirm", { count: selected.length })}
+      cancelLabel={t("actions.cancel")}
+      icon={eliminationTarget ? <BanIcon /> : <RotateCcwIcon />}
+      tone={eliminationTarget ? "destructive" : "success"}
+      onConfirm={runEliminationUpdate}
+    />
   </>;
 }
