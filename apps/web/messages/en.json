@@ -710,16 +710,18 @@
         "restore": "Mark {count, plural, =1 {# team} other {# teams}} as not eliminated",
         "markSuccess": "Marked {count, plural, =1 {# team} other {# teams}} as eliminated.",
         "restoreSuccess": "Marked {count, plural, =1 {# team} other {# teams}} as not eliminated.",
+        "mailQueued": "{count, plural, =0 {No new emails were queued.} one {# result email was added to the Mail queue.} other {# result emails were added to the Mail queue.}}",
+        "mailRemoved": "{count, plural, =0 {No unsent emails were removed.} one {# unsent elimination email was removed.} other {# unsent elimination emails were removed.}}",
         "error": "The elimination value could not be updated. Reload the teams and try again.",
         "promotionBlocked": "Eliminated teams cannot be promoted. Mark them as not eliminated first.",
         "markConfirmation": {
           "title": "Mark selected teams as eliminated?",
-          "description": "Set Is Eliminated to True for {count, plural, =1 {the selected team} other {the # selected teams}}.",
+          "description": "Set Is Eliminated to True for {count, plural, =1 {the selected team} other {the # selected teams}}. One pending result email per newly eliminated team will be added to the Mail queue and will not be sent automatically.",
           "confirm": "Mark {count, plural, =1 {team} other {# teams}} eliminated"
         },
         "restoreConfirmation": {
           "title": "Mark selected teams as not eliminated?",
-          "description": "Set Is Eliminated to False for {count, plural, =1 {the selected team} other {the # selected teams}}.",
+          "description": "Set Is Eliminated to False for {count, plural, =1 {the selected team} other {the # selected teams}}. Pending or failed elimination emails for the selected teams will be removed.",
           "confirm": "Restore {count, plural, =1 {team} other {# teams}}"
         }
       },
