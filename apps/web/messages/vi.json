@@ -710,16 +710,18 @@
         "restore": "Đánh dấu {count} đội là chưa bị loại",
         "markSuccess": "Đã đánh dấu {count} đội là bị loại.",
         "restoreSuccess": "Đã đánh dấu {count} đội là chưa bị loại.",
+        "mailQueued": "{count, plural, =0 {Không có email mới nào được thêm vào hàng chờ.} other {Đã thêm # email kết quả vào hàng chờ Thư.}}",
+        "mailRemoved": "{count, plural, =0 {Không có email chưa gửi nào bị xóa.} other {Đã xóa # email thông báo bị loại chưa gửi.}}",
         "error": "Không thể cập nhật trạng thái bị loại. Vui lòng tải lại danh sách đội và thử lại.",
         "promotionBlocked": "Không thể thăng hạng đội đã bị loại. Hãy đánh dấu đội là chưa bị loại trước.",
         "markConfirmation": {
           "title": "Đánh dấu các đội đã chọn là bị loại?",
-          "description": "Đặt cột Đã bị loại thành Có cho {count} đội đã chọn.",
+          "description": "Đặt cột Đã bị loại thành Có cho {count} đội đã chọn. Mỗi đội mới bị loại sẽ có một email kết quả được thêm vào hàng chờ Thư và email sẽ không được gửi tự động.",
           "confirm": "Đánh dấu {count} đội bị loại"
         },
         "restoreConfirmation": {
           "title": "Đánh dấu các đội đã chọn là chưa bị loại?",
-          "description": "Đặt cột Đã bị loại thành Không cho {count} đội đã chọn.",
+          "description": "Đặt cột Đã bị loại thành Không cho {count} đội đã chọn. Các email thông báo bị loại đang chờ hoặc gửi thất bại của những đội này sẽ bị xóa.",
           "confirm": "Khôi phục {count} đội"
         }
       },

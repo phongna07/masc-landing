@@ -20,6 +20,7 @@ import {
   teamRegistrationRejectedEvent,
   teamRegistrationRejectedSubject,
 } from "../email/team-registration-rejected";
+import { renderTeamEliminated, teamEliminatedEvent } from "../email/team-eliminated";
 import { sendMail } from "../email/send-mail";
 import { renderTeamRoundPromotion, teamRoundPromotionEvent } from "../email/team-round-promotion";
 import { getAdmissionSettings } from "../admission-settings";
@@ -721,7 +722,23 @@ export const adminRouter = router({
     if (new Set(input.teamIds).size !== input.teamIds.length) {
       throw new TRPCError({ code: "BAD_REQUEST", message: "DUPLICATE_TEAM_IDS" });
     }
-    const { team } = registrationTables(input.round);
+    const { team, member } = registrationTables(input.round);
+    const selectedTeams = await db.select({ id: team.id, name: team.teamName,
+      status: team.registrationStatus, captainId: member.id, captainName: member.fullName,
+      captainEmail: member.email }).from(team).innerJoin(member, and(
+        eq(member.teamId, team.id), eq(member.isCaptain, true),
+      )).where(inArray(team.id, input.teamIds));
+    if (selectedTeams.length !== input.teamIds.length
+      || selectedTeams.some((selectedTeam) => selectedTeam.status !== "approved")) {
+      throw new TRPCError({ code: "CONFLICT", message: "TEAMS_NOT_ELIGIBLE_FOR_ELIMINATION_UPDATE" });
+    }
+    const queueRecords = selectedTeams.map((selectedTeam) => {
+      const content = renderTeamEliminated(selectedTeam.name, input.round);
+      return { id: crypto.randomUUID(), from_address: mailSender, to_address: selectedTeam.captainEmail,
+        cc: [] as string[], subject: content.subject, text: content.text, html: content.html,
+        event_type: teamEliminatedEvent, round: input.round, team_id: selectedTeam.id,
+        member_id: selectedTeam.captainId, team_name: selectedTeam.name, member_name: selectedTeam.captainName };
+    });
     const update = await db.execute(sql`
       with requested as (
         select requested_id.value as id
@@ -736,19 +753,54 @@ export const adminRouter = router({
         set "is_eliminated" = ${input.isEliminated}
         where ${team.id} in (select eligible.id from eligible)
           and (select count(*) from eligible) = (select count(*) from requested)
+          and ${team.isEliminated} <> ${input.isEliminated}
         returning ${team.id}
+      ), removed as (
+        delete from ${emailQueue}
+        where ${input.isEliminated} = false
+          and ${emailQueue.teamId} in (select eligible.id from eligible)
+          and ${emailQueue.round} = ${input.round}
+          and ${emailQueue.eventType} = ${teamEliminatedEvent}
+          and ${emailQueue.status} in ('pending', 'failed')
+          and (select count(*) from eligible) = (select count(*) from requested)
+        returning ${emailQueue.id}
+      ), mail_items as (
+        select item.*
+        from jsonb_to_recordset(${JSON.stringify(queueRecords)}::jsonb) as item(
+          id text, from_address text, to_address text, cc text[], subject text, text text, html text,
+          event_type text, round text, team_id text, member_id text, team_name text, member_name text
+        )
+      ), queued as (
+        insert into ${emailQueue} (id, from_address, to_address, cc, subject, text, html, status, event_type,
+          round, team_id, member_id, team_name, member_name, approval_sequence, attempt_count, created_at, updated_at)
+        select item.id, item.from_address, item.to_address, item.cc, item.subject, item.text, item.html, 'pending',
+          item.event_type, item.round::competition_round, item.team_id, item.member_id, item.team_name,
+          item.member_name, coalesce((
+            select max(existing_mail."approval_sequence")
+            from ${emailQueue} as existing_mail
+            where existing_mail."round" = item.round::competition_round
+              and existing_mail."team_id" = item.team_id
+              and existing_mail."event_type" = item.event_type
+          ), 0) + 1, 0, now(), now()
+        from updated
+        inner join mail_items as item on item.team_id = updated.id
+        where ${input.isEliminated} = true
+        returning id
       )
       select
         (select count(*)::integer from requested) as requested_count,
         (select count(*)::integer from eligible) as eligible_count,
-        (select count(*)::integer from updated) as updated_count
+        (select count(*)::integer from updated) as changed_count,
+        (select count(*)::integer from queued) as queued_mail_count,
+        (select count(*)::integer from removed) as removed_mail_count
     `);
-    const result = update.rows[0] as { requested_count: number; eligible_count: number; updated_count: number } | undefined;
-    if (!result || Number(result.eligible_count) !== input.teamIds.length
-      || Number(result.updated_count) !== input.teamIds.length) {
+    const result = update.rows[0] as { requested_count: number; eligible_count: number; changed_count: number;
+      queued_mail_count: number; removed_mail_count: number } | undefined;
+    if (!result || Number(result.eligible_count) !== input.teamIds.length) {
       throw new TRPCError({ code: "CONFLICT", message: "TEAMS_NOT_ELIGIBLE_FOR_ELIMINATION_UPDATE" });
     }
-    return { updatedCount: Number(result.updated_count), isEliminated: input.isEliminated };
+    return { updatedCount: Number(result.requested_count), isEliminated: input.isEliminated,
+      queuedMailCount: Number(result.queued_mail_count), removedMailCount: Number(result.removed_mail_count) };
   }),
   promoteTeams: teamsProcedure.input(promotionPairSchema).mutation(async ({ input }) => {
     if (new Set(input.teamIds).size !== input.teamIds.length) {
