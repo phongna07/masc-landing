@@ -54,6 +54,7 @@ export const teams = pgTable(
     registrationStatus: registrationStatus("registration_status")
       .default("pending")
       .notNull(),
+    isEliminated: boolean("is_eliminated").default(false).notNull(),
     approvalSequence: integer("approval_sequence").default(0).notNull(),
     createdAt: timestamp("created_at").defaultNow().notNull(),
     captainId: text("captain_id")
@@ -97,6 +98,7 @@ export const roundOneTeams = pgTable(
     id: text("id").$defaultFn(() => crypto.randomUUID()).primaryKey(),
     teamName: text("team_name").notNull(),
     registrationStatus: registrationStatus("registration_status").default("pending").notNull(),
+    isEliminated: boolean("is_eliminated").default(false).notNull(),
     approvalSequence: integer("approval_sequence").default(0).notNull(),
     createdAt: timestamp("created_at").defaultNow().notNull(),
     captainId: text("captain_id").notNull().references(() => user.id, { onDelete: "restrict" }).unique(),
@@ -179,6 +181,7 @@ export const roundTwoTeams = pgTable(
     id: text("id").$defaultFn(() => crypto.randomUUID()).primaryKey(),
     teamName: text("team_name").notNull(),
     registrationStatus: registrationStatus("registration_status").default("approved").notNull(),
+    isEliminated: boolean("is_eliminated").default(false).notNull(),
     approvalSequence: integer("approval_sequence").default(0).notNull(),
     createdAt: timestamp("created_at").defaultNow().notNull(),
     captainId: text("captain_id").notNull().references(() => user.id, { onDelete: "restrict" }).unique(),
@@ -222,6 +225,7 @@ export const roundThreeTeams = pgTable(
     id: text("id").$defaultFn(() => crypto.randomUUID()).primaryKey(),
     teamName: text("team_name").notNull(),
     registrationStatus: registrationStatus("registration_status").default("approved").notNull(),
+    isEliminated: boolean("is_eliminated").default(false).notNull(),
     approvalSequence: integer("approval_sequence").default(0).notNull(),
     createdAt: timestamp("created_at").defaultNow().notNull(),
     captainId: text("captain_id").notNull().references(() => user.id, { onDelete: "restrict" }).unique(),

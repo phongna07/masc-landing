@@ -69,7 +69,7 @@ export default function RoundTeamDetail({ round, teamId }: { round: RoundId; tea
         tone="destructive"
         onConfirm={() => decide("rejected")}
       />}
-      {team.data.status === "approved" && targets[round].map((targetRound) => <ConfirmationDialog
+      {team.data.status === "approved" && !team.data.isEliminated && targets[round].map((targetRound) => <ConfirmationDialog
         key={targetRound}
         trigger={<Button variant="outline" disabled={promote.isPending}>{t("teams.promoteTo", { roundLabel: roundLabel(targetRound) })}</Button>}
         title={t("teams.promotionConfirmation.title", { count: 1, roundLabel: roundLabel(targetRound) })}
@@ -82,6 +82,7 @@ export default function RoundTeamDetail({ round, teamId }: { round: RoundId; tea
     </div>
     <div className="admin-detail-grid"><Card className="dashboard-card"><CardHeader><CardTitle>{t("detail.registration")}</CardTitle></CardHeader><CardContent className="detail-list">
       <Detail label={t("fields.created")} value={formatDate(team.data.createdAt, locale)} /><Detail label={t("fields.members")} value={t("values.memberCount", { count: team.data.members.length, required: TEAM_SIZE })} />
+      <Detail label={t("fields.isEliminated")} value={t(`values.boolean.${team.data.isEliminated}`)} />
       <Detail label={t("teams.admissionMethod")} value={t(`teams.admissionMethods.${team.data.admissionMethod}`)} />
       {round === "1" && <><Detail label={t("fields.preferenceStatus")} value={team.data.preferenceStatus
         ? t(`values.preferenceStatus.${team.data.preferenceStatus}`) : "—"} />

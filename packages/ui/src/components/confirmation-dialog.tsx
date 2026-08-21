@@ -20,13 +20,15 @@ const confirmToneStyles: Record<ConfirmationDialogTone, string> = {
 };
 
 interface ConfirmationDialogProps {
-  trigger: ReactElement;
+  trigger?: ReactElement;
   title: string;
   description: string;
   confirmLabel: string;
   cancelLabel: string;
   icon?: ReactNode;
   tone?: ConfirmationDialogTone;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
   onConfirm: () => void;
 }
 
@@ -38,13 +40,15 @@ function ConfirmationDialog({
   cancelLabel,
   icon,
   tone = "default",
+  open,
+  onOpenChange,
   onConfirm,
 }: ConfirmationDialogProps) {
   const cancelRef = useRef<HTMLButtonElement>(null);
 
   return (
-    <AlertDialog.Root>
-      <AlertDialog.Trigger render={trigger} />
+    <AlertDialog.Root open={open} onOpenChange={onOpenChange}>
+      {trigger ? <AlertDialog.Trigger render={trigger} /> : null}
       <AlertDialog.Portal>
         <AlertDialog.Backdrop className="fixed inset-0 z-[100] bg-black/75 backdrop-blur-[5px] duration-200 data-closed:animate-out data-closed:fade-out-0 data-open:animate-in data-open:fade-in-0 motion-reduce:animate-none" />
         <AlertDialog.Viewport className="fixed inset-0 z-[101] grid place-items-center overflow-y-auto p-4">

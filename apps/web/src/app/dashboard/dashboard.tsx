@@ -24,8 +24,8 @@ import { Skeleton } from "@masc-landing/ui/components/skeleton";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import type { inferRouterOutputs } from "@trpc/server";
 import {
-  ArrowDownIcon, ArrowRightIcon, CheckCircle2Icon, ChevronDownIcon, ListChecksIcon, MegaphoneIcon, MessageSquareQuoteIcon,
-  RefreshCwIcon, TriangleAlertIcon
+  ArrowDownIcon, ArrowRightIcon, CheckCircle2Icon, ChevronDownIcon, CircleXIcon, ListChecksIcon, MegaphoneIcon,
+  MessageSquareQuoteIcon, RefreshCwIcon, TriangleAlertIcon
 } from "lucide-react";
 import type { Route } from "next";
 import dynamic from "next/dynamic";
@@ -189,6 +189,11 @@ function RoundHub({ memberships, settings, dashboardTabSettings, submissionSetti
         : membership.registered ? t(`status.${membership.team.status}`) : canApply ? t("hub.open")
           : isDirectAdmissionRound ? t("hub.closed") : t("hub.notEligible");
       return <Card className={`dashboard-card round-entry-card round-entry-card-${state}`} key={round}>
+        {membership.registered && membership.team.isEliminated && <div
+          className="round-entry-submission-status round-entry-submission-status-eliminated">
+          <CircleXIcon aria-hidden="true" />
+          <p>{t(round === "0.5" ? "hub.elimination.roundHalf" : "hub.elimination.default")}</p>
+        </div>}
         {needsRoundOnePreferences && <div className="round-entry-submission-status round-entry-submission-status-feedback">
           <ListChecksIcon aria-hidden="true" />
           <p>{t("hub.preferenceReminder")}</p>

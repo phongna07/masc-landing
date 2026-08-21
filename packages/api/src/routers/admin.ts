@@ -45,6 +45,10 @@ const mailProcedure = adminAreaProcedure("mail");
 const roundsProcedure = adminAreaProcedure("rounds");
 const roundOneCvScreeningProcedure = adminAreaProcedure("roundOneCvScreening");
 const roundInput = z.object({ round: roundSchema });
+const teamEliminationInput = roundInput.extend({
+  teamIds: z.array(z.string().trim().min(1).max(128)).min(1).max(100),
+  isEliminated: z.boolean(),
+});
 const submissionInput = roundInput.extend({ submissionId: z.string().trim().min(1).max(128) });
 const pdfExportInput = roundInput.extend({ exportId: z.string().trim().min(1).max(128) });
 const feedbackInput = submissionInput.extend({
@@ -136,6 +140,7 @@ type ExportTeamRow = {
   id: string;
   name: string;
   status: "pending" | "approved" | "rejected";
+  isEliminated: boolean;
   createdAt: Date;
   captainPhone: string;
   awarenessSource: AwarenessSource | null;
@@ -152,6 +157,7 @@ type ExportTeamRow = {
 async function getExportTeamRows(round: RoundId): Promise<ExportTeamRow[]> {
   if (round === "0.5") {
     const rows = await db.select({ id: teams.id, name: teams.teamName, status: teams.registrationStatus,
+      isEliminated: teams.isEliminated,
       createdAt: teams.createdAt, captainPhone: teams.captainPhone, awarenessSource: teams.awarenessSource,
       awarenessSourceDetail: teams.awarenessSourceDetail }).from(teams)
       .orderBy(desc(teams.createdAt), asc(teams.teamName));
@@ -161,7 +167,8 @@ async function getExportTeamRows(round: RoundId): Promise<ExportTeamRow[]> {
 
   if (round === "1") {
     const rows = await db.select({ id: roundOneTeams.id, name: roundOneTeams.teamName,
-      status: roundOneTeams.registrationStatus, createdAt: roundOneTeams.createdAt,
+      status: roundOneTeams.registrationStatus, isEliminated: roundOneTeams.isEliminated,
+      createdAt: roundOneTeams.createdAt,
       captainPhone: roundOneTeams.captainPhone, awarenessSource: roundOneTeams.awarenessSource,
       awarenessSourceDetail: roundOneTeams.awarenessSourceDetail, admissionMethod: roundOneTeams.admissionMethod,
       preferenceStatus: roundOneTeams.preferenceStatus, preferences: roundOneTeams.preferences,
@@ -180,7 +187,8 @@ async function getExportTeamRows(round: RoundId): Promise<ExportTeamRow[]> {
 
   if (round === "2") {
     const rows = await db.select({ id: roundTwoTeams.id, name: roundTwoTeams.teamName,
-      status: roundTwoTeams.registrationStatus, createdAt: roundTwoTeams.createdAt,
+      status: roundTwoTeams.registrationStatus, isEliminated: roundTwoTeams.isEliminated,
+      createdAt: roundTwoTeams.createdAt,
       captainPhone: roundTwoTeams.captainPhone, awarenessSource: roundTwoTeams.awarenessSource,
       awarenessSourceDetail: roundTwoTeams.awarenessSourceDetail,
       sourceRoundHalfTeamId: roundTwoTeams.sourceRoundHalfTeamId,
@@ -204,7 +212,8 @@ async function getExportTeamRows(round: RoundId): Promise<ExportTeamRow[]> {
   }
 
   const rows = await db.select({ id: roundThreeTeams.id, name: roundThreeTeams.teamName,
-    status: roundThreeTeams.registrationStatus, createdAt: roundThreeTeams.createdAt,
+    status: roundThreeTeams.registrationStatus, isEliminated: roundThreeTeams.isEliminated,
+    createdAt: roundThreeTeams.createdAt,
     captainPhone: roundThreeTeams.captainPhone, awarenessSource: roundThreeTeams.awarenessSource,
     awarenessSourceDetail: roundThreeTeams.awarenessSourceDetail,
     sourceTeamId: roundThreeTeams.sourceRoundTwoTeamId, sourceTeamName: roundTwoTeams.teamName })
@@ -219,12 +228,15 @@ async function promoteOne(input: PromotionInput, sourceTeamId: string) {
   const target = registrationTables(input.targetRound);
   const [sourceTeam] = await db.select({ id: source.team.id, name: source.team.teamName,
     status: source.team.registrationStatus, captainId: source.team.captainId,
+    isEliminated: source.team.isEliminated,
     captainPhone: source.team.captainPhone, awarenessSource: source.team.awarenessSource,
     awarenessSourceDetail: source.team.awarenessSourceDetail }).from(source.team)
     .where(eq(source.team.id, sourceTeamId)).limit(1);
   if (!sourceTeam) return { sourceTeamId, success: false as const, reason: "NOT_FOUND" as const, conflictingEmails: [] as string[] };
   if (sourceTeam.status !== "approved") return { sourceTeamId, success: false as const,
     reason: "SOURCE_NOT_APPROVED" as const, conflictingEmails: [] as string[] };
+  if (sourceTeam.isEliminated) return { sourceTeamId, success: false as const,
+    reason: "SOURCE_ELIMINATED" as const, conflictingEmails: [] as string[] };
   const roster = await db.select({ id: source.member.id, fullName: source.member.fullName,
     email: source.member.email, birthdate: source.member.birthdate, universityName: source.member.universityName,
     isCaptain: source.member.isCaptain }).from(source.member).where(eq(source.member.teamId, sourceTeamId))
@@ -527,7 +539,8 @@ export const adminRouter = router({
     const { team, member } = registrationTables(input.round);
     const { captainName, captainEmail } = captainExpressions(team, member);
     const base = await db.select({ id: team.id, name: team.teamName, status: team.registrationStatus,
-      createdAt: team.createdAt, captainName, captainEmail, captainPhone: team.captainPhone,
+      isEliminated: team.isEliminated, createdAt: team.createdAt, captainName, captainEmail,
+      captainPhone: team.captainPhone,
       awarenessSource: team.awarenessSource, awarenessSourceDetail: team.awarenessSourceDetail,
       memberCount: count(member.id) }).from(team).leftJoin(member, eq(team.id, member.teamId))
       .groupBy(team.id).orderBy(desc(team.createdAt), asc(team.teamName));
@@ -594,7 +607,8 @@ export const adminRouter = router({
     const { team: teamTable, member } = registrationTables(input.round);
     const { captainName, captainEmail } = captainExpressions(teamTable, member);
     const [team] = await db.select({ id: teamTable.id, name: teamTable.teamName, status: teamTable.registrationStatus,
-      createdAt: teamTable.createdAt, captainName, captainEmail, captainPhone: teamTable.captainPhone,
+      isEliminated: teamTable.isEliminated, createdAt: teamTable.createdAt, captainName, captainEmail,
+      captainPhone: teamTable.captainPhone,
       awarenessSource: teamTable.awarenessSource, awarenessSourceDetail: teamTable.awarenessSourceDetail })
       .from(teamTable).where(eq(teamTable.id, input.teamId)).limit(1);
     if (!team) throw new TRPCError({ code: "NOT_FOUND", message: "Team not found" });
@@ -659,7 +673,8 @@ export const adminRouter = router({
     const transition = await db.execute(sql`
       with transitioned as (
         update ${team}
-        set "registration_status" = ${input.status}, "approval_sequence" = ${nextSequence}
+        set "registration_status" = ${input.status}, "approval_sequence" = ${nextSequence},
+          "is_eliminated" = ${input.status === "approved" ? team.isEliminated : false}
         where ${team.id} = ${existing.id}
           and ${team.registrationStatus} = ${existing.status}
           and ${team.approvalSequence} = ${existing.approvalSequence}
@@ -701,6 +716,39 @@ export const adminRouter = router({
     if (!result) throw new TRPCError({ code: "CONFLICT", message: "Team status changed while updating" });
     return { id: result.id, status: result.status, queuedMailCount: Number(result.queued_mail_count),
       removedMailCount: Number(result.removed_mail_count) };
+  }),
+  setTeamsEliminated: teamsProcedure.input(teamEliminationInput).mutation(async ({ input }) => {
+    if (new Set(input.teamIds).size !== input.teamIds.length) {
+      throw new TRPCError({ code: "BAD_REQUEST", message: "DUPLICATE_TEAM_IDS" });
+    }
+    const { team } = registrationTables(input.round);
+    const update = await db.execute(sql`
+      with requested as (
+        select requested_id.value as id
+        from jsonb_array_elements_text(${JSON.stringify(input.teamIds)}::jsonb) as requested_id(value)
+      ), eligible as (
+        select ${team.id} as id
+        from ${team}
+        inner join requested on requested.id = ${team.id}
+        where ${team.registrationStatus} = 'approved'
+      ), updated as (
+        update ${team}
+        set "is_eliminated" = ${input.isEliminated}
+        where ${team.id} in (select eligible.id from eligible)
+          and (select count(*) from eligible) = (select count(*) from requested)
+        returning ${team.id}
+      )
+      select
+        (select count(*)::integer from requested) as requested_count,
+        (select count(*)::integer from eligible) as eligible_count,
+        (select count(*)::integer from updated) as updated_count
+    `);
+    const result = update.rows[0] as { requested_count: number; eligible_count: number; updated_count: number } | undefined;
+    if (!result || Number(result.eligible_count) !== input.teamIds.length
+      || Number(result.updated_count) !== input.teamIds.length) {
+      throw new TRPCError({ code: "CONFLICT", message: "TEAMS_NOT_ELIGIBLE_FOR_ELIMINATION_UPDATE" });
+    }
+    return { updatedCount: Number(result.updated_count), isEliminated: input.isEliminated };
   }),
   promoteTeams: teamsProcedure.input(promotionPairSchema).mutation(async ({ input }) => {
     if (new Set(input.teamIds).size !== input.teamIds.length) {

@@ -261,6 +261,10 @@
       "eligibilityDescription": "{roundLabel} chỉ dành cho các đội đủ điều kiện được quản trị viên lựa chọn.",
       "roundOneAlternative": "Vòng 1 sử dụng hồ sơ sàng lọc CV riêng. Đội của bạn vẫn có thể đăng ký tại đây ngay cả khi đã tham gia Vòng Sơ loại.",
       "preferenceReminder": "Vui lòng đăng ký track mong muốn cho Vòng 1.",
+      "elimination": {
+        "roundHalf": "Đội của bạn không đủ điều kiện để bước vào vòng tiếp theo, nhưng vẫn có thể đăng ký Vòng 1 thông qua vòng Sàng lọc CV.",
+        "default": "Đội của bạn không đủ điều kiện để bước vào vòng tiếp theo."
+      },
       "emptyTitle": "Hiện chưa có vòng thi nào khả dụng",
       "emptyDescription": "Các vòng đội đã đăng ký và những vòng đang mở hồ sơ sẽ xuất hiện tại đây khi khả dụng.",
       "announcementsTitle": "Cập nhật cuộc thi",
@@ -700,6 +704,25 @@
       "exportingExcel": "Đang xuất…",
       "exportSuccess": "Đã xuất {count} đội.",
       "exportError": "Không thể tạo tệp Excel. Vui lòng thử lại.",
+      "elimination": {
+        "button": "Đánh dấu bị loại",
+        "mark": "Đánh dấu {count} đội là bị loại",
+        "restore": "Đánh dấu {count} đội là chưa bị loại",
+        "markSuccess": "Đã đánh dấu {count} đội là bị loại.",
+        "restoreSuccess": "Đã đánh dấu {count} đội là chưa bị loại.",
+        "error": "Không thể cập nhật trạng thái bị loại. Vui lòng tải lại danh sách đội và thử lại.",
+        "promotionBlocked": "Không thể thăng hạng đội đã bị loại. Hãy đánh dấu đội là chưa bị loại trước.",
+        "markConfirmation": {
+          "title": "Đánh dấu các đội đã chọn là bị loại?",
+          "description": "Đặt cột Đã bị loại thành Có cho {count} đội đã chọn.",
+          "confirm": "Đánh dấu {count} đội bị loại"
+        },
+        "restoreConfirmation": {
+          "title": "Đánh dấu các đội đã chọn là chưa bị loại?",
+          "description": "Đặt cột Đã bị loại thành Không cho {count} đội đã chọn.",
+          "confirm": "Khôi phục {count} đội"
+        }
+      },
       "promoteSelected": "Chọn {count} đội vào {roundLabel}",
       "promoteTo": "Chọn vào {roundLabel}",
       "promotionConfirmation": {
@@ -889,7 +912,8 @@
       "awarenessSource": "Nguồn biết đến MASC",
       "preferenceStatus": "Trạng thái nguyện vọng",
       "preferences": "Nguyện vọng",
-      "assignedTrack": "Track được chỉ định"
+      "assignedTrack": "Track được chỉ định",
+      "isEliminated": "Đã bị loại"
     },
     "values": {
       "verified": "Đã xác minh",
@@ -910,6 +934,10 @@
         "pending": "Chờ xét duyệt",
         "approved": "Đã duyệt",
         "rejected": "Bị từ chối"
+      },
+      "boolean": {
+        "true": "Có",
+        "false": "Không"
       },
       "preferenceStatus": {
         "not_submitted": "Chưa gửi",
