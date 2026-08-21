@@ -13,6 +13,7 @@ import {
 import { and, eq, or, sql } from "drizzle-orm";
 
 import type { RoundId } from "./rounds";
+import { resolveRoundOnePreferences } from "./round-one-preferences";
 
 export type MembershipUser = { id: string; email: string };
 
@@ -63,12 +64,15 @@ async function roundOneMembership(user: MembershipUser) {
 		captainPhone: roundOneTeams.captainPhone,
 		admissionMethod: roundOneTeams.admissionMethod,
 		sourceTeamId: roundOneTeams.sourceRoundHalfTeamId,
+		preferenceStatus: roundOneTeams.preferenceStatus,
+		preferences: roundOneTeams.preferences,
+		assignedTrackId: roundOneTeams.assignedTrackId,
 	}).from(roundOneMembers).innerJoin(roundOneTeams, eq(roundOneMembers.teamId, roundOneTeams.id)).where(or(
 		and(eq(roundOneTeams.captainId, user.id), eq(roundOneMembers.isCaptain, true)),
 		sql`lower(${roundOneMembers.email}) = ${email}`,
 	)).limit(1);
 	if (!membership) return { registered: false as const, round: "1" as const };
-	const roster = await db.select({
+	const [roster, resolvedPreferences] = await Promise.all([db.select({
 		id: roundOneMembers.id,
 		fullName: roundOneMembers.fullName,
 		email: roundOneMembers.email,
@@ -78,7 +82,9 @@ async function roundOneMembership(user: MembershipUser) {
 		hasCv: sql<boolean>`${roundOneMemberCvs.id} is not null`,
 	}).from(roundOneMembers).leftJoin(roundOneMemberCvs, eq(roundOneMemberCvs.memberId, roundOneMembers.id))
 		.where(eq(roundOneMembers.teamId, membership.teamId))
-		.orderBy(sql`${roundOneMembers.isCaptain} desc`, roundOneMembers.fullName);
+		.orderBy(sql`${roundOneMembers.isCaptain} desc`, roundOneMembers.fullName),
+		resolveRoundOnePreferences(membership.preferences),
+	]);
 	return {
 		registered: true as const,
 		round: "1" as const,
@@ -90,6 +96,9 @@ async function roundOneMembership(user: MembershipUser) {
 			captainPhone: membership.captainPhone,
 			admissionMethod: membership.admissionMethod,
 			sourceTeamId: membership.sourceTeamId,
+			preferenceStatus: membership.preferenceStatus,
+			preferences: resolvedPreferences,
+			assignedTrack: resolvedPreferences.find((preference) => preference.id === membership.assignedTrackId) ?? null,
 			members: roster,
 		},
 	};

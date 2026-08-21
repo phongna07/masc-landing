@@ -19,7 +19,7 @@ function escapeHtml(value: string) {
   })[character] ?? character);
 }
 
-export function renderTeamRegistrationSuccess(teamName: string, members: TeamMember[]) {
+export function renderTeamRegistrationSuccess(teamName: string, members: TeamMember[], assignedTrack?: string) {
   const rows = members.map((member) => `
                         <tr>
                             <td>${escapeHtml(member.fullName)}</td>
@@ -34,6 +34,7 @@ export function renderTeamRegistrationSuccess(teamName: string, members: TeamMem
             <div class="info-block">
                 <div class="info-title">THÔNG TIN ĐỘI THI ĐÃ ĐĂNG KÝ</div>
                 <strong>Tên đội:</strong> ${escapeHtml(teamName)}<br>
+                ${assignedTrack ? `<strong>Track được chỉ định:</strong> ${escapeHtml(assignedTrack)}<br>` : ""}
                 <table class="member-table">
                     <thead><tr><th>Họ và tên</th><th>Email</th><th>Trường đại học</th></tr></thead>
                     <tbody>${rows}
@@ -56,7 +57,7 @@ Ban Tổ chức Marketing All-Star Challenge 2026 xin xác nhận thông tin đ�
 
 THÔNG TIN ĐỘI THI ĐÃ ĐĂNG KÝ
 Tên đội: ${teamName}
-${roster}
+${assignedTrack ? `Track được chỉ định: ${assignedTrack}\n` : ""}${roster}
 
 Lưu ý quan trọng từ Ban Tổ chức:
 - Các thông tin cập nhật về đề bài, mốc thời gian và quy chế vòng sơ loại sẽ được gửi trực tiếp đến email của từng thành viên. Bạn vui lòng nhắc nhở các bạn trong đội kiểm tra cả hòm thư Spam/Quảng cáo để không bỏ lỡ.`;

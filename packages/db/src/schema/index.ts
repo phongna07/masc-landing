@@ -5,6 +5,7 @@ export * from "./announcements";
 export * from "./dashboard-tab-settings";
 export * from "./email";
 export * from "./pdf-exports";
+export * from "./preferences-settings";
 export * from "./registration";
 export * from "./submission-settings";
 export * from "./upload-limit-settings";

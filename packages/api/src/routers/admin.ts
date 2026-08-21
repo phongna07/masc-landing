@@ -1,13 +1,13 @@
 import { GetObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { db } from "@masc-landing/db";
-import { adminEmails, admissionSettings, dashboardTabSettings, emailQueue, members, roundOneMemberCvs,
+import { adminEmails, admissionSettings, dashboardTabSettings, emailQueue, members, preferencesSettings, roundOneMemberCvs,
   pdfExportJobs, roundOneMembers, roundOneSubmissions, roundOneTeams, roundSubmissions, roundThreeMembers,
   roundThreeSubmissions, roundThreeTeams, roundTwoMembers, roundTwoSubmissions, roundTwoTeams,
   submissionSettings, teams, uploadLimitSettings, user, userAnnouncements } from "@masc-landing/db/schema/index";
 import { env } from "@masc-landing/env/server";
 import { TRPCError } from "@trpc/server";
-import { and, asc, count, desc, eq, getTableName, gt, inArray, isNotNull, or, sql } from "drizzle-orm";
+import { and, asc, count, desc, eq, getTableName, gt, inArray, isNotNull, max, ne, or, sql } from "drizzle-orm";
 import { z } from "zod";
 
 import {
@@ -29,6 +29,7 @@ import { awarenessSources, type AwarenessSource } from "../registration-schema";
 import { roundSchema, type RoundId } from "../rounds";
 import { attachmentContentDisposition, roundSubmissionArchiveFilename } from "../submission-files";
 import { getSubmissionSettings } from "../submission-settings";
+import { getRoundOnePreferenceSettings, resolveRoundOnePreferences } from "../round-one-preferences";
 import {
   getUploadLimits,
   MEBIBYTE,
@@ -42,6 +43,7 @@ const usersProcedure = adminAreaProcedure("users");
 const teamsProcedure = adminAreaProcedure("teams");
 const mailProcedure = adminAreaProcedure("mail");
 const roundsProcedure = adminAreaProcedure("rounds");
+const roundOneCvScreeningProcedure = adminAreaProcedure("roundOneCvScreening");
 const roundInput = z.object({ round: roundSchema });
 const submissionInput = roundInput.extend({ submissionId: z.string().trim().min(1).max(128) });
 const pdfExportInput = roundInput.extend({ exportId: z.string().trim().min(1).max(128) });
@@ -50,6 +52,7 @@ const feedbackInput = submissionInput.extend({
   score: z.number().finite().nonnegative(),
 });
 const registrationDecisionSchema = z.enum(["approved", "rejected"]);
+const preferenceNameSchema = z.string().trim().min(1).max(160);
 const mailStatusSchema = z.enum(["pending", "sent", "failed"]);
 const mailListStatusSchema = z.enum(["all", "pending", "sent", "failed"]);
 const mailSender = `Ban Tổ chức MASC <${env.MAIL_USERNAME}>`;
@@ -64,6 +67,14 @@ function registrationTables(round: RoundId) {
   if (round === "1") return { team: roundOneTeams as unknown as typeof teams, member: roundOneMembers as unknown as typeof members };
   if (round === "2") return { team: roundTwoTeams as unknown as typeof teams, member: roundTwoMembers as unknown as typeof members };
   return { team: roundThreeTeams as unknown as typeof teams, member: roundThreeMembers as unknown as typeof members };
+}
+
+function roundOneCvScreeningQueue() {
+  return or(
+    eq(roundOneTeams.admissionMethod, "cv_screening"),
+    and(eq(roundOneTeams.admissionMethod, "round_0_5_promotion"),
+      ne(roundOneTeams.preferenceStatus, "not_submitted")),
+  );
 }
 
 function submissionTables(round: RoundId) {
@@ -133,6 +144,9 @@ type ExportTeamRow = {
   sourceRound: RoundId | null;
   sourceTeamId: string | null;
   sourceTeamName: string | null;
+  preferenceStatus: "not_submitted" | "submitted" | "assigned" | null;
+  preferences: { id: string; name: string }[];
+  assignedTrack: { id: string; name: string } | null;
 };
 
 async function getExportTeamRows(round: RoundId): Promise<ExportTeamRow[]> {
@@ -142,7 +156,7 @@ async function getExportTeamRows(round: RoundId): Promise<ExportTeamRow[]> {
       awarenessSourceDetail: teams.awarenessSourceDetail }).from(teams)
       .orderBy(desc(teams.createdAt), asc(teams.teamName));
     return rows.map((row) => ({ ...row, admissionMethod: "direct", sourceRound: null,
-      sourceTeamId: null, sourceTeamName: null }));
+      sourceTeamId: null, sourceTeamName: null, preferenceStatus: null, preferences: [], assignedTrack: null }));
   }
 
   if (round === "1") {
@@ -150,10 +164,18 @@ async function getExportTeamRows(round: RoundId): Promise<ExportTeamRow[]> {
       status: roundOneTeams.registrationStatus, createdAt: roundOneTeams.createdAt,
       captainPhone: roundOneTeams.captainPhone, awarenessSource: roundOneTeams.awarenessSource,
       awarenessSourceDetail: roundOneTeams.awarenessSourceDetail, admissionMethod: roundOneTeams.admissionMethod,
+      preferenceStatus: roundOneTeams.preferenceStatus, preferences: roundOneTeams.preferences,
+      assignedTrackId: roundOneTeams.assignedTrackId,
       sourceTeamId: roundOneTeams.sourceRoundHalfTeamId, sourceTeamName: teams.teamName })
       .from(roundOneTeams).leftJoin(teams, eq(roundOneTeams.sourceRoundHalfTeamId, teams.id))
       .orderBy(desc(roundOneTeams.createdAt), asc(roundOneTeams.teamName));
-    return rows.map((row) => ({ ...row, sourceRound: row.sourceTeamId ? "0.5" : null }));
+    const settings = await getRoundOnePreferenceSettings(false);
+    const byId = new Map(settings.map((setting) => [setting.id, { id: setting.id, name: setting.name }]));
+    return rows.map(({ assignedTrackId, preferences, ...row }) => ({ ...row,
+      sourceRound: row.sourceTeamId ? "0.5" : null,
+      preferences: preferences.flatMap((id) => byId.get(id) ?? []),
+      assignedTrack: assignedTrackId ? byId.get(assignedTrackId) ?? null : null,
+    }));
   }
 
   if (round === "2") {
@@ -175,6 +197,9 @@ async function getExportTeamRows(round: RoundId): Promise<ExportTeamRow[]> {
       sourceRound: sourceRoundOneTeamId ? "1" : sourceRoundHalfTeamId ? "0.5" : null,
       sourceTeamId: sourceRoundOneTeamId ?? sourceRoundHalfTeamId,
       sourceTeamName: sourceRoundOneTeamName ?? sourceRoundHalfTeamName,
+      preferenceStatus: null,
+      preferences: [],
+      assignedTrack: null,
     }));
   }
 
@@ -185,7 +210,8 @@ async function getExportTeamRows(round: RoundId): Promise<ExportTeamRow[]> {
     sourceTeamId: roundThreeTeams.sourceRoundTwoTeamId, sourceTeamName: roundTwoTeams.teamName })
     .from(roundThreeTeams).leftJoin(roundTwoTeams, eq(roundThreeTeams.sourceRoundTwoTeamId, roundTwoTeams.id))
     .orderBy(desc(roundThreeTeams.createdAt), asc(roundThreeTeams.teamName));
-  return rows.map((row) => ({ ...row, admissionMethod: "promotion", sourceRound: "2" }));
+  return rows.map((row) => ({ ...row, admissionMethod: "promotion", sourceRound: "2",
+    preferenceStatus: null, preferences: [], assignedTrack: null }));
 }
 
 async function promoteOne(input: PromotionInput, sourceTeamId: string) {
@@ -275,7 +301,176 @@ async function promoteOne(input: PromotionInput, sourceTeamId: string) {
   }
   return { sourceTeamId, targetTeamId, success: true as const };
 }
+
+async function decideRoundOneCvTeam(input: { teamId: string; status: "approved" | "rejected"; trackId?: string }) {
+  const [existing] = await db.select({ id: roundOneTeams.id, name: roundOneTeams.teamName,
+    status: roundOneTeams.registrationStatus, preferenceStatus: roundOneTeams.preferenceStatus,
+    preferences: roundOneTeams.preferences, approvalSequence: roundOneTeams.approvalSequence,
+    admissionMethod: roundOneTeams.admissionMethod }).from(roundOneTeams)
+    .where(eq(roundOneTeams.id, input.teamId)).limit(1);
+  if (!existing) throw new TRPCError({ code: "NOT_FOUND", message: "Team not found" });
+  if (existing.admissionMethod !== "cv_screening" || existing.status !== "pending" || existing.preferenceStatus !== "submitted") {
+    throw new TRPCError({ code: "CONFLICT", message: "TEAM_NOT_READY_FOR_SCREENING" });
+  }
+  const isApproval = input.status === "approved";
+  if (isApproval && (!input.trackId || !existing.preferences.includes(input.trackId))) {
+    throw new TRPCError({ code: "BAD_REQUEST", message: "ASSIGNED_TRACK_MUST_BE_SUBMITTED" });
+  }
+  const roster = await db.select({ id: roundOneMembers.id, fullName: roundOneMembers.fullName,
+    email: roundOneMembers.email, universityName: roundOneMembers.universityName,
+    isCaptain: roundOneMembers.isCaptain }).from(roundOneMembers)
+    .where(eq(roundOneMembers.teamId, existing.id)).orderBy(desc(roundOneMembers.isCaptain), asc(roundOneMembers.fullName));
+  const captain = roster.find((member) => member.isCaptain);
+  if (!captain) throw new TRPCError({ code: "PRECONDITION_FAILED", message: "Team captain not found" });
+  const assignedTrack = isApproval
+    ? (await db.select({ name: preferencesSettings.name }).from(preferencesSettings)
+      .where(eq(preferencesSettings.id, input.trackId!)).limit(1))[0]
+    : null;
+  if (isApproval && !assignedTrack) throw new TRPCError({ code: "BAD_REQUEST", message: "TRACK_NOT_FOUND" });
+
+  const content = isApproval
+    ? renderTeamRegistrationSuccess(existing.name, roster, assignedTrack!.name)
+    : renderTeamRegistrationRejected(existing.name);
+  const eventType = isApproval ? teamRegistrationSuccessEvent : teamRegistrationRejectedEvent;
+  const oppositeEventType = isApproval ? teamRegistrationRejectedEvent : teamRegistrationSuccessEvent;
+  const subject = `${isApproval ? teamRegistrationSuccessSubject : teamRegistrationRejectedSubject} — Vòng 1`;
+  const nextSequence = existing.approvalSequence + 1;
+  const queueRecord = { id: crypto.randomUUID(), from_address: mailSender, to_address: captain.email,
+    cc: isApproval ? roster.filter((member) => !member.isCaptain).map((member) => member.email) : [],
+    subject, text: content.text, html: content.html, event_type: eventType, team_id: existing.id,
+    member_id: captain.id, approval_sequence: nextSequence, round: "1", team_name: existing.name,
+    member_name: captain.fullName };
+  const preferenceUpdate = isApproval ? sql`, "preference_status" = 'assigned',
+    "assigned_track_id" = ${input.trackId!}, "assigned_at" = now()` : sql``;
+  const transition = await db.execute(sql`
+    with transitioned as (
+      update ${roundOneTeams}
+      set "registration_status" = ${input.status}, "approval_sequence" = ${nextSequence}${preferenceUpdate}
+      where ${roundOneTeams.id} = ${existing.id}
+        and ${roundOneTeams.registrationStatus} = 'pending'
+        and ${roundOneTeams.preferenceStatus} = 'submitted'
+        and ${roundOneTeams.approvalSequence} = ${existing.approvalSequence}
+      returning ${roundOneTeams.id}, ${roundOneTeams.registrationStatus}, ${roundOneTeams.preferenceStatus}
+    ), removed as (
+      delete from ${emailQueue}
+      where ${emailQueue.teamId} = ${existing.id} and ${emailQueue.round} = '1'
+        and ${emailQueue.eventType} = ${oppositeEventType} and ${emailQueue.status} in ('pending', 'failed')
+        and exists (select 1 from transitioned)
+      returning ${emailQueue.id}
+    ), queued as (
+      insert into ${emailQueue} (id, from_address, to_address, cc, subject, text, html, status, event_type,
+        round, team_id, member_id, team_name, member_name, approval_sequence, attempt_count, created_at, updated_at)
+      select item.id, item.from_address, item.to_address, item.cc, item.subject, item.text, item.html, 'pending',
+        item.event_type, item.round::competition_round, item.team_id, item.member_id, item.team_name, item.member_name,
+        item.approval_sequence, 0, now(), now()
+      from transitioned
+      cross join jsonb_to_record(${JSON.stringify(queueRecord)}::jsonb) as item(
+        id text, from_address text, to_address text, cc text[], subject text, text text, html text, event_type text,
+        team_id text, member_id text, approval_sequence integer, round text, team_name text, member_name text
+      )
+      cross join (select count(*) from removed) as removal
+      returning id
+    )
+    select transitioned.id, transitioned.registration_status as status,
+      transitioned.preference_status as preference_status,
+      (select count(*)::integer from queued) as queued_mail_count
+    from transitioned
+  `);
+  const result = transition.rows[0] as { id: string; status: "approved" | "rejected";
+    preference_status: "submitted" | "assigned"; queued_mail_count: number } | undefined;
+  if (!result) throw new TRPCError({ code: "CONFLICT", message: "TEAM_CHANGED_WHILE_SCREENING" });
+  return { id: result.id, status: result.status, preferenceStatus: result.preference_status,
+    queuedMailCount: Number(result.queued_mail_count) };
+}
+
+async function assignRoundOneTrack(input: { teamId: string; trackId: string }) {
+  const [existing] = await db.select({ status: roundOneTeams.registrationStatus,
+    preferenceStatus: roundOneTeams.preferenceStatus, preferences: roundOneTeams.preferences,
+    assignedTrackId: roundOneTeams.assignedTrackId }).from(roundOneTeams)
+    .where(eq(roundOneTeams.id, input.teamId)).limit(1);
+  if (!existing) throw new TRPCError({ code: "NOT_FOUND", message: "Team not found" });
+  if (existing.status !== "approved" || !["submitted", "assigned"].includes(existing.preferenceStatus)) {
+    throw new TRPCError({ code: "CONFLICT", message: "TEAM_NOT_READY_FOR_ASSIGNMENT" });
+  }
+  if (!existing.preferences.includes(input.trackId)) {
+    throw new TRPCError({ code: "BAD_REQUEST", message: "ASSIGNED_TRACK_MUST_BE_SUBMITTED" });
+  }
+  if (existing.preferenceStatus === "assigned" && existing.assignedTrackId === input.trackId) {
+    throw new TRPCError({ code: "CONFLICT", message: "TRACK_ALREADY_ASSIGNED" });
+  }
+  const result = await db.execute(sql`
+    update ${roundOneTeams}
+    set "preference_status" = 'assigned', "assigned_track_id" = ${input.trackId}, "assigned_at" = now()
+    where ${roundOneTeams.id} = ${input.teamId}
+      and ${roundOneTeams.registrationStatus} = 'approved'
+      and ${roundOneTeams.preferenceStatus} = ${existing.preferenceStatus}
+      and ${roundOneTeams.assignedTrackId} is not distinct from ${existing.assignedTrackId}
+      and ${input.trackId} = any(${roundOneTeams.preferences})
+    returning ${roundOneTeams.id}
+  `);
+  if (!result.rows[0]) throw new TRPCError({ code: "CONFLICT", message: "TEAM_CHANGED_WHILE_ASSIGNING" });
+  return { id: input.teamId, preferenceStatus: "assigned" as const, assignedTrackId: input.trackId };
+}
 export const adminRouter = router({
+  getRoundOnePreferenceSettings: overviewProcedure.query(() => getRoundOnePreferenceSettings(false)),
+  createRoundOnePreferenceSetting: overviewProcedure.input(z.object({ name: preferenceNameSchema }))
+    .mutation(async ({ input }) => {
+      const [order] = await db.select({ value: max(preferencesSettings.displayOrder) }).from(preferencesSettings);
+      try {
+        const [created] = await db.insert(preferencesSettings).values({
+          name: input.name,
+          displayOrder: Number(order?.value ?? 0) + 1,
+        }).returning({ id: preferencesSettings.id });
+        return { id: created!.id };
+      } catch (error) {
+        if (isUniqueViolation(error)) throw new TRPCError({ code: "CONFLICT", message: "PREFERENCE_NAME_EXISTS" });
+        throw error;
+      }
+    }),
+  updateRoundOnePreferenceSetting: overviewProcedure.input(z.object({
+    id: z.string().trim().min(1).max(128),
+    name: preferenceNameSchema.optional(),
+    isActive: z.boolean().optional(),
+  }).refine((input) => input.name !== undefined || input.isActive !== undefined))
+    .mutation(async ({ input }) => {
+      const [existing] = await db.select({ isActive: preferencesSettings.isActive })
+        .from(preferencesSettings).where(eq(preferencesSettings.id, input.id)).limit(1);
+      if (!existing) throw new TRPCError({ code: "NOT_FOUND", message: "PREFERENCE_SETTING_NOT_FOUND" });
+      if (existing.isActive && input.isActive === false) {
+        const [active] = await db.select({ total: count() }).from(preferencesSettings)
+          .where(eq(preferencesSettings.isActive, true));
+        if (Number(active?.total ?? 0) <= 3) {
+          throw new TRPCError({ code: "PRECONDITION_FAILED", message: "AT_LEAST_THREE_ACTIVE_PREFERENCES" });
+        }
+      }
+      try {
+        await db.update(preferencesSettings).set({
+          ...(input.name !== undefined ? { name: input.name } : {}),
+          ...(input.isActive !== undefined ? { isActive: input.isActive } : {}),
+          updatedAt: new Date(),
+        }).where(eq(preferencesSettings.id, input.id));
+      } catch (error) {
+        if (isUniqueViolation(error)) throw new TRPCError({ code: "CONFLICT", message: "PREFERENCE_NAME_EXISTS" });
+        throw error;
+      }
+      return { id: input.id };
+    }),
+  reorderRoundOnePreferenceSettings: overviewProcedure.input(z.object({
+    orderedIds: z.array(z.string().trim().min(1).max(128)).min(3).max(100),
+  })).mutation(async ({ input }) => {
+    if (new Set(input.orderedIds).size !== input.orderedIds.length) {
+      throw new TRPCError({ code: "BAD_REQUEST", message: "DUPLICATE_PREFERENCE_IDS" });
+    }
+    const current = await db.select({ id: preferencesSettings.id }).from(preferencesSettings);
+    if (current.length !== input.orderedIds.length || current.some((setting) => !input.orderedIds.includes(setting.id))) {
+      throw new TRPCError({ code: "CONFLICT", message: "PREFERENCE_SETTINGS_CHANGED" });
+    }
+    for (const [index, id] of input.orderedIds.entries()) {
+      await db.update(preferencesSettings).set({ displayOrder: index + 1, updatedAt: new Date() })
+        .where(eq(preferencesSettings.id, id));
+    }
+    return getRoundOnePreferenceSettings(false);
+  }),
   getDashboardTabSettings: overviewProcedure.query(getDashboardTabSettings),
   setDashboardTabVisible: overviewProcedure.input(roundInput.extend({ isVisible: z.boolean() })).mutation(async ({ input }) => {
     await db.insert(dashboardTabSettings).values({ round: input.round, isVisible: input.isVisible, updatedAt: new Date() })
@@ -331,11 +526,24 @@ export const adminRouter = router({
   listTeams: teamsProcedure.input(roundInput).query(async ({ input }) => {
     const { team, member } = registrationTables(input.round);
     const { captainName, captainEmail } = captainExpressions(team, member);
-    return db.select({ id: team.id, name: team.teamName, status: team.registrationStatus,
+    const base = await db.select({ id: team.id, name: team.teamName, status: team.registrationStatus,
       createdAt: team.createdAt, captainName, captainEmail, captainPhone: team.captainPhone,
       awarenessSource: team.awarenessSource, awarenessSourceDetail: team.awarenessSourceDetail,
       memberCount: count(member.id) }).from(team).leftJoin(member, eq(team.id, member.teamId))
       .groupBy(team.id).orderBy(desc(team.createdAt), asc(team.teamName));
+    if (input.round !== "1") return base.map((item) => ({ ...item, preferenceStatus: null,
+      preferences: [] as { id: string; name: string }[], assignedTrack: null as { id: string; name: string } | null }));
+    const preferenceRows = await db.select({ id: roundOneTeams.id, status: roundOneTeams.preferenceStatus,
+      preferences: roundOneTeams.preferences, assignedTrackId: roundOneTeams.assignedTrackId }).from(roundOneTeams);
+    const settings = await getRoundOnePreferenceSettings(false);
+    const byId = new Map(settings.map((setting) => [setting.id, { id: setting.id, name: setting.name }]));
+    const byTeam = new Map(preferenceRows.map((row) => [row.id, row]));
+    return base.map((item) => {
+      const preference = byTeam.get(item.id)!;
+      return { ...item, preferenceStatus: preference.status,
+        preferences: preference.preferences.flatMap((id) => byId.get(id) ?? []),
+        assignedTrack: preference.assignedTrackId ? byId.get(preference.assignedTrackId) ?? null : null };
+    });
   }),
   exportTeams: teamsProcedure.input(roundInput).query(async ({ input }) => {
     const teamRows = await getExportTeamRows(input.round);
@@ -394,21 +602,33 @@ export const adminRouter = router({
       birthdate: member.birthdate, universityName: member.universityName, isCaptain: member.isCaptain }).from(member)
       .where(eq(member.teamId, team.id)).orderBy(desc(member.isCaptain), asc(member.fullName));
     let admissionMethod: "direct" | "cv_screening" | "round_0_5_promotion" | "promotion" = input.round === "0.5" ? "direct" : "promotion";
+    let preferenceStatus: "not_submitted" | "submitted" | "assigned" | null = null;
+    let preferences: { id: string; name: string }[] = [];
+    let assignedTrack: { id: string; name: string } | null = null;
     if (input.round === "1") {
-      const [source] = await db.select({ admissionMethod: roundOneTeams.admissionMethod }).from(roundOneTeams)
+      const [source] = await db.select({ admissionMethod: roundOneTeams.admissionMethod,
+        preferenceStatus: roundOneTeams.preferenceStatus, preferences: roundOneTeams.preferences,
+        assignedTrackId: roundOneTeams.assignedTrackId }).from(roundOneTeams)
         .where(eq(roundOneTeams.id, input.teamId)).limit(1);
       admissionMethod = source?.admissionMethod ?? "promotion";
+      preferenceStatus = source?.preferenceStatus ?? null;
+      preferences = await resolveRoundOnePreferences(source?.preferences ?? []);
+      assignedTrack = preferences.find((preference) => preference.id === source?.assignedTrackId) ?? null;
     }
     const cvs = input.round === "1" ? await db.select({ memberId: roundOneMemberCvs.memberId,
       filename: roundOneMemberCvs.originalFilename, fileSize: roundOneMemberCvs.fileSize })
       .from(roundOneMemberCvs).innerJoin(roundOneMembers, eq(roundOneMemberCvs.memberId, roundOneMembers.id))
       .where(eq(roundOneMembers.teamId, input.teamId)) : [];
-    return { ...team, round: input.round, admissionMethod, members: roster.map((item) => ({ ...item,
+    return { ...team, round: input.round, admissionMethod, preferenceStatus, preferences, assignedTrack,
+      members: roster.map((item) => ({ ...item,
       cv: cvs.find((cv) => cv.memberId === item.id) ?? null })) };
   }),
   updateTeamStatus: teamsProcedure.input(roundInput.extend({
     teamId: z.string().trim().min(1).max(128), status: registrationDecisionSchema,
   })).mutation(async ({ input }) => {
+    if (input.round === "1") {
+      throw new TRPCError({ code: "BAD_REQUEST", message: "ROUND_ONE_DECISIONS_USE_CV_SCREENING" });
+    }
     const { team, member } = registrationTables(input.round);
     const [existing] = await db.select({ id: team.id, name: team.teamName, status: team.registrationStatus,
       approvalSequence: team.approvalSequence }).from(team).where(eq(team.id, input.teamId)).limit(1);
@@ -503,6 +723,91 @@ export const adminRouter = router({
         ResponseContentType: "application/pdf",
         ResponseContentDisposition: `${input.disposition}; filename="${safeFilename}"` }), { expiresIn: signedUrlExpirySeconds }) };
     }),
+  getRoundOneCvScreeningStats: roundOneCvScreeningProcedure.query(async () => {
+    const queue = roundOneCvScreeningQueue();
+    const [statsRows, assignmentRows, activeTracks] = await Promise.all([
+      db.select({
+        totalTeams: count(),
+        waitingForPreferences: sql<number>`count(*) filter (where ${roundOneTeams.preferenceStatus} = ${"not_submitted"})`,
+        pendingScreening: sql<number>`count(*) filter (where ${roundOneTeams.registrationStatus} = ${"pending"})`,
+        approvedTeams: sql<number>`count(*) filter (where ${roundOneTeams.registrationStatus} = ${"approved"})`,
+        rejectedTeams: sql<number>`count(*) filter (where ${roundOneTeams.registrationStatus} = ${"rejected"})`,
+        assignedTeams: sql<number>`count(*) filter (where ${roundOneTeams.preferenceStatus} = ${"assigned"})`,
+      }).from(roundOneTeams).where(queue),
+      db.select({ trackId: roundOneTeams.assignedTrackId, assignedTeams: count() }).from(roundOneTeams)
+        .where(and(queue, isNotNull(roundOneTeams.assignedTrackId)))
+        .groupBy(roundOneTeams.assignedTrackId),
+      getRoundOnePreferenceSettings(true),
+    ]);
+    const [stats] = statsRows;
+    const assignmentsByTrack = new Map(assignmentRows.map((row) => [row.trackId, Number(row.assignedTeams)]));
+    return {
+      totalTeams: Number(stats?.totalTeams ?? 0),
+      waitingForPreferences: Number(stats?.waitingForPreferences ?? 0),
+      pendingScreening: Number(stats?.pendingScreening ?? 0),
+      approvedTeams: Number(stats?.approvedTeams ?? 0),
+      rejectedTeams: Number(stats?.rejectedTeams ?? 0),
+      assignedTeams: Number(stats?.assignedTeams ?? 0),
+      trackAssignments: activeTracks.map((track) => ({
+        trackId: track.id,
+        trackName: track.name,
+        assignedTeams: assignmentsByTrack.get(track.id) ?? 0,
+      })),
+    };
+  }),
+  listRoundOneCvScreeningTeams: roundOneCvScreeningProcedure.query(async () => {
+    const { captainName, captainEmail } = captainExpressions(
+      roundOneTeams as unknown as typeof teams,
+      roundOneMembers as unknown as typeof members,
+    );
+    const teamRows = await db.select({ id: roundOneTeams.id, name: roundOneTeams.teamName,
+      registrationStatus: roundOneTeams.registrationStatus, admissionMethod: roundOneTeams.admissionMethod,
+      preferenceStatus: roundOneTeams.preferenceStatus, preferences: roundOneTeams.preferences,
+      assignedTrackId: roundOneTeams.assignedTrackId, createdAt: roundOneTeams.createdAt,
+      preferenceSubmittedAt: roundOneTeams.preferenceSubmittedAt, captainName, captainEmail })
+      .from(roundOneTeams).where(roundOneCvScreeningQueue())
+      .orderBy(asc(sql`coalesce(${roundOneTeams.preferenceSubmittedAt}, ${roundOneTeams.createdAt})`),
+        asc(roundOneTeams.teamName));
+    if (!teamRows.length) return [];
+    const [memberRows, settings] = await Promise.all([
+      db.select({ id: roundOneMembers.id, teamId: roundOneMembers.teamId,
+        fullName: roundOneMembers.fullName, isCaptain: roundOneMembers.isCaptain,
+        cvFilename: roundOneMemberCvs.originalFilename, cvFileSize: roundOneMemberCvs.fileSize })
+        .from(roundOneMembers).leftJoin(roundOneMemberCvs, eq(roundOneMemberCvs.memberId, roundOneMembers.id))
+        .where(inArray(roundOneMembers.teamId, teamRows.map((team) => team.id)))
+        .orderBy(desc(roundOneMembers.isCaptain), asc(roundOneMembers.fullName)),
+      getRoundOnePreferenceSettings(false),
+    ]);
+    const settingById = new Map(settings.map((setting) => [setting.id, { id: setting.id, name: setting.name }]));
+    return teamRows.map((team) => ({
+      ...team,
+      readyAt: team.preferenceSubmittedAt ?? team.createdAt,
+      preferences: team.preferences.flatMap((id) => settingById.get(id) ?? []),
+      assignedTrack: team.assignedTrackId ? settingById.get(team.assignedTrackId) ?? null : null,
+      members: memberRows.filter((member) => member.teamId === team.id).map(({ teamId: _teamId, ...member }) => member),
+    }));
+  }),
+  decideRoundOneCvScreeningTeam: roundOneCvScreeningProcedure.input(z.discriminatedUnion("status", [
+    z.object({ teamId: z.string().trim().min(1).max(128), status: z.literal("approved"),
+      trackId: z.string().trim().min(1).max(128) }),
+    z.object({ teamId: z.string().trim().min(1).max(128), status: z.literal("rejected") }),
+  ])).mutation(({ input }) => decideRoundOneCvTeam(input)),
+  assignRoundOneTrack: roundOneCvScreeningProcedure.input(z.object({ teamId: z.string().trim().min(1).max(128),
+    trackId: z.string().trim().min(1).max(128) })).mutation(({ input }) => assignRoundOneTrack(input)),
+  createRoundOneScreeningCvUrl: roundOneCvScreeningProcedure.input(z.object({
+    teamId: z.string().min(1).max(128), memberId: z.string().min(1).max(128),
+    disposition: z.enum(["inline", "attachment"]).default("inline"),
+  })).mutation(async ({ input }) => {
+    const [cv] = await db.select({ objectKey: roundOneMemberCvs.objectKey,
+      filename: roundOneMemberCvs.originalFilename }).from(roundOneMemberCvs)
+      .innerJoin(roundOneMembers, eq(roundOneMemberCvs.memberId, roundOneMembers.id))
+      .where(and(eq(roundOneMembers.teamId, input.teamId), eq(roundOneMemberCvs.memberId, input.memberId))).limit(1);
+    if (!cv) throw new TRPCError({ code: "NOT_FOUND", message: "CV_NOT_FOUND" });
+    const safeFilename = cv.filename.replace(/[^a-zA-Z0-9._ -]/g, "_");
+    return { url: await getSignedUrl(s3, new GetObjectCommand({ Bucket: env.R2_BUCKET, Key: cv.objectKey,
+      ResponseContentType: "application/pdf",
+      ResponseContentDisposition: `${input.disposition}; filename="${safeFilename}"` }), { expiresIn: signedUrlExpirySeconds }) };
+  }),
   listMail: mailProcedure.input(z.object({ status: mailListStatusSchema.default("pending") })).query(async ({ input }) => {
     const where = input.status === "all" ? undefined : eq(emailQueue.status, input.status);
     return db.select({ id: emailQueue.id, toAddress: emailQueue.toAddress, cc: emailQueue.cc, subject: emailQueue.subject,

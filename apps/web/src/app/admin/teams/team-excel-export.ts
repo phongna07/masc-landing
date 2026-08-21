@@ -12,6 +12,12 @@ const statusLabels = {
   rejected: "Rejected",
 } as const;
 
+const preferenceStatusLabels = {
+  not_submitted: "Not submitted",
+  submitted: "Submitted",
+  assigned: "Assigned",
+} as const;
+
 const admissionMethodLabels = {
   direct: "Direct application",
   cv_screening: "CV screening",
@@ -76,6 +82,10 @@ export async function exportTeamsToExcel(round: RoundId, teams: ExportTeams) {
     { width: 38 }, { width: 28 }, { width: 10 }, { width: 20 }, { width: 22 }, { width: 26 },
     { width: 12 }, { width: 38 }, { width: 28 }, { width: 18 }, { width: 30 }, { width: 36 },
   ];
+  if (round === "1") {
+    headers.push("Preference Status", "Preferences", "Assigned Track");
+    columns.push({ width: 20 }, { width: 54 }, { width: 32 });
+  }
   for (let slot = 1; slot <= memberSlots; slot += 1) {
     headers.push(`Member ${slot} Role`, `Member ${slot} Name`, `Member ${slot} Email`,
       `Member ${slot} Birthdate`, `Member ${slot} University`);
@@ -99,6 +109,11 @@ export async function exportTeamsToExcel(round: RoundId, teams: ExportTeams) {
         textCell(team.awarenessSource ? awarenessSourceLabels[team.awarenessSource] : null),
         textCell(team.awarenessSourceDetail),
       ];
+      if (round === "1") row.push(
+        textCell(team.preferenceStatus ? preferenceStatusLabels[team.preferenceStatus] : null),
+        textCell(team.preferences.map((preference, index) => `${index + 1}. ${preference.name}`).join(" | ")),
+        textCell(team.assignedTrack?.name),
+      );
       for (let index = 0; index < memberSlots; index += 1) {
         const member = team.members[index];
         row.push(

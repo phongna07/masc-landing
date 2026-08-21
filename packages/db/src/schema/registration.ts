@@ -15,6 +15,7 @@ import {
 } from "drizzle-orm/pg-core";
 
 import { user } from "./auth";
+import { preferencesSettings } from "./preferences-settings";
 
 export const registrationStatus = pgEnum("registration_status", [
   "pending",
@@ -27,6 +28,12 @@ export const competitionRound = pgEnum("competition_round", ["0.5", "1", "2", "3
 export const roundOneAdmissionMethod = pgEnum("round_one_admission_method", [
   "cv_screening",
   "round_0_5_promotion",
+]);
+
+export const roundOnePreferenceStatus = pgEnum("round_one_preference_status", [
+  "not_submitted",
+  "submitted",
+  "assigned",
 ]);
 
 export const registrationAwarenessSource = pgEnum("registration_awareness_source", [
@@ -98,6 +105,11 @@ export const roundOneTeams = pgTable(
     awarenessSourceDetail: text("awareness_source_detail"),
     admissionMethod: roundOneAdmissionMethod("admission_method").notNull(),
     sourceRoundHalfTeamId: text("source_round_0_5_team_id").references(() => teams.id, { onDelete: "restrict" }),
+    preferenceStatus: roundOnePreferenceStatus("preference_status").default("not_submitted").notNull(),
+    preferences: text("preferences").array().default(sql`'{}'::text[]`).notNull(),
+    preferenceSubmittedAt: timestamp("preference_submitted_at"),
+    assignedTrackId: text("assigned_track_id").references(() => preferencesSettings.id, { onDelete: "restrict" }),
+    assignedAt: timestamp("assigned_at"),
   },
   (table) => [
     index("round_1_teams_registration_status_idx").on(table.registrationStatus),
@@ -106,6 +118,24 @@ export const roundOneTeams = pgTable(
     check("round_1_teams_admission_source_check", sql`(
       (${table.admissionMethod} = 'cv_screening' and ${table.sourceRoundHalfTeamId} is null) or
       (${table.admissionMethod} = 'round_0_5_promotion' and ${table.sourceRoundHalfTeamId} is not null)
+    )`),
+    index("round_1_teams_preference_status_idx").on(table.preferenceStatus, table.preferenceSubmittedAt),
+    check("round_1_teams_preferences_distinct_check", sql`(
+      cardinality(${table.preferences}) = 0 or (
+        cardinality(${table.preferences}) = 3 and
+        ${table.preferences}[1] <> ${table.preferences}[2] and
+        ${table.preferences}[1] <> ${table.preferences}[3] and
+        ${table.preferences}[2] <> ${table.preferences}[3]
+      )
+    )`),
+    check("round_1_teams_preference_state_check", sql`(
+      (${table.preferenceStatus} = 'not_submitted' and cardinality(${table.preferences}) = 0
+        and ${table.preferenceSubmittedAt} is null and ${table.assignedTrackId} is null and ${table.assignedAt} is null) or
+      (${table.preferenceStatus} = 'submitted' and cardinality(${table.preferences}) = 3
+        and ${table.preferenceSubmittedAt} is not null and ${table.assignedTrackId} is null and ${table.assignedAt} is null) or
+      (${table.preferenceStatus} = 'assigned' and cardinality(${table.preferences}) = 3
+        and ${table.preferenceSubmittedAt} is not null and ${table.assignedTrackId} is not null
+        and ${table.assignedTrackId} = any(${table.preferences}) and ${table.assignedAt} is not null)
     )`),
   ],
 );

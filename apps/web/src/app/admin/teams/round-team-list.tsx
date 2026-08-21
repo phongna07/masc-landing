@@ -114,6 +114,8 @@ export default function RoundTeamList({ round }: { round: RoundId }) {
         <thead><tr><th><input type="checkbox" aria-label={t("teams.selectAll")} checked={approvedIds.length > 0 && selected.length === approvedIds.length} onChange={toggleAll} /></th>
           <th>{t("fields.team")}</th><th>{t("fields.captain")}</th><th>{t("fields.members")}</th>
           {showAwarenessSource && <th>{t("fields.awarenessSource")}</th>}
+          {round === "1" && <><th>{t("fields.preferenceStatus")}</th><th>{t("fields.preferences")}</th>
+            <th>{t("fields.assignedTrack")}</th></>}
           <th>{t("fields.status")}</th><th>{t("fields.created")}</th><th /></tr></thead>
         <tbody>{visibleTeams.map((team) => {
           const awarenessSource = team.awarenessSource
@@ -124,6 +126,11 @@ export default function RoundTeamList({ round }: { round: RoundId }) {
             <td><Link className="admin-row-link" href={`/admin/teams/round-${round}/${team.id}` as Route}><strong>{team.name}</strong></Link></td>
             <td><strong>{team.captainName}</strong><span>{team.captainEmail}</span></td><td>{t("values.memberCount", { count: team.memberCount, required: TEAM_SIZE })}</td>
             {showAwarenessSource && <td>{awarenessSource}</td>}
+            {round === "1" && <><td>{team.preferenceStatus ? <span className={`preference-status preference-status-${team.preferenceStatus}`}>
+              {t(`values.preferenceStatus.${team.preferenceStatus}`)}</span> : "—"}</td>
+              <td>{team.preferences.length ? <ol className="admin-preference-list">{team.preferences.map((preference) =>
+                <li key={preference.id}>{preference.name}</li>)}</ol> : "—"}</td>
+              <td>{team.assignedTrack?.name ?? "—"}</td></>}
             <td><span className={`status-badge status-${team.status}`}>{t(`values.status.${team.status}`)}</span></td><td>{formatDate(team.createdAt, locale)}</td>
             <td><Link className="admin-view-link" href={`/admin/teams/round-${round}/${team.id}` as Route}><ChevronRightIcon /></Link></td></tr>;
         })}</tbody>
