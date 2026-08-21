@@ -9,9 +9,9 @@ CREATE TABLE "preferences_settings" (
 );
 --> statement-breakpoint
 INSERT INTO "preferences_settings" ("id", "name", "display_order", "is_active") VALUES
-	('round-1-product-growth', 'Product & Growth', 1, true),
-	('round-1-societal-pr-marcom', 'Societal + PR/MarCom', 2, true),
-	('round-1-market-research-trade', 'Market Research + Trade', 3, true)
+	('round-1-product-growth', 'Product + Growth', 1, true),
+	('round-1-societal-pr-marcom', 'Societal + Marketing Communications', 2, true),
+	('round-1-market-research-trade', 'Market Research + Trade Marketing', 3, true)
 ON CONFLICT DO NOTHING;
 --> statement-breakpoint
 ALTER TABLE "round_1_teams" ADD COLUMN "preference_status" "round_one_preference_status" DEFAULT 'not_submitted' NOT NULL;--> statement-breakpoint
