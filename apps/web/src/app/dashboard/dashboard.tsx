@@ -644,6 +644,7 @@ function RoundOnePreferences({ membership, preferenceSettings }: {
   preferenceSettings: RoundOnePreferenceSettings;
 }) {
   const t = useTranslations("Dashboard");
+  const isAssigned = membership.team.preferenceStatus === "assigned";
   const [values, setValues] = useState(["", "", ""]);
   const [error, setError] = useState<string | undefined>();
   const submitPreferences = useMutation(trpc.registration.submitRoundOnePreferences.mutationOptions({
@@ -669,13 +670,14 @@ function RoundOnePreferences({ membership, preferenceSettings }: {
   return <Card className="dashboard-card preference-card">
     <CardHeader>
       <div className="preference-heading-row">
-        <div><p className="dashboard-card-index">02 / {t("preferences.section")}</p>
-          <CardTitle>{t("preferences.title")}</CardTitle></div>
+        <div><p className="dashboard-card-index">02 / {t(isAssigned
+          ? "preferences.assignedSection" : "preferences.section")}</p>
+          <CardTitle>{t(isAssigned ? "preferences.assignedTitle" : "preferences.title")}</CardTitle></div>
         <span className={`preference-status preference-status-${membership.team.preferenceStatus}`}>
           {t(`preferences.status.${membership.team.preferenceStatus}`)}
         </span>
       </div>
-      <p>{t("preferences.description")}</p>
+      <p>{t(isAssigned ? "preferences.assignedDescription" : "preferences.description")}</p>
     </CardHeader>
     <CardContent>
       {membership.team.preferenceStatus === "not_submitted" ? membership.role === "captain" ?

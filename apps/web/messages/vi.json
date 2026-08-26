@@ -342,6 +342,9 @@
       "section": "Đăng ký track mong muốn",
       "title": "Đăng ký track mong muốn",
       "description": "Xếp hạng ba track Vòng 1 khác nhau theo thứ tự ưu tiên. Thứ tự không thể thay đổi sau khi gửi.",
+      "assignedSection": "Phân bổ track",
+      "assignedTitle": "Đội đã được chỉ định track",
+      "assignedDescription": "Ban Tổ chức đã chỉ định đội của bạn vào track được hiển thị bên dưới.",
       "rank": "Nguyện vọng {rank}",
       "summaryRank": {
         "first": "Nguyện vọng 1",

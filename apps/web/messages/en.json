@@ -342,6 +342,9 @@
       "section": "Register your desired track",
       "title": "Register your desired track",
       "description": "Rank three different Round 1 tracks in order of preference. Your ranking cannot be changed after submission.",
+      "assignedSection": "Track assignment",
+      "assignedTitle": "Your track has been assigned",
+      "assignedDescription": "The organizers have assigned your team to the track shown below.",
       "rank": "Preference {rank}",
       "summaryRank": {
         "first": "First Preference",
