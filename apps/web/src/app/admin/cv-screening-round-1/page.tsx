@@ -14,12 +14,14 @@ import { toast } from "sonner";
 import { queryClient, trpc } from "@/utils/trpc";
 import { AdminEmpty, AdminError, AdminHeading, AdminLoading, AdminMetrics, formatDate } from "../admin-state";
 
-type StatusFilter = "all" | "pending" | "approved" | "rejected";
+type TeamFilter = "all" | "pending" | "approved" | "rejected" | "track_assigned" | "track_unassigned";
+
+const teamFilters: TeamFilter[] = ["all", "pending", "approved", "rejected", "track_assigned", "track_unassigned"];
 
 export default function CvScreeningRoundOnePage() {
 	const t = useTranslations("Admin");
 	const locale = useLocale();
-	const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
+	const [teamFilter, setTeamFilter] = useState<TeamFilter>("all");
 	const [selectedTracks, setSelectedTracks] = useState<Record<string, string>>({});
 	const [preview, setPreview] = useState<{ url: string; memberName: string; filename: string } | null>(null);
 	const teams = useQuery(trpc.admin.listRoundOneCvScreeningTeams.queryOptions());
@@ -51,7 +53,12 @@ export default function CvScreeningRoundOnePage() {
 			window.open(url, "_blank", "noopener,noreferrer");
 		} catch { /* mutation callback shows the localized error */ }
 	};
-	const visible = teams.data?.filter((team) => statusFilter === "all" || team.registrationStatus === statusFilter) ?? [];
+	const visible = teams.data?.filter((team) => {
+		if (teamFilter === "all") return true;
+		if (teamFilter === "track_assigned") return team.assignedTrack !== null;
+		if (teamFilter === "track_unassigned") return team.assignedTrack === null;
+		return team.registrationStatus === teamFilter;
+	}) ?? [];
 	return <>
 		<AdminHeading eyebrow={t("eyebrow")} title={t("screening.title")} description={t("screening.description")} />
 		<AdminMetrics label={t("screening.summaryLabel")} isPending={stats.isPending} isError={stats.isError}
@@ -66,11 +73,14 @@ export default function CvScreeningRoundOnePage() {
 		{stats.isPending ? <TrackDistributionSkeleton /> : stats.data
 			? <TrackDistribution tracks={stats.data.trackAssignments} locale={locale} /> : null}
 		<div className="admin-team-toolbar screening-toolbar">
-			<div className="admin-status-actions admin-status-filter" role="group" aria-label={t("teams.statusFilter")}>
-				{(["all", "pending", "approved", "rejected"] as const).map((status) => <Button key={status}
-					aria-pressed={statusFilter === status} className="admin-status-filter-button" data-status={status}
-					size="sm" variant="ghost" onClick={() => setStatusFilter(status)}>
-					{status === "all" ? t("teams.filterAll") : t(`values.status.${status}`)}</Button>)}
+			<div className="admin-status-actions admin-status-filter" role="group" aria-label={t("screening.teamFilter")}>
+				{teamFilters.map((filter) => <Button key={filter}
+					aria-pressed={teamFilter === filter} className="admin-status-filter-button" data-status={filter}
+					size="sm" variant="ghost" onClick={() => setTeamFilter(filter)}>
+					{filter === "all" ? t("teams.filterAll")
+						: filter === "track_assigned" ? t("screening.filterTrackAssigned")
+							: filter === "track_unassigned" ? t("screening.filterTrackUnassigned")
+								: t(`values.status.${filter}`)}</Button>)}
 			</div>
 			<Button variant="outline" onClick={() => Promise.all([teams.refetch(), stats.refetch()])}
 				disabled={teams.isFetching || stats.isFetching}>
