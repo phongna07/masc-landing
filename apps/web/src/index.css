@@ -489,6 +489,35 @@ dialog[open]::backdrop {
   font-weight: 400;
 }
 
+.assigned-problem-statement {
+  display: grid;
+  gap: 10px;
+}
+
+.problem-statement-message {
+  margin: 0;
+  padding: 14px 16px;
+  border: 1px solid rgba(255, 255, 255, .1);
+  background: rgba(255, 255, 255, .025);
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.problem-statement-error {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.problem-statement-error p {
+  margin: 0;
+}
+
+.problem-statement-file {
+  margin-top: 0;
+}
+
 .round-entry-team {
   display: grid;
   gap: 2px;
@@ -965,13 +994,15 @@ dialog[open]::backdrop {
   font-size: 15px;
 }
 
-.dashboard-field .cv-file-input {
+.dashboard-field .cv-file-input,
+.admin-problem-statement .cv-file-input {
   height: 52px;
   padding: 7px 14px 7px 7px;
   color: var(--ink);
 }
 
-.dashboard-field .cv-file-input::file-selector-button {
+.dashboard-field .cv-file-input::file-selector-button,
+.admin-problem-statement .cv-file-input::file-selector-button {
   height: 36px;
   margin-right: 14px;
   border: 1px solid rgba(242, 213, 132, 0.5);
@@ -984,12 +1015,14 @@ dialog[open]::backdrop {
   transition: border-color 160ms ease, background 160ms ease;
 }
 
-.dashboard-field .cv-file-input:hover::file-selector-button {
+.dashboard-field .cv-file-input:hover::file-selector-button,
+.admin-problem-statement .cv-file-input:hover::file-selector-button {
   border-color: rgba(242, 213, 132, 0.8);
   background: rgba(242, 213, 132, 0.18);
 }
 
-.dashboard-field .cv-file-input:focus-visible::file-selector-button {
+.dashboard-field .cv-file-input:focus-visible::file-selector-button,
+.admin-problem-statement .cv-file-input:focus-visible::file-selector-button {
   border-color: #f2d584;
   background: rgba(242, 213, 132, 0.22);
 }
@@ -2332,26 +2365,91 @@ dialog[open]::backdrop {
 
 .admin-preference-setting-row {
   display: grid;
-  grid-template-columns: auto minmax(220px, 1fr) auto auto auto;
-  align-items: center;
-  gap: 10px;
+  gap: 14px;
   padding: 14px;
   border: 1px solid rgba(255, 255, 255, .16);
   background: rgba(17, 16, 20, .88);
 }
 
-.admin-preference-setting-row>span {
-  padding: 6px 9px;
-  border: 1px solid;
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: .08em;
-  text-transform: uppercase;
+.admin-preference-setting-main {
+  display: grid;
+  grid-template-columns: auto minmax(220px, 1fr) auto auto;
+  align-items: center;
+  gap: 10px;
 }
 
 .admin-preference-order-actions {
   display: flex;
   gap: 6px;
+}
+
+.admin-problem-statement {
+  display: grid;
+  gap: 10px;
+  padding-top: 14px;
+  border-top: 1px solid rgba(255, 255, 255, .1);
+}
+
+.admin-problem-statement-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.admin-problem-statement-heading>div:first-child {
+  display: grid;
+  gap: 4px;
+}
+
+.admin-problem-statement-current {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  max-width: 100%;
+}
+
+.admin-problem-statement-current>svg {
+  flex: 0 0 auto;
+  color: #d2a66c;
+}
+
+.admin-problem-statement-current>div {
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.admin-problem-statement-current strong,
+.admin-problem-statement-current span {
+  display: block;
+  overflow-wrap: anywhere;
+}
+
+.admin-problem-statement-current strong {
+  font-size: 13px;
+}
+
+.admin-problem-statement-current span {
+  margin-top: 3px;
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.admin-problem-statement-current [data-slot="button"] {
+  flex: 0 0 auto;
+  height: 30px;
+}
+
+.admin-problem-statement-controls {
+  display: grid;
+  grid-template-columns: minmax(220px, 1fr) auto auto;
+  gap: 10px;
+}
+
+.admin-problem-statement .admin-file-error {
+  margin: 0;
 }
 
 .admin-preference-add {
@@ -2604,9 +2702,20 @@ dialog[open]::backdrop {
   }
 
   .preference-select-group,
-  .admin-preference-setting-row,
+  .admin-preference-setting-main,
+  .admin-problem-statement-controls,
   .admin-preference-add>div {
     grid-template-columns: minmax(0, 1fr);
+  }
+
+  .admin-problem-statement-heading,
+  .problem-statement-error {
+    display: grid;
+  }
+
+  .admin-problem-statement-controls [data-slot="button"],
+  .problem-statement-error [data-slot="button"] {
+    width: 100%;
   }
 
   .screening-track-legend,

@@ -366,7 +366,16 @@
       "captainRequired": "Đội trưởng cần gửi nguyện vọng track cho đội.",
       "waitingAssignment": "Ban Tổ chức đã nhận nguyện vọng và sẽ chỉ định track cho đội.",
       "assignedTrack": "Track được chỉ định",
-      "unavailable": "Hệ thống cần ít nhất ba track đang hoạt động. Vui lòng liên hệ Ban Tổ chức."
+      "unavailable": "Hệ thống cần ít nhất ba track đang hoạt động. Vui lòng liên hệ Ban Tổ chức.",
+      "problemStatement": {
+        "label": "Đề bài",
+        "loading": "Đang tải đề bài…",
+        "unavailable": "Đề bài chưa được cập nhật.",
+        "retry": "Thử tải lại",
+        "download": "Tải đề bài",
+        "downloadError": "Không thể tải đề bài xuống. Vui lòng thử lại.",
+        "iframeTitle": "Đề bài: {filename}"
+      }
     },
     "fields": {
       "teamName": "Tên đội",
@@ -605,7 +614,32 @@
         "add": "Thêm track",
         "success": "Đã cập nhật cài đặt track Vòng 1.",
         "error": "Không thể cập nhật track. Hãy kiểm tra tên bị trùng và duy trì ít nhất ba track hoạt động.",
-        "loadError": "Không thể tải cài đặt track Vòng 1."
+        "loadError": "Không thể tải cài đặt track Vòng 1.",
+        "problemStatement": {
+          "label": "Tệp PDF đề bài",
+          "hint": "Tệp PDF không bắt buộc - tối đa 200 MiB.",
+          "upload": "Tải PDF lên",
+          "replace": "Thay thế PDF",
+          "uploading": "Đang tải lên…",
+          "download": "Tải xuống",
+          "downloadError": "Không thể tải đề bài xuống. Vui lòng thử lại.",
+          "delete": "Xóa PDF",
+          "uploadSuccess": "Đã lưu tệp PDF đề bài.",
+          "uploadError": "Không thể tải đề bài lên. Hãy kiểm tra tệp và thử lại.",
+          "deleteSuccess": "Đã xóa tệp PDF đề bài.",
+          "deleteError": "Không thể xóa đề bài. Vui lòng thử lại.",
+          "validation": {
+            "required": "Hãy chọn một tệp PDF.",
+            "type": "Hãy chọn tệp có phần mở rộng .pdf.",
+            "empty": "Tệp PDF không được để trống.",
+            "size": "Tệp PDF không được lớn hơn 200 MiB."
+          },
+          "deleteConfirmation": {
+            "title": "Xóa đề bài?",
+            "description": "Thao tác này sẽ xóa tệp PDF đề bài của {track}. Các đội được chỉ định track sẽ không thể xem hoặc tải tệp này nữa.",
+            "confirm": "Xóa PDF"
+          }
+        }
       }
     },
     "announcements": {

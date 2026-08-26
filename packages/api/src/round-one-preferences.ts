@@ -18,6 +18,27 @@ export async function getRoundOnePreferenceSettings(activeOnly = true) {
 		.orderBy(asc(preferencesSettings.displayOrder), asc(preferencesSettings.createdAt));
 }
 
+export async function getAdminRoundOnePreferenceSettings() {
+	const settings = await db
+		.select({
+			id: preferencesSettings.id,
+			name: preferencesSettings.name,
+			displayOrder: preferencesSettings.displayOrder,
+			isActive: preferencesSettings.isActive,
+			problemStatementOriginalFilename: preferencesSettings.problemStatementOriginalFilename,
+			problemStatementFileSize: preferencesSettings.problemStatementFileSize,
+		})
+		.from(preferencesSettings)
+		.orderBy(asc(preferencesSettings.displayOrder), asc(preferencesSettings.createdAt));
+
+	return settings.map(({ problemStatementOriginalFilename, problemStatementFileSize, ...setting }) => ({
+		...setting,
+		problemStatement: problemStatementOriginalFilename !== null && problemStatementFileSize !== null
+			? { originalFilename: problemStatementOriginalFilename, fileSize: problemStatementFileSize }
+			: null,
+	}));
+}
+
 export async function requireActiveRoundOnePreferences(preferenceIds: string[]) {
 	if (
 		preferenceIds.length !== ROUND_ONE_PREFERENCE_COUNT ||

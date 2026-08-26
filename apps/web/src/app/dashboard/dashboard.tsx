@@ -24,8 +24,8 @@ import { Skeleton } from "@masc-landing/ui/components/skeleton";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import type { inferRouterOutputs } from "@trpc/server";
 import {
-  ArrowDownIcon, ArrowRightIcon, CheckCircle2Icon, ChevronDownIcon, CircleXIcon, ListChecksIcon, MegaphoneIcon,
-  MessageSquareQuoteIcon, RefreshCwIcon, TriangleAlertIcon
+  ArrowDownIcon, ArrowRightIcon, CheckCircle2Icon, ChevronDownIcon, CircleXIcon, DownloadIcon, FileTextIcon,
+  ListChecksIcon, MegaphoneIcon, MessageSquareQuoteIcon, RefreshCwIcon, TriangleAlertIcon
 } from "lucide-react";
 import type { Route } from "next";
 import dynamic from "next/dynamic";
@@ -696,12 +696,52 @@ function RoundOnePreferences({ membership, preferenceSettings }: {
                 : t("preferences.summaryRank.third")}{": "}{preference.name}
           </li>)}</ol>
           {membership.team.preferenceStatus === "assigned" && membership.team.assignedTrack
-            ? <div className="assigned-track"><span>{t("preferences.assignedTrack")}</span>
+            ? <><div className="assigned-track"><span>{t("preferences.assignedTrack")}</span>
               <strong>{membership.team.assignedTrack.name}</strong></div>
+              <AssignedProblemStatement /></>
             : <p className="preference-message">{t("preferences.waitingAssignment")}</p>}
         </div>}
     </CardContent>
   </Card>;
+}
+
+function AssignedProblemStatement() {
+  const t = useTranslations("Dashboard");
+  const statement = useQuery(trpc.roundOneProblemStatement.current.queryOptions());
+  const download = useMutation(trpc.roundOneProblemStatement.createDownloadUrl.mutationOptions({
+    onSuccess: ({ downloadUrl }) => window.location.assign(downloadUrl),
+    onError: () => toast.error(t("preferences.problemStatement.downloadError")),
+  }));
+
+  if (statement.isPending) {
+    return <p className="problem-statement-message">{t("preferences.problemStatement.loading")}</p>;
+  }
+  if (statement.isError) {
+    return <div className="problem-statement-message problem-statement-error">
+      <p>{t("errors.loadDescription")}</p>
+      <Button type="button" size="sm" variant="outline" onClick={() => statement.refetch()}>
+        <RefreshCwIcon aria-hidden="true" />{t("preferences.problemStatement.retry")}
+      </Button>
+    </div>;
+  }
+  if (!statement.data) {
+    return <p className="problem-statement-message">{t("preferences.problemStatement.unavailable")}</p>;
+  }
+
+  return <section className="assigned-problem-statement" aria-label={t("preferences.problemStatement.label")}>
+    <div className="submission-file problem-statement-file">
+      <FileTextIcon aria-hidden="true" />
+      <div><strong>{statement.data.originalFilename}</strong><span>{formatBytes(statement.data.fileSize)}</span></div>
+      <Button type="button" variant="outline" disabled={download.isPending} onClick={() => download.mutate()}>
+        <DownloadIcon aria-hidden="true" />{t("preferences.problemStatement.download")}
+      </Button>
+    </div>
+    <div className="submission-preview">
+      <Label>{t("preferences.problemStatement.label")}</Label>
+      <iframe src={statement.data.previewUrl}
+        title={t("preferences.problemStatement.iframeTitle", { filename: statement.data.originalFilename })} />
+    </div>
+  </section>;
 }
 
 function TeamOverview({ membership }: { membership: Extract<Membership, { registered: true }> }) {
@@ -805,6 +845,12 @@ function Detail({ label, value }: { label: string; value: string }) {
 
 function formatUploadLimit(bytes: number) {
   return `${bytes / 1024 / 1024} MiB`;
+}
+
+function formatBytes(bytes: number) {
+  return bytes < 1024 * 1024
+    ? `${Math.ceil(bytes / 1024)} KiB`
+    : `${(bytes / 1024 / 1024).toFixed(1)} MiB`;
 }
 
 function DashboardSkeleton() {
