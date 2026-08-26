@@ -59,6 +59,7 @@ export default function RoundTeamList({ round }: { round: RoundId }) {
       setSelected([]);
       await Promise.all([
         queryClient.invalidateQueries({ queryKey: trpc.admin.listTeams.queryKey({ round }) }),
+        queryClient.invalidateQueries({ queryKey: trpc.admin.getTeamStats.queryKey({ round }) }),
         queryClient.invalidateQueries({ queryKey: trpc.admin.getMailStats.queryKey() }),
         ...mailFilters.map((status) => queryClient.invalidateQueries({
           queryKey: trpc.admin.listMail.queryKey({ status }),
@@ -115,7 +116,7 @@ export default function RoundTeamList({ round }: { round: RoundId }) {
       retry={() => stats.refetch()} retryLabel={t("actions.retry")} locale={locale} metrics={[
         { label: t("stats.totalTeams"), value: stats.data?.totalTeams }, { label: t("stats.totalParticipants"), value: stats.data?.totalParticipants },
         { label: t("stats.pendingTeams"), value: stats.data?.pendingTeams }, { label: t("stats.approvedTeams"), value: stats.data?.approvedTeams },
-        { label: t("stats.rejectedTeams"), value: stats.data?.rejectedTeams },
+        { label: t("stats.rejectedTeams"), value: stats.data?.rejectedTeams }, { label: t("stats.eliminatedTeams"), value: stats.data?.eliminatedTeams },
         ...awarenessMetrics,
       ]} />
     <div className="admin-team-toolbar">

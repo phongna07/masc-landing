@@ -655,6 +655,7 @@ export const adminRouter = router({
         pendingTeams: sql<number>`count(*) filter (where ${team.registrationStatus} = ${"pending"})`,
         approvedTeams: sql<number>`count(*) filter (where ${team.registrationStatus} = ${"approved"})`,
         rejectedTeams: sql<number>`count(*) filter (where ${team.registrationStatus} = ${"rejected"})`,
+        eliminatedTeams: sql<number>`count(*) filter (where ${team.isEliminated} = true)`,
       }).from(team),
       db.select({ totalParticipants: count() }).from(member),
       db.select({ awarenessSource: team.awarenessSource, total: count() }).from(team)
@@ -672,6 +673,7 @@ export const adminRouter = router({
       pendingTeams: Number(teamStats?.pendingTeams ?? 0),
       approvedTeams: Number(teamStats?.approvedTeams ?? 0),
       rejectedTeams: Number(teamStats?.rejectedTeams ?? 0),
+      eliminatedTeams: Number(teamStats?.eliminatedTeams ?? 0),
       awarenessSourceCounts,
     };
   }),
