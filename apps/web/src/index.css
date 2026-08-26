@@ -453,7 +453,6 @@ dialog[open]::backdrop {
 .preference-summary ol,
 .admin-preference-list {
   margin: 0;
-  padding-left: 22px;
 }
 
 .preference-summary li,

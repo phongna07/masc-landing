@@ -343,6 +343,11 @@
       "title": "Register your desired track",
       "description": "Rank three different Round 1 tracks in order of preference. Your ranking cannot be changed after submission.",
       "rank": "Preference {rank}",
+      "summaryRank": {
+        "first": "First Preference",
+        "second": "Second Preference",
+        "third": "Third Preference"
+      },
       "selectPlaceholder": "Select a track",
       "validation": "Select three different tracks in preference order.",
       "status": {

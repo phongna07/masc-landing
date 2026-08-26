@@ -254,7 +254,7 @@ function RoundDashboard({ round, session, settings, uploadLimits, preferenceSett
   return <div className="team-dashboard"><Link className="admin-back-link" href="/dashboard">← {t("hub.back")}</Link>
     {!membership.data.registered ? (round === "0.5" || round === "1")
       ? settings[round] ? <RegistrationForm session={session} round={round} maxCvFileSize={uploadLimits.participantCv}
-          preferenceSettings={preferenceSettings} />
+        preferenceSettings={preferenceSettings} />
         : <Card className="dashboard-state-card"><CardHeader><CardTitle>{t("hub.closed")}</CardTitle></CardHeader><CardContent><p>{t("hub.closedDescription")}</p></CardContent></Card>
       : <Card className="dashboard-state-card"><CardHeader><CardTitle>{t("hub.notEligible")}</CardTitle></CardHeader><CardContent><p>{t("hub.eligibilityDescription", { roundLabel: roundLabel(round) })}</p></CardContent></Card>
       : <><TeamOverview membership={membership.data} />
@@ -433,9 +433,11 @@ function RegistrationForm({ session, round, maxCvFileSize, preferenceSettings }:
       const message = cause instanceof Error ? cause.message : "";
       if (message === "FILE_TOO_LARGE") {
         const latest = await queryClient.fetchQuery(trpc.uploadLimits.queryOptions());
-        setErrors((current) => ({ ...current, form: t("registration.cv.fileSize", {
-          maxSize: formatUploadLimit(latest.participantCv),
-        }) }));
+        setErrors((current) => ({
+          ...current, form: t("registration.cv.fileSize", {
+            maxSize: formatUploadLimit(latest.participantCv),
+          })
+        }));
       } else if (message !== "EMAIL_ALREADY_REGISTERED" && message !== "DUPLICATE_EMAILS") {
         setErrors((current) => ({ ...current, form: t("registration.cv.uploadError") }));
       }
@@ -498,9 +500,9 @@ function RegistrationForm({ session, round, maxCvFileSize, preferenceSettings }:
             label={t("registration.cv.memberLabel", { name: captainFullName || t("roles.captain") })}
             error={errors["cvs.0"]}>
             <><Input className="cv-file-input" type="file" accept=".pdf,application/pdf"
-                aria-invalid={!!errors["cvs.0"]}
-                onChange={(event) => setCvFiles((current) => current.map((file, fileIndex) =>
-                  fileIndex === 0 ? event.target.files?.[0] ?? null : file))} />
+              aria-invalid={!!errors["cvs.0"]}
+              onChange={(event) => setCvFiles((current) => current.map((file, fileIndex) =>
+                fileIndex === 0 ? event.target.files?.[0] ?? null : file))} />
               <span className="field-hint">{t("registration.cv.description", {
                 maxSize: formatUploadLimit(maxCvFileSize),
               })}</span></>
@@ -542,9 +544,9 @@ function RegistrationForm({ session, round, maxCvFileSize, preferenceSettings }:
                   name: member.fullName || t("registration.memberNumber", { number: index + 2 }),
                 })} error={errors[`cvs.${index + 1}`]}>
                   <><Input className="cv-file-input" type="file" accept=".pdf,application/pdf"
-                      aria-invalid={!!errors[`cvs.${index + 1}`]}
-                      onChange={(event) => setCvFiles((current) => current.map((file, fileIndex) =>
-                        fileIndex === index + 1 ? event.target.files?.[0] ?? null : file))} />
+                    aria-invalid={!!errors[`cvs.${index + 1}`]}
+                    onChange={(event) => setCvFiles((current) => current.map((file, fileIndex) =>
+                      fileIndex === index + 1 ? event.target.files?.[0] ?? null : file))} />
                     <span className="field-hint">{t("registration.cv.description", {
                       maxSize: formatUploadLimit(maxCvFileSize),
                     })}</span></>
@@ -686,7 +688,11 @@ function RoundOnePreferences({ membership, preferenceSettings }: {
           </Button>
         </form> : <p className="preference-message">{t("preferences.captainRequired")}</p>
         : <div className="preference-summary">
-          <ol>{membership.team.preferences.map((preference) => <li key={preference.id}>{preference.name}</li>)}</ol>
+          <ol>{membership.team.preferences.map((preference, index) => <li key={preference.id}>
+            {index === 0 ? t("preferences.summaryRank.first")
+              : index === 1 ? t("preferences.summaryRank.second")
+                : t("preferences.summaryRank.third")}{": "}{preference.name}
+          </li>)}</ol>
           {membership.team.preferenceStatus === "assigned" && membership.team.assignedTrack
             ? <div className="assigned-track"><span>{t("preferences.assignedTrack")}</span>
               <strong>{membership.team.assignedTrack.name}</strong></div>

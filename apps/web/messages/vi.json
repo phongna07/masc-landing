@@ -343,6 +343,11 @@
       "title": "Đăng ký track mong muốn",
       "description": "Xếp hạng ba track Vòng 1 khác nhau theo thứ tự ưu tiên. Thứ tự không thể thay đổi sau khi gửi.",
       "rank": "Nguyện vọng {rank}",
+      "summaryRank": {
+        "first": "Nguyện vọng 1",
+        "second": "Nguyện vọng 2",
+        "third": "Nguyện vọng 3"
+      },
       "selectPlaceholder": "Chọn một track",
       "validation": "Hãy chọn ba track khác nhau theo thứ tự ưu tiên.",
       "status": {
