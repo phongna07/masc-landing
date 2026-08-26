@@ -439,7 +439,6 @@
       "previewLabel": "Xem trước tệp",
       "previewTitle": "Xem trước {filename}",
       "feedbackTitle": "Nhận xét từ ban tổ chức",
-      "scoreTitle": "Điểm số",
       "emptyTitle": "Chưa có bài nộp",
       "unavailableTitle": "Chưa mở nộp bài {roundLabel}",
       "unavailableDescription": "Ban tổ chức sẽ mở vòng này khi bắt đầu nhận bài.",
@@ -871,7 +870,6 @@
     "feedback": {
       "title": "Nhận xét bài nộp",
       "label": "Nhận xét dành cho đội thi",
-      "scoreLabel": "Điểm số",
       "characters": "{count} / 5000 ký tự",
       "draftStatus": "Bản nháp - đội thi chưa thể xem",
       "publishedStatus": "Đã công bố - đội thi có thể xem",
@@ -880,8 +878,6 @@
       "draftSaved": "Đã lưu bản nháp nhận xét.",
       "published": "Đã công bố nhận xét cho đội thi.",
       "required": "Hãy nhập nhận xét trước khi lưu.",
-      "scoreRequired": "Hãy nhập điểm số trước khi lưu.",
-      "scoreInvalid": "Điểm số phải là một số không âm.",
       "tooLong": "Nhận xét không được vượt quá 5.000 ký tự.",
       "saveError": "Không thể lưu nhận xét. Vui lòng thử lại."
     },
