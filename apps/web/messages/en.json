@@ -439,7 +439,6 @@
       "previewLabel": "File preview",
       "previewTitle": "Preview of {filename}",
       "feedbackTitle": "Admin feedback",
-      "scoreTitle": "Score",
       "emptyTitle": "No submission yet",
       "unavailableTitle": "{roundLabel} submissions are not available yet",
       "unavailableDescription": "The organizers will open this round when submissions can begin.",
@@ -871,7 +870,6 @@
     "feedback": {
       "title": "Submission feedback",
       "label": "Feedback for the team",
-      "scoreLabel": "Score",
       "characters": "{count} / 5000 characters",
       "draftStatus": "Draft - not visible to the team",
       "publishedStatus": "Published - visible to the team",
@@ -880,8 +878,6 @@
       "draftSaved": "Feedback draft saved.",
       "published": "Feedback published to the team.",
       "required": "Enter feedback before saving.",
-      "scoreRequired": "Enter a score before saving.",
-      "scoreInvalid": "Score must be a non-negative number.",
       "tooLong": "Feedback must be 5,000 characters or fewer.",
       "saveError": "Feedback could not be saved. Please try again."
     },

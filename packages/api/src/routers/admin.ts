@@ -54,7 +54,7 @@ const submissionInput = roundInput.extend({ submissionId: z.string().trim().min(
 const pdfExportInput = roundInput.extend({ exportId: z.string().trim().min(1).max(128) });
 const feedbackInput = submissionInput.extend({
   feedback: z.string().trim().min(1).max(5000),
-  score: z.number().finite().nonnegative(),
+  score: z.number().finite().nonnegative().optional(),
 });
 const registrationDecisionSchema = z.enum(["approved", "rejected"]);
 const preferenceNameSchema = z.string().trim().min(1).max(160);
@@ -1036,14 +1036,14 @@ export const adminRouter = router({
   saveRoundFeedbackDraft: roundsProcedure.input(feedbackInput).mutation(async ({ input }) => {
     const { submission: table } = submissionTables(input.round);
     const [submission] = await db.update(table)
-      .set({ feedback: input.feedback, score: input.score, feedbackPublished: false })
+      .set({ feedback: input.feedback, ...(input.score !== undefined && { score: input.score }), feedbackPublished: false })
       .where(identifiedSubmission(input)).returning({ id: table.id });
     if (!submission) throw new TRPCError({ code: "NOT_FOUND", message: "Submission not found" }); return { success: true };
   }),
   publishRoundFeedback: roundsProcedure.input(feedbackInput).mutation(async ({ input }) => {
     const { submission: table } = submissionTables(input.round);
     const [submission] = await db.update(table)
-      .set({ feedback: input.feedback, score: input.score, feedbackPublished: true })
+      .set({ feedback: input.feedback, ...(input.score !== undefined && { score: input.score }), feedbackPublished: true })
       .where(identifiedSubmission(input)).returning({ id: table.id });
     if (!submission) throw new TRPCError({ code: "NOT_FOUND", message: "Submission not found" }); return { success: true };
   }),

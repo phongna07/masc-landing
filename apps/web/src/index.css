@@ -721,7 +721,6 @@ dialog[open]::backdrop {
 
 .participant-feedback {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
   gap: clamp(22px, 4vw, 42px);
   align-items: stretch;
   margin-top: 10px;
@@ -752,16 +751,14 @@ dialog[open]::backdrop {
   height: 18px;
 }
 
-.participant-feedback-heading [data-slot="label"],
-.participant-feedback-score [data-slot="label"] {
+.participant-feedback-heading [data-slot="label"] {
   color: inherit;
   font-size: 11px;
   letter-spacing: .14em;
   text-transform: uppercase;
 }
 
-.participant-feedback-copy p,
-.participant-feedback-score p {
+.participant-feedback-copy p {
   margin: 0;
 }
 
@@ -771,24 +768,6 @@ dialog[open]::backdrop {
   overflow-wrap: anywhere;
   font-size: 15px;
   line-height: 1.75;
-}
-
-.participant-feedback-score {
-  display: grid;
-  min-width: 118px;
-  place-content: center;
-  gap: 7px;
-  padding: 16px 22px;
-  border: 1px solid rgba(242, 213, 132, 0.35);
-  color: #f2d584;
-  background: rgba(9, 9, 12, 0.34);
-  text-align: center;
-}
-
-.participant-feedback-score p {
-  font-family: var(--font-castela), Georgia, serif;
-  font-size: clamp(32px, 5vw, 46px);
-  line-height: 1;
 }
 
 .round-submission-fields {
@@ -1536,14 +1515,6 @@ dialog[open]::backdrop {
   .submission-file [data-slot="button"] {
     grid-column: 1 / -1;
     width: 100%;
-  }
-
-  .participant-feedback {
-    grid-template-columns: 1fr;
-  }
-
-  .participant-feedback-score {
-    min-width: 0;
   }
 
   .round-status-header {
@@ -2920,10 +2891,6 @@ dialog[open]::backdrop {
   min-height: 180px;
   resize: vertical;
   line-height: 1.6;
-}
-
-.admin-feedback-fields [data-slot="input"] {
-  max-width: 260px;
 }
 
 .admin-feedback-actions {

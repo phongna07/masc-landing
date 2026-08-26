@@ -118,7 +118,6 @@ export default function RoundSubmission({ round, maxFileSize, sectionNumber = "0
         <Button variant="outline" disabled={download.isPending} onClick={() => download.mutate(input)}><DownloadIcon aria-hidden="true" />{t("round.download")}</Button></div>
       {existing.feedback && <section className="participant-feedback" aria-labelledby={`round-${round}-feedback-title`}>
         <div className="participant-feedback-copy"><div className="participant-feedback-heading"><MessageSquareQuoteIcon aria-hidden="true" /><Label id={`round-${round}-feedback-title`}>{t("round.feedbackTitle")}</Label></div><p>{existing.feedback}</p></div>
-        {existing.score !== null && <div className="participant-feedback-score"><Label>{t("round.scoreTitle")}</Label><p>{existing.score}</p></div>}
       </section>}
       {existing.mimeType === "application/pdf" && preview.data?.previewUrl && <div className="submission-preview"><Label>{t("round.previewLabel")}</Label><iframe src={preview.data.previewUrl} title={t("round.previewTitle", { filename: existing.originalFilename })} /></div>}
     </CardContent>}
