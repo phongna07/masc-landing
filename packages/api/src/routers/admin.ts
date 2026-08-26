@@ -32,7 +32,11 @@ import { awarenessSources, type AwarenessSource } from "../registration-schema";
 import { roundSchema, type RoundId } from "../rounds";
 import { attachmentContentDisposition, roundSubmissionArchiveFilename } from "../submission-files";
 import { getSubmissionSettings } from "../submission-settings";
-import { getRoundOnePreferenceSettings, resolveRoundOnePreferences } from "../round-one-preferences";
+import {
+  getAdminRoundOnePreferenceSettings,
+  getRoundOnePreferenceSettings,
+  resolveRoundOnePreferences,
+} from "../round-one-preferences";
 import {
   getUploadLimits,
   MEBIBYTE,
@@ -480,7 +484,7 @@ async function assignRoundOneTrack(input: { teamId: string; trackId: string }) {
   return { id: input.teamId, preferenceStatus: "assigned" as const, assignedTrackId: input.trackId };
 }
 export const adminRouter = router({
-  getRoundOnePreferenceSettings: overviewProcedure.query(() => getRoundOnePreferenceSettings(false)),
+  getRoundOnePreferenceSettings: overviewProcedure.query(getAdminRoundOnePreferenceSettings),
   createRoundOnePreferenceSetting: overviewProcedure.input(z.object({ name: preferenceNameSchema }))
     .mutation(async ({ input }) => {
       const [order] = await db.select({ value: max(preferencesSettings.displayOrder) }).from(preferencesSettings);

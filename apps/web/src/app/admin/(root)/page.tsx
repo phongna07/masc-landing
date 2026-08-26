@@ -1,16 +1,18 @@
 "use client";
 
 import type { UploadLimitKind } from "@masc-landing/api/upload-limits";
+import { MAX_PROBLEM_STATEMENT_FILE_SIZE } from "@masc-landing/api/round-one-problem-statements";
 import { Button } from "@masc-landing/ui/components/button";
 import { roundIds } from "@masc-landing/api/rounds";
 import { Card, CardContent, CardHeader, CardTitle } from "@masc-landing/ui/components/card";
+import { ConfirmationDialog } from "@masc-landing/ui/components/confirmation-dialog";
 import { Input } from "@masc-landing/ui/components/input";
 import { Label } from "@masc-landing/ui/components/label";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
-import { useEffect, useState, type FormEvent } from "react";
+import { useEffect, useRef, useState, type FormEvent } from "react";
 import { toast } from "sonner";
-import { ArrowDownIcon, ArrowUpIcon, PlusIcon } from "lucide-react";
+import { ArrowDownIcon, ArrowUpIcon, DownloadIcon, FileTextIcon, PlusIcon, Trash2Icon, UploadIcon } from "lucide-react";
 
 import { useRoundLabel } from "@/hooks/use-round-label";
 import { trpc } from "@/utils/trpc";
@@ -150,6 +152,7 @@ function PreferenceSettingsSection() {
 			description={t("overview.preferences.loadError")} retry={() => settings.refetch()} retryLabel={t("actions.retry")} /> : <>
 			<div className="admin-preference-settings">{settings.data.map((setting, index) => <PreferenceSettingRow key={setting.id}
 				setting={setting} disabled={update.isPending || reorder.isPending}
+				onChanged={() => settings.refetch()}
 				onSave={(name) => update.mutate({ id: setting.id, name })}
 				onToggle={() => update.mutate({ id: setting.id, isActive: !setting.isActive })}
 				onMoveUp={() => move(index, -1)} onMoveDown={() => move(index, 1)}
@@ -163,9 +166,15 @@ function PreferenceSettingsSection() {
 	</section>;
 }
 
-function PreferenceSettingRow({ setting, disabled, onSave, onToggle, onMoveUp, onMoveDown, first, last }: {
-	setting: { id: string; name: string; isActive: boolean };
+function PreferenceSettingRow({ setting, disabled, onChanged, onSave, onToggle, onMoveUp, onMoveDown, first, last }: {
+	setting: {
+		id: string;
+		name: string;
+		isActive: boolean;
+		problemStatement: { originalFilename: string; fileSize: number } | null;
+	};
 	disabled: boolean;
+	onChanged: () => Promise<unknown>;
 	onSave: (name: string) => void;
 	onToggle: () => void;
 	onMoveUp: () => void;
@@ -175,22 +184,110 @@ function PreferenceSettingRow({ setting, disabled, onSave, onToggle, onMoveUp, o
 }) {
 	const t = useTranslations("Admin");
 	const [name, setName] = useState(setting.name);
+	const [file, setFile] = useState<File | null>(null);
+	const [fileError, setFileError] = useState<string | null>(null);
+	const [isUploading, setIsUploading] = useState(false);
+	const fileInputRef = useRef<HTMLInputElement>(null);
+	const createUploadUrl = useMutation(trpc.roundOneProblemStatement.createUploadUrl.mutationOptions());
+	const replace = useMutation(trpc.roundOneProblemStatement.replace.mutationOptions());
+	const download = useMutation(trpc.roundOneProblemStatement.createAdminDownloadUrl.mutationOptions({
+		onSuccess: ({ downloadUrl }) => window.location.assign(downloadUrl),
+		onError: () => toast.error(t("overview.preferences.problemStatement.downloadError")),
+	}));
+	const remove = useMutation(trpc.roundOneProblemStatement.remove.mutationOptions({
+		onSuccess: async () => {
+			await onChanged();
+			toast.success(t("overview.preferences.problemStatement.deleteSuccess"));
+		},
+		onError: () => toast.error(t("overview.preferences.problemStatement.deleteError")),
+	}));
 	useEffect(() => setName(setting.name), [setting.name]);
-	return <form className="admin-preference-setting-row" onSubmit={(event) => {
-		event.preventDefault(); const value = name.trim(); if (value && value !== setting.name) onSave(value);
-	}}>
-		<div className="admin-preference-order-actions">
-			<Button type="button" size="icon-sm" variant="outline" aria-label={t("overview.preferences.moveUp")}
-				disabled={disabled || first} onClick={onMoveUp}><ArrowUpIcon /></Button>
-			<Button type="button" size="icon-sm" variant="outline" aria-label={t("overview.preferences.moveDown")}
-				disabled={disabled || last} onClick={onMoveDown}><ArrowDownIcon /></Button>
+	const rowDisabled = disabled || isUploading || remove.isPending;
+	const inputId = `problem-statement-${setting.id}`;
+	const upload = async () => {
+		setFileError(null);
+		if (!file) return setFileError(t("overview.preferences.problemStatement.validation.required"));
+		if (!file.name.toLowerCase().endsWith(".pdf")) {
+			return setFileError(t("overview.preferences.problemStatement.validation.type"));
+		}
+		if (file.size <= 0) return setFileError(t("overview.preferences.problemStatement.validation.empty"));
+		if (file.size > MAX_PROBLEM_STATEMENT_FILE_SIZE) {
+			return setFileError(t("overview.preferences.problemStatement.validation.size"));
+		}
+		const metadata = {
+			trackId: setting.id,
+			filename: file.name,
+			mimeType: "application/pdf" as const,
+			fileSize: file.size,
+		};
+		setIsUploading(true);
+		try {
+			const signed = await createUploadUrl.mutateAsync(metadata);
+			const response = await fetch(signed.uploadUrl, {
+				method: "PUT",
+				body: file,
+				headers: { "Content-Type": "application/pdf" },
+			});
+			if (!response.ok) throw new Error("UPLOAD_FAILED");
+			await replace.mutateAsync({ ...metadata, uploadId: signed.uploadId });
+			setFile(null);
+			if (fileInputRef.current) fileInputRef.current.value = "";
+			await onChanged();
+			toast.success(t("overview.preferences.problemStatement.uploadSuccess"));
+		} catch {
+			setFileError(t("overview.preferences.problemStatement.uploadError"));
+		} finally {
+			setIsUploading(false);
+		}
+	};
+	return <div className="admin-preference-setting-row">
+		<form className="admin-preference-setting-main" onSubmit={(event) => {
+			event.preventDefault(); const value = name.trim(); if (value && value !== setting.name) onSave(value);
+		}}>
+			<div className="admin-preference-order-actions">
+				<Button type="button" size="icon-sm" variant="outline" aria-label={t("overview.preferences.moveUp")}
+					disabled={rowDisabled || first} onClick={onMoveUp}><ArrowUpIcon /></Button>
+				<Button type="button" size="icon-sm" variant="outline" aria-label={t("overview.preferences.moveDown")}
+					disabled={rowDisabled || last} onClick={onMoveDown}><ArrowDownIcon /></Button>
+			</div>
+			<Input value={name} maxLength={160} disabled={rowDisabled} onChange={(event) => setName(event.target.value)} />
+			<Button type="submit" variant="outline" disabled={rowDisabled || !name.trim() || name.trim() === setting.name}>{t("overview.preferences.save")}</Button>
+			<Button type="button" variant={setting.isActive ? "destructive" : "outline"} disabled={rowDisabled} onClick={onToggle}>
+				{t(setting.isActive ? "overview.preferences.deactivate" : "overview.preferences.activate")}</Button>
+		</form>
+		<div className="admin-problem-statement">
+			<div className="admin-problem-statement-heading"><div><Label htmlFor={inputId}>{t("overview.preferences.problemStatement.label")}</Label>
+				<span className="field-hint">{t("overview.preferences.problemStatement.hint")}</span></div>
+				{setting.problemStatement && <div className="admin-problem-statement-current"><FileTextIcon aria-hidden="true" />
+					<div><strong>{setting.problemStatement.originalFilename}</strong><span>{formatFileSize(setting.problemStatement.fileSize)}</span></div>
+					<Button type="button" size="sm" variant="outline" disabled={download.isPending}
+						onClick={() => download.mutate({ trackId: setting.id })}><DownloadIcon aria-hidden="true" />
+						{t("overview.preferences.problemStatement.download")}</Button></div>}
+			</div>
+			<div className="admin-problem-statement-controls">
+				<Input ref={fileInputRef} id={inputId} className="cv-file-input" type="file" accept=".pdf,application/pdf"
+					disabled={rowDisabled} onChange={(event) => { setFile(event.target.files?.[0] ?? null); setFileError(null); }} />
+				<Button type="button" variant="outline" disabled={rowDisabled || !file} onClick={() => void upload()}>
+					<UploadIcon aria-hidden="true" />{isUploading ? t("overview.preferences.problemStatement.uploading")
+						: t(setting.problemStatement ? "overview.preferences.problemStatement.replace" : "overview.preferences.problemStatement.upload")}</Button>
+				{setting.problemStatement && <ConfirmationDialog
+					trigger={<Button type="button" variant="destructive" disabled={rowDisabled}><Trash2Icon aria-hidden="true" />
+						{t("overview.preferences.problemStatement.delete")}</Button>}
+					title={t("overview.preferences.problemStatement.deleteConfirmation.title")}
+					description={t("overview.preferences.problemStatement.deleteConfirmation.description", { track: setting.name })}
+					confirmLabel={t("overview.preferences.problemStatement.deleteConfirmation.confirm")}
+					cancelLabel={t("actions.cancel")}
+					icon={<Trash2Icon />} tone="destructive" onConfirm={() => remove.mutate({ trackId: setting.id })} />}
+			</div>
+			{fileError && <p className="admin-file-error" role="alert">{fileError}</p>}
 		</div>
-		<Input value={name} maxLength={160} disabled={disabled} onChange={(event) => setName(event.target.value)} />
-		<span className={setting.isActive ? "is-open" : "is-closed"}>{t(setting.isActive ? "overview.preferences.active" : "overview.preferences.inactive")}</span>
-		<Button type="submit" variant="outline" disabled={disabled || !name.trim() || name.trim() === setting.name}>{t("overview.preferences.save")}</Button>
-		<Button type="button" variant={setting.isActive ? "destructive" : "outline"} disabled={disabled} onClick={onToggle}>
-			{t(setting.isActive ? "overview.preferences.deactivate" : "overview.preferences.activate")}</Button>
-	</form>;
+	</div>;
+}
+
+function formatFileSize(bytes: number) {
+	return bytes < MEBIBYTE
+		? `${Math.ceil(bytes / 1024)} KiB`
+		: `${(bytes / MEBIBYTE).toFixed(1)} MiB`;
 }
 
 function UploadLimitCard({ kind, maxFileSize, onSaved }: {

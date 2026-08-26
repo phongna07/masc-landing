@@ -37,16 +37,18 @@ export default function RoundTeamList({ round }: { round: RoundId }) {
   const [isExporting, setIsExporting] = useState(false);
   const teams = useQuery(trpc.admin.listTeams.queryOptions({ round }));
   const stats = useQuery(trpc.admin.getTeamStats.queryOptions({ round }));
-  const promote = useMutation(trpc.admin.promoteTeams.mutationOptions({ onSuccess: async ({ results }) => {
-    const succeeded = results.filter((result) => result.success).length;
-    const failed = results.length - succeeded;
-    const conflicts = results.flatMap((result) => result.success ? [] : result.conflictingEmails).join(", ");
-    toast.success(t("teams.promotionResult", { succeeded, failed }), {
-      description: conflicts ? t("teams.promotionConflicts", { emails: conflicts }) : undefined,
-    }); setSelected([]);
-    await Promise.all([queryClient.invalidateQueries({ queryKey: trpc.admin.listTeams.queryKey({ round }) }),
+  const promote = useMutation(trpc.admin.promoteTeams.mutationOptions({
+    onSuccess: async ({ results }) => {
+      const succeeded = results.filter((result) => result.success).length;
+      const failed = results.length - succeeded;
+      const conflicts = results.flatMap((result) => result.success ? [] : result.conflictingEmails).join(", ");
+      toast.success(t("teams.promotionResult", { succeeded, failed }), {
+        description: conflicts ? t("teams.promotionConflicts", { emails: conflicts }) : undefined,
+      }); setSelected([]);
+      await Promise.all([queryClient.invalidateQueries({ queryKey: trpc.admin.listTeams.queryKey({ round }) }),
       ...targets[round].map((targetRound) => queryClient.invalidateQueries({ queryKey: trpc.admin.listTeams.queryKey({ round: targetRound }) }))]);
-  }, onError: () => toast.error(t("teams.promotionError")) }));
+    }, onError: () => toast.error(t("teams.promotionError"))
+  }));
   const setEliminated = useMutation(trpc.admin.setTeamsEliminated.mutationOptions({
     onSuccess: async ({ updatedCount, isEliminated, queuedMailCount, removedMailCount }, variables) => {
       toast.success(t(isEliminated ? "teams.elimination.markSuccess" : "teams.elimination.restoreSuccess", { count: updatedCount }), {
@@ -183,8 +185,8 @@ export default function RoundTeamList({ round }: { round: RoundId }) {
             {showAwarenessSource && <td>{awarenessSource}</td>}
             {round === "1" && <><td>{team.preferenceStatus ? <span className={`preference-status preference-status-${team.preferenceStatus}`}>
               {t(`values.preferenceStatus.${team.preferenceStatus}`)}</span> : "—"}</td>
-              <td>{team.preferences.length ? <ol className="admin-preference-list">{team.preferences.map((preference) =>
-                <li key={preference.id}>{preference.name}</li>)}</ol> : "—"}</td>
+              <td>{team.preferences.length ? <ol className="admin-preference-list">{team.preferences.map((preference, index) =>
+                <li key={preference.id}>{index + 1}{")"} {preference.name}</li>)}</ol> : "—"}</td>
               <td>{team.assignedTrack?.name ?? "—"}</td></>}
             <td><span className={`status-badge status-${team.status}`}>{t(`values.status.${team.status}`)}</span></td>
             <td><span className="elimination-badge" data-eliminated={team.isEliminated}>

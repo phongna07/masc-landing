@@ -3,6 +3,7 @@ import { getUploadLimits } from "../upload-limits";
 import { announcementsRouter } from "./announcements";
 import { adminRouter } from "./admin";
 import { registrationRouter } from "./registration";
+import { roundOneProblemStatementRouter } from "./round-one-problem-statement";
 import { roundSubmissionRouter } from "./round-submission";
 import { userAnnouncementsRouter } from "./user-announcements";
 
@@ -10,6 +11,7 @@ export const appRouter = router({
   announcements: announcementsRouter,
   admin: adminRouter,
   registration: registrationRouter,
+  roundOneProblemStatement: roundOneProblemStatementRouter,
   roundSubmission: roundSubmissionRouter,
   userAnnouncements: userAnnouncementsRouter,
   uploadLimits: protectedProcedure.query(getUploadLimits),

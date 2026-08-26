@@ -342,7 +342,15 @@
       "section": "Register your desired track",
       "title": "Register your desired track",
       "description": "Rank three different Round 1 tracks in order of preference. Your ranking cannot be changed after submission.",
+      "assignedSection": "Track assignment",
+      "assignedTitle": "Your track has been assigned",
+      "assignedDescription": "The organizers have assigned your team to the track shown below.",
       "rank": "Preference {rank}",
+      "summaryRank": {
+        "first": "First Preference",
+        "second": "Second Preference",
+        "third": "Third Preference"
+      },
       "selectPlaceholder": "Select a track",
       "validation": "Select three different tracks in preference order.",
       "status": {
@@ -358,7 +366,16 @@
       "captainRequired": "The team captain must submit the track preferences.",
       "waitingAssignment": "Your preferences were received. The organizers will assign your track.",
       "assignedTrack": "Assigned track",
-      "unavailable": "At least three active tracks are required. Please contact the organizers."
+      "unavailable": "At least three active tracks are required. Please contact the organizers.",
+      "problemStatement": {
+        "label": "Problem statement",
+        "loading": "Loading the problem statement…",
+        "unavailable": "The problem statement is not available yet.",
+        "retry": "Try loading again",
+        "download": "Download problem statement",
+        "downloadError": "The problem statement could not be downloaded. Please try again.",
+        "iframeTitle": "Problem statement: {filename}"
+      }
     },
     "fields": {
       "teamName": "Team name",
@@ -597,7 +614,32 @@
         "add": "Add track",
         "success": "Round 1 track settings updated.",
         "error": "Could not update the track settings. Check for duplicate names and keep at least three active tracks.",
-        "loadError": "Could not load Round 1 track settings."
+        "loadError": "Could not load Round 1 track settings.",
+        "problemStatement": {
+          "label": "Problem statement PDF",
+          "hint": "Optional PDF - maximum 200 MiB.",
+          "upload": "Upload PDF",
+          "replace": "Replace PDF",
+          "uploading": "Uploading…",
+          "download": "Download",
+          "downloadError": "The problem statement could not be downloaded. Please try again.",
+          "delete": "Delete PDF",
+          "uploadSuccess": "The problem statement PDF was saved.",
+          "uploadError": "The problem statement could not be uploaded. Check the file and try again.",
+          "deleteSuccess": "The problem statement PDF was deleted.",
+          "deleteError": "The problem statement could not be deleted. Please try again.",
+          "validation": {
+            "required": "Choose a PDF file.",
+            "type": "Choose a file with a .pdf extension.",
+            "empty": "The PDF file cannot be empty.",
+            "size": "The PDF file must be no larger than 200 MiB."
+          },
+          "deleteConfirmation": {
+            "title": "Delete problem statement?",
+            "description": "This removes the problem statement PDF for {track}. Assigned teams will no longer be able to view or download it.",
+            "confirm": "Delete PDF"
+          }
+        }
       }
     },
     "announcements": {

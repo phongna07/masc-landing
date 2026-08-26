@@ -24,8 +24,8 @@ import { Skeleton } from "@masc-landing/ui/components/skeleton";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import type { inferRouterOutputs } from "@trpc/server";
 import {
-  ArrowDownIcon, ArrowRightIcon, CheckCircle2Icon, ChevronDownIcon, CircleXIcon, ListChecksIcon, MegaphoneIcon,
-  MessageSquareQuoteIcon, RefreshCwIcon, TriangleAlertIcon
+  ArrowDownIcon, ArrowRightIcon, CheckCircle2Icon, ChevronDownIcon, CircleXIcon, DownloadIcon, FileTextIcon,
+  ListChecksIcon, MegaphoneIcon, MessageSquareQuoteIcon, RefreshCwIcon, TriangleAlertIcon
 } from "lucide-react";
 import type { Route } from "next";
 import dynamic from "next/dynamic";
@@ -254,7 +254,7 @@ function RoundDashboard({ round, session, settings, uploadLimits, preferenceSett
   return <div className="team-dashboard"><Link className="admin-back-link" href="/dashboard">← {t("hub.back")}</Link>
     {!membership.data.registered ? (round === "0.5" || round === "1")
       ? settings[round] ? <RegistrationForm session={session} round={round} maxCvFileSize={uploadLimits.participantCv}
-          preferenceSettings={preferenceSettings} />
+        preferenceSettings={preferenceSettings} />
         : <Card className="dashboard-state-card"><CardHeader><CardTitle>{t("hub.closed")}</CardTitle></CardHeader><CardContent><p>{t("hub.closedDescription")}</p></CardContent></Card>
       : <Card className="dashboard-state-card"><CardHeader><CardTitle>{t("hub.notEligible")}</CardTitle></CardHeader><CardContent><p>{t("hub.eligibilityDescription", { roundLabel: roundLabel(round) })}</p></CardContent></Card>
       : <><TeamOverview membership={membership.data} />
@@ -433,9 +433,11 @@ function RegistrationForm({ session, round, maxCvFileSize, preferenceSettings }:
       const message = cause instanceof Error ? cause.message : "";
       if (message === "FILE_TOO_LARGE") {
         const latest = await queryClient.fetchQuery(trpc.uploadLimits.queryOptions());
-        setErrors((current) => ({ ...current, form: t("registration.cv.fileSize", {
-          maxSize: formatUploadLimit(latest.participantCv),
-        }) }));
+        setErrors((current) => ({
+          ...current, form: t("registration.cv.fileSize", {
+            maxSize: formatUploadLimit(latest.participantCv),
+          })
+        }));
       } else if (message !== "EMAIL_ALREADY_REGISTERED" && message !== "DUPLICATE_EMAILS") {
         setErrors((current) => ({ ...current, form: t("registration.cv.uploadError") }));
       }
@@ -498,9 +500,9 @@ function RegistrationForm({ session, round, maxCvFileSize, preferenceSettings }:
             label={t("registration.cv.memberLabel", { name: captainFullName || t("roles.captain") })}
             error={errors["cvs.0"]}>
             <><Input className="cv-file-input" type="file" accept=".pdf,application/pdf"
-                aria-invalid={!!errors["cvs.0"]}
-                onChange={(event) => setCvFiles((current) => current.map((file, fileIndex) =>
-                  fileIndex === 0 ? event.target.files?.[0] ?? null : file))} />
+              aria-invalid={!!errors["cvs.0"]}
+              onChange={(event) => setCvFiles((current) => current.map((file, fileIndex) =>
+                fileIndex === 0 ? event.target.files?.[0] ?? null : file))} />
               <span className="field-hint">{t("registration.cv.description", {
                 maxSize: formatUploadLimit(maxCvFileSize),
               })}</span></>
@@ -542,9 +544,9 @@ function RegistrationForm({ session, round, maxCvFileSize, preferenceSettings }:
                   name: member.fullName || t("registration.memberNumber", { number: index + 2 }),
                 })} error={errors[`cvs.${index + 1}`]}>
                   <><Input className="cv-file-input" type="file" accept=".pdf,application/pdf"
-                      aria-invalid={!!errors[`cvs.${index + 1}`]}
-                      onChange={(event) => setCvFiles((current) => current.map((file, fileIndex) =>
-                        fileIndex === index + 1 ? event.target.files?.[0] ?? null : file))} />
+                    aria-invalid={!!errors[`cvs.${index + 1}`]}
+                    onChange={(event) => setCvFiles((current) => current.map((file, fileIndex) =>
+                      fileIndex === index + 1 ? event.target.files?.[0] ?? null : file))} />
                     <span className="field-hint">{t("registration.cv.description", {
                       maxSize: formatUploadLimit(maxCvFileSize),
                     })}</span></>
@@ -642,6 +644,7 @@ function RoundOnePreferences({ membership, preferenceSettings }: {
   preferenceSettings: RoundOnePreferenceSettings;
 }) {
   const t = useTranslations("Dashboard");
+  const isAssigned = membership.team.preferenceStatus === "assigned";
   const [values, setValues] = useState(["", "", ""]);
   const [error, setError] = useState<string | undefined>();
   const submitPreferences = useMutation(trpc.registration.submitRoundOnePreferences.mutationOptions({
@@ -667,13 +670,14 @@ function RoundOnePreferences({ membership, preferenceSettings }: {
   return <Card className="dashboard-card preference-card">
     <CardHeader>
       <div className="preference-heading-row">
-        <div><p className="dashboard-card-index">02 / {t("preferences.section")}</p>
-          <CardTitle>{t("preferences.title")}</CardTitle></div>
+        <div><p className="dashboard-card-index">02 / {t(isAssigned
+          ? "preferences.assignedSection" : "preferences.section")}</p>
+          <CardTitle>{t(isAssigned ? "preferences.assignedTitle" : "preferences.title")}</CardTitle></div>
         <span className={`preference-status preference-status-${membership.team.preferenceStatus}`}>
           {t(`preferences.status.${membership.team.preferenceStatus}`)}
         </span>
       </div>
-      <p>{t("preferences.description")}</p>
+      <p>{t(isAssigned ? "preferences.assignedDescription" : "preferences.description")}</p>
     </CardHeader>
     <CardContent>
       {membership.team.preferenceStatus === "not_submitted" ? membership.role === "captain" ?
@@ -686,14 +690,58 @@ function RoundOnePreferences({ membership, preferenceSettings }: {
           </Button>
         </form> : <p className="preference-message">{t("preferences.captainRequired")}</p>
         : <div className="preference-summary">
-          <ol>{membership.team.preferences.map((preference) => <li key={preference.id}>{preference.name}</li>)}</ol>
+          <ol>{membership.team.preferences.map((preference, index) => <li key={preference.id}>
+            {index === 0 ? t("preferences.summaryRank.first")
+              : index === 1 ? t("preferences.summaryRank.second")
+                : t("preferences.summaryRank.third")}{": "}{preference.name}
+          </li>)}</ol>
           {membership.team.preferenceStatus === "assigned" && membership.team.assignedTrack
-            ? <div className="assigned-track"><span>{t("preferences.assignedTrack")}</span>
+            ? <><div className="assigned-track"><span>{t("preferences.assignedTrack")}</span>
               <strong>{membership.team.assignedTrack.name}</strong></div>
+              <AssignedProblemStatement /></>
             : <p className="preference-message">{t("preferences.waitingAssignment")}</p>}
         </div>}
     </CardContent>
   </Card>;
+}
+
+function AssignedProblemStatement() {
+  const t = useTranslations("Dashboard");
+  const statement = useQuery(trpc.roundOneProblemStatement.current.queryOptions());
+  const download = useMutation(trpc.roundOneProblemStatement.createDownloadUrl.mutationOptions({
+    onSuccess: ({ downloadUrl }) => window.location.assign(downloadUrl),
+    onError: () => toast.error(t("preferences.problemStatement.downloadError")),
+  }));
+
+  if (statement.isPending) {
+    return <p className="problem-statement-message">{t("preferences.problemStatement.loading")}</p>;
+  }
+  if (statement.isError) {
+    return <div className="problem-statement-message problem-statement-error">
+      <p>{t("errors.loadDescription")}</p>
+      <Button type="button" size="sm" variant="outline" onClick={() => statement.refetch()}>
+        <RefreshCwIcon aria-hidden="true" />{t("preferences.problemStatement.retry")}
+      </Button>
+    </div>;
+  }
+  if (!statement.data) {
+    return <p className="problem-statement-message">{t("preferences.problemStatement.unavailable")}</p>;
+  }
+
+  return <section className="assigned-problem-statement" aria-label={t("preferences.problemStatement.label")}>
+    <div className="submission-file problem-statement-file">
+      <FileTextIcon aria-hidden="true" />
+      <div><strong>{statement.data.originalFilename}</strong><span>{formatBytes(statement.data.fileSize)}</span></div>
+      <Button type="button" variant="outline" disabled={download.isPending} onClick={() => download.mutate()}>
+        <DownloadIcon aria-hidden="true" />{t("preferences.problemStatement.download")}
+      </Button>
+    </div>
+    <div className="submission-preview">
+      <Label>{t("preferences.problemStatement.label")}</Label>
+      <iframe src={statement.data.previewUrl}
+        title={t("preferences.problemStatement.iframeTitle", { filename: statement.data.originalFilename })} />
+    </div>
+  </section>;
 }
 
 function TeamOverview({ membership }: { membership: Extract<Membership, { registered: true }> }) {
@@ -797,6 +845,12 @@ function Detail({ label, value }: { label: string; value: string }) {
 
 function formatUploadLimit(bytes: number) {
   return `${bytes / 1024 / 1024} MiB`;
+}
+
+function formatBytes(bytes: number) {
+  return bytes < 1024 * 1024
+    ? `${Math.ceil(bytes / 1024)} KiB`
+    : `${(bytes / 1024 / 1024).toFixed(1)} MiB`;
 }
 
 function DashboardSkeleton() {

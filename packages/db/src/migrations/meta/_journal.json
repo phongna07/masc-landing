@@ -50,6 +50,13 @@
       "when": 1787307767181,
       "tag": "0006_gray_vin_gonzales",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1787759570774,
+      "tag": "0007_happy_slyde",
+      "breakpoints": true
     }
   ]
 }
