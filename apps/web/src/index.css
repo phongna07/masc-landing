@@ -1594,7 +1594,7 @@ dialog[open]::backdrop {
 .admin-status-actions {
   display: flex;
   flex-wrap: wrap;
-  justify-content: flex-end;
+  justify-content: flex-start;
   gap: 8px;
 }
 
@@ -1705,6 +1705,14 @@ dialog[open]::backdrop {
   color: #fca5a5;
 }
 
+.admin-status-filter-button[data-status="track_assigned"] {
+  color: #93c5fd;
+}
+
+.admin-status-filter-button[data-status="track_unassigned"] {
+  color: #c4b5fd;
+}
+
 .admin-status-filter-button:hover {
   color: var(--ink);
   background: rgba(255, 255, 255, .08);
@@ -1747,6 +1755,14 @@ dialog[open]::backdrop {
 
 .admin-status-filter-button[data-status="rejected"][aria-pressed="true"] {
   background: #fca5a5;
+}
+
+.admin-status-filter-button[data-status="track_assigned"][aria-pressed="true"] {
+  background: #93c5fd;
+}
+
+.admin-status-filter-button[data-status="track_unassigned"][aria-pressed="true"] {
+  background: #c4b5fd;
 }
 
 @media (max-width: 620px) {
