@@ -596,9 +596,12 @@ function DeadlineCountdown() {
     return () => window.clearInterval(timer);
   }, []);
 
-  const target = new Date("2026-08-07T23:59:00+07:00").getTime();
-  const remaining = now === null ? 0 : Math.max(0, target - now);
-  const isClosed = now !== null && now >= target;
+  const openAt = new Date("2026-09-01T00:00:00+07:00").getTime();
+  const closeAt = new Date("2026-09-18T00:00:00+07:00").getTime();
+  const isBeforeOpen = now !== null && now < openAt;
+  const isClosed = now !== null && now >= closeAt;
+  const activeTarget = isBeforeOpen ? openAt : closeAt;
+  const remaining = now === null ? 0 : Math.max(0, activeTarget - now);
   const days = Math.floor(remaining / 86_400_000);
   const hours = Math.floor((remaining / 3_600_000) % 24);
   const minutes = Math.floor((remaining / 60_000) % 60);
@@ -606,7 +609,7 @@ function DeadlineCountdown() {
 
   return (
     <div className="deadline-panel" aria-live="polite">
-      <p>{isClosed ? t("applications") : t("closesIn")}</p>
+      <p>{isClosed ? t("applications") : t(isBeforeOpen ? "opensIn" : "closesIn")}</p>
       {isClosed ? (
         <strong className="deadline-status">{t("closed")}</strong>
       ) : (

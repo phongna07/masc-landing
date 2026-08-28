@@ -41,9 +41,9 @@
       "scroll": "Cuộn để khám phá"
     },
     "countdown": {
-      "applications": "Đơn đăng ký Vòng Sơ loại",
-      "closesIn": "Thời gian đóng đơn còn",
-      "opensIn": "Vòng Sơ loại mở đơn sau",
+      "applications": "Đơn đăng ký Vòng 1",
+      "closesIn": "Thời gian đóng đơn Vòng 1 còn",
+      "opensIn": "Vòng 1 mở đơn sau",
       "closed": "Đã đóng đơn",
       "aria": "{days} ngày, {hours} giờ, {minutes} phút, {seconds} giây",
       "days": "Ngày",

@@ -41,9 +41,9 @@
       "scroll": "Scroll to discover"
     },
     "countdown": {
-      "applications": "Preliminary Round applications",
-      "closesIn": "Applications close in",
-      "opensIn": "Preliminary Round opens in",
+      "applications": "Round 1 applications",
+      "closesIn": "Applications for Round 1 close in",
+      "opensIn": "Round 1 applications open in",
       "closed": "Submissions closed",
       "aria": "{days} days, {hours} hours, {minutes} minutes, {seconds} seconds",
       "days": "Days",
