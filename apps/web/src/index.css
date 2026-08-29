@@ -494,6 +494,30 @@ dialog[open]::backdrop {
   gap: 10px;
 }
 
+.problem-statement-description {
+  padding: 16px 18px;
+  border: 1px solid rgba(255, 255, 255, .1);
+  background: rgba(255, 255, 255, .025);
+  color: var(--ink);
+  font-size: 14px;
+  line-height: 1.7;
+  overflow-wrap: anywhere;
+}
+
+.problem-statement-description p {
+  margin: 0 0 12px;
+}
+
+.problem-statement-description p:last-child {
+  margin-bottom: 0;
+}
+
+.problem-statement-description a {
+  color: #bde7ad;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
 .problem-statement-message {
   margin: 0;
   padding: 14px 16px;
@@ -2401,6 +2425,10 @@ dialog[open]::backdrop {
   gap: 10px;
 }
 
+.admin-problem-publication {
+  margin-bottom: 18px;
+}
+
 .admin-preference-setting-row {
   display: grid;
   gap: 14px;
@@ -2419,6 +2447,61 @@ dialog[open]::backdrop {
 .admin-preference-order-actions {
   display: flex;
   gap: 6px;
+}
+
+.admin-track-description-control {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding-top: 14px;
+  border-top: 1px solid rgba(255, 255, 255, .1);
+}
+
+.admin-track-description-control>div {
+  display: grid;
+  gap: 4px;
+	min-width: 0;
+}
+
+.admin-track-description-preview {
+	max-width: 680px;
+	max-height: 72px;
+	overflow: hidden;
+	color: var(--muted);
+	font-size: 12px;
+	line-height: 1.5;
+	overflow-wrap: anywhere;
+}
+
+.admin-track-description-preview p {
+	margin: 0 0 4px;
+}
+
+.admin-track-description-preview p:last-child {
+	margin-bottom: 0;
+}
+
+.admin-track-description-preview a {
+	color: #bde7ad;
+	text-decoration: underline;
+	text-underline-offset: 2px;
+}
+
+.admin-track-description-dialog {
+  max-width: 760px;
+}
+
+.admin-track-description-dialog>form {
+  display: grid;
+  gap: 22px;
+  padding: 24px;
+}
+
+.admin-track-description-dialog .mail-rich-text-content {
+  min-height: 280px;
+  max-height: 50svh;
+  overflow-y: auto;
 }
 
 .admin-problem-statement {
@@ -2747,11 +2830,13 @@ dialog[open]::backdrop {
   }
 
   .admin-problem-statement-heading,
+	.admin-track-description-control,
   .problem-statement-error {
     display: grid;
   }
 
   .admin-problem-statement-controls [data-slot="button"],
+	.admin-track-description-control [data-slot="button"],
   .problem-statement-error [data-slot="button"] {
     width: 100%;
   }

@@ -6,18 +6,20 @@ import { Button } from "@masc-landing/ui/components/button";
 import { roundIds } from "@masc-landing/api/rounds";
 import { Card, CardContent, CardHeader, CardTitle } from "@masc-landing/ui/components/card";
 import { ConfirmationDialog } from "@masc-landing/ui/components/confirmation-dialog";
+import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@masc-landing/ui/components/dialog";
 import { Input } from "@masc-landing/ui/components/input";
 import { Label } from "@masc-landing/ui/components/label";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import { toast } from "sonner";
-import { ArrowDownIcon, ArrowUpIcon, DownloadIcon, FileTextIcon, PlusIcon, Trash2Icon, UploadIcon } from "lucide-react";
+import { ArrowDownIcon, ArrowUpIcon, DownloadIcon, FileTextIcon, PencilIcon, PlusIcon, Trash2Icon, UploadIcon } from "lucide-react";
 
 import { useRoundLabel } from "@/hooks/use-round-label";
 import { trpc } from "@/utils/trpc";
 
 import { AdminError, AdminHeading, AdminLoading } from "../admin-state";
+import RichTextEditor from "../mail/rich-text-editor";
 
 const MEBIBYTE = 1024 * 1024;
 
@@ -119,6 +121,7 @@ export default function AdminPage() {
 function PreferenceSettingsSection() {
 	const t = useTranslations("Admin");
 	const settings = useQuery(trpc.admin.getRoundOnePreferenceSettings.queryOptions());
+	const publicationSettings = useQuery(trpc.admin.getProblemStatementPublicationSettings.queryOptions());
 	const [newName, setNewName] = useState("");
 	const create = useMutation(trpc.admin.createRoundOnePreferenceSetting.mutationOptions({
 		onSuccess: async () => { setNewName(""); await settings.refetch(); toast.success(t("overview.preferences.success")); },
@@ -127,6 +130,13 @@ function PreferenceSettingsSection() {
 	const update = useMutation(trpc.admin.updateRoundOnePreferenceSetting.mutationOptions({
 		onSuccess: async () => { await settings.refetch(); toast.success(t("overview.preferences.success")); },
 		onError: () => toast.error(t("overview.preferences.error")),
+	}));
+	const updatePublication = useMutation(trpc.admin.setProblemStatementPublished.mutationOptions({
+		onSuccess: async () => {
+			await publicationSettings.refetch();
+			toast.success(t("overview.preferences.publication.success"));
+		},
+		onError: () => toast.error(t("overview.preferences.publication.error")),
 	}));
 	const reorder = useMutation(trpc.admin.reorderRoundOnePreferenceSettings.mutationOptions({
 		onSuccess: async () => { await settings.refetch(); toast.success(t("overview.preferences.success")); },
@@ -148,12 +158,29 @@ function PreferenceSettingsSection() {
 	return <section className="admin-setting-section" aria-labelledby="preference-settings-title">
 		<div className="admin-setting-section-heading"><h2 id="preference-settings-title">{t("overview.preferences.title")}</h2>
 			<p>{t("overview.preferences.description")}</p></div>
+		{publicationSettings.isPending ? <AdminLoading /> : publicationSettings.isError ?
+			<AdminError title={t("errors.loadTitle")} description={t("overview.preferences.publication.loadError")}
+				retry={() => publicationSettings.refetch()} retryLabel={t("actions.retry")} /> :
+			<Card className="admin-round-setting admin-problem-publication">
+				<CardHeader><div><CardTitle>{t("overview.preferences.publication.title")}</CardTitle>
+					<p>{t("overview.preferences.publication.description")}</p></div>
+					<span className={publicationSettings.data["1"] ? "is-open" : "is-closed"}>
+						{t(publicationSettings.data["1"] ? "overview.preferences.publication.published" : "overview.preferences.publication.unpublished")}
+					</span></CardHeader>
+				<CardContent><Button type="button" role="switch" aria-checked={publicationSettings.data["1"]}
+					disabled={updatePublication.isPending}
+					onClick={() => updatePublication.mutate({ round: "1", isPublished: !publicationSettings.data["1"] })}>
+					{updatePublication.isPending ? t("overview.updating") : t(publicationSettings.data["1"]
+						? "overview.preferences.publication.unpublish" : "overview.preferences.publication.publish")}
+				</Button></CardContent>
+			</Card>}
 		{settings.isPending ? <AdminLoading /> : settings.isError ? <AdminError title={t("errors.loadTitle")}
 			description={t("overview.preferences.loadError")} retry={() => settings.refetch()} retryLabel={t("actions.retry")} /> : <>
 			<div className="admin-preference-settings">{settings.data.map((setting, index) => <PreferenceSettingRow key={setting.id}
 				setting={setting} disabled={update.isPending || reorder.isPending}
 				onChanged={() => settings.refetch()}
 				onSave={(name) => update.mutate({ id: setting.id, name })}
+				onSaveDescription={(description) => update.mutateAsync({ id: setting.id, description })}
 				onToggle={() => update.mutate({ id: setting.id, isActive: !setting.isActive })}
 				onMoveUp={() => move(index, -1)} onMoveDown={() => move(index, 1)}
 				first={index === 0} last={index === settings.data.length - 1} />)}</div>
@@ -166,16 +193,18 @@ function PreferenceSettingsSection() {
 	</section>;
 }
 
-function PreferenceSettingRow({ setting, disabled, onChanged, onSave, onToggle, onMoveUp, onMoveDown, first, last }: {
+function PreferenceSettingRow({ setting, disabled, onChanged, onSave, onSaveDescription, onToggle, onMoveUp, onMoveDown, first, last }: {
 	setting: {
 		id: string;
 		name: string;
+		description: string | null;
 		isActive: boolean;
 		problemStatement: { originalFilename: string; fileSize: number } | null;
 	};
 	disabled: boolean;
 	onChanged: () => Promise<unknown>;
 	onSave: (name: string) => void;
+	onSaveDescription: (description: string) => Promise<unknown>;
 	onToggle: () => void;
 	onMoveUp: () => void;
 	onMoveDown: () => void;
@@ -255,6 +284,13 @@ function PreferenceSettingRow({ setting, disabled, onChanged, onSave, onToggle, 
 			<Button type="button" variant={setting.isActive ? "destructive" : "outline"} disabled={rowDisabled} onClick={onToggle}>
 				{t(setting.isActive ? "overview.preferences.deactivate" : "overview.preferences.activate")}</Button>
 		</form>
+		<div className="admin-track-description-control">
+			<div><Label>{t("overview.preferences.trackDescription.label")}</Label>
+				{setting.description
+					? <div className="admin-track-description-preview" dangerouslySetInnerHTML={{ __html: setting.description }} />
+					: <span className="field-hint">{t("overview.preferences.trackDescription.empty")}</span>}</div>
+			<DescriptionEditorDialog setting={setting} disabled={rowDisabled} onSave={onSaveDescription} />
+		</div>
 		<div className="admin-problem-statement">
 			<div className="admin-problem-statement-heading"><div><Label htmlFor={inputId}>{t("overview.preferences.problemStatement.label")}</Label>
 				<span className="field-hint">{t("overview.preferences.problemStatement.hint")}</span></div>
@@ -282,6 +318,66 @@ function PreferenceSettingRow({ setting, disabled, onChanged, onSave, onToggle, 
 			{fileError && <p className="admin-file-error" role="alert">{fileError}</p>}
 		</div>
 	</div>;
+}
+
+function DescriptionEditorDialog({ setting, disabled, onSave }: {
+	setting: { id: string; name: string; description: string | null };
+	disabled: boolean;
+	onSave: (description: string) => Promise<unknown>;
+}) {
+	const t = useTranslations("Admin");
+	const [open, setOpen] = useState(false);
+	const [draft, setDraft] = useState(setting.description ?? "");
+	const [saving, setSaving] = useState(false);
+	const changeOpen = (nextOpen: boolean) => {
+		if (saving) return;
+		if (nextOpen) setDraft(setting.description ?? "");
+		setOpen(nextOpen);
+	};
+	const save = async (event: FormEvent<HTMLFormElement>) => {
+		event.preventDefault();
+		setSaving(true);
+		try {
+			await onSave(draft);
+			setOpen(false);
+		} catch {
+			// The owning mutation displays the localized error toast.
+		} finally {
+			setSaving(false);
+		}
+	};
+	return <Dialog open={open} onOpenChange={changeOpen}>
+		<Button type="button" variant="outline" disabled={disabled} onClick={() => changeOpen(true)}>
+			<PencilIcon aria-hidden="true" />{t("overview.preferences.trackDescription.edit")}
+		</Button>
+		<DialogContent className="admin-track-description-dialog">
+			<form onSubmit={save}>
+				<DialogHeader><DialogTitle>{t("overview.preferences.trackDescription.dialogTitle", { track: setting.name })}</DialogTitle>
+					<DialogDescription>{t("overview.preferences.trackDescription.dialogDescription")}</DialogDescription></DialogHeader>
+				<RichTextEditor id={`track-description-${setting.id}`} ariaLabel={t("overview.preferences.trackDescription.label")}
+					value={draft} maxLength={20_000} disabled={saving} onChange={setDraft} labels={{
+						toolbar: t("overview.preferences.trackDescription.richText.toolbar"),
+						bold: t("overview.preferences.trackDescription.richText.bold"),
+						italic: t("overview.preferences.trackDescription.richText.italic"),
+						underline: t("overview.preferences.trackDescription.richText.underline"),
+						link: t("overview.preferences.trackDescription.richText.link"),
+						linkTitle: t("overview.preferences.trackDescription.richText.linkTitle"),
+						linkDescription: t("overview.preferences.trackDescription.richText.linkDescription"),
+						linkUrl: t("overview.preferences.trackDescription.richText.linkUrl"),
+						linkPlaceholder: t("overview.preferences.trackDescription.richText.linkPlaceholder"),
+						linkInvalid: t("overview.preferences.trackDescription.richText.linkInvalid"),
+						linkApply: t("overview.preferences.trackDescription.richText.linkApply"),
+						linkRemove: t("overview.preferences.trackDescription.richText.linkRemove"),
+						cancel: t("actions.cancel"),
+					}} />
+				<DialogFooter><DialogClose render={<Button type="button" variant="outline" disabled={saving} />}>
+					{t("actions.cancel")}</DialogClose>
+					<Button type="submit" disabled={saving}>{t(saving
+						? "overview.preferences.trackDescription.saving" : "overview.preferences.trackDescription.save")}</Button>
+				</DialogFooter>
+			</form>
+		</DialogContent>
+	</Dialog>;
 }
 
 function formatFileSize(bytes: number) {

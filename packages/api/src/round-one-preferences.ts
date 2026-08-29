@@ -23,6 +23,7 @@ export async function getAdminRoundOnePreferenceSettings() {
 		.select({
 			id: preferencesSettings.id,
 			name: preferencesSettings.name,
+			description: preferencesSettings.description,
 			displayOrder: preferencesSettings.displayOrder,
 			isActive: preferencesSettings.isActive,
 			problemStatementOriginalFilename: preferencesSettings.problemStatementOriginalFilename,

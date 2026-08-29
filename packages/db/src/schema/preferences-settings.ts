@@ -18,6 +18,7 @@ export const preferencesSettings = pgTable(
 			.$defaultFn(() => crypto.randomUUID())
 			.primaryKey(),
 		name: text("name").notNull(),
+		description: text("description"),
 		displayOrder: integer("display_order").notNull(),
 		isActive: boolean("is_active").default(true).notNull(),
 		problemStatementObjectKey: text("problem_statement_object_key").unique(),

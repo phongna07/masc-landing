@@ -16,6 +16,7 @@ import { z } from "zod";
 import { adminAreaProcedure, freshProtectedProcedure, router } from "../index";
 import { MAX_PROBLEM_STATEMENT_FILE_SIZE } from "../round-one-problem-statements";
 import { attachmentContentDisposition } from "../submission-files";
+import { getProblemStatementPublicationSettings } from "../problem-statement-publication-settings";
 
 const URL_EXPIRY_SECONDS = 300;
 const PDF_MIME_TYPE = "application/pdf";
@@ -68,6 +69,7 @@ async function assignedProblemStatementFor(user: { id: string; email: string }) 
     originalFilename: preferencesSettings.problemStatementOriginalFilename,
     mimeType: preferencesSettings.problemStatementMimeType,
     fileSize: preferencesSettings.problemStatementFileSize,
+    description: preferencesSettings.description,
   }).from(roundOneMembers)
     .innerJoin(roundOneTeams, eq(roundOneMembers.teamId, roundOneTeams.id))
     .innerJoin(preferencesSettings, eq(roundOneTeams.assignedTrackId, preferencesSettings.id))
@@ -83,6 +85,8 @@ async function assignedProblemStatementFor(user: { id: string; email: string }) 
   if (!assignedTrack) {
     throw new TRPCError({ code: "FORBIDDEN", message: "ROUND_ONE_TRACK_NOT_ASSIGNED" });
   }
+  const publicationSettings = await getProblemStatementPublicationSettings();
+  if (!publicationSettings["1"]) return null;
   if (
     assignedTrack.objectKey === null ||
     assignedTrack.originalFilename === null ||
@@ -95,6 +99,7 @@ async function assignedProblemStatementFor(user: { id: string; email: string }) 
     objectKey: assignedTrack.objectKey,
     originalFilename: assignedTrack.originalFilename,
     fileSize: assignedTrack.fileSize,
+    description: assignedTrack.description,
   };
 }
 
@@ -201,6 +206,7 @@ export const roundOneProblemStatementRouter = router({
     return {
       originalFilename: statement.originalFilename,
       fileSize: statement.fileSize,
+      description: statement.description,
       previewUrl,
     };
   }),
