@@ -57,6 +57,13 @@
       "when": 1787759570774,
       "tag": "0007_happy_slyde",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1787978818260,
+      "tag": "0008_amused_bill_hollister",
+      "breakpoints": true
     }
   ]
 }

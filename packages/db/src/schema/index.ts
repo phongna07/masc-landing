@@ -4,6 +4,7 @@ export * from "./admin-emails";
 export * from "./announcements";
 export * from "./dashboard-tab-settings";
 export * from "./email";
+export * from "./mail-campaigns";
 export * from "./pdf-exports";
 export * from "./preferences-settings";
 export * from "./registration";
