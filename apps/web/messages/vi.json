@@ -880,7 +880,21 @@
       "placeholders": {
         "title": "Các biến có thể sử dụng",
         "description": "Dùng trong tiêu đề hoặc nội dung. Thành viên 1 là đội trưởng; thành viên 2–3 được sắp xếp ổn định theo tên.",
-        "optional": "Biến track và nguyện vọng sẽ để trống khi vòng hoặc đội không có dữ liệu. URL HTTP và HTTPS trong nội dung sẽ tự động trở thành liên kết."
+        "optional": "Biến track và nguyện vọng sẽ để trống khi vòng hoặc đội không có dữ liệu. Có thể định dạng biến, nhưng không thể dùng biến trong URL liên kết."
+      },
+      "richText": {
+        "toolbar": "Định dạng nội dung email",
+        "bold": "In đậm",
+        "italic": "In nghiêng",
+        "underline": "Gạch chân",
+        "link": "Chèn hoặc chỉnh sửa liên kết",
+        "linkTitle": "Chèn hoặc chỉnh sửa liên kết",
+        "linkDescription": "Nhập địa chỉ web hoặc email. Chỉ cho phép liên kết HTTP, HTTPS và email.",
+        "linkUrl": "Đích liên kết",
+        "linkPlaceholder": "https://example.com hoặc name@example.com",
+        "linkInvalid": "Hãy nhập địa chỉ web hoặc email hợp lệ. Không thể dùng biến trong đích liên kết.",
+        "linkApply": "Áp dụng liên kết",
+        "linkRemove": "Xóa liên kết"
       },
       "preview": {
         "title": "Xem trước email",

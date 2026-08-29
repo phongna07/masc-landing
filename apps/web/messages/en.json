@@ -880,7 +880,21 @@
       "placeholders": {
         "title": "Available placeholders",
         "description": "Use these in the subject or body. Member 1 is the captain; members 2–3 are ordered consistently by name.",
-        "optional": "Assigned track and preference placeholders are empty when the selected round or team has no value. HTTP and HTTPS URLs in the body become clickable automatically."
+        "optional": "Assigned track and preference placeholders are empty when the selected round or team has no value. Variables can be formatted, but cannot be used inside link URLs."
+      },
+      "richText": {
+        "toolbar": "Email content formatting",
+        "bold": "Bold",
+        "italic": "Italic",
+        "underline": "Underline",
+        "link": "Insert or edit link",
+        "linkTitle": "Insert or edit link",
+        "linkDescription": "Enter a web address or email address. Only HTTP, HTTPS, and email links are allowed.",
+        "linkUrl": "Link destination",
+        "linkPlaceholder": "https://example.com or name@example.com",
+        "linkInvalid": "Enter a valid web or email address. Variables cannot be used in link destinations.",
+        "linkApply": "Apply link",
+        "linkRemove": "Remove link"
       },
       "preview": {
         "title": "Email preview",

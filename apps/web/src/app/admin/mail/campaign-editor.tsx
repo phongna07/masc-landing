@@ -14,7 +14,6 @@ import { Button } from "@masc-landing/ui/components/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@masc-landing/ui/components/card";
 import { Input } from "@masc-landing/ui/components/input";
 import { Label } from "@masc-landing/ui/components/label";
-import { Textarea } from "@masc-landing/ui/components/textarea";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { EyeIcon, SaveIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -24,6 +23,7 @@ import { toast } from "sonner";
 
 import { useRoundLabel } from "@/hooks/use-round-label";
 import { trpc } from "@/utils/trpc";
+import RichTextEditor, { richTextHasContent } from "./rich-text-editor";
 
 type CampaignEditorProps = {
 	initial: MailCampaignInput;
@@ -57,13 +57,13 @@ export default function CampaignEditor({ initial, campaignId, archived = false, 
 	const [saved, setSaved] = useState(initial);
 	const [previewTeamId, setPreviewTeamId] = useState<string>();
 	const dirty = useMemo(() => JSON.stringify(form) !== JSON.stringify(saved), [form, saved]);
-	const previewReady = !!(form.name.trim() && form.subjectTemplate.trim() && form.bodyTemplate.trim());
+	const previewReady = !!(form.name.trim() && form.subjectTemplate.trim() && richTextHasContent(form.bodyTemplate));
 	useEffect(() => onDirtyChange?.(dirty), [dirty, onDirtyChange]);
 
 	const preview = useMutation(trpc.admin.previewMailCampaign.mutationOptions());
 	const previewCampaign = preview.mutate;
 	useEffect(() => {
-		if (!form.name.trim() || !form.subjectTemplate.trim() || !form.bodyTemplate.trim()
+		if (!form.name.trim() || !form.subjectTemplate.trim() || !richTextHasContent(form.bodyTemplate)
 			|| !form.registrationStatuses.length || !form.preferenceStatuses.length || !form.admissionMethods.length) return;
 		const timer = window.setTimeout(() => previewCampaign({ campaign: form, teamId: previewTeamId }), 450);
 		return () => window.clearTimeout(timer);
@@ -92,7 +92,7 @@ export default function CampaignEditor({ initial, campaignId, archived = false, 
 		else create.mutate(form);
 	};
 	const pending = create.isPending || update.isPending;
-	const canSave = !!(!archived && dirty && form.name.trim() && form.subjectTemplate.trim() && form.bodyTemplate.trim()
+	const canSave = !!(!archived && dirty && form.name.trim() && form.subjectTemplate.trim() && richTextHasContent(form.bodyTemplate)
 		&& form.registrationStatuses.length > 0 && form.preferenceStatuses.length > 0 && form.admissionMethods.length > 0);
 
 	return <div className="mail-campaign-editor">
@@ -140,8 +140,15 @@ export default function CampaignEditor({ initial, campaignId, archived = false, 
 					<Input id="campaign-subject" value={form.subjectTemplate} maxLength={250} disabled={archived}
 						onChange={(event) => setForm((current) => ({ ...current, subjectTemplate: event.target.value }))} /></div>
 				<div className="mail-form-field"><Label htmlFor="campaign-body">{t("fields.body")}</Label>
-					<Textarea id="campaign-body" value={form.bodyTemplate} maxLength={20_000} disabled={archived}
-						onChange={(event) => setForm((current) => ({ ...current, bodyTemplate: event.target.value }))} /></div>
+					<RichTextEditor id="campaign-body" ariaLabel={t("fields.body")} value={form.bodyTemplate} maxLength={20_000} disabled={archived}
+						labels={{
+							toolbar: t("richText.toolbar"),
+							bold: t("richText.bold"), italic: t("richText.italic"), underline: t("richText.underline"),
+							link: t("richText.link"), linkTitle: t("richText.linkTitle"), linkDescription: t("richText.linkDescription"),
+							linkUrl: t("richText.linkUrl"), linkPlaceholder: t("richText.linkPlaceholder"), linkInvalid: t("richText.linkInvalid"),
+							linkApply: t("richText.linkApply"), linkRemove: t("richText.linkRemove"), cancel: t("cancel"),
+						}}
+						onChange={(bodyTemplate) => setForm((current) => ({ ...current, bodyTemplate }))} /></div>
 				<div className="mail-placeholder-help"><strong>{t("placeholders.title")}</strong><p>{t("placeholders.description")}</p>
 					<div>{mailCampaignPlaceholders.map((placeholder) => <code key={placeholder}>{`{{${placeholder}}}`}</code>)}</div>
 					<p>{t("placeholders.optional")}</p></div>
