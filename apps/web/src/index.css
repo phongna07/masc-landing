@@ -1171,6 +1171,20 @@ dialog[open]::backdrop {
   margin: 0;
 }
 
+.registration-submit-action {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 10px;
+}
+
+.registration-submit .registration-validation-warning {
+  color: #ff9189;
+  font-size: 13px;
+  line-height: 1.45;
+  text-align: right;
+}
+
 .registration-submit [data-slot="button"] {
   min-width: 190px;
   height: 46px;
@@ -1515,6 +1529,14 @@ dialog[open]::backdrop {
 
   .registration-submit [data-slot="button"] {
     width: 100%;
+  }
+
+  .registration-submit-action {
+    align-items: stretch;
+  }
+
+  .registration-submit .registration-validation-warning {
+    text-align: left;
   }
 
   .team-badges {

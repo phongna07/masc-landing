@@ -336,6 +336,7 @@
         }
       },
       "submitNote": "Review all names and email addresses carefully before submitting.",
+      "validationWarning": "Some information is missing or invalid. Review the highlighted fields above.",
       "sectionLabel": "Team registration form"
     },
     "preferences": {
