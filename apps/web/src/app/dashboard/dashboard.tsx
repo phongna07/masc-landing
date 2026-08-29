@@ -736,6 +736,8 @@ function AssignedProblemStatement() {
   }
 
   return <section className="assigned-problem-statement" aria-label={t("preferences.problemStatement.label")}>
+    {statement.data.description && <div className="problem-statement-description"
+      dangerouslySetInnerHTML={{ __html: statement.data.description }} />}
     <div className="submission-file problem-statement-file">
       <FileTextIcon aria-hidden="true" />
       <div><strong>{statement.data.originalFilename}</strong><span>{formatBytes(statement.data.fileSize)}</span></div>
@@ -826,9 +828,11 @@ function TeamOverview({ membership }: { membership: Extract<Membership, { regist
                         <td><h3>{member.fullName}</h3><p>{member.email}</p></td>
                         <td><p>{format.dateTime(new Date(`${member.birthdate}T00:00:00Z`), { dateStyle: "medium", timeZone: "UTC" })}</p></td>
                         <td><p>{member.universityName}</p></td>
-                        <td>{member.isCaptain && <span className="captain-tag">{t("roles.captain")}</span>}
+                        <td>
                           {membership.role === "captain" && "hasCv" in member && member.hasCv && <Button size="sm" variant="outline"
-                            disabled={cvDownload.isPending} onClick={() => cvDownload.mutate({ memberId: member.id })}>{t("registration.cv.download")}</Button>}</td>
+                            disabled={cvDownload.isPending} onClick={() => cvDownload.mutate({ memberId: member.id })}>{t("registration.cv.download")}</Button>}
+                          {member.isCaptain && <span className="captain-tag">{t("roles.captain")}</span>}
+                        </td>
                       </tr>
                     ))}
                   </tbody>

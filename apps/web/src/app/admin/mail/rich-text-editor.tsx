@@ -165,6 +165,7 @@ export default function RichTextEditor({ id, ariaLabel, value, disabled = false,
 
 	const applyLink = (event: FormEvent) => {
 		event.preventDefault();
+		event.stopPropagation();
 		const href = normalizeLink(linkValue);
 		if (!href) {
 			setLinkError(true);

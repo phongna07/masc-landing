@@ -617,6 +617,40 @@
         "success": "Đã cập nhật cài đặt track Vòng 1.",
         "error": "Không thể cập nhật track. Hãy kiểm tra tên bị trùng và duy trì ít nhất ba track hoạt động.",
         "loadError": "Không thể tải cài đặt track Vòng 1.",
+        "publication": {
+          "title": "Xuất bản đề bài Vòng 1",
+          "description": "Xuất bản hoặc ẩn toàn bộ đề bài và mô tả track Vòng 1 đối với các đội đã được chỉ định track.",
+          "published": "Đã xuất bản",
+          "unpublished": "Chưa xuất bản",
+          "publish": "Xuất bản đề bài Vòng 1",
+          "unpublish": "Hủy xuất bản đề bài Vòng 1",
+          "success": "Đã cập nhật trạng thái xuất bản đề bài Vòng 1.",
+          "error": "Không thể cập nhật trạng thái xuất bản. Vui lòng thử lại.",
+          "loadError": "Không thể tải trạng thái xuất bản đề bài."
+        },
+        "trackDescription": {
+          "label": "Mô tả",
+          "empty": "Chưa có mô tả.",
+          "edit": "Chỉnh sửa mô tả",
+          "dialogTitle": "Chỉnh sửa mô tả cho {track}",
+          "dialogDescription": "Thêm thông tin không bắt buộc mà các đội được chỉ định track sẽ thấy khi đề bài Vòng 1 được xuất bản.",
+          "save": "Lưu mô tả",
+          "saving": "Đang lưu…",
+          "richText": {
+            "toolbar": "Định dạng mô tả",
+            "bold": "In đậm",
+            "italic": "In nghiêng",
+            "underline": "Gạch chân",
+            "link": "Chèn hoặc chỉnh sửa liên kết",
+            "linkTitle": "Chèn hoặc chỉnh sửa liên kết",
+            "linkDescription": "Nhập địa chỉ web hoặc email. Chỉ cho phép liên kết HTTP, HTTPS và email.",
+            "linkUrl": "Đích liên kết",
+            "linkPlaceholder": "https://example.com hoặc name@example.com",
+            "linkInvalid": "Hãy nhập địa chỉ web hoặc email hợp lệ.",
+            "linkApply": "Áp dụng liên kết",
+            "linkRemove": "Xóa liên kết"
+          }
+        },
         "problemStatement": {
           "label": "Tệp PDF đề bài",
           "hint": "Tệp PDF không bắt buộc - tối đa 200 MiB.",

@@ -617,6 +617,40 @@
         "success": "Round 1 track settings updated.",
         "error": "Could not update the track settings. Check for duplicate names and keep at least three active tracks.",
         "loadError": "Could not load Round 1 track settings.",
+        "publication": {
+          "title": "Round 1 problem-statement publication",
+          "description": "Publish or hide every Round 1 track problem statement and its description for assigned teams.",
+          "published": "Published",
+          "unpublished": "Unpublished",
+          "publish": "Publish Round 1 problem statements",
+          "unpublish": "Unpublish Round 1 problem statements",
+          "success": "Round 1 problem-statement publication updated.",
+          "error": "Could not update the publication setting. Please try again.",
+          "loadError": "Could not load the problem-statement publication setting."
+        },
+        "trackDescription": {
+          "label": "Description",
+          "empty": "No description added.",
+          "edit": "Edit description",
+          "dialogTitle": "Edit description for {track}",
+          "dialogDescription": "Add optional context that assigned teams will see when the Round 1 problem statements are published.",
+          "save": "Save description",
+          "saving": "Saving…",
+          "richText": {
+            "toolbar": "Description formatting",
+            "bold": "Bold",
+            "italic": "Italic",
+            "underline": "Underline",
+            "link": "Insert or edit link",
+            "linkTitle": "Insert or edit link",
+            "linkDescription": "Enter a web address or email address. Only HTTP, HTTPS, and email links are allowed.",
+            "linkUrl": "Link destination",
+            "linkPlaceholder": "https://example.com or name@example.com",
+            "linkInvalid": "Enter a valid web or email address.",
+            "linkApply": "Apply link",
+            "linkRemove": "Remove link"
+          }
+        },
         "problemStatement": {
           "label": "Problem statement PDF",
           "hint": "Optional PDF - maximum 200 MiB.",

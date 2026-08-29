@@ -2,7 +2,7 @@ import { GetObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { db } from "@masc-landing/db";
 import {
-  adminEmails, admissionSettings, dashboardTabSettings, mailCampaigns, members, preferencesSettings, roundOneMemberCvs,
+  adminEmails, admissionSettings, dashboardTabSettings, mailCampaigns, members, preferencesSettings, problemStatementPublicationSettings, roundOneMemberCvs,
   pdfExportJobs, roundOneMembers, roundOneSubmissions, roundOneTeams, roundSubmissions, roundThreeMembers,
   roundThreeSubmissions, roundThreeTeams, roundTwoMembers, roundTwoSubmissions, roundTwoTeams,
   submissionSettings, teams, uploadLimitSettings, user, userAnnouncements
@@ -14,9 +14,11 @@ import { z } from "zod";
 
 import { getAdmissionSettings } from "../admission-settings";
 import { getDashboardTabSettings } from "../dashboard-tab-settings";
+import { getProblemStatementPublicationSettings } from "../problem-statement-publication-settings";
 import { adminAreaProcedure, router } from "../index";
 import { awarenessSources, type AwarenessSource } from "../registration-schema";
 import { roundSchema, type RoundId } from "../rounds";
+import { sanitizeRoundOneTrackDescription } from "../round-one-track-description";
 import { attachmentContentDisposition, roundSubmissionArchiveFilename } from "../submission-files";
 import {
   campaignRowToInput,
@@ -437,8 +439,9 @@ export const adminRouter = router({
   updateRoundOnePreferenceSetting: overviewProcedure.input(z.object({
     id: z.string().trim().min(1).max(128),
     name: preferenceNameSchema.optional(),
+    description: z.string().max(100_000).nullable().optional(),
     isActive: z.boolean().optional(),
-  }).refine((input) => input.name !== undefined || input.isActive !== undefined))
+  }).refine((input) => input.name !== undefined || input.description !== undefined || input.isActive !== undefined))
     .mutation(async ({ input }) => {
       const [existing] = await db.select({ isActive: preferencesSettings.isActive })
         .from(preferencesSettings).where(eq(preferencesSettings.id, input.id)).limit(1);
@@ -451,8 +454,12 @@ export const adminRouter = router({
         }
       }
       try {
+        const description = input.description !== undefined
+          ? sanitizeRoundOneTrackDescription(input.description ?? "")
+          : undefined;
         await db.update(preferencesSettings).set({
           ...(input.name !== undefined ? { name: input.name } : {}),
+          ...(description !== undefined ? { description } : {}),
           ...(input.isActive !== undefined ? { isActive: input.isActive } : {}),
           updatedAt: new Date(),
         }).where(eq(preferencesSettings.id, input.id));
@@ -478,6 +485,19 @@ export const adminRouter = router({
     }
     return getRoundOnePreferenceSettings(false);
   }),
+  getProblemStatementPublicationSettings: overviewProcedure.query(getProblemStatementPublicationSettings),
+  setProblemStatementPublished: overviewProcedure.input(roundInput.extend({ isPublished: z.boolean() }))
+    .mutation(async ({ input }) => {
+      await db.insert(problemStatementPublicationSettings).values({
+        round: input.round,
+        isPublished: input.isPublished,
+        updatedAt: new Date(),
+      }).onConflictDoUpdate({
+        target: problemStatementPublicationSettings.round,
+        set: { isPublished: input.isPublished, updatedAt: new Date() },
+      });
+      return getProblemStatementPublicationSettings();
+    }),
   getDashboardTabSettings: overviewProcedure.query(getDashboardTabSettings),
   setDashboardTabVisible: overviewProcedure.input(roundInput.extend({ isVisible: z.boolean() })).mutation(async ({ input }) => {
     await db.insert(dashboardTabSettings).values({ round: input.round, isVisible: input.isVisible, updatedAt: new Date() })
