@@ -7,6 +7,16 @@ type EmailLayoutOptions = {
     styles?: string;
 };
 
+function escapeHtml(value: string) {
+    return value.replace(/[&<>"']/g, (character) => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        "\"": "&quot;",
+        "'": "&#039;",
+    })[character] ?? character);
+}
+
 export function renderEmailLayout({
     subject,
     contentHtml,
@@ -18,7 +28,7 @@ export function renderEmailLayout({
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>${subject}</title>
+    <title>${escapeHtml(subject)}</title>
     <style>
         body { font-family: Arial, sans-serif; background-color: #f9f9f9; margin: 0; padding: 20px; color: #333333; }
         .email-container { max-width: 650px; margin: 0 auto; background-color: #ffffff; border: 2px solid #5d3593; border-radius: 4px; overflow: hidden; }

@@ -2,95 +2,42 @@
 
 import { Button } from "@masc-landing/ui/components/button";
 import { Card, CardContent } from "@masc-landing/ui/components/card";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { ChevronRightIcon, RefreshCwIcon, SendIcon } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import { ArchiveIcon, ChevronRightIcon, MailPlusIcon } from "lucide-react";
 import Link from "next/link";
 import { useLocale, useTranslations } from "next-intl";
 import { useState } from "react";
-import { toast } from "sonner";
 
+import { useRoundLabel } from "@/hooks/use-round-label";
 import { trpc } from "@/utils/trpc";
-import { AdminEmpty, AdminError, AdminHeading, AdminLoading, AdminMetrics, formatDate } from "../admin-state";
-
-const filters = ["pending", "failed", "sent", "all"] as const;
-type MailFilter = (typeof filters)[number];
+import { AdminEmpty, AdminError, AdminHeading, AdminLoading, formatDate } from "../admin-state";
 
 export default function AdminMailPage() {
-  const t = useTranslations("Admin");
-  const locale = useLocale();
-  const queryClient = useQueryClient();
-  const [status, setStatus] = useState<MailFilter>("pending");
-  const mail = useQuery(trpc.admin.listMail.queryOptions({ status }));
-  const stats = useQuery(trpc.admin.getMailStats.queryOptions());
-  const sendMail = useMutation(trpc.admin.sendMail.mutationOptions({
-    onSuccess: async (_, input) => {
-      await Promise.all(filters.map((filter) => queryClient.invalidateQueries({
-        queryKey: trpc.admin.listMail.queryKey({ status: filter }),
-      })));
-      await queryClient.invalidateQueries({ queryKey: trpc.admin.getMail.queryKey({ mailId: input.mailId }) });
-      await queryClient.invalidateQueries({ queryKey: trpc.admin.getMailStats.queryKey() });
-      toast.success(t("mail.sendSuccess"));
-    },
-    onError: async () => {
-      await Promise.all([
-        queryClient.invalidateQueries({ queryKey: trpc.admin.listMail.queryKey({ status }) }),
-        queryClient.invalidateQueries({ queryKey: trpc.admin.getMailStats.queryKey() }),
-      ]);
-      toast.error(t("mail.sendError"));
-    },
-  }));
-
-  return <>
-    <AdminHeading eyebrow={t("eyebrow")} title={t("mail.title")} description={t("mail.description")} />
-    <AdminMetrics label={t("stats.label")} isPending={stats.isPending} isError={stats.isError}
-      errorLabel={t("stats.error")} retry={() => stats.refetch()} retryLabel={t("actions.retry")} locale={locale}
-      metrics={[
-        { label: t("stats.totalMails"), value: stats.data?.totalMails },
-        { label: t("stats.pendingMails"), value: stats.data?.pendingMails },
-        { label: t("stats.sentMails"), value: stats.data?.sentMails },
-        { label: t("stats.failedMails"), value: stats.data?.failedMails },
-      ]} />
-    <div className="mail-filters" role="group" aria-label={t("mail.filterLabel")}>
-      {filters.map((filter) => <Button key={filter} type="button" variant={status === filter ? "default" : "outline"}
-        onClick={() => setStatus(filter)}>{t(`mail.filters.${filter}`)}</Button>)}
-    </div>
-    {mail.isPending ? <AdminLoading /> : mail.isError ? (
-      <AdminError title={t("errors.loadTitle")} description={t("errors.mail")} retry={() => mail.refetch()} retryLabel={t("actions.retry")} />
-    ) : mail.data.length === 0 ? (
-      <AdminEmpty title={t("mail.emptyTitle")} description={t("mail.emptyDescription")} />
-    ) : (
-      <Card className="admin-table-card"><CardContent className="admin-table-scroll">
-        <table className="admin-table admin-mail-table">
-          <thead><tr><th scope="col">{t("fields.recipient")}</th><th scope="col">{t("fields.team")}</th>
-            <th scope="col">{t("fields.subject")}</th><th scope="col">{t("fields.status")}</th>
-            <th scope="col">{t("fields.created")}</th><th scope="col"><span className="sr-only">{t("mail.actions")}</span></th></tr></thead>
-          <tbody>{mail.data.map((item) => {
-            const canSend = item.status === "pending" || item.status === "failed";
-            const isSending = sendMail.isPending && sendMail.variables?.mailId === item.id;
-            return <tr key={item.id}>
-              <td className="mail-recipients">
-                <strong>{t("fields.to")}: {item.memberName}</strong>
-                <span>{item.toAddress}</span>
-                <span><b>{t("fields.cc")}:</b> {item.cc.join(", ")}</span>
-              </td>
-              <td>{item.teamName}</td>
-              <td><Link className="admin-row-link" href={`/admin/mail/${item.id}`}><strong>{item.subject}</strong></Link></td>
-              <td><span className={`mail-status mail-status-${item.status}`}>{t(`mail.status.${item.status}`)}</span></td>
-              <td>{formatDate(item.createdAt, locale)}</td>
-              <td><div className="mail-row-actions">
-                {canSend && <Button type="button" size="sm" disabled={sendMail.isPending}
-                  onClick={() => sendMail.mutate({ mailId: item.id })}>
-                  {item.status === "failed" ? <RefreshCwIcon aria-hidden="true" /> : <SendIcon aria-hidden="true" />}
-                  {isSending ? t("mail.sending") : t(item.status === "failed" ? "mail.retry" : "mail.send")}
-                </Button>}
-                <Link className="admin-view-link" href={`/admin/mail/${item.id}`} aria-label={t("mail.previewFor", { recipient: item.toAddress })}>
-                  <ChevronRightIcon aria-hidden="true" />
-                </Link>
-              </div></td>
-            </tr>;
-          })}</tbody>
-        </table>
-      </CardContent></Card>
-    )}
-  </>;
+	const t = useTranslations("Admin.mail");
+	const locale = useLocale();
+	const roundLabel = useRoundLabel();
+	const [archived, setArchived] = useState(false);
+	const campaigns = useQuery(trpc.admin.listMailCampaigns.queryOptions({ archived }));
+	return <>
+		<div className="admin-heading-actions"><AdminHeading eyebrow={t("eyebrow")} title={t("title")} description={t("description")} />
+			<Link href="/admin/mail/new"><Button><MailPlusIcon />{t("newCampaign")}</Button></Link></div>
+		<div className="mail-campaign-list-toolbar" role="group" aria-label={t("archiveFilterLabel")}>
+			<Button variant={!archived ? "default" : "outline"} onClick={() => setArchived(false)}>{t("active")}</Button>
+			<Button variant={archived ? "default" : "outline"} onClick={() => setArchived(true)}><ArchiveIcon />{t("archived")}</Button>
+		</div>
+		{campaigns.isPending ? <AdminLoading /> : campaigns.isError ? <AdminError title={t("loadErrorTitle")}
+			description={t("loadError")} retry={() => campaigns.refetch()} retryLabel={t("retry")} />
+			: campaigns.data.length === 0 ? <AdminEmpty title={t("emptyCampaigns")} description={t("emptyCampaignsDescription")} />
+				: <Card className="admin-table-card"><CardContent className="admin-table-scroll"><table className="admin-table mail-campaign-table">
+					<thead><tr><th>{t("fields.name")}</th><th>{t("fields.round")}</th><th>{t("stats.audience")}</th>
+						<th>{t("stats.remaining")}</th><th>{t("stats.failed")}</th><th>{t("stats.sent")}</th>
+						<th>{t("fields.updated")}</th><th><span className="sr-only">{t("actions")}</span></th></tr></thead>
+					<tbody>{campaigns.data.map((campaign) => <tr key={campaign.id}>
+						<td><Link className="admin-row-link" href={`/admin/mail/${campaign.id}`}><strong>{campaign.name}</strong></Link></td>
+						<td>{roundLabel(campaign.round)}</td><td>{campaign.audienceCount}</td><td>{campaign.remainingCount}</td>
+						<td>{campaign.failedCount}</td><td>{campaign.sentCount}</td><td>{formatDate(campaign.updatedAt, locale)}</td>
+						<td><Link className="admin-view-link" href={`/admin/mail/${campaign.id}`} aria-label={t("openCampaign", { name: campaign.name })}>
+							<ChevronRightIcon /></Link></td></tr>)}</tbody>
+				</table></CardContent></Card>}
+	</>;
 }

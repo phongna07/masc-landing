@@ -26,7 +26,6 @@ import { AdminEmpty, AdminError, AdminHeading, AdminLoading, AdminMetrics, forma
 import { exportTeamsToExcel } from "./team-excel-export";
 
 const targets: Record<RoundId, RoundId[]> = { "0.5": ["1", "2"], "1": ["2"], "2": ["3"], "3": [] };
-const mailFilters = ["pending", "failed", "sent", "all"] as const;
 
 export default function RoundTeamList({ round }: { round: RoundId }) {
   const t = useTranslations("Admin"); const locale = useLocale();
@@ -50,20 +49,12 @@ export default function RoundTeamList({ round }: { round: RoundId }) {
     }, onError: () => toast.error(t("teams.promotionError"))
   }));
   const setEliminated = useMutation(trpc.admin.setTeamsEliminated.mutationOptions({
-    onSuccess: async ({ updatedCount, isEliminated, queuedMailCount, removedMailCount }, variables) => {
-      toast.success(t(isEliminated ? "teams.elimination.markSuccess" : "teams.elimination.restoreSuccess", { count: updatedCount }), {
-        description: t(isEliminated ? "teams.elimination.mailQueued" : "teams.elimination.mailRemoved", {
-          count: isEliminated ? queuedMailCount : removedMailCount,
-        }),
-      });
+    onSuccess: async ({ updatedCount, isEliminated }, variables) => {
+      toast.success(t(isEliminated ? "teams.elimination.markSuccess" : "teams.elimination.restoreSuccess", { count: updatedCount }));
       setSelected([]);
       await Promise.all([
         queryClient.invalidateQueries({ queryKey: trpc.admin.listTeams.queryKey({ round }) }),
         queryClient.invalidateQueries({ queryKey: trpc.admin.getTeamStats.queryKey({ round }) }),
-        queryClient.invalidateQueries({ queryKey: trpc.admin.getMailStats.queryKey() }),
-        ...mailFilters.map((status) => queryClient.invalidateQueries({
-          queryKey: trpc.admin.listMail.queryKey({ status }),
-        })),
         ...variables.teamIds.map((teamId) => queryClient.invalidateQueries({
           queryKey: trpc.admin.getTeam.queryKey({ round, teamId }),
         })),
