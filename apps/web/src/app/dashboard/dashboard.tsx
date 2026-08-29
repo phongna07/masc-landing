@@ -291,6 +291,7 @@ function RegistrationForm({ session, round, maxCvFileSize, preferenceSettings }:
     Array.from({ length: TEAMMATE_COUNT }, (_, index) => emptyTeammate(`member-${index + 1}`)),
   );
   const [errors, setErrors] = useState<FormErrors>({});
+  const [showValidationWarning, setShowValidationWarning] = useState(false);
   const [cvFiles, setCvFiles] = useState<(File | null)[]>([null, null, null]);
   const [uploading, setUploading] = useState(false);
   const [preferenceIds, setPreferenceIds] = useState(["", "", ""]);
@@ -396,8 +397,10 @@ function RegistrationForm({ session, round, maxCvFileSize, preferenceSettings }:
     if (round === "1" && (preferenceIds.some((id) => !id) || new Set(preferenceIds).size !== 3)) {
       next.preferences = t("preferences.validation");
     }
+    const isValid = Object.keys(next).length === 0;
     setErrors(next);
-    return Object.keys(next).length === 0;
+    setShowValidationWarning(!isValid);
+    return isValid;
   };
 
   const submit = async (event: FormEvent<HTMLFormElement>) => {
@@ -609,9 +612,13 @@ function RegistrationForm({ session, round, maxCvFileSize, preferenceSettings }:
       {(errors.form || mutationError) && <p className="form-error" role="alert">{errors.form || mutationError}</p>}
       <div className="registration-submit">
         <p>{t("registration.submitNote")}</p>
-        <Button type="submit" size="lg" disabled={isSubmitting} aria-busy={isSubmitting}>
-          {isSubmitting ? t("actions.submitting") : t("actions.submit")}
-        </Button>
+        <div className="registration-submit-action">
+          {showValidationWarning &&
+            <p className="registration-validation-warning" role="alert">{t("registration.validationWarning")}</p>}
+          <Button type="submit" size="lg" disabled={isSubmitting} aria-busy={isSubmitting}>
+            {isSubmitting ? t("actions.submitting") : t("actions.submit")}
+          </Button>
+        </div>
       </div>
     </form>
   );

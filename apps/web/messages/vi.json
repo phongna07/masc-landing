@@ -336,6 +336,7 @@
         }
       },
       "submitNote": "Vui lòng kiểm tra lại các thông tin trước khi hoàn tất đăng ký.",
+      "validationWarning": "Một số thông tin còn thiếu hoặc chưa hợp lệ. Vui lòng kiểm tra các trường được đánh dấu ở trên.",
       "sectionLabel": "Biểu mẫu đăng ký đội thi"
     },
     "preferences": {
