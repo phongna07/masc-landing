@@ -23,6 +23,7 @@ import { z } from "zod";
 
 import {
 	renderMailCampaignTemplate,
+	validateMailCampaignBodyTemplate,
 	validateMailCampaignTemplate,
 } from "./email/mail-campaign-template";
 import { sendMail } from "./email/send-mail";
@@ -61,14 +62,23 @@ function templateError(value: string) {
 	}
 }
 
+function bodyTemplateError(value: string) {
+	try {
+		validateMailCampaignBodyTemplate(value);
+		return true;
+	} catch {
+		return false;
+	}
+}
+
 export const mailCampaignInputSchema = mailCampaignAudienceSchema.extend({
 	name: z.string().trim().min(1).max(160),
 	subjectTemplate: z.string().trim().min(1).max(250)
 		.refine((value) => !/[\r\n]/.test(value), "SUBJECT_NEWLINES_NOT_ALLOWED")
 		.refine(templateError, "INVALID_PLACEHOLDER"),
 	bodyTemplate: z.string().min(1).max(20_000)
-		.refine((value) => value.trim().length > 0, "BODY_REQUIRED")
-		.refine(templateError, "INVALID_PLACEHOLDER"),
+		.refine(bodyTemplateError, "INVALID_BODY_TEMPLATE")
+		.transform((value) => validateMailCampaignBodyTemplate(value)),
 });
 
 type AudienceTeamRow = {

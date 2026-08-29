@@ -34,6 +34,9 @@ export function renderEmailLayout({
         .email-container { max-width: 650px; margin: 0 auto; background-color: #ffffff; border: 2px solid #5d3593; border-radius: 4px; overflow: hidden; }
         .banner { width: 100%; display: block; }
         .content { padding: 30px 25px; line-height: 1.6; }
+        .content p { margin: 0 0 16px; }
+        .content p:last-of-type { margin-bottom: 0; }
+        .content a { color: #5d3593; text-decoration: underline; }
         .greeting { font-size: 16px; font-weight: bold; margin-bottom: 15px; }
         .footer { margin-top: 30px; font-size: 14px; border-top: 1px solid #eeeeee; padding-top: 15px; }
         .automated-notice { margin: 18px 0 0; color: #777777; font-size: 11px; line-height: 1.5; }
