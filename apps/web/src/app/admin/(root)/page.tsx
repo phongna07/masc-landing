@@ -360,6 +360,8 @@ function DescriptionEditorDialog({ setting, disabled, onSave }: {
 						bold: t("overview.preferences.trackDescription.richText.bold"),
 						italic: t("overview.preferences.trackDescription.richText.italic"),
 						underline: t("overview.preferences.trackDescription.richText.underline"),
+						unorderedList: t("overview.preferences.trackDescription.richText.unorderedList"),
+						orderedList: t("overview.preferences.trackDescription.richText.orderedList"),
 						link: t("overview.preferences.trackDescription.richText.link"),
 						linkTitle: t("overview.preferences.trackDescription.richText.linkTitle"),
 						linkDescription: t("overview.preferences.trackDescription.richText.linkDescription"),

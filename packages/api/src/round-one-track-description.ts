@@ -22,7 +22,7 @@ function hasTextContent(value: string) {
 
 export function sanitizeRoundOneTrackDescription(value: string) {
 	const sanitized = sanitizeHtml(value, {
-		allowedTags: ["p", "br", "strong", "em", "u", "a"],
+		allowedTags: ["p", "br", "strong", "em", "u", "a", "ul", "ol", "li"],
 		allowedAttributes: { a: ["href", "target", "rel"] },
 		allowedSchemes: ["http", "https", "mailto"],
 		allowedSchemesAppliedToAttributes: ["href"],

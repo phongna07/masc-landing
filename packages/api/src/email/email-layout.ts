@@ -36,6 +36,14 @@ export function renderEmailLayout({
         .content { padding: 30px 25px; line-height: 1.6; }
         .content p { margin: 0 0 16px; }
         .content p:last-of-type { margin-bottom: 0; }
+        .content ul, .content ol { margin: 0 0 16px; padding-left: 26px; }
+        .content ul { list-style-type: disc; }
+        .content ol { list-style-type: decimal; }
+        .content ul ul { list-style-type: circle; }
+        .content ol ol { list-style-type: lower-alpha; }
+        .content li { margin: 0 0 6px; padding-left: 2px; }
+        .content li:last-child { margin-bottom: 0; }
+        .content li > ul, .content li > ol { margin-top: 6px; margin-bottom: 0; }
         .content a { color: #5d3593; text-decoration: underline; }
         .greeting { font-size: 16px; font-weight: bold; margin-bottom: 15px; }
         .footer { margin-top: 30px; font-size: 14px; border-top: 1px solid #eeeeee; padding-top: 15px; }

@@ -56,7 +56,7 @@ export function sanitizeMailCampaignBodyTemplate(template: string) {
 	validateMailCampaignTemplate(template);
 	assertPlaceholdersAreTextOnly(template);
 	const sanitized = sanitizeHtml(template, {
-		allowedTags: ["p", "br", "strong", "em", "u", "a"],
+		allowedTags: ["p", "br", "strong", "em", "u", "a", "ul", "ol", "li"],
 		allowedAttributes: { a: ["href"] },
 		allowedSchemes: ["http", "https", "mailto"],
 		allowedSchemesAppliedToAttributes: ["href"],
