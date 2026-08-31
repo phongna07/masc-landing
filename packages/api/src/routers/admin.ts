@@ -3,7 +3,7 @@ import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { db } from "@masc-landing/db";
 import {
   adminEmails, admissionSettings, dashboardTabSettings, mailCampaigns, members, preferencesSettings, problemStatementPublicationSettings, roundOneMemberCvs,
-  pdfExportJobs, roundOneMembers, roundOneSubmissions, roundOneTeams, roundSubmissions, roundThreeMembers,
+  pdfExportJobs, roundEndSettings, roundOneMembers, roundOneSubmissions, roundOneTeams, roundSubmissions, roundThreeMembers,
   roundThreeSubmissions, roundThreeTeams, roundTwoMembers, roundTwoSubmissions, roundTwoTeams,
   submissionSettings, teams, uploadLimitSettings, user, userAnnouncements
 } from "@masc-landing/db/schema/index";
@@ -15,6 +15,7 @@ import { z } from "zod";
 import { getAdmissionSettings } from "../admission-settings";
 import { getDashboardTabSettings } from "../dashboard-tab-settings";
 import { getProblemStatementPublicationSettings } from "../problem-statement-publication-settings";
+import { getRoundEndSettings } from "../round-end-settings";
 import { adminAreaProcedure, router } from "../index";
 import { awarenessSources, type AwarenessSource } from "../registration-schema";
 import { roundSchema, type RoundId } from "../rounds";
@@ -503,6 +504,12 @@ export const adminRouter = router({
     await db.insert(dashboardTabSettings).values({ round: input.round, isVisible: input.isVisible, updatedAt: new Date() })
       .onConflictDoUpdate({ target: dashboardTabSettings.round, set: { isVisible: input.isVisible, updatedAt: new Date() } });
     return getDashboardTabSettings();
+  }),
+  getRoundEndSettings: overviewProcedure.query(getRoundEndSettings),
+  setRoundEnded: overviewProcedure.input(roundInput.extend({ isEnded: z.boolean() })).mutation(async ({ input }) => {
+    await db.insert(roundEndSettings).values({ round: input.round, isEnded: input.isEnded, updatedAt: new Date() })
+      .onConflictDoUpdate({ target: roundEndSettings.round, set: { isEnded: input.isEnded, updatedAt: new Date() } });
+    return getRoundEndSettings();
   }),
   getSubmissionSettings: overviewProcedure.query(getSubmissionSettings),
   setRoundSubmissionOpen: overviewProcedure.input(roundInput.extend({ isOpen: z.boolean() })).mutation(async ({ input }) => {

@@ -9,6 +9,7 @@ export * from "./pdf-exports";
 export * from "./preferences-settings";
 export * from "./problem-statement-publication-settings";
 export * from "./registration";
+export * from "./round-end-settings";
 export * from "./submission-settings";
 export * from "./upload-limit-settings";
 export * from "./user-announcements";

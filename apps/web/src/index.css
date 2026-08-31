@@ -307,6 +307,13 @@ dialog[open]::backdrop {
   border-color: rgba(134, 239, 172, 0.31) !important;
 }
 
+.round-entry-card-ended {
+  border-color: rgba(191, 181, 204, 0.24) !important;
+  background:
+    radial-gradient(circle at 100% 0, rgba(191, 181, 204, 0.06), transparent 34%),
+    rgba(15, 14, 17, 0.94) !important;
+}
+
 .round-entry-card [data-slot="card-header"] {
   padding-top: 28px;
   padding-bottom: 8px;
@@ -641,6 +648,12 @@ dialog[open]::backdrop {
 .status-locked {
   color: #d0ccd3;
   background: rgba(255, 255, 255, 0.045);
+}
+
+.status-ended {
+  color: #bfb5cc;
+  border-color: rgba(191, 181, 204, 0.28) !important;
+  background: rgba(191, 181, 204, 0.07);
 }
 
 .round-hub-empty [data-slot="card-content"] {
