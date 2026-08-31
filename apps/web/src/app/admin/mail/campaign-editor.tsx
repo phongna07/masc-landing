@@ -144,6 +144,7 @@ export default function CampaignEditor({ initial, campaignId, archived = false, 
 						labels={{
 							toolbar: t("richText.toolbar"),
 							bold: t("richText.bold"), italic: t("richText.italic"), underline: t("richText.underline"),
+							unorderedList: t("richText.unorderedList"), orderedList: t("richText.orderedList"),
 							link: t("richText.link"), linkTitle: t("richText.linkTitle"), linkDescription: t("richText.linkDescription"),
 							linkUrl: t("richText.linkUrl"), linkPlaceholder: t("richText.linkPlaceholder"), linkInvalid: t("richText.linkInvalid"),
 							linkApply: t("richText.linkApply"), linkRemove: t("richText.linkRemove"), cancel: t("cancel"),

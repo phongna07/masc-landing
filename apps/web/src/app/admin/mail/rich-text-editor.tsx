@@ -12,7 +12,7 @@ import {
 } from "@masc-landing/ui/components/dialog";
 import { Input } from "@masc-landing/ui/components/input";
 import { Label } from "@masc-landing/ui/components/label";
-import { BoldIcon, ItalicIcon, LinkIcon, UnderlineIcon } from "lucide-react";
+import { BoldIcon, ItalicIcon, LinkIcon, ListIcon, ListOrderedIcon, UnderlineIcon } from "lucide-react";
 import { useCallback, useEffect, useLayoutEffect, useRef, useState, type ClipboardEvent, type FormEvent, type KeyboardEvent, type ReactNode } from "react";
 
 type RichTextEditorLabels = {
@@ -20,6 +20,8 @@ type RichTextEditorLabels = {
 	bold: string;
 	italic: string;
 	underline: string;
+	unorderedList: string;
+	orderedList: string;
 	link: string;
 	linkTitle: string;
 	linkDescription: string;
@@ -45,15 +47,65 @@ type ActiveFormats = {
 	bold: boolean;
 	italic: boolean;
 	underline: boolean;
+	unorderedList: boolean;
+	orderedList: boolean;
 	link: boolean;
 };
 
-const emptyFormats: ActiveFormats = { bold: false, italic: false, underline: false, link: false };
+const emptyFormats: ActiveFormats = {
+	bold: false,
+	italic: false,
+	underline: false,
+	unorderedList: false,
+	orderedList: false,
+	link: false,
+};
 
 function closestAnchor(node: Node | null, editor: HTMLElement) {
 	const element = node instanceof Element ? node : node?.parentElement;
 	const anchor = element?.closest("a") ?? null;
 	return anchor && editor.contains(anchor) ? anchor as HTMLAnchorElement : null;
+}
+
+function closestListItem(node: Node | null, editor: HTMLElement) {
+	const element = node instanceof Element ? node : node?.parentElement;
+	const listItem = element?.closest("li") ?? null;
+	return listItem && editor.contains(listItem) ? listItem as HTMLLIElement : null;
+}
+
+function isListElement(element: Element | null | undefined): element is HTMLUListElement | HTMLOListElement {
+	return element instanceof HTMLUListElement || element instanceof HTMLOListElement;
+}
+
+function indentListItem(listItem: HTMLLIElement) {
+	const parentList = listItem.parentElement;
+	const previousItem = listItem.previousElementSibling;
+	if (!isListElement(parentList) || !(previousItem instanceof HTMLLIElement)) return false;
+	const lastChild = previousItem.lastElementChild;
+	const nestedList = lastChild?.tagName === parentList.tagName
+		? lastChild as HTMLUListElement | HTMLOListElement
+		: document.createElement(parentList.tagName.toLowerCase() as "ul" | "ol");
+	if (!nestedList.parentElement) previousItem.append(nestedList);
+	nestedList.append(listItem);
+	return true;
+}
+
+function outdentListItem(listItem: HTMLLIElement) {
+	const parentList = listItem.parentElement;
+	const parentItem = parentList?.parentElement;
+	const outerList = parentItem?.parentElement;
+	if (!isListElement(parentList) || !(parentItem instanceof HTMLLIElement) || !isListElement(outerList)) return false;
+	if (listItem.nextElementSibling instanceof HTMLLIElement) {
+		const lastChild = listItem.lastElementChild;
+		const nestedList = lastChild?.tagName === parentList.tagName
+			? lastChild as HTMLUListElement | HTMLOListElement
+			: document.createElement(parentList.tagName.toLowerCase() as "ul" | "ol");
+		if (!nestedList.parentElement) listItem.append(nestedList);
+		while (listItem.nextElementSibling instanceof HTMLLIElement) nestedList.append(listItem.nextElementSibling);
+	}
+	outerList.insertBefore(listItem, parentItem.nextSibling);
+	if (!parentList.children.length) parentList.remove();
+	return true;
 }
 
 function normalizeLink(value: string) {
@@ -108,6 +160,8 @@ export default function RichTextEditor({ id, ariaLabel, value, disabled = false,
 			bold: document.queryCommandState("bold"),
 			italic: document.queryCommandState("italic"),
 			underline: document.queryCommandState("underline"),
+			unorderedList: document.queryCommandState("insertUnorderedList"),
+			orderedList: document.queryCommandState("insertOrderedList"),
 			link: closestAnchor(selection.anchorNode, editor) !== null,
 		});
 	}, []);
@@ -130,6 +184,13 @@ export default function RichTextEditor({ id, ariaLabel, value, disabled = false,
 	};
 
 	const runCommand = (command: "bold" | "italic" | "underline") => {
+		if (disabled) return;
+		editorRef.current?.focus();
+		document.execCommand(command);
+		emitChange();
+	};
+
+	const runListCommand = (command: "insertUnorderedList" | "insertOrderedList") => {
 		if (disabled) return;
 		editorRef.current?.focus();
 		document.execCommand(command);
@@ -205,6 +266,14 @@ export default function RichTextEditor({ id, ariaLabel, value, disabled = false,
 	};
 
 	const handleKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
+		if (event.key === "Tab") {
+			event.preventDefault();
+			const editor = editorRef.current;
+			const selection = window.getSelection();
+			const listItem = editor && selection?.anchorNode ? closestListItem(selection.anchorNode, editor) : null;
+			if (listItem && (event.shiftKey ? outdentListItem(listItem) : indentListItem(listItem))) emitChange();
+			return;
+		}
 		if (!(event.ctrlKey || event.metaKey) || event.altKey) return;
 		const command = ({ b: "bold", i: "italic", u: "underline" } as const)[event.key.toLowerCase() as "b" | "i" | "u"];
 		if (!command) return;
@@ -215,12 +284,17 @@ export default function RichTextEditor({ id, ariaLabel, value, disabled = false,
 	const toolbarButton = (command: "bold" | "italic" | "underline", icon: ReactNode, label: string) =>
 		<Button type="button" size="icon-sm" variant="ghost" disabled={disabled} aria-label={label} title={label}
 			aria-pressed={formats[command]} onMouseDown={(event) => event.preventDefault()} onClick={() => runCommand(command)}>{icon}</Button>;
+	const listButton = (command: "insertUnorderedList" | "insertOrderedList", format: "unorderedList" | "orderedList", icon: ReactNode, label: string) =>
+		<Button type="button" size="icon-sm" variant="ghost" disabled={disabled} aria-label={label} title={label}
+			aria-pressed={formats[format]} onMouseDown={(event) => event.preventDefault()} onClick={() => runListCommand(command)}>{icon}</Button>;
 
 	return <div className="mail-rich-text-editor" data-disabled={disabled || undefined}>
 		<div className="mail-rich-text-toolbar" role="toolbar" aria-label={labels.toolbar}>
 			{toolbarButton("bold", <BoldIcon />, labels.bold)}
 			{toolbarButton("italic", <ItalicIcon />, labels.italic)}
 			{toolbarButton("underline", <UnderlineIcon />, labels.underline)}
+			{listButton("insertUnorderedList", "unorderedList", <ListIcon />, labels.unorderedList)}
+			{listButton("insertOrderedList", "orderedList", <ListOrderedIcon />, labels.orderedList)}
 			<Button type="button" size="icon-sm" variant="ghost" disabled={disabled} aria-label={labels.link} title={labels.link}
 				aria-pressed={formats.link} onMouseDown={(event) => event.preventDefault()} onClick={openLinkDialog}><LinkIcon /></Button>
 		</div>

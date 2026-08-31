@@ -24,6 +24,13 @@ test("keeps safe links and forces new-tab protection", () => {
 	);
 });
 
+test("keeps ordered and unordered lists with supported inline content", () => {
+	assert.equal(
+		sanitizeRoundOneTrackDescription('<ul class="items"><li><strong>Bold</strong><ol><li><u>Nested</u></li></ol></li><li><a href="https://example.com" onclick="x()">Details</a><img src=x></li></ul><ol start="4"><li><em>First</em></li></ol>'),
+		'<ul><li><strong>Bold</strong><ol><li><u>Nested</u></li></ol></li><li><a href="https://example.com" target="_blank" rel="noopener noreferrer">Details</a></li></ul><ol><li><em>First</em></li></ol>',
+	);
+});
+
 test("removes unsafe and relative link destinations", () => {
 	assert.equal(
 		sanitizeRoundOneTrackDescription('<p><a href="javascript:alert(1)">Bad</a> <a href="/relative">Relative</a></p>'),

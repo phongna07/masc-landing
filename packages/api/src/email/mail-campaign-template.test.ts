@@ -44,6 +44,13 @@ test("keeps safe web and email links and unwraps unsafe links", () => {
 	);
 });
 
+test("keeps ordered and unordered lists with supported inline content", () => {
+	assert.equal(
+		sanitizeMailCampaignBodyTemplate('<ul class="items"><li><strong>{{team_name}}</strong><ol><li><u>Nested</u></li></ol></li><li><a href="https://example.com" onclick="x()">Details</a><img src=x></li></ul><ol start="4"><li><em>First</em></li></ol>'),
+		'<ul><li><strong>{{team_name}}</strong><ol><li><u>Nested</u></li></ol></li><li><a href="https://example.com">Details</a></li></ul><ol><li><em>First</em></li></ol>',
+	);
+});
+
 test("rejects empty markup, unknown variables, and variables in link destinations", () => {
 	assert.throws(() => validateMailCampaignBodyTemplate("<p><br></p>"), /BODY_REQUIRED/);
 	assert.throws(() => validateMailCampaignBodyTemplate("<p>{{unknown}}</p>"), /UNKNOWN_PLACEHOLDER/);
@@ -68,6 +75,24 @@ test("creates a readable plain-text alternative with link destinations", () => {
 	const text = mailCampaignBodyText(template);
 	assert.match(text, /First\nSecond/);
 	assert.match(text, /Read more \[https:\/\/example\.com\/path\]/);
+});
+
+test("creates readable bullets and numbering in the plain-text alternative", () => {
+	const text = mailCampaignBodyText("<ul><li>Alpha</li><li>Beta</li></ul><ol><li>First</li><li>Second</li></ol>");
+	assert.match(text, /\* Alpha/);
+	assert.match(text, /\* Beta/);
+	assert.match(text, /1\. First/);
+	assert.match(text, /2\. Second/);
+});
+
+test("renders list markup with explicit email layout styling", () => {
+	const rendered = renderMailCampaignTemplate({
+		subjectTemplate: "List",
+		bodyTemplate: "<ul><li>Alpha</li></ul><ol><li>First</li></ol>",
+		values,
+	});
+	assert.match(rendered.html, /\.content ul, \.content ol \{ margin: 0 0 16px; padding-left: 26px; \}/);
+	assert.match(rendered.html, /<ul><li>Alpha<\/li><\/ul><ol><li>First<\/li><\/ol>/);
 });
 
 test("repairs malformed pasted markup without retaining executable content", () => {

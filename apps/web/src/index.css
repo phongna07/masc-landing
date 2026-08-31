@@ -512,6 +512,42 @@ dialog[open]::backdrop {
   margin-bottom: 0;
 }
 
+.problem-statement-description ul,
+.problem-statement-description ol {
+  margin: 0 0 12px;
+  padding-left: 26px;
+}
+
+.problem-statement-description ul {
+  list-style-type: disc;
+}
+
+.problem-statement-description ol {
+  list-style-type: decimal;
+}
+
+.problem-statement-description ul ul {
+  list-style-type: circle;
+}
+
+.problem-statement-description ol ol {
+  list-style-type: lower-alpha;
+}
+
+.problem-statement-description li {
+  margin-bottom: 4px;
+}
+
+.problem-statement-description li:last-child {
+  margin-bottom: 0;
+}
+
+.problem-statement-description li>ul,
+.problem-statement-description li>ol {
+  margin-top: 4px;
+  margin-bottom: 0;
+}
+
 .problem-statement-description a {
   color: #bde7ad;
   text-decoration: underline;
@@ -2482,6 +2518,33 @@ dialog[open]::backdrop {
 	margin-bottom: 0;
 }
 
+.admin-track-description-preview ul,
+.admin-track-description-preview ol {
+	margin: 0 0 4px;
+	padding-left: 20px;
+}
+
+.admin-track-description-preview ul {
+	list-style-type: disc;
+}
+
+.admin-track-description-preview ol {
+	list-style-type: decimal;
+}
+
+.admin-track-description-preview ul ul {
+	list-style-type: circle;
+}
+
+.admin-track-description-preview ol ol {
+	list-style-type: lower-alpha;
+}
+
+.admin-track-description-preview li>ul,
+.admin-track-description-preview li>ol {
+	margin-bottom: 0;
+}
+
 .admin-track-description-preview a {
 	color: #bde7ad;
 	text-decoration: underline;
@@ -3436,6 +3499,42 @@ dialog[open]::backdrop {
 
 .mail-rich-text-content p {
 	margin: 0 0 14px;
+}
+
+.mail-rich-text-content ul,
+.mail-rich-text-content ol {
+	margin: 0 0 14px;
+	padding-left: 28px;
+}
+
+.mail-rich-text-content ul {
+	list-style-type: disc;
+}
+
+.mail-rich-text-content ol {
+	list-style-type: decimal;
+}
+
+.mail-rich-text-content ul ul {
+	list-style-type: circle;
+}
+
+.mail-rich-text-content ol ol {
+	list-style-type: lower-alpha;
+}
+
+.mail-rich-text-content li {
+	margin-bottom: 4px;
+}
+
+.mail-rich-text-content li:last-child {
+	margin-bottom: 0;
+}
+
+.mail-rich-text-content li>ul,
+.mail-rich-text-content li>ol {
+	margin-top: 4px;
+	margin-bottom: 0;
 }
 
 .mail-rich-text-content a {
