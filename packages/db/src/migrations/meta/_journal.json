@@ -78,6 +78,13 @@
       "when": 1788187129189,
       "tag": "0010_lucky_lord_hawal",
       "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1788189248995,
+      "tag": "0011_magical_proudstar",
+      "breakpoints": true
     }
   ]
 }

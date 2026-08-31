@@ -382,6 +382,11 @@
     "fields": {
       "teamName": "Tên đội",
       "captainPhone": "Số điện thoại đội trưởng",
+      "phone": "Số điện thoại",
+      "facebookProfileUrl": "Liên kết trang cá nhân Facebook",
+      "facebookProfilePlaceholder": "facebook.com/trang-ca-nhan",
+      "cv": "CV",
+      "role": "Vai trò",
       "fullName": "Họ và tên",
       "email": "Địa chỉ email",
       "birthdate": "Ngày sinh",
@@ -400,6 +405,7 @@
       "gmailEmail": "Vui lòng nhập địa chỉ email có đuôi @gmail.com.",
       "birthdate": "Thí sinh phải từ 18 đến 22 tuổi.",
       "phone": "Nhập số điện thoại hợp lệ gồm 8–15 chữ số.",
+      "facebookProfileUrl": "Nhập liên kết trang cá nhân Facebook hợp lệ.",
       "emoji": "Không được sử dụng emoji.",
       "maxCharacters": "Vui lòng nhập không quá {count} ký tự.",
       "duplicateEmail": "Mỗi thành viên phải sử dụng một địa chỉ email khác nhau."
@@ -1076,6 +1082,7 @@
       "from": "Người gửi",
       "subject": "Tiêu đề",
       "phone": "Điện thoại",
+      "facebookProfile": "Trang cá nhân Facebook",
       "birthdate": "Ngày sinh",
       "university": "Trường",
       "role": "Vai trò",

@@ -81,6 +81,8 @@ async function roundOneMembership(user: MembershipUser) {
 		email: roundOneMembers.email,
 		birthdate: roundOneMembers.birthdate,
 		universityName: roundOneMembers.universityName,
+		phone: roundOneMembers.phone,
+		facebookProfileUrl: roundOneMembers.facebookProfileUrl,
 		isCaptain: roundOneMembers.isCaptain,
 		hasCv: sql<boolean>`${roundOneMemberCvs.id} is not null`,
 	}).from(roundOneMembers).leftJoin(roundOneMemberCvs, eq(roundOneMemberCvs.memberId, roundOneMembers.id))

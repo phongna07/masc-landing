@@ -152,6 +152,8 @@ export const roundOneMembers = pgTable(
     isCaptain: boolean("is_captain").default(false).notNull(),
     fullName: text("full_name").notNull(),
     email: text("email").notNull(),
+    phone: text("phone"),
+    facebookProfileUrl: text("facebook_profile_url"),
   },
   (table) => [
     index("round_1_members_team_id_idx").on(table.teamId),

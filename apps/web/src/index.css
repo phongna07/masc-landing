@@ -1029,18 +1029,6 @@ dialog[open]::backdrop {
   gap: 20px;
 }
 
-.round-one-member-fields {
-  grid-template-columns: repeat(6, minmax(0, 1fr));
-}
-
-.round-one-member-fields>.dashboard-field:nth-child(-n+2) {
-  grid-column: span 3;
-}
-
-.round-one-member-fields>.dashboard-field:nth-child(n+3) {
-  grid-column: span 2;
-}
-
 .dashboard-field {
   display: grid;
   align-content: start;
@@ -1389,7 +1377,8 @@ dialog[open]::backdrop {
 
 .role-badge,
 .status-badge,
-.captain-tag {
+.captain-tag,
+.member-tag {
   padding: 7px 10px;
   border: 1px solid rgba(255, 255, 255, 0.18);
   font-size: 11px;
@@ -1403,6 +1392,12 @@ dialog[open]::backdrop {
   color: #f2d584;
   border-color: rgba(242, 213, 132, 0.32);
   background: rgba(242, 213, 132, 0.07);
+}
+
+.member-tag {
+  color: #c4b5fd;
+  border-color: rgba(196, 181, 253, 0.32);
+  background: rgba(123, 102, 255, 0.08);
 }
 
 .status-approved {
@@ -1445,6 +1440,17 @@ dialog[open]::backdrop {
   text-align: right;
 }
 
+.facebook-profile-link {
+  display: inline-block;
+  max-width: 260px;
+  overflow: hidden;
+  color: #f2d584;
+  text-decoration: underline;
+  text-overflow: ellipsis;
+  vertical-align: middle;
+  white-space: nowrap;
+}
+
 .roster-list {
   min-width: 0;
   overflow-x: auto;
@@ -1454,8 +1460,24 @@ dialog[open]::backdrop {
   width: 100%;
   min-width: 900px;
   border-collapse: collapse;
-  table-layout: fixed;
+  table-layout: auto;
   text-align: left;
+}
+
+.round-one-roster-table {
+  min-width: 1300px;
+}
+
+.round-one-roster-table th:nth-child(2) {
+  width: 25%;
+}
+
+.round-one-roster-table th:nth-child(5) {
+  width: 150px;
+}
+
+.round-one-roster-table th:nth-child(6) {
+  width: 230px;
 }
 
 .roster-table th,
@@ -1464,6 +1486,7 @@ dialog[open]::backdrop {
   text-align: left;
   vertical-align: middle;
   border-bottom: 1px solid rgba(255, 255, 255, 0.09);
+  white-space: nowrap;
 }
 
 .roster-table th {
@@ -1492,6 +1515,12 @@ dialog[open]::backdrop {
   white-space: nowrap;
 }
 
+.roster-table th:nth-last-child(2),
+.roster-table td:nth-last-child(2) {
+  width: 150px;
+  white-space: nowrap;
+}
+
 .roster-table tbody tr:last-child td,
 .detail-list>div:last-child {
   border-bottom: 0;
@@ -1506,7 +1535,8 @@ dialog[open]::backdrop {
 .roster-table h3,
 .roster-table p {
   margin: 0;
-  overflow-wrap: anywhere;
+  overflow-wrap: normal;
+  white-space: nowrap;
 }
 
 .roster-table h3 {
@@ -1586,10 +1616,6 @@ dialog[open]::backdrop {
   .overview-grid,
   .dashboard-skeleton>div:nth-child(2) {
     grid-template-columns: 1fr;
-  }
-
-  .round-one-member-fields>.dashboard-field:nth-child(n) {
-    grid-column: 1 / -1;
   }
 
   .roster-form-header,
