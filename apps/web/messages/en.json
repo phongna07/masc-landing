@@ -934,7 +934,10 @@
       "placeholders": {
         "title": "Available placeholders",
         "description": "Use these in the subject or body. Member 1 is the captain; members 2–3 are ordered consistently by name.",
-        "optional": "Assigned track and preference placeholders are empty when the selected round or team has no value. Variables can be formatted, but cannot be used inside link URLs."
+        "optional": "A database value that is not available is shown as “Chưa có”. Variables can be formatted, but cannot be used inside link URLs.",
+        "invalidVariables": "Unsupported email template variable(s): {variables}. Remove or replace each named variable with one from the available list below.",
+        "variablesInLinks": "Template variable(s) cannot be used inside a link URL: {variables}. Move each named variable into the visible email text.",
+        "malformedVariable": "A template variable is malformed. Every variable must have two opening braces and two closing braces."
       },
       "richText": {
         "toolbar": "Email content formatting",

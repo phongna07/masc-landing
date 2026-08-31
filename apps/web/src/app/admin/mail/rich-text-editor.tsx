@@ -36,6 +36,8 @@ type RichTextEditorLabels = {
 type RichTextEditorProps = {
 	id: string;
 	ariaLabel: string;
+	ariaInvalid?: boolean;
+	ariaDescribedBy?: string;
 	value: string;
 	disabled?: boolean;
 	maxLength: number;
@@ -133,7 +135,7 @@ export function richTextHasContent(value: string) {
 		.trim().length > 0;
 }
 
-export default function RichTextEditor({ id, ariaLabel, value, disabled = false, maxLength, labels, onChange }: RichTextEditorProps) {
+export default function RichTextEditor({ id, ariaLabel, ariaInvalid, ariaDescribedBy, value, disabled = false, maxLength, labels, onChange }: RichTextEditorProps) {
 	const editorRef = useRef<HTMLDivElement>(null);
 	const acceptedValueRef = useRef(value);
 	const savedRangeRef = useRef<Range | null>(null);
@@ -299,7 +301,8 @@ export default function RichTextEditor({ id, ariaLabel, value, disabled = false,
 				aria-pressed={formats.link} onMouseDown={(event) => event.preventDefault()} onClick={openLinkDialog}><LinkIcon /></Button>
 		</div>
 		<div ref={editorRef} id={id} className="mail-rich-text-content" contentEditable={!disabled} role="textbox"
-			aria-label={ariaLabel} aria-multiline="true" aria-readonly={disabled} suppressContentEditableWarning spellCheck
+			aria-label={ariaLabel} aria-invalid={ariaInvalid} aria-describedby={ariaDescribedBy}
+			aria-multiline="true" aria-readonly={disabled} suppressContentEditableWarning spellCheck
 			onFocus={() => {
 				document.execCommand("defaultParagraphSeparator", false, "p");
 				document.execCommand("styleWithCSS", false, "false");

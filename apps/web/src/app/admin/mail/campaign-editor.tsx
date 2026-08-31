@@ -3,6 +3,7 @@
 import {
 	admissionMethods,
 	eliminationFilters,
+	inspectMailCampaignTemplate,
 	mailCampaignPlaceholders,
 	preferenceStatuses,
 	registrationStatuses,
@@ -57,17 +58,21 @@ export default function CampaignEditor({ initial, campaignId, archived = false, 
 	const [saved, setSaved] = useState(initial);
 	const [previewTeamId, setPreviewTeamId] = useState<string>();
 	const dirty = useMemo(() => JSON.stringify(form) !== JSON.stringify(saved), [form, saved]);
-	const previewReady = !!(form.name.trim() && form.subjectTemplate.trim() && richTextHasContent(form.bodyTemplate));
+	const subjectIssues = useMemo(() => inspectMailCampaignTemplate(form.subjectTemplate), [form.subjectTemplate]);
+	const bodyIssues = useMemo(() => inspectMailCampaignTemplate(form.bodyTemplate), [form.bodyTemplate]);
+	const hasTemplateIssues = subjectIssues.malformed || bodyIssues.malformed
+		|| subjectIssues.unknownPlaceholders.length > 0 || bodyIssues.unknownPlaceholders.length > 0
+		|| bodyIssues.placeholdersInTags.length > 0;
+	const previewReady = !!(form.name.trim() && form.subjectTemplate.trim() && richTextHasContent(form.bodyTemplate) && !hasTemplateIssues);
 	useEffect(() => onDirtyChange?.(dirty), [dirty, onDirtyChange]);
 
 	const preview = useMutation(trpc.admin.previewMailCampaign.mutationOptions());
 	const previewCampaign = preview.mutate;
 	useEffect(() => {
-		if (!form.name.trim() || !form.subjectTemplate.trim() || !richTextHasContent(form.bodyTemplate)
-			|| !form.registrationStatuses.length || !form.preferenceStatuses.length || !form.admissionMethods.length) return;
+		if (!previewReady || !form.registrationStatuses.length || !form.preferenceStatuses.length || !form.admissionMethods.length) return;
 		const timer = window.setTimeout(() => previewCampaign({ campaign: form, teamId: previewTeamId }), 450);
 		return () => window.clearTimeout(timer);
-	}, [form, previewTeamId, previewCampaign]);
+	}, [form, previewTeamId, previewCampaign, previewReady]);
 
 	const create = useMutation(trpc.admin.createMailCampaign.mutationOptions({
 		onSuccess: ({ id }) => {
@@ -93,7 +98,22 @@ export default function CampaignEditor({ initial, campaignId, archived = false, 
 	};
 	const pending = create.isPending || update.isPending;
 	const canSave = !!(!archived && dirty && form.name.trim() && form.subjectTemplate.trim() && richTextHasContent(form.bodyTemplate)
-		&& form.registrationStatuses.length > 0 && form.preferenceStatuses.length > 0 && form.admissionMethods.length > 0);
+		&& !hasTemplateIssues && form.registrationStatuses.length > 0 && form.preferenceStatuses.length > 0 && form.admissionMethods.length > 0);
+	const templateWarning = (issues: ReturnType<typeof inspectMailCampaignTemplate>, checkTagPlacement = false) => {
+		if (issues.unknownPlaceholders.length) {
+			return t("placeholders.invalidVariables", {
+				variables: issues.unknownPlaceholders.map((placeholder) => `{{${placeholder}}}`).join(", "),
+			});
+		}
+		if (checkTagPlacement && issues.placeholdersInTags.length) {
+			return t("placeholders.variablesInLinks", {
+				variables: issues.placeholdersInTags.map((placeholder) => `{{${placeholder}}}`).join(", "),
+			});
+		}
+		return issues.malformed ? t("placeholders.malformedVariable") : null;
+	};
+	const subjectWarning = templateWarning(subjectIssues);
+	const bodyWarning = templateWarning(bodyIssues, true);
 
 	return <div className="mail-campaign-editor">
 		<Card className="mail-campaign-form-card"><CardHeader><CardTitle>{t("editor.title")}</CardTitle></CardHeader>
@@ -138,9 +158,12 @@ export default function CampaignEditor({ initial, campaignId, archived = false, 
 				</div>
 				<div className="mail-form-field"><Label htmlFor="campaign-subject">{t("fields.subject")}</Label>
 					<Input id="campaign-subject" value={form.subjectTemplate} maxLength={250} disabled={archived}
+						aria-invalid={!!subjectWarning} aria-describedby={subjectWarning ? "campaign-subject-warning" : undefined}
 						onChange={(event) => setForm((current) => ({ ...current, subjectTemplate: event.target.value }))} /></div>
+				{subjectWarning && <p id="campaign-subject-warning" className="form-error" role="alert">{subjectWarning}</p>}
 				<div className="mail-form-field"><Label htmlFor="campaign-body">{t("fields.body")}</Label>
 					<RichTextEditor id="campaign-body" ariaLabel={t("fields.body")} value={form.bodyTemplate} maxLength={20_000} disabled={archived}
+						ariaInvalid={!!bodyWarning} ariaDescribedBy={bodyWarning ? "campaign-body-warning" : undefined}
 						labels={{
 							toolbar: t("richText.toolbar"),
 							bold: t("richText.bold"), italic: t("richText.italic"), underline: t("richText.underline"),
@@ -150,6 +173,7 @@ export default function CampaignEditor({ initial, campaignId, archived = false, 
 							linkApply: t("richText.linkApply"), linkRemove: t("richText.linkRemove"), cancel: t("cancel"),
 						}}
 						onChange={(bodyTemplate) => setForm((current) => ({ ...current, bodyTemplate }))} /></div>
+				{bodyWarning && <p id="campaign-body-warning" className="form-error" role="alert">{bodyWarning}</p>}
 				<div className="mail-placeholder-help"><strong>{t("placeholders.title")}</strong><p>{t("placeholders.description")}</p>
 					<div>{mailCampaignPlaceholders.map((placeholder) => <code key={placeholder}>{`{{${placeholder}}}`}</code>)}</div>
 					<p>{t("placeholders.optional")}</p></div>

@@ -934,7 +934,10 @@
       "placeholders": {
         "title": "Các biến có thể sử dụng",
         "description": "Dùng trong tiêu đề hoặc nội dung. Thành viên 1 là đội trưởng; thành viên 2–3 được sắp xếp ổn định theo tên.",
-        "optional": "Biến track và nguyện vọng sẽ để trống khi vòng hoặc đội không có dữ liệu. Có thể định dạng biến, nhưng không thể dùng biến trong URL liên kết."
+        "optional": "Giá trị không có trong cơ sở dữ liệu sẽ hiển thị là “Chưa có”. Có thể định dạng biến, nhưng không thể dùng biến trong URL liên kết.",
+        "invalidVariables": "Biến mẫu email không được hỗ trợ: {variables}. Hãy xóa hoặc thay từng biến được nêu bằng một biến trong danh sách bên dưới.",
+        "variablesInLinks": "Không thể dùng biến mẫu trong URL liên kết: {variables}. Hãy chuyển từng biến được nêu vào phần nội dung email hiển thị.",
+        "malformedVariable": "Có một biến mẫu email sai định dạng. Mỗi biến phải có hai dấu ngoặc nhọn mở và hai dấu ngoặc nhọn đóng."
       },
       "richText": {
         "toolbar": "Định dạng nội dung email",
