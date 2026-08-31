@@ -27,12 +27,17 @@ export default function AdminPage() {
 	const t = useTranslations("Admin");
 	const roundLabel = useRoundLabel();
 	const dashboardTabSettings = useQuery(trpc.admin.getDashboardTabSettings.queryOptions());
+	const roundEndSettings = useQuery(trpc.admin.getRoundEndSettings.queryOptions());
 	const settings = useQuery(trpc.admin.getSubmissionSettings.queryOptions());
 	const admissionSettings = useQuery(trpc.admin.getAdmissionSettings.queryOptions());
 	const uploadLimits = useQuery(trpc.admin.getUploadLimits.queryOptions());
 	const updateDashboardTab = useMutation(trpc.admin.setDashboardTabVisible.mutationOptions({
 		onSuccess: async () => { await dashboardTabSettings.refetch(); toast.success(t("overview.visibilitySuccess")); },
 		onError: () => toast.error(t("overview.visibilityError")),
+	}));
+	const updateRoundEnded = useMutation(trpc.admin.setRoundEnded.mutationOptions({
+		onSuccess: async () => { await roundEndSettings.refetch(); toast.success(t("overview.roundEndSuccess")); },
+		onError: () => toast.error(t("overview.roundEndError")),
 	}));
 	const update = useMutation(trpc.admin.setRoundSubmissionOpen.mutationOptions({
 		onSuccess: async (data) => {
@@ -65,6 +70,24 @@ export default function AdminPage() {
 						<CardContent><Button variant={isVisible ? "default" : "outline"} role="switch" aria-checked={isVisible}
 							disabled={updateDashboardTab.isPending} onClick={() => updateDashboardTab.mutate({ round, isVisible: !isVisible })}
 						>{isUpdating ? t("overview.updating") : t(isVisible ? "overview.hideAction" : "overview.showAction")}</Button></CardContent>
+					</Card>;
+				})}</div>}
+		</section>
+		<section className="admin-setting-section" aria-labelledby="round-end-settings-title">
+			<div className="admin-setting-section-heading"><h2 id="round-end-settings-title">{t("overview.roundEndSectionTitle")}</h2>
+				<p>{t("overview.roundEndSectionDescription")}</p></div>
+			{roundEndSettings.isPending ? <AdminLoading /> : roundEndSettings.isError ?
+				<AdminError title={t("errors.loadTitle")} description={t("overview.roundEndLoadError")} retry={() => roundEndSettings.refetch()} retryLabel={t("actions.retry")} /> :
+				<div className="admin-round-settings">{roundIds.map((round) => {
+					const displayRound = roundLabel(round);
+					const isEnded = roundEndSettings.data[round];
+					const isUpdating = updateRoundEnded.isPending && updateRoundEnded.variables?.round === round;
+					return <Card className="admin-round-setting" key={round}>
+						<CardHeader><div><CardTitle>{t("overview.roundTitle", { roundLabel: displayRound })}</CardTitle><p>{t("overview.roundEndRoundDescription", { roundLabel: displayRound })}</p></div>
+							<span className={isEnded ? "is-closed" : "is-open"}>{t(isEnded ? "overview.ended" : "overview.notEnded")}</span></CardHeader>
+						<CardContent><Button variant={isEnded ? "default" : "outline"} role="switch" aria-checked={isEnded}
+							disabled={updateRoundEnded.isPending} onClick={() => updateRoundEnded.mutate({ round, isEnded: !isEnded })}
+						>{isUpdating ? t("overview.updating") : t(isEnded ? "overview.markNotEnded" : "overview.markEnded")}</Button></CardContent>
 					</Card>;
 				})}</div>}
 		</section>

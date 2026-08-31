@@ -73,12 +73,13 @@ const AnnouncementsFeed = dynamic(() => import("./announcements-feed"), {
 });
 
 export default function Dashboard({ session, activeTab, initialMemberships, initialSettings, initialDashboardTabSettings, initialSubmissionSettings,
-  initialRoundOnePreferenceSettings, initialSubmissionStatuses, initialUploadLimits, initialUserAnnouncements }: {
+  initialRoundEndSettings, initialRoundOnePreferenceSettings, initialSubmissionStatuses, initialUploadLimits, initialUserAnnouncements }: {
     session: Session;
     activeTab: DashboardTab;
     initialMemberships: Memberships;
     initialSettings: Record<RoundId, boolean>;
     initialDashboardTabSettings: Record<RoundId, boolean>;
+    initialRoundEndSettings: Record<RoundId, boolean>;
     initialRoundOnePreferenceSettings: RoundOnePreferenceSettings;
     initialSubmissionSettings: Record<RoundId, boolean>;
     initialSubmissionStatuses: SubmissionStatuses;
@@ -149,6 +150,7 @@ export default function Dashboard({ session, activeTab, initialMemberships, init
           </Card>
         ) : activeTab === "overview" ? <RoundHub memberships={memberships.data!} settings={settings.data!}
           dashboardTabSettings={initialDashboardTabSettings}
+          roundEndSettings={initialRoundEndSettings}
           submissionSettings={initialSubmissionSettings}
           submissionStatuses={submissionStatuses.data ?? initialSubmissionStatuses} />
           : <RoundDashboard round={activeTab.slice(6) as RoundId} session={session} settings={settings.data!}
@@ -158,10 +160,11 @@ export default function Dashboard({ session, activeTab, initialMemberships, init
   );
 }
 
-function RoundHub({ memberships, settings, dashboardTabSettings, submissionSettings, submissionStatuses }: {
+function RoundHub({ memberships, settings, dashboardTabSettings, roundEndSettings, submissionSettings, submissionStatuses }: {
   memberships: Memberships;
   settings: Record<RoundId, boolean>;
   dashboardTabSettings: Record<RoundId, boolean>;
+  roundEndSettings: Record<RoundId, boolean>;
   submissionSettings: Record<RoundId, boolean>;
   submissionStatuses: SubmissionStatuses;
 }) {
@@ -172,12 +175,13 @@ function RoundHub({ memberships, settings, dashboardTabSettings, submissionSetti
     <div className="round-entry-grid">{roundIds.filter((round) => dashboardTabSettings[round]).map((round) => {
       const membership = memberships[round];
       const submissionStatus = submissionStatuses[round];
+      const isEnded = roundEndSettings[round];
       const isDirectAdmissionRound = round === "0.5" || round === "1";
       const canApply = !membership.registered && isDirectAdmissionRound && settings[round];
       const roundKey = round.replace(".", "_");
       const description = canApply && round === "1" && memberships["0.5"].registered
         ? t("hub.roundOneAlternative") : t(`hub.description.${roundKey}`);
-      const state = membership.registered ? membership.team.status : canApply ? "open"
+      const state = isEnded ? "ended" : membership.registered ? membership.team.status : canApply ? "open"
         : isDirectAdmissionRound ? "closed" : "locked";
       const isSubmissionOngoing = membership.registered && membership.team.status === "approved"
         && submissionSettings[round];
@@ -185,7 +189,7 @@ function RoundHub({ memberships, settings, dashboardTabSettings, submissionSetti
         && membership.team.admissionMethod === "round_0_5_promotion"
         && "preferenceStatus" in membership.team
         && membership.team.preferenceStatus === "not_submitted";
-      const stateLabel = isSubmissionOngoing ? t("hub.ongoing")
+      const stateLabel = isEnded ? t("hub.ended") : isSubmissionOngoing ? t("hub.ongoing")
         : membership.registered ? t(`status.${membership.team.status}`) : canApply ? t("hub.open")
           : isDirectAdmissionRound ? t("hub.closed") : t("hub.notEligible");
       return <Card className={`dashboard-card round-entry-card round-entry-card-${state}`} key={round}>

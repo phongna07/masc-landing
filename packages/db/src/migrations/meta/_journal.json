@@ -71,6 +71,13 @@
       "when": 1788019510846,
       "tag": "0009_complete_nekra",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1788187129189,
+      "tag": "0010_lucky_lord_hawal",
+      "breakpoints": true
     }
   ]
 }
