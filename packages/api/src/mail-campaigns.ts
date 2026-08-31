@@ -53,21 +53,15 @@ export const mailCampaignAudienceSchema = z.object({
 	admissionMethods: z.array(z.enum(admissionMethods)).min(1).max(admissionMethods.length),
 });
 
-function templateError(value: string) {
+function addTemplateIssue(value: string, context: z.RefinementCtx, body = false) {
 	try {
-		validateMailCampaignTemplate(value);
-		return true;
-	} catch {
-		return false;
-	}
-}
-
-function bodyTemplateError(value: string) {
-	try {
-		validateMailCampaignBodyTemplate(value);
-		return true;
-	} catch {
-		return false;
+		if (body) validateMailCampaignBodyTemplate(value);
+		else validateMailCampaignTemplate(value);
+	} catch (error) {
+		context.addIssue({
+			code: "custom",
+			message: error instanceof Error ? error.message : "INVALID_TEMPLATE",
+		});
 	}
 }
 
@@ -75,9 +69,9 @@ export const mailCampaignInputSchema = mailCampaignAudienceSchema.extend({
 	name: z.string().trim().min(1).max(160),
 	subjectTemplate: z.string().trim().min(1).max(250)
 		.refine((value) => !/[\r\n]/.test(value), "SUBJECT_NEWLINES_NOT_ALLOWED")
-		.refine(templateError, "INVALID_PLACEHOLDER"),
+		.superRefine((value, context) => addTemplateIssue(value, context)),
 	bodyTemplate: z.string().min(1).max(20_000)
-		.refine(bodyTemplateError, "INVALID_BODY_TEMPLATE")
+		.superRefine((value, context) => addTemplateIssue(value, context, true))
 		.transform((value) => validateMailCampaignBodyTemplate(value)),
 });
 
@@ -99,6 +93,8 @@ type AudienceMember = {
 	fullName: string;
 	email: string;
 	universityName: string;
+	phone: string | null;
+	facebookProfileUrl: string | null;
 	isCaptain: boolean;
 };
 
@@ -143,6 +139,33 @@ function audienceConditions(audience: MailCampaignAudience) {
 	return conditions;
 }
 
+async function getAudienceMemberRows(round: RoundId, teamIds: string[]): Promise<AudienceMember[]> {
+	if (round === "1") {
+		return db.select({
+			id: roundOneMembers.id,
+			teamId: roundOneMembers.teamId,
+			fullName: roundOneMembers.fullName,
+			email: roundOneMembers.email,
+			universityName: roundOneMembers.universityName,
+			phone: roundOneMembers.phone,
+			facebookProfileUrl: roundOneMembers.facebookProfileUrl,
+			isCaptain: roundOneMembers.isCaptain,
+		}).from(roundOneMembers).where(inArray(roundOneMembers.teamId, teamIds))
+			.orderBy(asc(roundOneMembers.teamId), desc(roundOneMembers.isCaptain), asc(roundOneMembers.fullName), asc(roundOneMembers.id));
+	}
+	const { member } = registrationTables(round);
+	const rows = await db.select({
+		id: member.id,
+		teamId: member.teamId,
+		fullName: member.fullName,
+		email: member.email,
+		universityName: member.universityName,
+		isCaptain: member.isCaptain,
+	}).from(member).where(inArray(member.teamId, teamIds))
+		.orderBy(asc(member.teamId), desc(member.isCaptain), asc(member.fullName), asc(member.id));
+	return rows.map((memberRow) => ({ ...memberRow, phone: null, facebookProfileUrl: null }));
+}
+
 async function getAudienceTeamRows(audience: MailCampaignAudience): Promise<AudienceTeamRow[]> {
 	if (audience.round === "1") {
 		return db.select({
@@ -183,17 +206,8 @@ async function getAudienceTeamRows(audience: MailCampaignAudience): Promise<Audi
 export async function resolveMailCampaignAudience(audience: MailCampaignAudience) {
 	const teamRows = await getAudienceTeamRows(audience);
 	if (!teamRows.length) return [];
-	const { member } = registrationTables(audience.round);
 	const [memberRows, trackRows] = await Promise.all([
-		db.select({
-			id: member.id,
-			teamId: member.teamId,
-			fullName: member.fullName,
-			email: member.email,
-			universityName: member.universityName,
-			isCaptain: member.isCaptain,
-		}).from(member).where(inArray(member.teamId, teamRows.map((team) => team.id)))
-			.orderBy(asc(member.teamId), desc(member.isCaptain), asc(member.fullName), asc(member.id)),
+		getAudienceMemberRows(audience.round, teamRows.map((team) => team.id)),
 		audience.round === "1"
 			? db.select({ id: preferencesSettings.id, name: preferencesSettings.name }).from(preferencesSettings)
 			: Promise.resolve([]),
@@ -238,12 +252,18 @@ function templateValues(team: ResolvedMailCampaignTeam, round: RoundId): MailCam
 		captain_phone: team.captainPhone,
 		member1_name: member(0)?.fullName ?? "",
 		member1_email: member(0)?.email ?? "",
+		member1_phone: member(0)?.phone ?? null,
+		member1_facebook_profile_url: member(0)?.facebookProfileUrl ?? null,
 		member1_university: member(0)?.universityName ?? "",
 		member2_name: member(1)?.fullName ?? "",
 		member2_email: member(1)?.email ?? "",
+		member2_phone: member(1)?.phone ?? null,
+		member2_facebook_profile_url: member(1)?.facebookProfileUrl ?? null,
 		member2_university: member(1)?.universityName ?? "",
 		member3_name: member(2)?.fullName ?? "",
 		member3_email: member(2)?.email ?? "",
+		member3_phone: member(2)?.phone ?? null,
+		member3_facebook_profile_url: member(2)?.facebookProfileUrl ?? null,
 		member3_university: member(2)?.universityName ?? "",
 		assigned_track: team.assignedTrack,
 		preference1: team.preferenceNames[0] ?? "",

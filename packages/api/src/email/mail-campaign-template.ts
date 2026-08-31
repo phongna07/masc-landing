@@ -2,15 +2,15 @@ import { htmlToText } from "html-to-text";
 import sanitizeHtml from "sanitize-html";
 
 import {
-	mailCampaignPlaceholders,
+	inspectMailCampaignTemplate,
 	type MailCampaignPlaceholder,
 	type MailCampaignTemplateValues,
 } from "../mail-campaign-schema";
 import { renderEmailLayout } from "./email-layout";
 
-const placeholderSet = new Set<string>(mailCampaignPlaceholders);
 const placeholderPattern = /{{\s*([a-zA-Z0-9_]+)\s*}}/g;
 const maximumBodyTemplateLength = 20_000;
+const missingTemplateValue = "Chưa có";
 
 function escapeHtml(value: string) {
 	return value.replace(/[&<>"']/g, (character) => ({
@@ -23,21 +23,20 @@ function escapeHtml(value: string) {
 }
 
 export function validateMailCampaignTemplate(template: string) {
-	const unknown = new Set<string>();
-	for (const match of template.matchAll(placeholderPattern)) {
-		if (!placeholderSet.has(match[1]!)) unknown.add(match[1]!);
-	}
-	const withoutKnownShape = template.replace(placeholderPattern, "");
-	if (withoutKnownShape.includes("{{") || withoutKnownShape.includes("}}")) {
-		throw new Error("MALFORMED_PLACEHOLDER");
-	}
-	if (unknown.size) throw new Error(`UNKNOWN_PLACEHOLDER:${[...unknown].join(",")}`);
+	const { unknownPlaceholders, malformed } = inspectMailCampaignTemplate(template);
+	if (malformed) throw new Error("MALFORMED_PLACEHOLDER");
+	if (unknownPlaceholders.length) throw new Error(`UNKNOWN_PLACEHOLDER:${unknownPlaceholders.join(",")}`);
+}
+
+function templateValue(value: string | null) {
+	return value ?? missingTemplateValue;
 }
 
 function assertPlaceholdersAreTextOnly(template: string) {
 	for (const tag of template.matchAll(/<[^>]*>/g)) {
 		if (tag[0].includes("{{") || tag[0].includes("}}")) {
-			throw new Error("PLACEHOLDER_NOT_ALLOWED_IN_TAG");
+			const names = [...tag[0].matchAll(placeholderPattern)].map((match) => match[1]!);
+			throw new Error(`PLACEHOLDER_NOT_ALLOWED_IN_TAG${names.length ? `:${names.join(",")}` : ""}`);
 		}
 	}
 }
@@ -97,12 +96,12 @@ export function validateMailCampaignBodyTemplate(template: string) {
 
 function interpolatePlainText(template: string, values: MailCampaignTemplateValues) {
 	validateMailCampaignTemplate(template);
-	return template.replace(placeholderPattern, (_match, name: MailCampaignPlaceholder) => values[name]);
+	return template.replace(placeholderPattern, (_match, name: MailCampaignPlaceholder) => templateValue(values[name]));
 }
 
 function interpolateHtml(template: string, values: MailCampaignTemplateValues) {
 	const sanitized = validateMailCampaignBodyTemplate(template);
-	return sanitized.replace(placeholderPattern, (_match, name: MailCampaignPlaceholder) => escapeHtml(values[name]));
+	return sanitized.replace(placeholderPattern, (_match, name: MailCampaignPlaceholder) => escapeHtml(templateValue(values[name])));
 }
 
 export function renderMailCampaignTemplate(options: {
