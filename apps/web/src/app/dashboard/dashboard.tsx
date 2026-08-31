@@ -8,6 +8,7 @@ import {
   awarenessSourcesRequiringDetail,
   type AwarenessSource,
   containsEmoji,
+  normalizeFacebookProfileUrl,
 } from "@masc-landing/api/registration-schema";
 import {
   Accordion,
@@ -53,7 +54,15 @@ type SubmissionStatuses = inferRouterOutputs<AppRouter>["roundSubmission"]["stat
 type UploadLimits = inferRouterOutputs<AppRouter>["uploadLimits"];
 type RoundOnePreferenceSettings = inferRouterOutputs<AppRouter>["registration"]["roundOnePreferenceSettings"];
 type UserAnnouncements = inferRouterOutputs<AppRouter>["userAnnouncements"]["listMine"];
-type Teammate = { id: string; fullName: string; email: string; birthdate: string; universityName: string };
+type Teammate = {
+  id: string;
+  fullName: string;
+  email: string;
+  birthdate: string;
+  universityName: string;
+  phone: string;
+  facebookProfileUrl: string;
+};
 type FormErrors = Record<string, string>;
 
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -64,6 +73,8 @@ const emptyTeammate = (id: string): Teammate => ({
   email: "",
   birthdate: "",
   universityName: "",
+  phone: "",
+  facebookProfileUrl: "",
 });
 
 export type DashboardTab = "overview" | `round-${RoundId}`;
@@ -288,6 +299,7 @@ function RegistrationForm({ session, round, maxCvFileSize, preferenceSettings }:
   const captainEmail = session.user.email;
   const [captainBirthdate, setCaptainBirthdate] = useState("");
   const [captainPhone, setCaptainPhone] = useState("");
+  const [captainFacebookProfileUrl, setCaptainFacebookProfileUrl] = useState("");
   const [captainUniversityName, setCaptainUniversityName] = useState("");
   const [awarenessSource, setAwarenessSource] = useState<AwarenessSource | "">("");
   const [awarenessSourceDetail, setAwarenessSourceDetail] = useState("");
@@ -359,6 +371,12 @@ function RegistrationForm({ session, round, maxCvFileSize, preferenceSettings }:
     if (captainPhone && (!/^\+?[0-9\s()-]+$/.test(captainPhone) || digits.length < 8 || digits.length > 15)) {
       next.captainPhone = t("validation.phone");
     }
+    if (round === "1") {
+      required("captainFacebookProfileUrl", captainFacebookProfileUrl);
+      if (captainFacebookProfileUrl && !normalizeFacebookProfileUrl(captainFacebookProfileUrl)) {
+        next.captainFacebookProfileUrl = t("validation.facebookProfileUrl");
+      }
+    }
 
     const normalizedCaptainEmail = captainEmail.trim().toLowerCase();
     if (captainEmail && !emailPattern.test(normalizedCaptainEmail)) {
@@ -374,6 +392,17 @@ function RegistrationForm({ session, round, maxCvFileSize, preferenceSettings }:
       required(`${prefix}.email`, member.email);
       required(`${prefix}.birthdate`, member.birthdate);
       text(`${prefix}.universityName`, member.universityName);
+      if (round === "1") {
+        required(`${prefix}.phone`, member.phone);
+        required(`${prefix}.facebookProfileUrl`, member.facebookProfileUrl);
+        const memberPhoneDigits = member.phone.replace(/\D/g, "");
+        if (member.phone && (!/^\+?[0-9\s()-]+$/.test(member.phone) || memberPhoneDigits.length < 8 || memberPhoneDigits.length > 15)) {
+          next[`${prefix}.phone`] = t("validation.phone");
+        }
+        if (member.facebookProfileUrl && !normalizeFacebookProfileUrl(member.facebookProfileUrl)) {
+          next[`${prefix}.facebookProfileUrl`] = t("validation.facebookProfileUrl");
+        }
+      }
       const email = member.email.trim().toLowerCase();
       if (member.email) {
         if (!emailPattern.test(email)) {
@@ -419,7 +448,12 @@ function RegistrationForm({ session, round, maxCvFileSize, preferenceSettings }:
       captainUniversityName,
       awarenessSource: awarenessSource as AwarenessSource,
       awarenessSourceDetail: awarenessDetailRequired ? awarenessSourceDetail : undefined,
-      teammates: teammates.map(({ id: _id, ...member }) => member),
+      teammates: teammates.map((member) => ({
+        fullName: member.fullName,
+        email: member.email,
+        birthdate: member.birthdate,
+        universityName: member.universityName,
+      })),
     };
     if (round === "0.5") return createRoundHalfTeam.mutate(registration);
     setUploading(true);
@@ -435,7 +469,13 @@ function RegistrationForm({ session, round, maxCvFileSize, preferenceSettings }:
         if (!response.ok) throw new Error("UPLOAD_FAILED");
         return { ...metadata, uploadId: signed.uploadId };
       }));
-      await createRoundOneTeam.mutateAsync({ ...registration, cvs, preferenceIds });
+      await createRoundOneTeam.mutateAsync({
+        ...registration,
+        captainFacebookProfileUrl,
+        teammates: teammates.map(({ id: _id, ...member }) => member),
+        cvs,
+        preferenceIds,
+      });
     } catch (cause) {
       const message = cause instanceof Error ? cause.message : "";
       if (message === "FILE_TOO_LARGE") {
@@ -479,9 +519,9 @@ function RegistrationForm({ session, round, maxCvFileSize, preferenceSettings }:
           <Field label={t("fields.teamName")} error={errors.teamName}>
             <Input value={teamName} onChange={(event) => setTeamName(event.target.value)} aria-invalid={!!errors.teamName} />
           </Field>
-          <Field label={t("fields.captainPhone")} error={errors.captainPhone}>
+          {round === "0.5" && <Field label={t("fields.captainPhone")} error={errors.captainPhone}>
             <Input type="tel" value={captainPhone} onChange={(event) => setCaptainPhone(event.target.value)} aria-invalid={!!errors.captainPhone} />
-          </Field>
+          </Field>}
         </CardContent>
       </Card>
 
@@ -490,7 +530,7 @@ function RegistrationForm({ session, round, maxCvFileSize, preferenceSettings }:
           <p className="dashboard-card-index">03 / {t("registration.captainSection")}</p>
           <CardTitle>{t("registration.captainDetails")}</CardTitle>
         </CardHeader>
-        <CardContent className={`dashboard-fields${round === "1" ? " round-one-member-fields" : ""}`}>
+        <CardContent className="dashboard-fields">
           <Field label={t("fields.fullName")} error={errors.captainFullName}>
             <Input value={captainFullName} onChange={(event) => setCaptainFullName(event.target.value)} aria-invalid={!!errors.captainFullName} />
           </Field>
@@ -503,7 +543,14 @@ function RegistrationForm({ session, round, maxCvFileSize, preferenceSettings }:
           <Field label={t("fields.university")} error={errors.captainUniversityName}>
             <Input value={captainUniversityName} onChange={(event) => setCaptainUniversityName(event.target.value)} aria-invalid={!!errors.captainUniversityName} />
           </Field>
-          {round === "1" && <Field
+          {round === "1" && <><Field label={t("fields.phone")} error={errors.captainPhone}>
+            <Input type="tel" value={captainPhone} onChange={(event) => setCaptainPhone(event.target.value)} aria-invalid={!!errors.captainPhone} />
+          </Field>
+          <Field label={t("fields.facebookProfileUrl")} error={errors.captainFacebookProfileUrl}>
+            <Input type="url" placeholder={t("fields.facebookProfilePlaceholder")} value={captainFacebookProfileUrl}
+              onChange={(event) => setCaptainFacebookProfileUrl(event.target.value)} aria-invalid={!!errors.captainFacebookProfileUrl} />
+          </Field></>}
+          {round === "1" && <Field full
             label={t("registration.cv.memberLabel", { name: captainFullName || t("roles.captain") })}
             error={errors["cvs.0"]}>
             <><Input className="cv-file-input" type="file" accept=".pdf,application/pdf"
@@ -534,7 +581,7 @@ function RegistrationForm({ session, round, maxCvFileSize, preferenceSettings }:
               <div className="teammate-heading">
                 <h3 id={`${member.id}-title`}>{t("registration.memberNumber", { number: index + 2 })}</h3>
               </div>
-              <div className={`dashboard-fields${round === "1" ? " round-one-member-fields" : ""}`}>
+              <div className="dashboard-fields">
                 <Field label={t("fields.fullName")} error={errors[`teammates.${index}.fullName`]}>
                   <Input value={member.fullName} onChange={(event) => updateTeammate(member.id, "fullName", event.target.value)} aria-invalid={!!errors[`teammates.${index}.fullName`]} />
                 </Field>
@@ -547,7 +594,14 @@ function RegistrationForm({ session, round, maxCvFileSize, preferenceSettings }:
                 <Field label={t("fields.university")} error={errors[`teammates.${index}.universityName`]}>
                   <Input value={member.universityName} onChange={(event) => updateTeammate(member.id, "universityName", event.target.value)} aria-invalid={!!errors[`teammates.${index}.universityName`]} />
                 </Field>
-                {round === "1" && <Field label={t("registration.cv.memberLabel", {
+                {round === "1" && <><Field label={t("fields.phone")} error={errors[`teammates.${index}.phone`]}>
+                  <Input type="tel" value={member.phone} onChange={(event) => updateTeammate(member.id, "phone", event.target.value)} aria-invalid={!!errors[`teammates.${index}.phone`]} />
+                </Field>
+                <Field label={t("fields.facebookProfileUrl")} error={errors[`teammates.${index}.facebookProfileUrl`]}>
+                  <Input type="url" placeholder={t("fields.facebookProfilePlaceholder")} value={member.facebookProfileUrl}
+                    onChange={(event) => updateTeammate(member.id, "facebookProfileUrl", event.target.value)} aria-invalid={!!errors[`teammates.${index}.facebookProfileUrl`]} />
+                </Field>
+                <Field full label={t("registration.cv.memberLabel", {
                   name: member.fullName || t("registration.memberNumber", { number: index + 2 }),
                 })} error={errors[`cvs.${index + 1}`]}>
                   <><Input className="cv-file-input" type="file" accept=".pdf,application/pdf"
@@ -557,7 +611,7 @@ function RegistrationForm({ session, round, maxCvFileSize, preferenceSettings }:
                     <span className="field-hint">{t("registration.cv.description", {
                       maxSize: formatUploadLimit(maxCvFileSize),
                     })}</span></>
-                </Field>}
+                </Field></>}
               </div>
             </section>
           ))}
@@ -815,14 +869,19 @@ function TeamOverview({ membership }: { membership: Extract<Membership, { regist
             <Card className="dashboard-card roster-card">
               <CardHeader><CardTitle>{t("overview.roster")}</CardTitle></CardHeader>
               <CardContent className="roster-list">
-                <table className="roster-table">
+                <table className={`roster-table${membership.round === "1" ? " round-one-roster-table" : ""}`}>
                   <thead>
                     <tr>
                       <th scope="col" aria-label="Number">#</th>
                       <th scope="col">{t("fields.fullName")}</th>
                       <th scope="col">{t("fields.birthdate")}</th>
                       <th scope="col">{t("fields.university")}</th>
-                      <th scope="col" aria-label={t("roles.captain")} />
+                      {membership.round === "1" && <>
+                        <th scope="col">{t("fields.phone")}</th>
+                        <th scope="col">{t("fields.facebookProfileUrl")}</th>
+                      </>}
+                      <th scope="col">{t("fields.cv")}</th>
+                      <th scope="col">{t("fields.role")}</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -832,11 +891,20 @@ function TeamOverview({ membership }: { membership: Extract<Membership, { regist
                         <td><h3>{member.fullName}</h3><p>{member.email}</p></td>
                         <td><p>{format.dateTime(new Date(`${member.birthdate}T00:00:00Z`), { dateStyle: "medium", timeZone: "UTC" })}</p></td>
                         <td><p>{member.universityName}</p></td>
+                        {membership.round === "1" && "phone" in member && <>
+                          <td><p>{member.phone ?? "—"}</p></td>
+                          <td>{member.facebookProfileUrl
+                            ? <a className="facebook-profile-link" href={member.facebookProfileUrl} target="_blank"
+                              rel="noopener noreferrer" title={member.facebookProfileUrl}>{member.facebookProfileUrl}</a>
+                            : "—"}</td>
+                        </>}
                         <td>
                           {membership.role === "captain" && "hasCv" in member && member.hasCv && <Button size="sm" variant="outline"
                             disabled={cvDownload.isPending} onClick={() => cvDownload.mutate({ memberId: member.id })}>{t("registration.cv.download")}</Button>}
-                          {member.isCaptain && <span className="captain-tag">{t("roles.captain")}</span>}
                         </td>
+                        <td><span className={member.isCaptain ? "captain-tag" : "member-tag"}>
+                          {t(member.isCaptain ? "roles.captain" : "roles.member")}
+                        </span></td>
                       </tr>
                     ))}
                   </tbody>

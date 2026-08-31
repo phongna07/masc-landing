@@ -94,6 +94,10 @@ export async function exportTeamsToExcel(round: RoundId, teams: ExportTeams) {
     headers.push(`Member ${slot} Role`, `Member ${slot} Name`, `Member ${slot} Email`,
       `Member ${slot} Birthdate`, `Member ${slot} University`);
     columns.push({ width: 16 }, { width: 26 }, { width: 32 }, { width: 18 }, { width: 32 });
+    if (round === "1") {
+      headers.push(`Member ${slot} Phone`, `Member ${slot} Facebook Profile`);
+      columns.push({ width: 20 }, { width: 42 });
+    }
   }
 
   const sheetData: SheetData = [
@@ -127,6 +131,10 @@ export async function exportTeamsToExcel(round: RoundId, teams: ExportTeams) {
           textCell(member?.email),
           member ? birthdateCell(member.birthdate) : null,
           textCell(member?.universityName),
+        );
+        if (round === "1") row.push(
+          textCell(member?.phone),
+          textCell(member?.facebookProfileUrl),
         );
       }
       return row;

@@ -594,17 +594,35 @@ export const adminRouter = router({
     const teamRows = await getExportTeamRows(input.round);
     if (!teamRows.length) return [];
     const { member } = registrationTables(input.round);
-    const memberRows = await db.select({
-      id: member.id, teamId: member.teamId, fullName: member.fullName,
-      email: member.email, birthdate: member.birthdate, universityName: member.universityName,
-      isCaptain: member.isCaptain
-    }).from(member)
-      .where(inArray(member.teamId, teamRows.map((team) => team.id)))
-      .orderBy(asc(member.teamId), desc(member.isCaptain), asc(member.fullName));
-    const membersByTeam = new Map<string, Omit<(typeof memberRows)[number], "teamId">[]>();
+    const [memberRows, contactRows] = await Promise.all([
+      db.select({
+        id: member.id, teamId: member.teamId, fullName: member.fullName,
+        email: member.email, birthdate: member.birthdate, universityName: member.universityName,
+        isCaptain: member.isCaptain
+      }).from(member)
+        .where(inArray(member.teamId, teamRows.map((team) => team.id)))
+        .orderBy(asc(member.teamId), desc(member.isCaptain), asc(member.fullName)),
+      input.round === "1" ? db.select({
+        id: roundOneMembers.id,
+        phone: roundOneMembers.phone,
+        facebookProfileUrl: roundOneMembers.facebookProfileUrl,
+      }).from(roundOneMembers)
+        .where(inArray(roundOneMembers.teamId, teamRows.map((team) => team.id))) : [],
+    ]);
+    const contactsByMember = new Map(contactRows.map((contact) => [contact.id, contact]));
+    type ExportMember = Omit<(typeof memberRows)[number], "teamId"> & {
+      phone: string | null;
+      facebookProfileUrl: string | null;
+    };
+    const membersByTeam = new Map<string, ExportMember[]>();
     for (const { teamId, ...listedMember } of memberRows) {
       const roster = membersByTeam.get(teamId) ?? [];
-      roster.push(listedMember);
+      const contact = contactsByMember.get(listedMember.id);
+      roster.push({
+        ...listedMember,
+        phone: contact?.phone ?? null,
+        facebookProfileUrl: contact?.facebookProfileUrl ?? null,
+      });
       membersByTeam.set(teamId, roster);
     }
     return teamRows.map((team) => ({ ...team, members: membersByTeam.get(team.id) ?? [] }));
@@ -650,11 +668,19 @@ export const adminRouter = router({
     })
       .from(teamTable).where(eq(teamTable.id, input.teamId)).limit(1);
     if (!team) throw new TRPCError({ code: "NOT_FOUND", message: "Team not found" });
-    const roster = await db.select({
-      id: member.id, fullName: member.fullName, email: member.email,
-      birthdate: member.birthdate, universityName: member.universityName, isCaptain: member.isCaptain
-    }).from(member)
-      .where(eq(member.teamId, team.id)).orderBy(desc(member.isCaptain), asc(member.fullName));
+    const [roster, contactRows] = await Promise.all([
+      db.select({
+        id: member.id, fullName: member.fullName, email: member.email,
+        birthdate: member.birthdate, universityName: member.universityName, isCaptain: member.isCaptain
+      }).from(member)
+        .where(eq(member.teamId, team.id)).orderBy(desc(member.isCaptain), asc(member.fullName)),
+      input.round === "1" ? db.select({
+        id: roundOneMembers.id,
+        phone: roundOneMembers.phone,
+        facebookProfileUrl: roundOneMembers.facebookProfileUrl,
+      }).from(roundOneMembers).where(eq(roundOneMembers.teamId, team.id)) : [],
+    ]);
+    const contactsByMember = new Map(contactRows.map((contact) => [contact.id, contact]));
     let admissionMethod: "direct" | "cv_screening" | "round_0_5_promotion" | "promotion" = input.round === "0.5" ? "direct" : "promotion";
     let preferenceStatus: "not_submitted" | "submitted" | "assigned" | null = null;
     let preferences: { id: string; name: string }[] = [];
@@ -681,6 +707,8 @@ export const adminRouter = router({
       ...team, round: input.round, admissionMethod, preferenceStatus, preferences, assignedTrack,
       members: roster.map((item) => ({
         ...item,
+        phone: contactsByMember.get(item.id)?.phone ?? null,
+        facebookProfileUrl: contactsByMember.get(item.id)?.facebookProfileUrl ?? null,
         cv: cvs.find((cv) => cv.memberId === item.id) ?? null
       }))
     };

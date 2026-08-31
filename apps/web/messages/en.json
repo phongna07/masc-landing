@@ -382,6 +382,11 @@
     "fields": {
       "teamName": "Team name",
       "captainPhone": "Captain phone number",
+      "phone": "Phone number",
+      "facebookProfileUrl": "Facebook profile link",
+      "facebookProfilePlaceholder": "facebook.com/your-profile",
+      "cv": "CV",
+      "role": "Role",
       "fullName": "Full name",
       "email": "Email address",
       "birthdate": "Birthdate",
@@ -400,6 +405,7 @@
       "gmailEmail": "Enter an email address ending in @gmail.com.",
       "birthdate": "Participant must be between 18 and 22 years old.",
       "phone": "Enter a valid phone number with 8–15 digits.",
+      "facebookProfileUrl": "Enter a valid Facebook profile link.",
       "emoji": "Emojis are not allowed in this field.",
       "maxCharacters": "Enter no more than {count} characters.",
       "duplicateEmail": "Each team member must use a different email address."
@@ -1076,6 +1082,7 @@
       "from": "From",
       "subject": "Subject",
       "phone": "Phone",
+      "facebookProfile": "Facebook profile",
       "birthdate": "Birthdate",
       "university": "University",
       "role": "Role",

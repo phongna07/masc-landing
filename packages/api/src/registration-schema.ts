@@ -19,7 +19,7 @@ const birthdate = z
   .trim()
   .refine(isValidBirthdate, { message: "INVALID_BIRTHDATE" })
   .refine(isEligibleBirthdate, { message: "INELIGIBLE_BIRTHDATE" });
-const phone = z
+export const phoneSchema = z
   .string()
   .trim()
   .regex(/^\+?[0-9\s()-]+$/)
@@ -27,6 +27,41 @@ const phone = z
     const digits = value.replace(/\D/g, "");
     return digits.length >= 8 && digits.length <= 15;
   });
+
+const facebookHostnames = ["facebook.com", "fb.com", "fb.me", "m.me", "messenger.com"] as const;
+const maximumFacebookProfileUrlLength = 2048;
+
+export function normalizeFacebookProfileUrl(value: string) {
+  const trimmed = value.trim();
+  if (!trimmed || trimmed.length > maximumFacebookProfileUrlLength) return null;
+  const candidate = /^[a-z][a-z0-9+.-]*:/i.test(trimmed) ? trimmed : `https://${trimmed}`;
+
+  try {
+    const url = new URL(candidate);
+    const hostname = url.hostname.toLowerCase().replace(/\.$/, "");
+    const isFacebookHostname = facebookHostnames.some(
+      (allowed) => hostname === allowed || hostname.endsWith(`.${allowed}`),
+    );
+    const hasProfilePath = url.pathname.split("/").some(Boolean);
+    if (
+      !isFacebookHostname ||
+      (url.protocol !== "http:" && url.protocol !== "https:") ||
+      url.username ||
+      url.password ||
+      !hasProfilePath
+    ) return null;
+
+    url.protocol = "https:";
+    url.hostname = hostname;
+    return url.toString();
+  } catch {
+    return null;
+  }
+}
+
+export const facebookProfileUrlSchema = z.string().trim().min(1).max(maximumFacebookProfileUrlLength)
+  .refine((value) => normalizeFacebookProfileUrl(value) !== null, { message: "INVALID_FACEBOOK_PROFILE_URL" })
+  .transform((value) => normalizeFacebookProfileUrl(value)!);
 
 export const awarenessSources = [
   "masc_fanpage",
@@ -48,24 +83,22 @@ const awarenessDetail = z.string().trim().max(200).refine((value) => !containsEm
   message: "EMOJI_NOT_ALLOWED",
 }).optional();
 
+const teammateSchema = z.object({
+  fullName: requiredText(120),
+  email: gmailEmail,
+  birthdate,
+  universityName: requiredText(160),
+});
+
 export const createTeamInputSchema = z.object({
   teamName: requiredText(100),
   captainFullName: requiredText(120),
   captainBirthdate: birthdate,
-  captainPhone: phone,
+  captainPhone: phoneSchema,
   captainUniversityName: requiredText(160),
   awarenessSource,
   awarenessSourceDetail: awarenessDetail,
-  teammates: z
-    .array(
-      z.object({
-        fullName: requiredText(120),
-        email: gmailEmail,
-        birthdate,
-        universityName: requiredText(160),
-      }),
-    )
-    .length(TEAMMATE_COUNT),
+  teammates: z.array(teammateSchema).length(TEAMMATE_COUNT),
 }).superRefine((input, context) => {
   if (
     awarenessSourcesRequiringDetail.includes(input.awarenessSource) &&
@@ -77,4 +110,12 @@ export const createTeamInputSchema = z.object({
       path: ["awarenessSourceDetail"],
     });
   }
+});
+
+export const createRoundOneTeamDetailsInputSchema = createTeamInputSchema.safeExtend({
+  captainFacebookProfileUrl: facebookProfileUrlSchema,
+  teammates: z.array(teammateSchema.extend({
+    phone: phoneSchema,
+    facebookProfileUrl: facebookProfileUrlSchema,
+  })).length(TEAMMATE_COUNT),
 });

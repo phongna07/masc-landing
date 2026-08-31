@@ -45,6 +45,7 @@ export default function RoundTeamDetail({ round, teamId }: { round: RoundId; tea
     else if (round === "1" && targetRound === "2") promote.mutate({ sourceRound: round, targetRound, teamIds: [teamId] });
     else if (round === "2" && targetRound === "3") promote.mutate({ sourceRound: round, targetRound, teamIds: [teamId] });
   };
+  const captain = team.data.members.find((member) => member.isCaptain);
   return <><Link className="admin-back-link" href={`/admin/teams/round-${round}`}><ArrowLeftIcon />{t("actions.backToTeams")}</Link>
     <div className="admin-detail-heading"><div><p>{t("teams.roundTitle", { roundLabel: roundLabel(round) })}</p><h1>{team.data.name}</h1></div>
       <span className={`status-badge status-${team.data.status}`}>{t(`values.status.${team.data.status}`)}</span></div>
@@ -91,15 +92,23 @@ export default function RoundTeamDetail({ round, teamId }: { round: RoundId; tea
       </CardContent></Card>
       <Card className="dashboard-card"><CardHeader><CardTitle>{t("detail.captainContact")}</CardTitle></CardHeader><CardContent className="detail-list">
         <Detail label={t("fields.name")} value={team.data.captainName} /><Detail label={t("fields.email")} value={team.data.captainEmail} /><Detail label={t("fields.phone")} value={team.data.captainPhone} />
+        {round === "1" && <Detail label={t("fields.facebookProfile")} value={captain?.facebookProfileUrl
+          ? <FacebookLink url={captain.facebookProfileUrl} /> : "—"} />}
       </CardContent></Card></div>
     <Card className="admin-table-card"><CardHeader><CardTitle>{t("detail.roster")}</CardTitle></CardHeader><CardContent className="admin-table-scroll"><table className="admin-table">
-      <thead><tr><th>{t("fields.member")}</th><th>{t("fields.email")}</th><th>{t("fields.birthdate")}</th><th>{t("fields.university")}</th><th>{t("fields.role")}</th><th>{t("teams.cv")}</th></tr></thead>
+      <thead><tr><th>{t("fields.member")}</th><th>{t("fields.email")}</th><th>{t("fields.birthdate")}</th><th>{t("fields.university")}</th>
+        {round === "1" && <><th>{t("fields.phone")}</th><th>{t("fields.facebookProfile")}</th></>}<th>{t("fields.role")}</th><th>{t("teams.cv")}</th></tr></thead>
       <tbody>{team.data.members.map((member) => <tr key={member.id}><td><strong>{member.fullName}</strong></td><td>{member.email}</td><td>{formatBirthdate(member.birthdate, locale)}</td>
-        <td>{member.universityName}</td><td>{member.isCaptain && <span className="captain-tag">{t("values.captain")}</span>}</td><td>{member.cv && <div className="admin-status-actions">
+        <td>{member.universityName}</td>{round === "1" && <><td>{member.phone ?? "—"}</td><td>{member.facebookProfileUrl
+          ? <FacebookLink url={member.facebookProfileUrl} /> : "—"}</td></>}<td>{member.isCaptain && <span className="captain-tag">{t("values.captain")}</span>}</td><td>{member.cv && <div className="admin-status-actions">
           <Button size="sm" variant="outline" onClick={() => cvUrl.mutate({ teamId, memberId: member.id, disposition: "inline" })}><EyeIcon />{t("teams.previewCv")}</Button>
           <Button size="sm" variant="outline" onClick={() => cvUrl.mutate({ teamId, memberId: member.id, disposition: "attachment" })}><DownloadIcon />{t("teams.downloadCv")}</Button></div>}</td></tr>)}</tbody>
     </table></CardContent></Card>
   </>;
 }
 
-function Detail({ label, value }: { label: string; value: string }) { return <div><dt>{label}</dt><dd>{value}</dd></div>; }
+function FacebookLink({ url }: { url: string }) {
+  return <a className="facebook-profile-link" href={url} target="_blank" rel="noopener noreferrer" title={url}>{url}</a>;
+}
+
+function Detail({ label, value }: { label: string; value: React.ReactNode }) { return <div><dt>{label}</dt><dd>{value}</dd></div>; }

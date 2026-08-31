@@ -17,7 +17,11 @@ import { getAdmissionSettings, requireAdmissionOpen } from "../admission-setting
 import { freshProtectedProcedure, protectedProcedure, router } from "../index";
 import { getRoundMembership, getRoundMemberships } from "../registration-memberships";
 import { roundSchema } from "../rounds";
-import { awarenessSourcesRequiringDetail, createTeamInputSchema } from "../registration-schema";
+import {
+  awarenessSourcesRequiringDetail,
+  createRoundOneTeamDetailsInputSchema,
+  createTeamInputSchema,
+} from "../registration-schema";
 import {
   getRoundOnePreferenceSettings,
   requireActiveRoundOnePreferences,
@@ -40,7 +44,7 @@ const cvFileSchema = z.object({
   fileSize: z.number().int().positive().max(MAX_UPLOAD_LIMIT_BYTES),
 });
 const preferenceIdsSchema = z.array(z.string().trim().min(1).max(128)).length(ROUND_ONE_PREFERENCE_COUNT);
-const createRoundOneTeamInputSchema = createTeamInputSchema.extend({
+const createRoundOneTeamInputSchema = createRoundOneTeamDetailsInputSchema.safeExtend({
   cvs: z.array(cvFileSchema).length(3),
   preferenceIds: preferenceIdsSchema,
 });
@@ -161,7 +165,8 @@ export const registrationRouter = router({
     }
     const teamId = crypto.randomUUID();
     const roster = [{ id: crypto.randomUUID(), teamId, isCaptain: true, fullName: input.captainFullName,
-      email: captainEmail, birthdate: input.captainBirthdate, universityName: input.captainUniversityName },
+      email: captainEmail, birthdate: input.captainBirthdate, universityName: input.captainUniversityName,
+      phone: input.captainPhone, facebookProfileUrl: input.captainFacebookProfileUrl },
       ...input.teammates.map((member) => ({ id: crypto.randomUUID(), teamId, isCaptain: false, ...member }))];
     try {
       await db.batch([
