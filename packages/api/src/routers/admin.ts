@@ -18,6 +18,7 @@ import { getProblemStatementPublicationSettings } from "../problem-statement-pub
 import { getRoundEndSettings } from "../round-end-settings";
 import { adminAreaProcedure, router } from "../index";
 import { awarenessSources, type AwarenessSource } from "../registration-schema";
+import { isRoundOneCvProofOfficeFile } from "../round-one-cv-proof-files";
 import { roundSchema, type RoundId } from "../rounds";
 import { sanitizeRoundOneTrackDescription } from "../round-one-track-description";
 import { attachmentContentDisposition, roundSubmissionArchiveFilename } from "../submission-files";
@@ -44,6 +45,7 @@ import {
 } from "../upload-limits";
 
 const signedUrlExpirySeconds = 300;
+const officePreviewUrlExpirySeconds = 60 * 60;
 const overviewProcedure = adminAreaProcedure("overview");
 const usersProcedure = adminAreaProcedure("users");
 const teamsProcedure = adminAreaProcedure("teams");
@@ -863,7 +865,8 @@ export const adminRouter = router({
       db.select({
         id: roundOneMembers.id, teamId: roundOneMembers.teamId,
         fullName: roundOneMembers.fullName, isCaptain: roundOneMembers.isCaptain,
-        cvFilename: roundOneMemberCvs.originalFilename, cvFileSize: roundOneMemberCvs.fileSize
+        cvFilename: roundOneMemberCvs.originalFilename, cvFileSize: roundOneMemberCvs.fileSize,
+        proofCount: sql<number>`coalesce(jsonb_array_length(${roundOneMemberCvs.proofFiles}), 0)`,
       })
         .from(roundOneMembers).leftJoin(roundOneMemberCvs, eq(roundOneMemberCvs.memberId, roundOneMembers.id))
         .where(inArray(roundOneMembers.teamId, teamRows.map((team) => team.id)))
@@ -908,6 +911,55 @@ export const adminRouter = router({
         ResponseContentType: "application/pdf",
         ResponseContentDisposition: `${input.disposition}; filename="${safeFilename}"`
       }), { expiresIn: signedUrlExpirySeconds })
+    };
+  }),
+  getRoundOneScreeningProofs: roundOneCvScreeningProcedure.input(z.object({
+    teamId: z.string().min(1).max(128),
+  })).query(async ({ input }) => {
+    const rows = await db.select({
+      id: roundOneMembers.id,
+      fullName: roundOneMembers.fullName,
+      isCaptain: roundOneMembers.isCaptain,
+      proofFiles: roundOneMemberCvs.proofFiles,
+    }).from(roundOneMembers)
+      .leftJoin(roundOneMemberCvs, eq(roundOneMemberCvs.memberId, roundOneMembers.id))
+      .where(eq(roundOneMembers.teamId, input.teamId))
+      .orderBy(desc(roundOneMembers.isCaptain), asc(roundOneMembers.fullName));
+    if (!rows.length) throw new TRPCError({ code: "NOT_FOUND", message: "TEAM_NOT_FOUND" });
+    return rows.map((member) => ({
+      id: member.id,
+      fullName: member.fullName,
+      isCaptain: member.isCaptain,
+      proofs: (member.proofFiles ?? []).map(({ objectKey: _objectKey, ...proof }) => proof),
+    }));
+  }),
+  createRoundOneScreeningProofUrl: roundOneCvScreeningProcedure.input(z.object({
+    teamId: z.string().min(1).max(128),
+    memberId: z.string().min(1).max(128),
+    proofId: z.uuid(),
+    disposition: z.enum(["inline", "attachment"]).default("inline"),
+  })).mutation(async ({ input }) => {
+    const [row] = await db.select({ proofFiles: roundOneMemberCvs.proofFiles })
+      .from(roundOneMemberCvs)
+      .innerJoin(roundOneMembers, eq(roundOneMemberCvs.memberId, roundOneMembers.id))
+      .where(and(eq(roundOneMembers.teamId, input.teamId), eq(roundOneMembers.id, input.memberId)))
+      .limit(1);
+    const proof = row?.proofFiles.find((file) => file.id === input.proofId);
+    if (!proof) throw new TRPCError({ code: "NOT_FOUND", message: "CV_PROOF_NOT_FOUND" });
+    const isOfficePreview = input.disposition === "inline"
+      && isRoundOneCvProofOfficeFile(proof.originalFilename);
+    const sourceUrl = await getSignedUrl(s3, new GetObjectCommand({
+      Bucket: env.R2_BUCKET,
+      Key: proof.objectKey,
+      ResponseContentType: proof.mimeType,
+      ResponseContentDisposition: input.disposition === "attachment"
+        ? attachmentContentDisposition(proof.originalFilename)
+        : `inline; filename="${proof.originalFilename.replace(/[^a-zA-Z0-9._ -]/g, "_")}"`,
+    }), { expiresIn: isOfficePreview ? officePreviewUrlExpirySeconds : signedUrlExpirySeconds });
+    return {
+      url: isOfficePreview
+        ? `https://view.officeapps.live.com/op/embed.aspx?${new URLSearchParams({ src: sourceUrl })}`
+        : sourceUrl,
     };
   }),
   listMailCampaigns: mailProcedure.input(z.object({ archived: z.boolean().default(false) }))

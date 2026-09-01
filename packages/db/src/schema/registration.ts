@@ -7,6 +7,7 @@ import {
   doublePrecision,
   index,
   integer,
+  jsonb,
   pgEnum,
   pgTable,
   text,
@@ -163,6 +164,14 @@ export const roundOneMembers = pgTable(
   ],
 );
 
+export type RoundOneCvProofFile = {
+  id: string;
+  objectKey: string;
+  originalFilename: string;
+  mimeType: string;
+  fileSize: number;
+};
+
 export const roundOneMemberCvs = pgTable(
   "round_1_member_cvs",
   {
@@ -172,9 +181,16 @@ export const roundOneMemberCvs = pgTable(
     originalFilename: text("original_filename").notNull(),
     mimeType: text("mime_type").notNull(),
     fileSize: bigint("file_size", { mode: "number" }).notNull(),
+    proofFiles: jsonb("proof_files").$type<RoundOneCvProofFile[]>()
+      .default(sql`'[]'::jsonb`).notNull(),
     createdAt: timestamp("created_at").defaultNow().notNull(),
   },
-  (table) => [check("round_1_member_cvs_file_size_check", sql`${table.fileSize} > 0`)],
+  (table) => [
+    check("round_1_member_cvs_file_size_check", sql`${table.fileSize} > 0`),
+    check("round_1_member_cvs_proof_files_check", sql`
+      jsonb_typeof(${table.proofFiles}) = 'array' and jsonb_array_length(${table.proofFiles}) <= 10
+    `),
+  ],
 );
 
 export const roundTwoTeams = pgTable(

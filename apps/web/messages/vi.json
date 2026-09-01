@@ -314,6 +314,24 @@
         "download": "Tải CV",
         "downloadError": "Không thể tải CV xuống."
       },
+      "cvProofs": {
+        "mainLabel": "Proof cho CV",
+        "description": "Minh chứng với các thông tin được liệt kê trong CV (bao gồm: giấy chứng nhận, giải thưởng, hình ảnh,…).",
+        "manage": "Tải minh chứng lên",
+        "selectedCount": "Đã chọn {count} tệp",
+        "dialogTitle": "Minh chứng CV — {name}",
+        "dialogDescription": "Thêm tối đa {count} tệp hình ảnh, PDF, Word, Excel hoặc PowerPoint. Mỗi tệp tối đa {maxSize}.",
+        "addFiles": "Thêm tệp minh chứng",
+        "removeFile": "Xóa {filename}",
+        "empty": "Chưa chọn tệp minh chứng. Nội dung này không bắt buộc.",
+        "dialogCount": "Đã chọn {count} / {max} tệp",
+        "done": "Hoàn tất",
+        "fileType": "Vui lòng chọn tệp hình ảnh, PDF, DOC, DOCX, XLS, XLSX, PPT hoặc PPTX.",
+        "fileSize": "Mỗi tệp minh chứng không được lớn hơn {maxSize}.",
+        "fileCount": "Mỗi thành viên chỉ được chọn tối đa {count} tệp minh chứng.",
+        "duplicate": "Không thể thêm cùng một tệp minh chứng nhiều lần.",
+        "uploadError": "Không thể tải tệp minh chứng lên. Vui lòng kiểm tra tệp và thử lại."
+      },
       "awareness": {
         "section": "Về cuộc thi",
         "title": "Bạn biết cuộc thi qua đâu?",
@@ -397,7 +415,8 @@
       "submit": "Gửi đăng ký",
       "submitting": "Đang gửi…",
       "loading": "Đang tải…",
-      "retry": "Thử lại"
+      "retry": "Thử lại",
+      "close": "Đóng"
     },
     "validation": {
       "required": "Vui lòng nhập thông tin này.",
@@ -767,6 +786,23 @@
       },
       "previewTitle": "Xem trước CV — {name}",
       "previewFrameTitle": "Bản xem trước {filename}",
+      "proofs": {
+        "column": "Minh chứng CV",
+        "count": "{count} tệp",
+        "open": "Xem minh chứng",
+        "dialogTitle": "Minh chứng CV — {team}",
+        "dialogDescription": "Xem các tệp minh chứng được gửi cho từng thành viên trong đội.",
+        "preview": "Xem trước",
+        "download": "Tải xuống",
+        "noProofs": "Không có tệp minh chứng.",
+        "selectPreview": "Chọn một tệp minh chứng để xem trước.",
+        "imageAlt": "Bản xem trước {filename}",
+        "previewFrameTitle": "Bản xem trước {filename}",
+        "officePreviewNote": "Bản xem trước tệp Office được cung cấp bởi Microsoft Office Online. Hãy tải tệp xuống nếu dịch vụ xem trước không khả dụng.",
+        "previewError": "Không thể xem trước tệp này. Hãy tải tệp gốc xuống để xem.",
+        "loadError": "Không thể tải danh sách tệp minh chứng.",
+        "urlError": "Không thể mở tệp minh chứng. Vui lòng thử lại."
+      },
       "actions": "Quyết định / chỉ định",
       "selectTrack": "Chỉ định track",
       "assign": "Chỉ định track",

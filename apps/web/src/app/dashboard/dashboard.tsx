@@ -2,6 +2,11 @@
 
 import type { AppRouter } from "@masc-landing/api/routers/index";
 import { roundIds, type RoundId } from "@masc-landing/api/rounds";
+import {
+  MAX_ROUND_ONE_CV_PROOFS_PER_MEMBER,
+  ROUND_ONE_CV_PROOF_ACCEPT,
+  roundOneCvProofFileInfo,
+} from "@masc-landing/api/round-one-cv-proof-files";
 import { getEligibleBirthdateRange, isEligibleBirthdate, TEAMMATE_COUNT } from "@masc-landing/api/registration";
 import {
   awarenessSources,
@@ -19,20 +24,24 @@ import {
 } from "@masc-landing/ui/components/accordion";
 import { Button } from "@masc-landing/ui/components/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@masc-landing/ui/components/card";
+import {
+  Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle,
+} from "@masc-landing/ui/components/dialog";
 import { Input } from "@masc-landing/ui/components/input";
 import { Label } from "@masc-landing/ui/components/label";
 import { Skeleton } from "@masc-landing/ui/components/skeleton";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import type { inferRouterOutputs } from "@trpc/server";
 import {
-  ArrowDownIcon, ArrowRightIcon, CheckCircle2Icon, ChevronDownIcon, CircleXIcon, DownloadIcon, FileTextIcon,
-  ListChecksIcon, MegaphoneIcon, MessageSquareQuoteIcon, RefreshCwIcon, TriangleAlertIcon
+  ArrowDownIcon, ArrowRightIcon, CheckCircle2Icon, ChevronDownIcon, CircleXIcon, DownloadIcon, FilePlus2Icon,
+  FileTextIcon, ListChecksIcon, MegaphoneIcon, MessageSquareQuoteIcon, RefreshCwIcon, Trash2Icon,
+  TriangleAlertIcon, XIcon
 } from "lucide-react";
 import type { Route } from "next";
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useFormatter, useTranslations } from "next-intl";
-import { useState } from "react";
+import { useId, useState } from "react";
 import type { FormEvent } from "react";
 import { toast } from "sonner";
 
@@ -309,6 +318,7 @@ function RegistrationForm({ session, round, maxCvFileSize, preferenceSettings }:
   const [errors, setErrors] = useState<FormErrors>({});
   const [showValidationWarning, setShowValidationWarning] = useState(false);
   const [cvFiles, setCvFiles] = useState<(File | null)[]>([null, null, null]);
+  const [proofFiles, setProofFiles] = useState<File[][]>([[], [], []]);
   const [uploading, setUploading] = useState(false);
   const [preferenceIds, setPreferenceIds] = useState(["", "", ""]);
   const birthdateRange = getEligibleBirthdateRange();
@@ -323,6 +333,7 @@ function RegistrationForm({ session, round, maxCvFileSize, preferenceSettings }:
   const createRoundHalfTeam = useMutation(trpc.registration.createRoundHalfTeam.mutationOptions({ onSuccess: onCreated }));
   const createRoundOneTeam = useMutation(trpc.registration.createRoundOneTeam.mutationOptions({ onSuccess: onCreated }));
   const createCvUploadUrl = useMutation(trpc.registration.createRoundOneCvUploadUrl.mutationOptions());
+  const createProofUploadUrl = useMutation(trpc.registration.createRoundOneProofUploadUrl.mutationOptions());
   const isSubmitting = createRoundHalfTeam.isPending || createRoundOneTeam.isPending || uploading;
   const awarenessDetailRequired = awarenessSource !== "" &&
     awarenessSourcesRequiringDetail.includes(awarenessSource);
@@ -427,6 +438,28 @@ function RegistrationForm({ session, round, maxCvFileSize, preferenceSettings }:
         next[`cvs.${index}`] = t("registration.cv.fileSize", { maxSize: formatUploadLimit(maxCvFileSize) });
       }
     });
+    if (round === "1") proofFiles.forEach((files, memberIndex) => {
+      if (files.length > MAX_ROUND_ONE_CV_PROOFS_PER_MEMBER) {
+        next[`proofs.${memberIndex}`] = t("registration.cvProofs.fileCount", {
+          count: MAX_ROUND_ONE_CV_PROOFS_PER_MEMBER,
+        });
+      } else if (new Set(files.map(proofFileIdentity)).size !== files.length) {
+        next[`proofs.${memberIndex}`] = t("registration.cvProofs.duplicate");
+      } else {
+        for (const file of files) {
+          if (!roundOneCvProofFileInfo(file.name, file.type)) {
+            next[`proofs.${memberIndex}`] = t("registration.cvProofs.fileType");
+            break;
+          }
+          if (file.size === 0 || file.size > maxCvFileSize) {
+            next[`proofs.${memberIndex}`] = t("registration.cvProofs.fileSize", {
+              maxSize: formatUploadLimit(maxCvFileSize),
+            });
+            break;
+          }
+        }
+      }
+    });
     if (round === "1" && (preferenceIds.some((id) => !id) || new Set(preferenceIds).size !== 3)) {
       next.preferences = t("preferences.validation");
     }
@@ -457,6 +490,7 @@ function RegistrationForm({ session, round, maxCvFileSize, preferenceSettings }:
     };
     if (round === "0.5") return createRoundHalfTeam.mutate(registration);
     setUploading(true);
+    let uploadStage: "cv" | "proof" | "finalize" = "cv";
     try {
       const cvs = await Promise.all(cvFiles.map(async (file) => {
         const selected = file!;
@@ -467,8 +501,25 @@ function RegistrationForm({ session, round, maxCvFileSize, preferenceSettings }:
           headers: { "Content-Type": "application/pdf" }
         });
         if (!response.ok) throw new Error("UPLOAD_FAILED");
-        return { ...metadata, uploadId: signed.uploadId };
+        return { ...metadata, uploadId: signed.uploadId, proofs: [] as {
+          filename: string; mimeType: string; fileSize: number; uploadId: string;
+        }[] };
       }));
+      uploadStage = "proof";
+      const selectedProofs = proofFiles.flatMap((files, cvIndex) => files.map((file) => ({ cvIndex, file })));
+      const uploadedProofs = await mapWithConcurrency(selectedProofs, 4, async ({ cvIndex, file }) => {
+        const info = roundOneCvProofFileInfo(file.name, file.type);
+        if (!info) throw new Error("UNSUPPORTED_FILE");
+        const metadata = { filename: file.name, mimeType: info.mimeType, fileSize: file.size };
+        const signed = await createProofUploadUrl.mutateAsync(metadata);
+        const response = await fetch(signed.uploadUrl, {
+          method: "PUT", body: file, headers: { "Content-Type": info.mimeType },
+        });
+        if (!response.ok) throw new Error("UPLOAD_FAILED");
+        return { cvIndex, proof: { ...metadata, uploadId: signed.uploadId } };
+      });
+      uploadedProofs.forEach(({ cvIndex, proof }) => cvs[cvIndex]!.proofs.push(proof));
+      uploadStage = "finalize";
       await createRoundOneTeam.mutateAsync({
         ...registration,
         captainFacebookProfileUrl,
@@ -486,7 +537,10 @@ function RegistrationForm({ session, round, maxCvFileSize, preferenceSettings }:
           })
         }));
       } else if (message !== "EMAIL_ALREADY_REGISTERED" && message !== "DUPLICATE_EMAILS") {
-        setErrors((current) => ({ ...current, form: t("registration.cv.uploadError") }));
+        setErrors((current) => ({
+          ...current,
+          form: t(uploadStage === "proof" ? "registration.cvProofs.uploadError" : "registration.cv.uploadError"),
+        }));
       }
     } finally { setUploading(false); }
   };
@@ -550,16 +604,20 @@ function RegistrationForm({ session, round, maxCvFileSize, preferenceSettings }:
             <Input type="url" placeholder={t("fields.facebookProfilePlaceholder")} value={captainFacebookProfileUrl}
               onChange={(event) => setCaptainFacebookProfileUrl(event.target.value)} aria-invalid={!!errors.captainFacebookProfileUrl} />
           </Field></>}
-          {round === "1" && <Field full
-            label={t("registration.cv.memberLabel", { name: captainFullName || t("roles.captain") })}
-            error={errors["cvs.0"]}>
-            <><Input className="cv-file-input" type="file" accept=".pdf,application/pdf"
+          {round === "1" && <Field full error={errors["cvs.0"]}>
+            <div className="cv-proof-controls"><div>
+              <Label>{t("registration.cv.memberLabel", { name: captainFullName || t("roles.captain") })}</Label>
+              <Input className="cv-file-input" type="file" accept=".pdf,application/pdf"
               aria-invalid={!!errors["cvs.0"]}
               onChange={(event) => setCvFiles((current) => current.map((file, fileIndex) =>
                 fileIndex === 0 ? event.target.files?.[0] ?? null : file))} />
               <span className="field-hint">{t("registration.cv.description", {
                 maxSize: formatUploadLimit(maxCvFileSize),
-              })}</span></>
+              })}</span></div>
+              <ProofFilesDialog memberName={captainFullName || t("roles.captain")} files={proofFiles[0]!}
+                error={errors["proofs.0"]} maxFileSize={maxCvFileSize} disabled={isSubmitting}
+                onChange={(files) => setProofFiles((current) => current.map((item, index) => index === 0 ? files : item))} />
+            </div>
           </Field>}
         </CardContent>
       </Card>
@@ -601,16 +659,24 @@ function RegistrationForm({ session, round, maxCvFileSize, preferenceSettings }:
                   <Input type="url" placeholder={t("fields.facebookProfilePlaceholder")} value={member.facebookProfileUrl}
                     onChange={(event) => updateTeammate(member.id, "facebookProfileUrl", event.target.value)} aria-invalid={!!errors[`teammates.${index}.facebookProfileUrl`]} />
                 </Field>
-                <Field full label={t("registration.cv.memberLabel", {
-                  name: member.fullName || t("registration.memberNumber", { number: index + 2 }),
-                })} error={errors[`cvs.${index + 1}`]}>
-                  <><Input className="cv-file-input" type="file" accept=".pdf,application/pdf"
+                <Field full error={errors[`cvs.${index + 1}`]}>
+                  <div className="cv-proof-controls"><div>
+                    <Label>{t("registration.cv.memberLabel", {
+                      name: member.fullName || t("registration.memberNumber", { number: index + 2 }),
+                    })}</Label>
+                    <Input className="cv-file-input" type="file" accept=".pdf,application/pdf"
                     aria-invalid={!!errors[`cvs.${index + 1}`]}
                     onChange={(event) => setCvFiles((current) => current.map((file, fileIndex) =>
                       fileIndex === index + 1 ? event.target.files?.[0] ?? null : file))} />
                     <span className="field-hint">{t("registration.cv.description", {
                       maxSize: formatUploadLimit(maxCvFileSize),
-                    })}</span></>
+                    })}</span></div>
+                    <ProofFilesDialog memberName={member.fullName || t("registration.memberNumber", { number: index + 2 })}
+                      files={proofFiles[index + 1]!} error={errors[`proofs.${index + 1}`]}
+                      maxFileSize={maxCvFileSize} disabled={isSubmitting}
+                      onChange={(files) => setProofFiles((current) => current.map((item, fileIndex) =>
+                        fileIndex === index + 1 ? files : item))} />
+                  </div>
                 </Field></>}
               </div>
             </section>
@@ -918,8 +984,122 @@ function TeamOverview({ membership }: { membership: Extract<Membership, { regist
   );
 }
 
-function Field({ label, error, full = false, children }: { label: string; error?: string; full?: boolean; children: React.ReactNode }) {
-  return <div className={`dashboard-field${full ? " field-full" : ""}`}><Label>{label}</Label>{children}{error && <span className="field-error">{error}</span>}</div>;
+function ProofFilesDialog({ memberName, files, maxFileSize, disabled, error, onChange }: {
+  memberName: string;
+  files: File[];
+  maxFileSize: number;
+  disabled: boolean;
+  error?: string;
+  onChange: (files: File[]) => void;
+}) {
+  const t = useTranslations("Dashboard");
+  const inputId = useId();
+  const [open, setOpen] = useState(false);
+  const [selectionError, setSelectionError] = useState<string>();
+  const addFiles = (selectedFiles: File[]) => {
+    const existing = new Set(files.map(proofFileIdentity));
+    const additions: File[] = [];
+    let nextError: string | undefined;
+    for (const file of selectedFiles) {
+      if (existing.has(proofFileIdentity(file))) {
+        nextError ??= t("registration.cvProofs.duplicate");
+        continue;
+      }
+      if (!roundOneCvProofFileInfo(file.name, file.type)) {
+        nextError ??= t("registration.cvProofs.fileType");
+        continue;
+      }
+      if (file.size === 0 || file.size > maxFileSize) {
+        nextError ??= t("registration.cvProofs.fileSize", { maxSize: formatUploadLimit(maxFileSize) });
+        continue;
+      }
+      if (files.length + additions.length >= MAX_ROUND_ONE_CV_PROOFS_PER_MEMBER) {
+        nextError ??= t("registration.cvProofs.fileCount", { count: MAX_ROUND_ONE_CV_PROOFS_PER_MEMBER });
+        continue;
+      }
+      existing.add(proofFileIdentity(file));
+      additions.push(file);
+    }
+    if (additions.length) onChange([...files, ...additions]);
+    setSelectionError(nextError);
+  };
+  return <div className="cv-proof-manager">
+    <Label>{t("registration.cvProofs.mainLabel")}</Label>
+    <Button type="button" variant="outline" disabled={disabled} onClick={() => setOpen(true)}>
+      <FilePlus2Icon aria-hidden="true" />{t("registration.cvProofs.manage")}
+      <span className="cv-proof-count">{t("registration.cvProofs.selectedCount", { count: files.length })}</span>
+    </Button>
+    <span className="cv-proof-description">{t("registration.cvProofs.description")}</span>
+    {error && <span className="field-error">{error}</span>}
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogContent className="cv-proof-dialog">
+        <DialogHeader>
+          <DialogTitle>{t("registration.cvProofs.dialogTitle", { name: memberName })}</DialogTitle>
+          <DialogDescription>{t("registration.cvProofs.dialogDescription", {
+            count: MAX_ROUND_ONE_CV_PROOFS_PER_MEMBER,
+            maxSize: formatUploadLimit(maxFileSize),
+          })}</DialogDescription>
+        </DialogHeader>
+        <DialogClose className="cv-proof-dialog-close"
+          render={<Button type="button" variant="ghost" size="icon" aria-label={t("actions.close")} />}>
+          <XIcon aria-hidden="true" />
+        </DialogClose>
+        <div className="cv-proof-dialog-picker">
+          <Label htmlFor={inputId}>{t("registration.cvProofs.addFiles")}</Label>
+          <Input id={inputId} className="cv-file-input" type="file" accept={ROUND_ONE_CV_PROOF_ACCEPT}
+            multiple disabled={disabled || files.length >= MAX_ROUND_ONE_CV_PROOFS_PER_MEMBER}
+            onChange={(event) => {
+              addFiles(Array.from(event.target.files ?? []));
+              event.currentTarget.value = "";
+            }} />
+        </div>
+        {selectionError && <p className="field-error cv-proof-dialog-error" role="alert">{selectionError}</p>}
+        {files.length ? <ul className="cv-proof-file-list">
+          {files.map((file) => <li key={proofFileIdentity(file)}>
+            <FileTextIcon aria-hidden="true" />
+            <span><strong>{file.name}</strong><small>{formatBytes(file.size)}</small></span>
+            <Button type="button" variant="ghost" size="icon" disabled={disabled}
+              aria-label={t("registration.cvProofs.removeFile", { filename: file.name })}
+              onClick={() => {
+                onChange(files.filter((item) => proofFileIdentity(item) !== proofFileIdentity(file)));
+                setSelectionError(undefined);
+              }}><Trash2Icon aria-hidden="true" /></Button>
+          </li>)}
+        </ul> : <p className="cv-proof-empty">{t("registration.cvProofs.empty")}</p>}
+        <p className="cv-proof-dialog-count" aria-live="polite">
+          {t("registration.cvProofs.dialogCount", {
+            count: files.length,
+            max: MAX_ROUND_ONE_CV_PROOFS_PER_MEMBER,
+          })}
+        </p>
+        <DialogFooter>
+          <DialogClose render={<Button type="button" disabled={disabled} />}>{t("registration.cvProofs.done")}</DialogClose>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  </div>;
+}
+
+function proofFileIdentity(file: File) {
+  return `${file.name}\u0000${file.size}\u0000${file.lastModified}`;
+}
+
+async function mapWithConcurrency<Item, Result>(items: Item[], concurrency: number,
+  mapper: (item: Item) => Promise<Result>) {
+  const results = new Array<Result>(items.length);
+  let nextIndex = 0;
+  await Promise.all(Array.from({ length: Math.min(concurrency, items.length) }, async () => {
+    while (nextIndex < items.length) {
+      const index = nextIndex;
+      nextIndex += 1;
+      results[index] = await mapper(items[index]!);
+    }
+  }));
+  return results;
+}
+
+function Field({ label, error, full = false, children }: { label?: string; error?: string; full?: boolean; children: React.ReactNode }) {
+  return <div className={`dashboard-field${full ? " field-full" : ""}`}>{label && <Label>{label}</Label>}{children}{error && <span className="field-error">{error}</span>}</div>;
 }
 
 function Detail({ label, value }: { label: string; value: string }) {

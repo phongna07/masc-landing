@@ -85,6 +85,13 @@
       "when": 1788189248995,
       "tag": "0011_magical_proudstar",
       "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "7",
+      "when": 1788261770634,
+      "tag": "0012_tiny_zuras",
+      "breakpoints": true
     }
   ]
 }

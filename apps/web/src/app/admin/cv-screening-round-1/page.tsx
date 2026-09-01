@@ -6,7 +6,7 @@ import { ConfirmationDialog } from "@masc-landing/ui/components/confirmation-dia
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@masc-landing/ui/components/dialog";
 import { Skeleton } from "@masc-landing/ui/components/skeleton";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { CheckIcon, DownloadIcon, EyeIcon, RefreshCwIcon, XIcon } from "lucide-react";
+import { CheckIcon, DownloadIcon, EyeIcon, FileTextIcon, RefreshCwIcon, XIcon } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -24,6 +24,7 @@ export default function CvScreeningRoundOnePage() {
 	const [teamFilter, setTeamFilter] = useState<TeamFilter>("all");
 	const [selectedTracks, setSelectedTracks] = useState<Record<string, string>>({});
 	const [preview, setPreview] = useState<{ url: string; memberName: string; filename: string } | null>(null);
+	const [proofTeam, setProofTeam] = useState<{ id: string; name: string } | null>(null);
 	const teams = useQuery(trpc.admin.listRoundOneCvScreeningTeams.queryOptions());
 	const stats = useQuery(trpc.admin.getRoundOneCvScreeningStats.queryOptions());
 	const refresh = () => Promise.all([
@@ -95,7 +96,8 @@ export default function CvScreeningRoundOnePage() {
 						<th>{t("fields.team")}</th><th>{t("teams.admissionMethod")}</th>
 						<th>{t("fields.status")}</th><th>{t("fields.preferenceStatus")}</th>
 						<th>{t("fields.preferences")}</th><th>{t("fields.assignedTrack")}</th>
-						<th>{t("teams.cv")}</th><th>{t("fields.created")}</th><th>{t("screening.actions")}</th>
+						<th>{t("teams.cv")}</th><th>{t("screening.proofs.column")}</th>
+						<th>{t("fields.created")}</th><th>{t("screening.actions")}</th>
 					</tr></thead><tbody>{visible.map((team) => {
 						const selectedTrack = selectedTracks[team.id] ?? team.assignedTrack?.id ?? "";
 						const canChoose = team.preferenceStatus === "submitted" || team.preferenceStatus === "assigned";
@@ -118,6 +120,14 @@ export default function CvScreeningRoundOnePage() {
 										<Button size="sm" variant="outline" disabled={cvUrl.isPending}
 											onClick={() => downloadCv(team.id, member.id)}><DownloadIcon />{t("teams.downloadCv")}</Button>
 									</div> : <span>—</span>}</div>)}
+							</div> : t("values.notApplicable")}</td>
+							<td>{team.admissionMethod === "cv_screening" ? <div className="screening-proofs-summary">
+								{team.members.map((member) => <span key={member.id}>{member.fullName}: {t("screening.proofs.count", {
+									count: member.proofCount,
+								})}</span>)}
+								{team.members.some((member) => member.proofCount > 0) && <Button size="sm" variant="outline"
+									onClick={() => setProofTeam({ id: team.id, name: team.name })}>
+									<EyeIcon />{t("screening.proofs.open")}</Button>}
 							</div> : t("values.notApplicable")}</td>
 							<td>{formatDate(team.readyAt, locale)}</td>
 							<td><div className="screening-actions">
@@ -159,7 +169,102 @@ export default function CvScreeningRoundOnePage() {
 					title={t("screening.previewFrameTitle", { filename: preview.filename })} />}
 			</DialogContent>
 		</Dialog>
+		{proofTeam && <ProofsDialog team={proofTeam} onClose={() => setProofTeam(null)} />}
 	</>;
+}
+
+function ProofsDialog({ team, onClose }: { team: { id: string; name: string }; onClose: () => void }) {
+	const t = useTranslations("Admin");
+	const locale = useLocale();
+	const [preview, setPreview] = useState<{
+		url: string; filename: string; memberName: string; kind: "image" | "pdf" | "office";
+	} | null>(null);
+	const [previewError, setPreviewError] = useState(false);
+	const proofs = useQuery(trpc.admin.getRoundOneScreeningProofs.queryOptions({ teamId: team.id }));
+	const proofUrl = useMutation(trpc.admin.createRoundOneScreeningProofUrl.mutationOptions({
+		onError: () => toast.error(t("screening.proofs.urlError")),
+	}));
+	const openPreview = async (memberId: string, memberName: string, proof: {
+		id: string; originalFilename: string; mimeType: string;
+	}) => {
+		try {
+			const { url } = await proofUrl.mutateAsync({
+				teamId: team.id, memberId, proofId: proof.id, disposition: "inline",
+			});
+			setPreviewError(false);
+			setPreview({
+				url,
+				filename: proof.originalFilename,
+				memberName,
+				kind: proof.mimeType.startsWith("image/") ? "image"
+					: proof.mimeType === "application/pdf" ? "pdf" : "office",
+			});
+		} catch { /* mutation callback shows the localized error */ }
+	};
+	const download = async (memberId: string, proofId: string) => {
+		try {
+			const { url } = await proofUrl.mutateAsync({
+				teamId: team.id, memberId, proofId, disposition: "attachment",
+			});
+			window.open(url, "_blank", "noopener,noreferrer");
+		} catch { /* mutation callback shows the localized error */ }
+	};
+	return <Dialog open onOpenChange={(open) => { if (!open) onClose(); }}>
+		<DialogContent className="screening-proof-dialog">
+			<DialogHeader className="screening-proof-dialog-header">
+				<DialogTitle>{t("screening.proofs.dialogTitle", { team: team.name })}</DialogTitle>
+				<DialogDescription>{t("screening.proofs.dialogDescription")}</DialogDescription>
+			</DialogHeader>
+			<DialogClose className="screening-cv-dialog-close"
+				render={<Button type="button" variant="ghost" size="icon" aria-label={t("actions.close")} />}>
+				<XIcon aria-hidden="true" />
+			</DialogClose>
+			<div className="screening-proof-dialog-body">
+				<div className="screening-proof-members">
+					{proofs.isPending ? <Skeleton className="h-48 w-full" /> : proofs.isError
+						? <div className="screening-proof-state"><p>{t("screening.proofs.loadError")}</p>
+							<Button variant="outline" onClick={() => proofs.refetch()}><RefreshCwIcon />{t("actions.retry")}</Button></div>
+						: proofs.data.map((member) => <section key={member.id}>
+							<h3>{member.fullName}</h3>
+							{member.proofs.length ? <ul>{member.proofs.map((proof) => <li key={proof.id}>
+								<FileTextIcon aria-hidden="true" />
+								<span><strong>{proof.originalFilename}</strong><small>{formatProofBytes(proof.fileSize, locale)}</small></span>
+								<div className="admin-status-actions">
+									<Button size="sm" variant="outline" disabled={proofUrl.isPending}
+										onClick={() => openPreview(member.id, member.fullName, proof)}>
+										<EyeIcon />{t("screening.proofs.preview")}</Button>
+									<Button size="sm" variant="outline" disabled={proofUrl.isPending}
+										onClick={() => download(member.id, proof.id)}>
+										<DownloadIcon />{t("screening.proofs.download")}</Button>
+								</div>
+							</li>)}</ul> : <p>{t("screening.proofs.noProofs")}</p>}
+						</section>)}
+				</div>
+				<div className="screening-proof-preview">
+					{preview ? <>
+						<div><strong>{preview.filename}</strong><span>{preview.memberName}</span></div>
+						{preview.kind === "image"
+							? <img src={preview.url} alt={t("screening.proofs.imageAlt", { filename: preview.filename })}
+								onError={() => setPreviewError(true)} />
+							: <iframe src={preview.url} onError={() => setPreviewError(true)}
+								title={t("screening.proofs.previewFrameTitle", { filename: preview.filename })} />}
+						{previewError && <p className="admin-file-error">{t("screening.proofs.previewError")}</p>}
+						{preview.kind === "office" && <p className="screening-proof-preview-note">
+							{t("screening.proofs.officePreviewNote")}</p>}
+					</> : <div className="screening-proof-preview-empty">
+						<EyeIcon aria-hidden="true" /><p>{t("screening.proofs.selectPreview")}</p>
+					</div>}
+				</div>
+			</div>
+		</DialogContent>
+	</Dialog>;
+}
+
+function formatProofBytes(bytes: number, locale: string) {
+	if (bytes < 1024) return `${bytes} B`;
+	const units = ["KB", "MB", "GB"];
+	const exponent = Math.min(Math.floor(Math.log(bytes) / Math.log(1024)), units.length);
+	return `${new Intl.NumberFormat(locale, { maximumFractionDigits: 1 }).format(bytes / 1024 ** exponent)} ${units[exponent - 1]}`;
 }
 
 function PreferenceStatus({ status }: { status: "not_submitted" | "submitted" | "assigned" }) {
