@@ -8,6 +8,10 @@
     "english": "English",
     "vietnamese": "Tiếng Việt"
   },
+  "FileInput": {
+    "choose": "Choose File",
+    "empty": "No file selected."
+  },
   "RoundLabels": {
     "preliminary": "Preliminary Round",
     "round1": "Round 1",

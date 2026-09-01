@@ -11,6 +11,7 @@ import { useFormatter, useTranslations } from "next-intl";
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import { toast } from "sonner";
 
+import FileInput from "@/components/file-input";
 import { useRoundLabel } from "@/hooks/use-round-label";
 import { queryClient, trpc } from "@/utils/trpc";
 
@@ -122,7 +123,7 @@ export default function RoundSubmission({ round, maxFileSize, sectionNumber = "0
       {existing.mimeType === "application/pdf" && preview.data?.previewUrl && <div className="submission-preview"><Label>{t("round.previewLabel")}</Label><iframe src={preview.data.previewUrl} title={t("round.previewTitle", { filename: existing.originalFilename })} /></div>}
     </CardContent>}
     {showForm && <form onSubmit={submit} className="round-submission-form" noValidate>
-      <CardContent className="round-submission-fields"><Field id="round-submission-file" label={t("round.fileLabel")}><Input id="round-submission-file" className="cv-file-input" type="file" accept=".pdf,application/pdf" onChange={(event) => setFile(event.target.files?.[0] ?? null)} /><span className="field-hint">{t("round.fileHint", { maxSize: formatUploadLimit(maxFileSize) })}</span></Field>
+      <CardContent className="round-submission-fields"><Field id="round-submission-file" label={t("round.fileLabel")}><FileInput id="round-submission-file" selectedFileName={file?.name} accept=".pdf,application/pdf" onChange={(event) => setFile(event.target.files?.[0] ?? null)} /><span className="field-hint">{t("round.fileHint", { maxSize: formatUploadLimit(maxFileSize) })}</span></Field>
       <Field id="round-submission-question" label={t("round.descriptionLabel")}><Input id="round-submission-question" className="submission-question-input" type="text" value={description} maxLength={5000} onChange={(event) => setDescription(event.target.value)} /><span className="field-hint">{t("round.characters", { count: description.length })}</span></Field></CardContent>
       {error && <p className="form-error" role="alert">{error}</p>}<div className="registration-submit">{editing ? <Button type="button" variant="outline" onClick={() => { setEditing(false); setError(null); }}>{t("round.cancel")}</Button> : <span />}
       <Button type="submit" size="lg" disabled={isSubmitting} aria-busy={isSubmitting}><UploadIcon aria-hidden="true" />{isSubmitting ? t("round.uploading") : t("round.submit", { roundLabel })}</Button></div></form>}

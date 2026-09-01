@@ -1055,15 +1055,44 @@ dialog[open]::backdrop {
   font-size: 15px;
 }
 
-.dashboard-field .cv-file-input,
-.admin-problem-statement .cv-file-input {
-  height: 52px;
-  padding: 7px 14px 7px 7px;
-  color: var(--ink);
+.cv-file-control {
+  position: relative;
+  width: 100%;
+  min-width: 0;
 }
 
-.dashboard-field .cv-file-input::file-selector-button,
-.admin-problem-statement .cv-file-input::file-selector-button {
+.cv-file-control-input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.cv-file-input {
+  display: flex;
+  align-items: center;
+  height: 52px;
+  min-width: 0;
+  border: 1px solid rgba(255, 255, 255, 0.17);
+  background: rgba(255, 255, 255, 0.035);
+  padding: 7px 14px 7px 7px;
+  color: var(--ink);
+  cursor: pointer;
+  font-size: 15px;
+  transition: border-color 160ms ease, box-shadow 160ms ease;
+}
+
+.cv-file-input-button {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
   height: 36px;
   margin-right: 14px;
   border: 1px solid rgba(242, 213, 132, 0.5);
@@ -1076,16 +1105,39 @@ dialog[open]::backdrop {
   transition: border-color 160ms ease, background 160ms ease;
 }
 
-.dashboard-field .cv-file-input:hover::file-selector-button,
-.admin-problem-statement .cv-file-input:hover::file-selector-button {
+.cv-file-input-name {
+  min-width: 0;
+  overflow: hidden;
+  line-height: 1.4;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cv-file-input:hover .cv-file-input-button {
   border-color: rgba(242, 213, 132, 0.8);
   background: rgba(242, 213, 132, 0.18);
 }
 
-.dashboard-field .cv-file-input:focus-visible::file-selector-button,
-.admin-problem-statement .cv-file-input:focus-visible::file-selector-button {
+.cv-file-control-input:focus-visible + .cv-file-input {
+  border-color: var(--ring);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--ring) 50%, transparent);
+}
+
+.cv-file-control-input:focus-visible + .cv-file-input .cv-file-input-button {
   border-color: #f2d584;
   background: rgba(242, 213, 132, 0.22);
+}
+
+.cv-file-control-input[aria-invalid="true"] + .cv-file-input {
+  border-color: color-mix(in srgb, var(--destructive) 50%, transparent);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--destructive) 40%, transparent);
+}
+
+.cv-file-control-input:disabled + .cv-file-input {
+  pointer-events: none;
+  cursor: not-allowed;
+  background: color-mix(in srgb, var(--input) 80%, transparent);
+  opacity: 0.5;
 }
 
 .dashboard-field [data-slot="input"][type="date"]::-webkit-calendar-picker-indicator {
@@ -1158,26 +1210,6 @@ dialog[open]::backdrop {
   font-weight: 700;
   letter-spacing: .1em;
   text-transform: uppercase;
-}
-
-.cv-proof-dialog-picker .cv-file-input {
-  height: 52px;
-  border-color: rgba(255, 255, 255, .17);
-  background: rgba(255, 255, 255, .035);
-  padding: 7px 14px 7px 7px;
-  color: var(--ink);
-}
-
-.cv-proof-dialog-picker .cv-file-input::file-selector-button {
-  height: 36px;
-  margin-right: 14px;
-  border: 1px solid rgba(242, 213, 132, .5);
-  background: rgba(242, 213, 132, .12);
-  padding-inline: 14px;
-  color: #f2d584;
-  font: inherit;
-  font-size: 13px;
-  font-weight: 700;
 }
 
 .cv-proof-dialog-error,

@@ -45,6 +45,7 @@ import { useId, useState } from "react";
 import type { FormEvent } from "react";
 import { toast } from "sonner";
 
+import FileInput from "@/components/file-input";
 import LanguageSwitcher from "@/components/language-switcher";
 import UserMenu from "@/components/user-menu";
 import { BrandLogo } from "@/components/hero-brand-logo";
@@ -607,7 +608,7 @@ function RegistrationForm({ session, round, maxCvFileSize, preferenceSettings }:
           {round === "1" && <Field full error={errors["cvs.0"]}>
             <div className="cv-proof-controls"><div>
               <Label>{t("registration.cv.memberLabel", { name: captainFullName || t("roles.captain") })}</Label>
-              <Input className="cv-file-input" type="file" accept=".pdf,application/pdf"
+              <FileInput selectedFileName={cvFiles[0]?.name} accept=".pdf,application/pdf"
               aria-invalid={!!errors["cvs.0"]}
               onChange={(event) => setCvFiles((current) => current.map((file, fileIndex) =>
                 fileIndex === 0 ? event.target.files?.[0] ?? null : file))} />
@@ -664,7 +665,7 @@ function RegistrationForm({ session, round, maxCvFileSize, preferenceSettings }:
                     <Label>{t("registration.cv.memberLabel", {
                       name: member.fullName || t("registration.memberNumber", { number: index + 2 }),
                     })}</Label>
-                    <Input className="cv-file-input" type="file" accept=".pdf,application/pdf"
+                    <FileInput selectedFileName={cvFiles[index + 1]?.name} accept=".pdf,application/pdf"
                     aria-invalid={!!errors[`cvs.${index + 1}`]}
                     onChange={(event) => setCvFiles((current) => current.map((file, fileIndex) =>
                       fileIndex === index + 1 ? event.target.files?.[0] ?? null : file))} />
@@ -1046,7 +1047,7 @@ function ProofFilesDialog({ memberName, files, maxFileSize, disabled, error, onC
         </DialogClose>
         <div className="cv-proof-dialog-picker">
           <Label htmlFor={inputId}>{t("registration.cvProofs.addFiles")}</Label>
-          <Input id={inputId} className="cv-file-input" type="file" accept={ROUND_ONE_CV_PROOF_ACCEPT}
+          <FileInput id={inputId} accept={ROUND_ONE_CV_PROOF_ACCEPT}
             multiple disabled={disabled || files.length >= MAX_ROUND_ONE_CV_PROOFS_PER_MEMBER}
             onChange={(event) => {
               addFiles(Array.from(event.target.files ?? []));
