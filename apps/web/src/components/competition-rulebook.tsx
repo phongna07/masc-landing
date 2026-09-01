@@ -25,8 +25,8 @@ export default function CompetitionRulebook() {
 				</ul>
 				<h3>1.1. Các đối tượng không đủ điều kiện tham gia</h3>
 				<ul>
-					<li>Cộng tác viên (từ tháng 07/2026) của Ban Tổ chức cuộc thi, và người đang hoạt động tại đơn vị là Nhà tài trợ, Bảo trợ Chuyên môn của Marketing All-Star Challenge (MASC).</li>
-					<li>Các thí sinh <strong>đã lọt vào Top 18 của Marketing All-Star Challenge 2025</strong> (MASC'25).</li>
+					<li>Tất cả thành viên (từ tháng 07/2026) của Ban Tổ chức cuộc thi, và người đang hoạt động tại đơn vị là Nhà tài trợ, Bảo trợ Chuyên môn của Marketing All-Star Challenge (MASC).</li>
+					<li>Các thí sinh là thành viên trong đội đã lọt vào Top 3 của Marketing All-Star Challenge 2025 (MASC'25).</li>
 				</ul>
 			</section>
 
