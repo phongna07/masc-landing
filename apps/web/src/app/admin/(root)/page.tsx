@@ -15,6 +15,7 @@ import { useEffect, useRef, useState, type FormEvent } from "react";
 import { toast } from "sonner";
 import { ArrowDownIcon, ArrowUpIcon, DownloadIcon, FileTextIcon, PencilIcon, PlusIcon, Trash2Icon, UploadIcon } from "lucide-react";
 
+import FileInput from "@/components/file-input";
 import { useRoundLabel } from "@/hooks/use-round-label";
 import { trpc } from "@/utils/trpc";
 
@@ -324,7 +325,7 @@ function PreferenceSettingRow({ setting, disabled, onChanged, onSave, onSaveDesc
 						{t("overview.preferences.problemStatement.download")}</Button></div>}
 			</div>
 			<div className="admin-problem-statement-controls">
-				<Input ref={fileInputRef} id={inputId} className="cv-file-input" type="file" accept=".pdf,application/pdf"
+				<FileInput ref={fileInputRef} id={inputId} selectedFileName={file?.name} accept=".pdf,application/pdf"
 					disabled={rowDisabled} onChange={(event) => { setFile(event.target.files?.[0] ?? null); setFileError(null); }} />
 				<Button type="button" variant="outline" disabled={rowDisabled || !file} onClick={() => void upload()}>
 					<UploadIcon aria-hidden="true" />{isUploading ? t("overview.preferences.problemStatement.uploading")
