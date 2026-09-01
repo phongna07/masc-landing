@@ -1103,6 +1103,134 @@ dialog[open]::backdrop {
   font-size: 12px;
 }
 
+.cv-proof-controls {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.cv-proof-controls>div,
+.cv-proof-manager {
+  display: grid;
+  align-content: start;
+  gap: 8px;
+}
+
+.cv-proof-description {
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.cv-proof-manager>[data-slot="button"] {
+  min-height: 52px;
+  justify-content: flex-start;
+}
+
+.cv-proof-count {
+  margin-left: auto;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.cv-proof-dialog {
+  display: grid;
+  gap: 20px;
+  padding: 24px;
+  background: #111014;
+}
+
+.cv-proof-dialog-close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+}
+
+.cv-proof-dialog-picker {
+  display: grid;
+  gap: 8px;
+}
+
+.cv-proof-dialog-picker [data-slot="label"] {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+}
+
+.cv-proof-dialog-picker .cv-file-input {
+  height: 52px;
+  border-color: rgba(255, 255, 255, .17);
+  background: rgba(255, 255, 255, .035);
+  padding: 7px 14px 7px 7px;
+  color: var(--ink);
+}
+
+.cv-proof-dialog-picker .cv-file-input::file-selector-button {
+  height: 36px;
+  margin-right: 14px;
+  border: 1px solid rgba(242, 213, 132, .5);
+  background: rgba(242, 213, 132, .12);
+  padding-inline: 14px;
+  color: #f2d584;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.cv-proof-dialog-error,
+.cv-proof-dialog-count,
+.cv-proof-empty {
+  margin: 0;
+}
+
+.cv-proof-dialog-count,
+.cv-proof-empty {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.cv-proof-file-list {
+  display: grid;
+  max-height: 330px;
+  margin: 0;
+  padding: 0;
+  overflow-y: auto;
+  border: 1px solid rgba(255, 255, 255, .12);
+  list-style: none;
+}
+
+.cv-proof-file-list li {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, .1);
+}
+
+.cv-proof-file-list li:last-child {
+  border-bottom: 0;
+}
+
+.cv-proof-file-list li>span {
+  display: grid;
+  min-width: 0;
+  gap: 2px;
+}
+
+.cv-proof-file-list strong {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cv-proof-file-list small {
+  color: var(--muted);
+}
+
 .roster-form-header {
   display: flex !important;
   align-items: end !important;
@@ -1616,6 +1744,10 @@ dialog[open]::backdrop {
   .overview-grid,
   .dashboard-skeleton>div:nth-child(2) {
     grid-template-columns: 1fr;
+  }
+
+  .cv-proof-controls {
+    grid-template-columns: minmax(0, 1fr);
   }
 
   .roster-form-header,
@@ -2851,7 +2983,7 @@ dialog[open]::backdrop {
 }
 
 .screening-table {
-  min-width: 1680px;
+  min-width: 1900px;
 }
 
 .screening-cvs,
@@ -2871,6 +3003,21 @@ dialog[open]::backdrop {
 .screening-cvs>div:last-child {
   padding-bottom: 0;
   border-bottom: 0;
+}
+
+.screening-proofs-summary {
+  display: grid;
+  min-width: 190px;
+  gap: 6px;
+}
+
+.screening-proofs-summary>span {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.screening-proofs-summary>[data-slot="button"] {
+  margin-top: 4px;
 }
 
 .admin-track-select {
@@ -2919,6 +3066,137 @@ dialog[open]::backdrop {
   background: #fff;
 }
 
+.screening-proof-dialog {
+  display: grid;
+  width: min(96vw, 1320px);
+  max-width: 1320px !important;
+  height: min(92svh, 900px);
+  max-height: calc(100svh - 2rem) !important;
+  grid-template-rows: auto minmax(0, 1fr);
+  overflow: hidden !important;
+  background: #111014;
+}
+
+.screening-proof-dialog-header {
+  padding: 20px 64px 18px 22px;
+  border-bottom: 1px solid rgba(255, 255, 255, .12);
+}
+
+.screening-proof-dialog-body {
+  display: grid;
+  min-height: 0;
+  grid-template-columns: minmax(320px, 440px) minmax(0, 1fr);
+}
+
+.screening-proof-members {
+  overflow-y: auto;
+  border-right: 1px solid rgba(255, 255, 255, .12);
+}
+
+.screening-proof-members section {
+  padding: 18px;
+  border-bottom: 1px solid rgba(255, 255, 255, .12);
+}
+
+.screening-proof-members h3,
+.screening-proof-members p {
+  margin: 0;
+}
+
+.screening-proof-members section>p {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.screening-proof-members ul {
+  display: grid;
+  gap: 10px;
+  margin: 14px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.screening-proof-members li {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 8px 10px;
+  padding: 10px;
+  border: 1px solid rgba(255, 255, 255, .1);
+  background: rgba(255, 255, 255, .025);
+}
+
+.screening-proof-members li>span {
+  display: grid;
+  min-width: 0;
+}
+
+.screening-proof-members li strong {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.screening-proof-members li small {
+  color: var(--muted);
+}
+
+.screening-proof-members li .admin-status-actions {
+  grid-column: 1 / -1;
+}
+
+.screening-proof-state {
+  display: grid;
+  gap: 12px;
+  padding: 18px;
+}
+
+.screening-proof-preview {
+  display: grid;
+  min-width: 0;
+  min-height: 0;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  background: #fff;
+  color: #17161b;
+}
+
+.screening-proof-preview>div:first-child {
+  display: grid;
+  gap: 2px;
+  padding: 12px 16px;
+  border-bottom: 1px solid #ddd;
+}
+
+.screening-proof-preview>div:first-child span {
+  color: #666;
+  font-size: 13px;
+}
+
+.screening-proof-preview iframe,
+.screening-proof-preview img {
+  width: 100%;
+  height: 100%;
+  min-height: 420px;
+  border: 0;
+  object-fit: contain;
+}
+
+.screening-proof-preview-empty {
+  display: grid !important;
+  place-content: center;
+  justify-items: center;
+  gap: 10px !important;
+  color: #666;
+}
+
+.screening-proof-preview-note,
+.screening-proof-preview .admin-file-error {
+  margin: 0;
+  padding: 10px 16px;
+  border-top: 1px solid #ddd;
+  color: #555;
+  font-size: 12px;
+}
+
 @media (max-width: 720px) {
   .preference-heading-row {
     display: grid;
@@ -2956,6 +3234,28 @@ dialog[open]::backdrop {
     width: calc(100vw - 1rem);
     height: calc(100svh - 1rem);
     max-height: calc(100svh - 1rem) !important;
+  }
+
+  .screening-proof-dialog {
+    width: calc(100vw - 1rem);
+    height: calc(100svh - 1rem);
+    max-height: calc(100svh - 1rem) !important;
+  }
+
+  .screening-proof-dialog-body {
+    grid-template-columns: minmax(0, 1fr);
+    overflow-y: auto;
+  }
+
+  .screening-proof-members {
+    max-height: 45svh;
+    border-right: 0;
+    border-bottom: 1px solid rgba(255, 255, 255, .12);
+  }
+
+  .screening-proof-preview iframe,
+  .screening-proof-preview img {
+    min-height: 360px;
   }
 
   .screening-cv-preview {

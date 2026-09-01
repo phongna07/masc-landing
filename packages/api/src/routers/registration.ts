@@ -28,6 +28,10 @@ import {
   ROUND_ONE_PREFERENCE_COUNT,
 } from "../round-one-preferences";
 import {
+  MAX_ROUND_ONE_CV_PROOFS_PER_MEMBER,
+  roundOneCvProofFileInfo,
+} from "../round-one-cv-proof-files";
+import {
   getUploadLimits,
   MAX_UPLOAD_LIMIT_BYTES,
   requireCurrentUploadLimit,
@@ -43,9 +47,17 @@ const cvFileSchema = z.object({
   mimeType: z.literal("application/pdf"),
   fileSize: z.number().int().positive().max(MAX_UPLOAD_LIMIT_BYTES),
 });
+const proofFileSchema = z.object({
+  uploadId: z.uuid(),
+  filename: z.string().trim().min(1).max(255),
+  mimeType: z.string().trim().min(1).max(255),
+  fileSize: z.number().int().positive().max(MAX_UPLOAD_LIMIT_BYTES),
+});
 const preferenceIdsSchema = z.array(z.string().trim().min(1).max(128)).length(ROUND_ONE_PREFERENCE_COUNT);
 const createRoundOneTeamInputSchema = createRoundOneTeamDetailsInputSchema.safeExtend({
-  cvs: z.array(cvFileSchema).length(3),
+  cvs: z.array(cvFileSchema.extend({
+    proofs: z.array(proofFileSchema).max(MAX_ROUND_ONE_CV_PROOFS_PER_MEMBER),
+  })).length(3),
   preferenceIds: preferenceIdsSchema,
 });
 
@@ -67,6 +79,18 @@ function isUniqueViolation(error: unknown) {
 
 function cvObjectKey(userId: string, uploadId: string) {
   return `round-1-cvs/${userId}/${uploadId}.pdf`;
+}
+
+function proofFileInfo(file: { filename: string; mimeType: string }) {
+  const info = roundOneCvProofFileInfo(file.filename, file.mimeType);
+  if (!info || info.mimeType !== file.mimeType) {
+    throw new TRPCError({ code: "BAD_REQUEST", message: "UNSUPPORTED_FILE" });
+  }
+  return info;
+}
+
+function proofObjectKey(userId: string, uploadId: string, extension: string) {
+  return `round-1-cv-proofs/${userId}/${uploadId}.${extension}`;
 }
 
 function validateCvFilename(filename: string) {
@@ -127,13 +151,40 @@ export const registrationRouter = router({
     { expiresIn: URL_EXPIRY_SECONDS });
     return { uploadId, uploadUrl, expiresIn: URL_EXPIRY_SECONDS };
   }),
+  createRoundOneProofUploadUrl: freshProtectedProcedure.input(proofFileSchema.omit({ uploadId: true })).mutation(async ({ ctx, input }) => {
+    await requireAdmissionOpen("1");
+    const info = proofFileInfo(input);
+    await requireCurrentUploadLimit("participantCv", input.fileSize);
+    const uploadId = crypto.randomUUID();
+    const uploadUrl = await getSignedUrl(s3, new PutObjectCommand({
+      Bucket: env.R2_BUCKET,
+      Key: proofObjectKey(ctx.session.user.id, uploadId, info.extension),
+      ContentType: input.mimeType,
+      ContentLength: input.fileSize,
+    }), { expiresIn: URL_EXPIRY_SECONDS });
+    return { uploadId, uploadUrl, expiresIn: URL_EXPIRY_SECONDS };
+  }),
   createRoundOneTeam: freshProtectedProcedure.input(createRoundOneTeamInputSchema).mutation(async ({ ctx, input }) => {
     await requireAdmissionOpen("1"); input.cvs.forEach((cv) => validateCvFilename(cv.filename));
-    const keys = input.cvs.map((cv) => cvObjectKey(ctx.session.user.id, cv.uploadId));
+    const cvKeys = input.cvs.map((cv) => cvObjectKey(ctx.session.user.id, cv.uploadId));
+    const proofUploads = input.cvs.flatMap((cv, cvIndex) => cv.proofs.map((proof) => {
+      const info = proofFileInfo(proof);
+      return {
+        cvIndex,
+        input: proof,
+        key: proofObjectKey(ctx.session.user.id, proof.uploadId, info.extension),
+      };
+    }));
+    const keys = [...cvKeys, ...proofUploads.map((proof) => proof.key)];
     try {
       await requireActiveRoundOnePreferences(input.preferenceIds);
       const limits = await getUploadLimits();
       input.cvs.forEach((cv) => requireFileWithinUploadLimit(cv.fileSize, limits.participantCv));
+      proofUploads.forEach(({ input: proof }) => requireFileWithinUploadLimit(proof.fileSize, limits.participantCv));
+      const proofUploadIds = proofUploads.map(({ input: proof }) => proof.uploadId);
+      if (new Set(proofUploadIds).size !== proofUploadIds.length) {
+        throw new TRPCError({ code: "BAD_REQUEST", message: "DUPLICATE_UPLOADS" });
+      }
     } catch (error) {
       await bestEffortDelete(keys);
       throw error;
@@ -151,10 +202,15 @@ export const registrationRouter = router({
       throw new TRPCError({ code: "CONFLICT", message: "EMAIL_ALREADY_REGISTERED" });
     }
     try {
-      const objects = await Promise.all(keys.map((Key) => s3.send(new HeadObjectCommand({ Bucket: env.R2_BUCKET, Key }))));
+      const uploadedFiles = [
+        ...input.cvs.map((cv, index) => ({ key: cvKeys[index]!, input: cv })),
+        ...proofUploads.map((proof) => ({ key: proof.key, input: proof.input })),
+      ];
+      const objects = await Promise.all(uploadedFiles.map(({ key: Key }) =>
+        s3.send(new HeadObjectCommand({ Bucket: env.R2_BUCKET, Key }))));
       objects.forEach((object, index) => {
-        const cv = input.cvs[index]!;
-        if (object.ContentLength !== cv.fileSize || object.ContentType !== cv.mimeType) {
+        const file = uploadedFiles[index]!.input;
+        if (object.ContentLength !== file.fileSize || object.ContentType !== file.mimeType) {
           throw new TRPCError({ code: "BAD_REQUEST", message: "UPLOAD_MISMATCH" });
         }
       });
@@ -176,8 +232,16 @@ export const registrationRouter = router({
           preferenceStatus: "submitted", preferences: input.preferenceIds, preferenceSubmittedAt: new Date() }),
         db.insert(roundOneMembers).values(roster),
         db.insert(roundOneMemberCvs).values(roster.map((member, index) => ({ memberId: member.id,
-          objectKey: keys[index]!, originalFilename: input.cvs[index]!.filename,
-          mimeType: input.cvs[index]!.mimeType, fileSize: input.cvs[index]!.fileSize }))),
+          objectKey: cvKeys[index]!, originalFilename: input.cvs[index]!.filename,
+          mimeType: input.cvs[index]!.mimeType, fileSize: input.cvs[index]!.fileSize,
+          proofFiles: proofUploads.filter((proof) => proof.cvIndex === index).map((proof) => ({
+            id: proof.input.uploadId,
+            objectKey: proof.key,
+            originalFilename: proof.input.filename,
+            mimeType: proof.input.mimeType,
+            fileSize: proof.input.fileSize,
+          })),
+        }))),
       ]);
     } catch (error) {
       await bestEffortDelete(keys);

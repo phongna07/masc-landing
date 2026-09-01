@@ -314,6 +314,24 @@
         "download": "Download CV",
         "downloadError": "The CV could not be downloaded."
       },
+      "cvProofs": {
+        "mainLabel": "Proof for CV",
+        "description": "Proof for information listed in the CV (including certificates, awards, images, etc.).",
+        "manage": "Upload proofs",
+        "selectedCount": "{count} selected",
+        "dialogTitle": "CV proofs — {name}",
+        "dialogDescription": "Add up to {count} images, PDF, Word, Excel, or PowerPoint files. Maximum {maxSize} per file.",
+        "addFiles": "Add proof files",
+        "removeFile": "Remove {filename}",
+        "empty": "No proof files selected. Proofs are optional.",
+        "dialogCount": "{count} / {max} files selected",
+        "done": "Done",
+        "fileType": "Choose an image, PDF, DOC, DOCX, XLS, XLSX, PPT, or PPTX file.",
+        "fileSize": "Each proof file must be no larger than {maxSize}.",
+        "fileCount": "Choose no more than {count} proof files for each member.",
+        "duplicate": "The same proof file cannot be added more than once.",
+        "uploadError": "The proof files could not be uploaded. Check the files and try again."
+      },
       "awareness": {
         "section": "About the competition",
         "title": "How did you hear about the competition?",
@@ -397,7 +415,8 @@
       "submit": "Submit registration",
       "submitting": "Submitting…",
       "loading": "Loading…",
-      "retry": "Try again"
+      "retry": "Try again",
+      "close": "Close"
     },
     "validation": {
       "required": "This field is required.",
@@ -767,6 +786,23 @@
       },
       "previewTitle": "CV preview — {name}",
       "previewFrameTitle": "Preview of {filename}",
+      "proofs": {
+        "column": "CV proofs",
+        "count": "{count, plural, =0 {0 files} =1 {1 file} other {# files}}",
+        "open": "View proofs",
+        "dialogTitle": "CV proofs — {team}",
+        "dialogDescription": "Review the supporting files associated with each team member.",
+        "preview": "Preview",
+        "download": "Download",
+        "noProofs": "No proofs submitted.",
+        "selectPreview": "Select a proof file to preview it.",
+        "imageAlt": "Preview of {filename}",
+        "previewFrameTitle": "Preview of {filename}",
+        "officePreviewNote": "Office previews are provided by Microsoft Office Online. Use Download if the external preview is unavailable.",
+        "previewError": "This file could not be previewed. Download it to review the original.",
+        "loadError": "The proof list could not be loaded.",
+        "urlError": "The proof file could not be opened. Please try again."
+      },
       "actions": "Decision / assignment",
       "selectTrack": "Select an assigned track",
       "assign": "Assign track",
