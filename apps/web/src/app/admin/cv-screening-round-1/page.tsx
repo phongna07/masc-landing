@@ -14,14 +14,24 @@ import { toast } from "sonner";
 import { queryClient, trpc } from "@/utils/trpc";
 import { AdminEmpty, AdminError, AdminHeading, AdminLoading, AdminMetrics, formatDate } from "../admin-state";
 
-type TeamFilter = "all" | "pending" | "approved" | "rejected" | "track_assigned" | "track_unassigned";
+type TeamFilter = "all" | "track_assigned" | "track_unassigned"
+	| "track_product_growth" | "track_societal_marcom" | "track_market_research_trade";
 
-const teamFilters: TeamFilter[] = ["all", "pending", "approved", "rejected", "track_assigned", "track_unassigned"];
+const teamFilters: TeamFilter[] = [
+	"all", "track_assigned", "track_unassigned",
+	"track_product_growth", "track_societal_marcom", "track_market_research_trade",
+];
+
+const trackFilterIds: Partial<Record<TeamFilter, string>> = {
+	track_product_growth: "round-1-product-growth",
+	track_societal_marcom: "round-1-societal-pr-marcom",
+	track_market_research_trade: "round-1-market-research-trade",
+};
 
 export default function CvScreeningRoundOnePage() {
 	const t = useTranslations("Admin");
 	const locale = useLocale();
-	const [teamFilter, setTeamFilter] = useState<TeamFilter>("all");
+	const [teamFilter, setTeamFilter] = useState<TeamFilter>("track_unassigned");
 	const [selectedTracks, setSelectedTracks] = useState<Record<string, string>>({});
 	const [preview, setPreview] = useState<{ url: string; memberName: string; filename: string } | null>(null);
 	const [proofTeam, setProofTeam] = useState<{ id: string; name: string } | null>(null);
@@ -58,7 +68,7 @@ export default function CvScreeningRoundOnePage() {
 		if (teamFilter === "all") return true;
 		if (teamFilter === "track_assigned") return team.assignedTrack !== null;
 		if (teamFilter === "track_unassigned") return team.assignedTrack === null;
-		return team.registrationStatus === teamFilter;
+		return team.assignedTrack?.id === trackFilterIds[teamFilter];
 	}) ?? [];
 	return <>
 		<AdminHeading eyebrow={t("eyebrow")} title={t("screening.title")} description={t("screening.description")} />
@@ -73,16 +83,18 @@ export default function CvScreeningRoundOnePage() {
 			]} />
 		{stats.isPending ? <TrackDistributionSkeleton /> : stats.data
 			? <TrackDistribution tracks={stats.data.trackAssignments} locale={locale} /> : null}
-		<div className="admin-team-toolbar screening-toolbar">
-			<div className="admin-status-actions admin-status-filter" role="group" aria-label={t("screening.teamFilter")}>
-				{teamFilters.map((filter) => <Button key={filter}
-					aria-pressed={teamFilter === filter} className="admin-status-filter-button" data-status={filter}
-					size="sm" variant="ghost" onClick={() => setTeamFilter(filter)}>
-					{filter === "all" ? t("teams.filterAll")
-						: filter === "track_assigned" ? t("screening.filterTrackAssigned")
-							: filter === "track_unassigned" ? t("screening.filterTrackUnassigned")
-								: t(`values.status.${filter}`)}</Button>)}
-			</div>
+		<div className="admin-team-toolbar screening-toolbar" role="toolbar" aria-label={t("screening.teamFilter")}>
+			<span className="screening-displayed-count">{t("screening.displayedTeams", { count: visible.length })}</span>
+			<span className="screening-filter-label">{t("screening.filterLabel")}</span>
+			{teamFilters.map((filter) => <Button key={filter}
+				aria-pressed={teamFilter === filter} className="admin-status-filter-button" data-status={filter}
+				size="sm" variant="ghost" onClick={() => setTeamFilter(filter)}>
+				{filter === "all" ? t("teams.filterAll")
+					: filter === "track_assigned" ? t("screening.filterTrackAssigned")
+						: filter === "track_unassigned" ? t("screening.filterTrackUnassigned")
+							: filter === "track_product_growth" ? t("screening.filterProductGrowth")
+								: filter === "track_societal_marcom" ? t("screening.filterSocietalMarcom")
+									: t("screening.filterMarketResearchTrade")}</Button>)}
 			<Button variant="outline" onClick={() => Promise.all([teams.refetch(), stats.refetch()])}
 				disabled={teams.isFetching || stats.isFetching}>
 				<RefreshCwIcon />{t("actions.retry")}
