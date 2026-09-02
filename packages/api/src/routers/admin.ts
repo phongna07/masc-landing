@@ -29,6 +29,7 @@ import {
   listMailCampaignTeams,
   mailCampaignInputSchema,
   previewMailCampaign,
+  requireKnownMailCampaignTracks,
   sendMailCampaignTeam,
 } from "../mail-campaigns";
 import { getSubmissionSettings } from "../submission-settings";
@@ -1056,22 +1057,25 @@ export const adminRouter = router({
   }),
   listMailCampaigns: mailProcedure.input(z.object({ archived: z.boolean().default(false) }))
     .query(({ input }) => listMailCampaigns(input.archived)),
+  getMailCampaignTrackOptions: mailProcedure.query(() => getRoundOnePreferenceSettings(false)),
   getMailCampaign: mailProcedure.input(z.object({ campaignId: z.string().trim().min(1).max(128) }))
     .query(async ({ input }) => {
       const campaign = await findMailCampaign(input.campaignId);
       return { ...campaign, input: campaignRowToInput(campaign) };
     }),
   createMailCampaign: mailProcedure.input(mailCampaignInputSchema).mutation(async ({ ctx, input }) => {
+    await requireKnownMailCampaignTracks(input);
     const [campaign] = await db.insert(mailCampaigns).values({
       ...input,
       createdByUserId: ctx.session.user.id,
     }).returning({ id: mailCampaigns.id });
     return campaign!;
   }),
-  updateMailCampaign: mailProcedure.input(mailCampaignInputSchema.extend({
+  updateMailCampaign: mailProcedure.input(mailCampaignInputSchema.safeExtend({
     campaignId: z.string().trim().min(1).max(128),
   })).mutation(async ({ input }) => {
     const { campaignId, ...changes } = input;
+    await requireKnownMailCampaignTracks(changes);
     const [campaign] = await db.update(mailCampaigns).set({ ...changes, updatedAt: new Date() })
       .where(and(eq(mailCampaigns.id, campaignId), sql`${mailCampaigns.archivedAt} is null`))
       .returning({ id: mailCampaigns.id, updatedAt: mailCampaigns.updatedAt });
@@ -1092,7 +1096,10 @@ export const adminRouter = router({
   previewMailCampaign: mailProcedure.input(z.object({
     campaign: mailCampaignInputSchema,
     teamId: z.string().trim().min(1).max(128).optional(),
-  })).mutation(({ input }) => previewMailCampaign(input.campaign, input.teamId)),
+  })).mutation(async ({ input }) => {
+    await requireKnownMailCampaignTracks(input.campaign);
+    return previewMailCampaign(input.campaign, input.teamId);
+  }),
   listMailCampaignTeams: mailProcedure.input(z.object({
     campaignId: z.string().trim().min(1).max(128),
     status: z.enum(["all", "not_sent", "failed", "sent"]).default("all"),

@@ -1006,7 +1006,8 @@
         "submission": "Round submission",
         "registrationStatuses": "Registration statuses",
         "preferenceStatuses": "Round 1 preference statuses",
-        "admissionMethods": "Round 1 admission methods"
+        "admissionMethods": "Round 1 admission methods",
+        "assignedTracks": "Assigned tracks"
       },
       "stats": {
         "audience": "Current audience",
@@ -1021,7 +1022,8 @@
         "elimination": { "any": "Any", "active": "Not eliminated", "eliminated": "Eliminated" },
         "submission": { "any": "Any", "submitted": "Has submitted", "not_submitted": "Has not submitted" },
         "preference": { "not_submitted": "Not submitted", "submitted": "Submitted", "assigned": "Track assigned" },
-        "admission": { "cv_screening": "CV screening", "round_0_5_promotion": "Promoted from Preliminary Round" }
+        "admission": { "cv_screening": "CV screening", "round_0_5_promotion": "Promoted from Preliminary Round" },
+        "inactiveTrack": "{track} (inactive)"
       },
       "placeholders": {
         "title": "Available placeholders",

@@ -36,6 +36,7 @@ export const mailCampaigns = pgTable(
 		eliminationFilter: mailCampaignEliminationFilter("elimination_filter").default("any").notNull(),
 		submissionFilter: mailCampaignSubmissionFilter("submission_filter").default("any").notNull(),
 		preferenceStatuses: roundOnePreferenceStatus("preference_statuses").array().notNull(),
+		assignedTrackIds: text("assigned_track_ids").array().notNull(),
 		admissionMethods: roundOneAdmissionMethod("admission_methods").array().notNull(),
 		subjectTemplate: text("subject_template").notNull(),
 		bodyTemplate: text("body_template").notNull(),

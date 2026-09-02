@@ -1006,7 +1006,8 @@
         "submission": "Bài nộp của vòng",
         "registrationStatuses": "Trạng thái đăng ký",
         "preferenceStatuses": "Trạng thái nguyện vọng Vòng 1",
-        "admissionMethods": "Hình thức tham gia Vòng 1"
+        "admissionMethods": "Hình thức tham gia Vòng 1",
+        "assignedTracks": "Track được chỉ định"
       },
       "stats": {
         "audience": "Nhóm hiện tại",
@@ -1021,7 +1022,8 @@
         "elimination": { "any": "Tất cả", "active": "Chưa bị loại", "eliminated": "Đã bị loại" },
         "submission": { "any": "Tất cả", "submitted": "Đã nộp bài", "not_submitted": "Chưa nộp bài" },
         "preference": { "not_submitted": "Chưa gửi", "submitted": "Đã gửi", "assigned": "Đã chỉ định track" },
-        "admission": { "cv_screening": "Sàng lọc CV", "round_0_5_promotion": "Được chọn từ Vòng Sơ loại" }
+        "admission": { "cv_screening": "Sàng lọc CV", "round_0_5_promotion": "Được chọn từ Vòng Sơ loại" },
+        "inactiveTrack": "{track} (ngừng hoạt động)"
       },
       "placeholders": {
         "title": "Các biến có thể sử dụng",

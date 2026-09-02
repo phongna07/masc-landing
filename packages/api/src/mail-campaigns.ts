@@ -28,11 +28,6 @@ import {
 } from "./email/mail-campaign-template";
 import { sendMail } from "./email/send-mail";
 import {
-	admissionMethods,
-	eliminationFilters,
-	preferenceStatuses,
-	registrationStatuses,
-	submissionFilters,
 	type AdmissionMethod,
 	type MailCampaignAudience,
 	type MailCampaignInput,
@@ -40,18 +35,15 @@ import {
 	type PreferenceStatus,
 	type RegistrationStatus,
 } from "./mail-campaign-schema";
-import { roundSchema, type RoundId } from "./rounds";
+import {
+	mailCampaignAudienceSchema,
+	matchesRoundOnePreferenceSelection,
+	unknownMailCampaignTrackIds,
+} from "./mail-campaign-audience";
+import type { RoundId } from "./rounds";
 
 export * from "./mail-campaign-schema";
-
-export const mailCampaignAudienceSchema = z.object({
-	round: roundSchema,
-	registrationStatuses: z.array(z.enum(registrationStatuses)).min(1).max(registrationStatuses.length),
-	eliminationFilter: z.enum(eliminationFilters),
-	submissionFilter: z.enum(submissionFilters),
-	preferenceStatuses: z.array(z.enum(preferenceStatuses)).min(1).max(preferenceStatuses.length),
-	admissionMethods: z.array(z.enum(admissionMethods)).min(1).max(admissionMethods.length),
-});
+export { mailCampaignAudienceSchema } from "./mail-campaign-audience";
 
 function addTemplateIssue(value: string, context: z.RefinementCtx, body = false) {
 	try {
@@ -65,7 +57,7 @@ function addTemplateIssue(value: string, context: z.RefinementCtx, body = false)
 	}
 }
 
-export const mailCampaignInputSchema = mailCampaignAudienceSchema.extend({
+export const mailCampaignInputSchema = mailCampaignAudienceSchema.safeExtend({
 	name: z.string().trim().min(1).max(160),
 	subjectTemplate: z.string().trim().min(1).max(250)
 		.refine((value) => !/[\r\n]/.test(value), "SUBJECT_NEWLINES_NOT_ALLOWED")
@@ -168,7 +160,7 @@ async function getAudienceMemberRows(round: RoundId, teamIds: string[]): Promise
 
 async function getAudienceTeamRows(audience: MailCampaignAudience): Promise<AudienceTeamRow[]> {
 	if (audience.round === "1") {
-		return db.select({
+		const rows = await db.select({
 			id: roundOneTeams.id,
 			name: roundOneTeams.teamName,
 			status: roundOneTeams.registrationStatus,
@@ -183,6 +175,7 @@ async function getAudienceTeamRows(audience: MailCampaignAudience): Promise<Audi
 			inArray(roundOneTeams.preferenceStatus, audience.preferenceStatuses),
 			inArray(roundOneTeams.admissionMethod, audience.admissionMethods),
 		)).orderBy(asc(roundOneTeams.teamName), asc(roundOneTeams.id));
+		return rows.filter((team) => matchesRoundOnePreferenceSelection(team, audience));
 	}
 
 	const { team } = registrationTables(audience.round);
@@ -201,6 +194,15 @@ async function getAudienceTeamRows(audience: MailCampaignAudience): Promise<Audi
 		assignedTrackId: null,
 		admissionMethod: null,
 	}));
+}
+
+export async function requireKnownMailCampaignTracks(input: MailCampaignAudience) {
+	if (!input.assignedTrackIds.length) return;
+	const tracks = await db.select({ id: preferencesSettings.id }).from(preferencesSettings)
+		.where(inArray(preferencesSettings.id, input.assignedTrackIds));
+	if (unknownMailCampaignTrackIds(input.assignedTrackIds, tracks.map((track) => track.id)).length) {
+		throw new TRPCError({ code: "BAD_REQUEST", message: "UNKNOWN_ASSIGNED_TRACK_ID" });
+	}
 }
 
 export async function resolveMailCampaignAudience(audience: MailCampaignAudience) {
@@ -236,6 +238,7 @@ export function campaignRowToInput(campaign: typeof mailCampaigns.$inferSelect):
 		eliminationFilter: campaign.eliminationFilter,
 		submissionFilter: campaign.submissionFilter,
 		preferenceStatuses: campaign.preferenceStatuses,
+		assignedTrackIds: campaign.assignedTrackIds,
 		admissionMethods: campaign.admissionMethods,
 		subjectTemplate: campaign.subjectTemplate,
 		bodyTemplate: campaign.bodyTemplate,

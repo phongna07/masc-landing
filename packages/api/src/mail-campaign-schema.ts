@@ -68,6 +68,7 @@ export type MailCampaignAudience = {
 	eliminationFilter: EliminationFilter;
 	submissionFilter: SubmissionFilter;
 	preferenceStatuses: PreferenceStatus[];
+	assignedTrackIds: string[];
 	admissionMethods: AdmissionMethod[];
 };
 

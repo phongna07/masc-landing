@@ -10,7 +10,7 @@
     }
   },
   "scripts": {
-		"test": "tsx --test src/admin-activity-input.test.ts src/email/mail-campaign-template.test.ts src/registration-schema.test.ts src/round-one-track-description.test.ts"
+		"test": "tsx --test src/admin-activity-input.test.ts src/email/mail-campaign-template.test.ts src/mail-campaign-audience.test.ts src/registration-schema.test.ts src/round-one-track-description.test.ts"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1085.0",
