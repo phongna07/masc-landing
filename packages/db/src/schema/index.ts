@@ -1,6 +1,7 @@
 export * from "./auth";
 export * from "./admission-settings";
 export * from "./admin-emails";
+export * from "./admin-activity-logs";
 export * from "./announcements";
 export * from "./dashboard-tab-settings";
 export * from "./email";

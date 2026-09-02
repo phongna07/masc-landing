@@ -2,14 +2,14 @@ import { GetObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { db } from "@masc-landing/db";
 import {
-  adminEmails, admissionSettings, dashboardTabSettings, mailCampaigns, members, preferencesSettings, problemStatementPublicationSettings, roundOneMemberCvs,
+  adminActivityLogs, adminEmails, admissionSettings, dashboardTabSettings, mailCampaigns, members, preferencesSettings, problemStatementPublicationSettings, roundOneMemberCvs,
   pdfExportJobs, roundEndSettings, roundOneMembers, roundOneSubmissions, roundOneTeams, roundSubmissions, roundThreeMembers,
   roundThreeSubmissions, roundThreeTeams, roundTwoMembers, roundTwoSubmissions, roundTwoTeams,
   submissionSettings, teams, uploadLimitSettings, user, userAnnouncements
 } from "@masc-landing/db/schema/index";
 import { env } from "@masc-landing/env/server";
 import { TRPCError } from "@trpc/server";
-import { and, asc, count, desc, eq, getTableName, gt, inArray, isNotNull, max, ne, or, sql } from "drizzle-orm";
+import { and, asc, count, desc, eq, getTableName, gt, inArray, isNotNull, lt, max, ne, or, sql } from "drizzle-orm";
 import { z } from "zod";
 
 import { getAdmissionSettings } from "../admission-settings";
@@ -52,6 +52,8 @@ const teamsProcedure = adminAreaProcedure("teams");
 const mailProcedure = adminAreaProcedure("mail");
 const roundsProcedure = adminAreaProcedure("rounds");
 const roundOneCvScreeningProcedure = adminAreaProcedure("roundOneCvScreening");
+const activityLogsProcedure = adminAreaProcedure("activityLogs");
+const activityLogPageSize = 25;
 const roundInput = z.object({ round: roundSchema });
 const teamEliminationInput = roundInput.extend({
   teamIds: z.array(z.string().trim().min(1).max(128)).min(1).max(500),
@@ -543,6 +545,44 @@ export const adminRouter = router({
       set: { maxFileSize: input.maxFileSizeMiB * MEBIBYTE, updatedAt: new Date() },
     });
     return getUploadLimits();
+  }),
+  listActivityLogs: activityLogsProcedure.input(z.object({
+    cursor: z.object({
+      createdAt: z.coerce.date(),
+      id: z.string().trim().min(1).max(128),
+    }).optional(),
+  })).query(async ({ input }) => {
+    const rows = await db.select({
+      id: adminActivityLogs.id,
+      actorUserId: adminActivityLogs.actorUserId,
+      actorName: adminActivityLogs.actorName,
+      actorEmail: adminActivityLogs.actorEmail,
+      actorRole: adminActivityLogs.actorRole,
+      procedurePath: adminActivityLogs.procedurePath,
+      procedureType: adminActivityLogs.procedureType,
+      input: adminActivityLogs.input,
+      outcome: adminActivityLogs.outcome,
+      errorCode: adminActivityLogs.errorCode,
+      createdAt: adminActivityLogs.createdAt,
+    }).from(adminActivityLogs)
+      .where(input.cursor ? or(
+        lt(adminActivityLogs.createdAt, input.cursor.createdAt),
+        and(
+          eq(adminActivityLogs.createdAt, input.cursor.createdAt),
+          lt(adminActivityLogs.id, input.cursor.id),
+        ),
+      ) : undefined)
+      .orderBy(desc(adminActivityLogs.createdAt), desc(adminActivityLogs.id))
+      .limit(activityLogPageSize + 1);
+
+    const items = rows.slice(0, activityLogPageSize);
+    const lastItem = items.at(-1);
+    return {
+      items,
+      nextCursor: rows.length > activityLogPageSize && lastItem
+        ? { createdAt: lastItem.createdAt, id: lastItem.id }
+        : null,
+    };
   }),
   listUsers: usersProcedure.query(async () => {
     const users = await db.select({

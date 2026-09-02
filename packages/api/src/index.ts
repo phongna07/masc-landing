@@ -1,6 +1,9 @@
 import { initTRPC, TRPCError } from "@trpc/server";
+import { db } from "@masc-landing/db";
+import { adminActivityLogs } from "@masc-landing/db/schema/admin-activity-logs";
 
 import { getAdminByEmail } from "./admin-access";
+import { sanitizeAdminActivityInput } from "./admin-activity-input";
 import { canAccessAdminArea, type AdminArea } from "./admin-roles";
 import type { Context } from "./context";
 
@@ -44,7 +47,7 @@ export const freshProtectedProcedure = t.procedure.use(async ({ ctx, next }) => 
   });
 });
 
-export const adminProcedure = freshProtectedProcedure.use(async ({ ctx, next }) => {
+export const adminProcedure = freshProtectedProcedure.use(async ({ ctx, next, path, type, getRawInput }) => {
   const admin = await getAdminByEmail(ctx.session.user.email);
   if (!admin) {
     throw new TRPCError({
@@ -53,7 +56,43 @@ export const adminProcedure = freshProtectedProcedure.use(async ({ ctx, next }) 
     });
   }
 
-  return next({ ctx: { ...ctx, admin } });
+  if (type !== "mutation") {
+    return next({ ctx: { ...ctx, admin } });
+  }
+
+  let rawInput: unknown;
+  try {
+    rawInput = await getRawInput();
+  } catch {
+    rawInput = undefined;
+  }
+
+  const writeActivity = async (outcome: "success" | "failure", errorCode: string | null) => {
+    try {
+      await db.insert(adminActivityLogs).values({
+        actorUserId: ctx.session.user.id,
+        actorName: ctx.session.user.name,
+        actorEmail: ctx.session.user.email,
+        actorRole: admin.role,
+        procedurePath: path,
+        procedureType: type,
+        input: sanitizeAdminActivityInput(rawInput),
+        outcome,
+        errorCode,
+      });
+    } catch (error) {
+      console.error("Failed to persist admin activity log", { path, type, outcome, error });
+    }
+  };
+
+  try {
+    const result = await next({ ctx: { ...ctx, admin } });
+    await writeActivity(result.ok ? "success" : "failure", result.ok ? null : result.error.code);
+    return result;
+  } catch (error) {
+    await writeActivity("failure", error instanceof TRPCError ? error.code : "INTERNAL_SERVER_ERROR");
+    throw error;
+  }
 });
 
 export function adminAreaProcedure(area: AdminArea) {

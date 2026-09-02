@@ -555,6 +555,7 @@
       "overview": "Tổng quan",
       "announcements": "Thông báo",
       "users": "Người dùng",
+      "activityLogs": "Nhật ký hoạt động",
       "teams": "Đội thi",
       "roundOneCvScreening": "Sàng lọc CV Vòng 1",
       "mail": "Thư",
@@ -770,6 +771,38 @@
       "description": "Xem tất cả tài khoản đã đăng ký với MASC.",
       "emptyTitle": "Chưa có người dùng",
       "emptyDescription": "Tài khoản người dùng sẽ xuất hiện tại đây sau khi đăng ký."
+    },
+    "activityLog": {
+      "title": "Nhật ký hoạt động",
+      "description": "Xem các thao tác API đã xác thực của quản trị viên, từ mới nhất đến cũ nhất.",
+      "columns": {
+        "time": "Thời gian",
+        "admin": "Quản trị viên",
+        "operation": "Thao tác",
+        "details": "Chi tiết",
+        "outcome": "Kết quả"
+      },
+      "types": {
+        "query": "Truy vấn",
+        "mutation": "Thay đổi",
+        "subscription": "Theo dõi"
+      },
+      "outcomes": {
+        "success": "Thành công",
+        "failure": "Thất bại"
+      },
+      "viewDetails": "Xem chi tiết đã lọc",
+      "noDetails": "Không có dữ liệu đầu vào",
+      "emptyTitle": "Chưa có hoạt động quản trị",
+      "emptyDescription": "Các thao tác API đã xác thực của quản trị viên sẽ xuất hiện tại đây.",
+      "loadErrorTitle": "Không thể tải nhật ký",
+      "loadError": "Hãy kiểm tra kết nối và thử lại.",
+      "pagination": {
+        "label": "Các trang nhật ký hoạt động",
+        "previous": "Trang trước",
+        "next": "Trang sau",
+        "page": "Trang {page}"
+      }
     },
     "screening": {
       "title": "Sàng lọc CV Vòng 1",
