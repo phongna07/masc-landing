@@ -840,6 +840,20 @@
         "loadError": "Không thể tải danh sách tệp minh chứng.",
         "urlError": "Không thể mở tệp minh chứng. Vui lòng thử lại."
       },
+      "details": {
+        "column": "Thông tin chi tiết",
+        "open": "Xem chi tiết",
+        "dialogTitle": "Thông tin đội — {team}",
+        "dialogDescription": "Xem toàn bộ thông tin đăng ký và thành viên của đội.",
+        "registration": "Thông tin đăng ký",
+        "captainContact": "Liên hệ đội trưởng",
+        "members": "Thành viên đội",
+        "preferenceSubmittedAt": "Thời gian gửi nguyện vọng",
+        "assignedAt": "Thời gian chỉ định track",
+        "awarenessDetail": "Chi tiết nguồn biết đến",
+        "memberRole": "Thành viên",
+        "loadError": "Không thể tải thông tin chi tiết của đội."
+      },
       "actions": "Quyết định / chỉ định",
       "selectTrack": "Chỉ định track",
       "assign": "Chỉ định track",
