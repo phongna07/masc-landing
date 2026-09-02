@@ -12,7 +12,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 
 import { queryClient, trpc } from "@/utils/trpc";
-import { AdminEmpty, AdminError, AdminHeading, AdminLoading, AdminMetrics, formatDate } from "../admin-state";
+import { AdminEmpty, AdminError, AdminHeading, AdminLoading, AdminMetrics, formatBirthdate, formatDate } from "../admin-state";
 
 type TeamFilter = "all" | "track_assigned" | "track_unassigned"
 	| "track_product_growth" | "track_societal_marcom" | "track_market_research_trade";
@@ -35,6 +35,7 @@ export default function CvScreeningRoundOnePage() {
 	const [selectedTracks, setSelectedTracks] = useState<Record<string, string>>({});
 	const [preview, setPreview] = useState<{ url: string; memberName: string; filename: string } | null>(null);
 	const [proofTeam, setProofTeam] = useState<{ id: string; name: string } | null>(null);
+	const [detailTeam, setDetailTeam] = useState<{ id: string; name: string } | null>(null);
 	const teams = useQuery(trpc.admin.listRoundOneCvScreeningTeams.queryOptions());
 	const stats = useQuery(trpc.admin.getRoundOneCvScreeningStats.queryOptions());
 	const refresh = () => Promise.all([
@@ -109,7 +110,7 @@ export default function CvScreeningRoundOnePage() {
 						<th>{t("fields.status")}</th><th>{t("fields.preferenceStatus")}</th>
 						<th>{t("fields.preferences")}</th><th>{t("fields.assignedTrack")}</th>
 						<th>{t("teams.cv")}</th><th>{t("screening.proofs.column")}</th>
-						<th>{t("fields.created")}</th><th>{t("screening.actions")}</th>
+						<th>{t("screening.details.column")}</th><th>{t("fields.created")}</th><th>{t("screening.actions")}</th>
 					</tr></thead><tbody>{visible.map((team) => {
 						const selectedTrack = selectedTracks[team.id] ?? team.assignedTrack?.id ?? "";
 						const canChoose = team.preferenceStatus === "submitted" || team.preferenceStatus === "assigned";
@@ -141,6 +142,8 @@ export default function CvScreeningRoundOnePage() {
 									onClick={() => setProofTeam({ id: team.id, name: team.name })}>
 									<EyeIcon />{t("screening.proofs.open")}</Button>}
 							</div> : t("values.notApplicable")}</td>
+							<td><Button size="sm" variant="outline" onClick={() => setDetailTeam({ id: team.id, name: team.name })}>
+								<EyeIcon />{t("screening.details.open")}</Button></td>
 							<td>{formatDate(team.readyAt, locale)}</td>
 							<td><div className="screening-actions">
 								{canChoose && <select className="admin-track-select" value={selectedTrack}
@@ -182,7 +185,90 @@ export default function CvScreeningRoundOnePage() {
 			</DialogContent>
 		</Dialog>
 		{proofTeam && <ProofsDialog team={proofTeam} onClose={() => setProofTeam(null)} />}
+		{detailTeam && <TeamDetailDialog team={detailTeam} onClose={() => setDetailTeam(null)} />}
 	</>;
+}
+
+function TeamDetailDialog({ team, onClose }: { team: { id: string; name: string }; onClose: () => void }) {
+	const t = useTranslations("Admin");
+	const locale = useLocale();
+	const detail = useQuery(trpc.admin.getRoundOneCvScreeningTeamDetail.queryOptions({ teamId: team.id }));
+	const notProvided = t("values.notProvided");
+	return <Dialog open onOpenChange={(open) => { if (!open) onClose(); }}>
+		<DialogContent className="screening-detail-dialog">
+			<DialogHeader className="screening-detail-dialog-header">
+				<DialogTitle>{t("screening.details.dialogTitle", { team: team.name })}</DialogTitle>
+				<DialogDescription>{t("screening.details.dialogDescription")}</DialogDescription>
+			</DialogHeader>
+			<DialogClose className="screening-cv-dialog-close"
+				render={<Button type="button" variant="ghost" size="icon" aria-label={t("actions.close")} />}>
+				<XIcon aria-hidden="true" />
+			</DialogClose>
+			<div className="screening-detail-dialog-body">
+				{detail.isPending ? <div className="screening-detail-loading" aria-label={t("actions.loading")}>
+					<Skeleton className="h-48 w-full" /><Skeleton className="h-48 w-full" />
+				</div> : detail.isError ? <div className="screening-detail-error" role="alert">
+					<p>{t("screening.details.loadError")}</p>
+					<Button variant="outline" onClick={() => detail.refetch()}><RefreshCwIcon />{t("actions.retry")}</Button>
+				</div> : <>
+					<div className="screening-detail-summary">
+						<Card className="dashboard-card"><CardHeader><CardTitle>{t("screening.details.registration")}</CardTitle></CardHeader>
+							<CardContent className="detail-list">
+								<Detail label={t("fields.team")} value={detail.data.name} />
+								<Detail label={t("fields.status")} value={t(`values.status.${detail.data.registrationStatus}`)} />
+								<Detail label={t("fields.isEliminated")} value={t(`values.boolean.${detail.data.isEliminated}`)} />
+								<Detail label={t("teams.admissionMethod")} value={t(`teams.admissionMethods.${detail.data.admissionMethod}`)} />
+								<Detail label={t("fields.created")} value={formatDate(detail.data.createdAt, locale)} />
+								<Detail label={t("screening.details.preferenceSubmittedAt")} value={detail.data.preferenceSubmittedAt
+									? formatDate(detail.data.preferenceSubmittedAt, locale) : notProvided} />
+								<Detail label={t("screening.details.assignedAt")} value={detail.data.assignedAt
+									? formatDate(detail.data.assignedAt, locale) : notProvided} />
+								<Detail label={t("fields.awarenessSource")} value={detail.data.awarenessSource
+									? t(`values.awarenessSource.${detail.data.awarenessSource}`) : notProvided} />
+								<Detail label={t("screening.details.awarenessDetail")} value={detail.data.awarenessSourceDetail || notProvided} />
+								<Detail label={t("fields.preferenceStatus")} value={t(`values.preferenceStatus.${detail.data.preferenceStatus}`)} />
+								<Detail label={t("fields.preferences")} value={detail.data.preferences.length
+									? detail.data.preferences.map((preference, index) => `${index + 1}. ${preference.name}`).join(" · ") : notProvided} />
+								<Detail label={t("fields.assignedTrack")} value={detail.data.assignedTrack?.name ?? notProvided} />
+							</CardContent>
+						</Card>
+						<Card className="dashboard-card"><CardHeader><CardTitle>{t("screening.details.captainContact")}</CardTitle></CardHeader>
+							<CardContent className="detail-list">
+								<Detail label={t("fields.name")} value={detail.data.captainName ?? notProvided} />
+								<Detail label={t("fields.email")} value={detail.data.captainEmail ?? notProvided} />
+								<Detail label={t("fields.phone")} value={detail.data.captainPhone} />
+								<Detail label={t("fields.facebookProfile")} value={detail.data.members.find((member) => member.isCaptain)?.facebookProfileUrl
+									? <FacebookLink url={detail.data.members.find((member) => member.isCaptain)!.facebookProfileUrl!} /> : notProvided} />
+							</CardContent>
+						</Card>
+					</div>
+					<Card className="dashboard-card screening-detail-members"><CardHeader><CardTitle>{t("screening.details.members")}</CardTitle></CardHeader>
+						<CardContent className="screening-detail-member-list">{detail.data.members.map((member) => <section key={member.email}>
+							<h3>{member.fullName}</h3>
+							<dl className="detail-list">
+								<Detail label={t("fields.role")} value={member.isCaptain
+									? t("values.captain") : t("screening.details.memberRole")} />
+								<Detail label={t("fields.email")} value={member.email} />
+								<Detail label={t("fields.birthdate")} value={formatBirthdate(member.birthdate, locale)} />
+								<Detail label={t("fields.university")} value={member.universityName} />
+								<Detail label={t("fields.phone")} value={member.phone ?? notProvided} />
+								<Detail label={t("fields.facebookProfile")} value={member.facebookProfileUrl
+									? <FacebookLink url={member.facebookProfileUrl} /> : notProvided} />
+							</dl>
+						</section>)}</CardContent>
+					</Card>
+				</>}
+			</div>
+		</DialogContent>
+	</Dialog>;
+}
+
+function FacebookLink({ url }: { url: string }) {
+	return <a className="facebook-profile-link" href={url} target="_blank" rel="noopener noreferrer" title={url}>{url}</a>;
+}
+
+function Detail({ label, value }: { label: string; value: React.ReactNode }) {
+	return <div><dt>{label}</dt><dd>{value}</dd></div>;
 }
 
 function ProofsDialog({ team, onClose }: { team: { id: string; name: string }; onClose: () => void }) {

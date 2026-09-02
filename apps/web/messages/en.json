@@ -840,6 +840,20 @@
         "loadError": "The proof list could not be loaded.",
         "urlError": "The proof file could not be opened. Please try again."
       },
+      "details": {
+        "column": "Detail info",
+        "open": "View details",
+        "dialogTitle": "Team details — {team}",
+        "dialogDescription": "Review the complete registration and member information for this team.",
+        "registration": "Registration details",
+        "captainContact": "Captain contact",
+        "members": "Team members",
+        "preferenceSubmittedAt": "Preferences submitted",
+        "assignedAt": "Track assigned",
+        "awarenessDetail": "Awareness source details",
+        "memberRole": "Member",
+        "loadError": "The team details could not be loaded."
+      },
       "actions": "Decision / assignment",
       "selectTrack": "Select an assigned track",
       "assign": "Assign track",

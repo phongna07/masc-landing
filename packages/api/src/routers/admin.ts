@@ -922,6 +922,58 @@ export const adminRouter = router({
       members: memberRows.filter((member) => member.teamId === team.id).map(({ teamId: _teamId, ...member }) => member),
     }));
   }),
+  getRoundOneCvScreeningTeamDetail: roundOneCvScreeningProcedure.input(z.object({
+    teamId: z.string().trim().min(1).max(128),
+  })).query(async ({ input }) => {
+    const [team] = await db.select({
+      id: roundOneTeams.id,
+      name: roundOneTeams.teamName,
+      registrationStatus: roundOneTeams.registrationStatus,
+      isEliminated: roundOneTeams.isEliminated,
+      createdAt: roundOneTeams.createdAt,
+      captainPhone: roundOneTeams.captainPhone,
+      awarenessSource: roundOneTeams.awarenessSource,
+      awarenessSourceDetail: roundOneTeams.awarenessSourceDetail,
+      admissionMethod: roundOneTeams.admissionMethod,
+      preferenceStatus: roundOneTeams.preferenceStatus,
+      preferenceIds: roundOneTeams.preferences,
+      preferenceSubmittedAt: roundOneTeams.preferenceSubmittedAt,
+      assignedTrackId: roundOneTeams.assignedTrackId,
+      assignedAt: roundOneTeams.assignedAt,
+    }).from(roundOneTeams).where(and(
+      eq(roundOneTeams.id, input.teamId),
+      roundOneCvScreeningQueue(),
+    )).limit(1);
+    if (!team) throw new TRPCError({ code: "NOT_FOUND", message: "TEAM_NOT_FOUND" });
+
+    const [memberRows, settings] = await Promise.all([
+      db.select({
+        fullName: roundOneMembers.fullName,
+        email: roundOneMembers.email,
+        birthdate: roundOneMembers.birthdate,
+        universityName: roundOneMembers.universityName,
+        isCaptain: roundOneMembers.isCaptain,
+        phone: roundOneMembers.phone,
+        facebookProfileUrl: roundOneMembers.facebookProfileUrl,
+      }).from(roundOneMembers)
+        .where(eq(roundOneMembers.teamId, team.id))
+        .orderBy(desc(roundOneMembers.isCaptain), asc(roundOneMembers.fullName)),
+      getRoundOnePreferenceSettings(false),
+    ]);
+    const settingById = new Map(settings.map((setting) => [setting.id, { id: setting.id, name: setting.name }]));
+    const preferences = team.preferenceIds.flatMap((id) => settingById.get(id) ?? []);
+    const captain = memberRows.find((member) => member.isCaptain) ?? null;
+    const { id: _id, preferenceIds: _preferenceIds, assignedTrackId, ...teamDetail } = team;
+
+    return {
+      ...teamDetail,
+      captainName: captain?.fullName ?? null,
+      captainEmail: captain?.email ?? null,
+      preferences,
+      assignedTrack: assignedTrackId ? settingById.get(assignedTrackId) ?? null : null,
+      members: memberRows,
+    };
+  }),
   decideRoundOneCvScreeningTeam: roundOneCvScreeningProcedure.input(z.discriminatedUnion("status", [
     z.object({
       teamId: z.string().trim().min(1).max(128), status: z.literal("approved"),
