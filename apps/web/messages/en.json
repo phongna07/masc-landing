@@ -555,6 +555,7 @@
       "overview": "Overview",
       "announcements": "Announcements",
       "users": "Users",
+      "activityLogs": "Activity log",
       "teams": "Teams",
       "roundOneCvScreening": "CV Screening Round 1",
       "mail": "Mail",
@@ -770,6 +771,38 @@
       "description": "Review every account registered with MASC.",
       "emptyTitle": "No users found",
       "emptyDescription": "User accounts will appear here after registration."
+    },
+    "activityLog": {
+      "title": "Activity log",
+      "description": "Review authenticated admin API operations from newest to oldest.",
+      "columns": {
+        "time": "Time",
+        "admin": "Administrator",
+        "operation": "Operation",
+        "details": "Details",
+        "outcome": "Outcome"
+      },
+      "types": {
+        "query": "Query",
+        "mutation": "Mutation",
+        "subscription": "Subscription"
+      },
+      "outcomes": {
+        "success": "Success",
+        "failure": "Failed"
+      },
+      "viewDetails": "View sanitized details",
+      "noDetails": "No input",
+      "emptyTitle": "No admin activity yet",
+      "emptyDescription": "Authenticated admin API operations will appear here.",
+      "loadErrorTitle": "Could not load activity",
+      "loadError": "Check your connection and try again.",
+      "pagination": {
+        "label": "Activity log pages",
+        "previous": "Previous",
+        "next": "Next",
+        "page": "Page {page}"
+      }
     },
     "screening": {
       "title": "CV Screening Round 1",

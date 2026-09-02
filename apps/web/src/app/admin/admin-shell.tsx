@@ -2,7 +2,7 @@
 
 import { canAccessAdminArea, type AdminArea, type AdminRole } from "@masc-landing/api/admin-roles";
 import { rounds } from "@masc-landing/api/rounds";
-import { ClipboardCheckIcon, FileTextIcon, LayoutDashboardIcon, MailIcon, MegaphoneIcon, MenuIcon, UsersIcon, XIcon } from "lucide-react";
+import { ClipboardCheckIcon, FileTextIcon, HistoryIcon, LayoutDashboardIcon, MailIcon, MegaphoneIcon, MenuIcon, UsersIcon, XIcon } from "lucide-react";
 import Link from "next/link";
 import type { Route } from "next";
 import { useTranslations } from "next-intl";
@@ -18,6 +18,7 @@ const items = [
   { href: "/admin", key: "overview", area: "overview", icon: LayoutDashboardIcon },
   { href: "/admin/announcements", key: "announcements", area: "announcements", icon: MegaphoneIcon },
   { href: "/admin/users", key: "users", area: "users", icon: UsersIcon },
+  { href: "/admin/activity-log", key: "activityLogs", area: "activityLogs", icon: HistoryIcon },
   { href: "/admin/teams", key: "teams", area: "teams", icon: UsersIcon },
   { href: "/admin/cv-screening-round-1", key: "roundOneCvScreening", area: "roundOneCvScreening", icon: ClipboardCheckIcon },
   { href: "/admin/mail", key: "mail", area: "mail", icon: MailIcon },

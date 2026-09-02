@@ -10,6 +10,7 @@ export const adminAreas = [
   "mail",
   "rounds",
   "roundOneCvScreening",
+  "activityLogs",
 ] as const;
 
 export type AdminArea = (typeof adminAreas)[number];

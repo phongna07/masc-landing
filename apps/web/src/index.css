@@ -3427,6 +3427,68 @@ dialog[open]::backdrop {
   font-size: 13px;
 }
 
+.admin-activity-table {
+  min-width: 1040px;
+}
+
+.admin-activity-table th:first-child,
+.admin-activity-table td:first-child {
+  width: 170px;
+}
+
+.admin-activity-table td {
+  vertical-align: top;
+}
+
+.admin-activity-details summary {
+  cursor: pointer;
+  color: #d8d0ff;
+  font-weight: 700;
+}
+
+.admin-activity-details pre {
+  max-width: 420px;
+  max-height: 260px;
+  margin: 12px 0 0;
+  overflow: auto;
+  color: rgba(244, 240, 232, .78);
+  font-size: 12px;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.admin-activity-error-code {
+  margin-top: 7px;
+  color: var(--muted);
+  font-family: monospace;
+  font-size: 11px !important;
+}
+
+.admin-activity-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 14px;
+  margin-top: 22px;
+}
+
+.admin-activity-pagination>span {
+  min-width: 80px;
+  color: var(--muted);
+  text-align: center;
+}
+
+@media (max-width: 700px) {
+  .admin-activity-pagination {
+    justify-content: space-between;
+  }
+
+  .admin-activity-pagination [data-slot="button"] {
+    padding-inline: 12px;
+  }
+}
+
 .elimination-badge {
   display: inline-flex !important;
   width: fit-content;
