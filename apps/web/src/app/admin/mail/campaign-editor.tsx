@@ -15,7 +15,7 @@ import { Button } from "@masc-landing/ui/components/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@masc-landing/ui/components/card";
 import { Input } from "@masc-landing/ui/components/input";
 import { Label } from "@masc-landing/ui/components/label";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { EyeIcon, SaveIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
@@ -44,6 +44,7 @@ export const emptyMailCampaign: MailCampaignInput = {
 	eliminationFilter: "any",
 	submissionFilter: "any",
 	preferenceStatuses: [...preferenceStatuses],
+	assignedTrackIds: [],
 	admissionMethods: [...admissionMethods],
 	subjectTemplate: "",
 	bodyTemplate: "",
@@ -57,6 +58,10 @@ export default function CampaignEditor({ initial, campaignId, archived = false, 
 	const [form, setForm] = useState(initial);
 	const [saved, setSaved] = useState(initial);
 	const [previewTeamId, setPreviewTeamId] = useState<string>();
+	const trackOptions = useQuery(trpc.admin.getMailCampaignTrackOptions.queryOptions());
+	const trackFilterRequired = form.round === "1" && form.preferenceStatuses.includes("assigned");
+	const visibleTrackOptions = useMemo(() => trackOptions.data?.filter((track) =>
+		track.isActive || form.assignedTrackIds.includes(track.id)) ?? [], [form.assignedTrackIds, trackOptions.data]);
 	const dirty = useMemo(() => JSON.stringify(form) !== JSON.stringify(saved), [form, saved]);
 	const subjectIssues = useMemo(() => inspectMailCampaignTemplate(form.subjectTemplate), [form.subjectTemplate]);
 	const bodyIssues = useMemo(() => inspectMailCampaignTemplate(form.bodyTemplate), [form.bodyTemplate]);
@@ -65,11 +70,17 @@ export default function CampaignEditor({ initial, campaignId, archived = false, 
 		|| bodyIssues.placeholdersInTags.length > 0;
 	const previewReady = !!(form.name.trim() && form.subjectTemplate.trim() && richTextHasContent(form.bodyTemplate) && !hasTemplateIssues);
 	useEffect(() => onDirtyChange?.(dirty), [dirty, onDirtyChange]);
+	useEffect(() => {
+		if (campaignId || form.assignedTrackIds.length || !trackOptions.data) return;
+		const activeTrackIds = trackOptions.data.filter((track) => track.isActive).map((track) => track.id);
+		if (activeTrackIds.length) setForm((current) => ({ ...current, assignedTrackIds: activeTrackIds }));
+	}, [campaignId, form.assignedTrackIds.length, trackOptions.data]);
 
 	const preview = useMutation(trpc.admin.previewMailCampaign.mutationOptions());
 	const previewCampaign = preview.mutate;
 	useEffect(() => {
-		if (!previewReady || !form.registrationStatuses.length || !form.preferenceStatuses.length || !form.admissionMethods.length) return;
+		if (!previewReady || !form.registrationStatuses.length || !form.preferenceStatuses.length || !form.admissionMethods.length
+			|| (trackFilterRequired && !form.assignedTrackIds.length)) return;
 		const timer = window.setTimeout(() => previewCampaign({ campaign: form, teamId: previewTeamId }), 450);
 		return () => window.clearTimeout(timer);
 	}, [form, previewTeamId, previewCampaign, previewReady]);
@@ -98,7 +109,8 @@ export default function CampaignEditor({ initial, campaignId, archived = false, 
 	};
 	const pending = create.isPending || update.isPending;
 	const canSave = !!(!archived && dirty && form.name.trim() && form.subjectTemplate.trim() && richTextHasContent(form.bodyTemplate)
-		&& !hasTemplateIssues && form.registrationStatuses.length > 0 && form.preferenceStatuses.length > 0 && form.admissionMethods.length > 0);
+		&& !hasTemplateIssues && form.registrationStatuses.length > 0 && form.preferenceStatuses.length > 0 && form.admissionMethods.length > 0
+		&& (!trackFilterRequired || form.assignedTrackIds.length > 0));
 	const templateWarning = (issues: ReturnType<typeof inspectMailCampaignTemplate>, checkTagPlacement = false) => {
 		if (issues.unknownPlaceholders.length) {
 			return t("placeholders.invalidVariables", {
@@ -151,6 +163,15 @@ export default function CampaignEditor({ initial, campaignId, archived = false, 
 						values={form.admissionMethods} onToggle={(value) => setForm((current) => ({
 							...current, admissionMethods: toggleValue(current.admissionMethods, value),
 						}))} />
+					{trackFilterRequired && <FilterChecks label={t("fields.assignedTracks")} disabled={archived || trackOptions.isPending}
+						options={visibleTrackOptions.map((track) => ({
+							value: track.id,
+							label: track.isActive ? track.name : t("audience.inactiveTrack", { track: track.name }),
+							disabled: !track.isActive && !form.assignedTrackIds.includes(track.id),
+						}))}
+						values={form.assignedTrackIds} onToggle={(value) => setForm((current) => ({
+							...current, assignedTrackIds: toggleValue(current.assignedTrackIds, value),
+						}))} />}
 				</div>}
 				<div className="mail-match-count" aria-live="polite">
 					<strong>{previewReady && preview.data ? t("audience.matches", { count: preview.data.matchCount }) : t("audience.matchesUnknown")}</strong>
@@ -199,12 +220,12 @@ export default function CampaignEditor({ initial, campaignId, archived = false, 
 
 function FilterChecks<T extends string>({ label, options, values, onToggle, disabled }: {
 	label: string;
-	options: { value: T; label: string }[];
+	options: { value: T; label: string; disabled?: boolean }[];
 	values: T[];
 	onToggle: (value: T) => void;
 	disabled: boolean;
 }) {
 	return <fieldset className="mail-filter-checks" disabled={disabled}><legend>{label}</legend>
-		{options.map((option) => <label key={option.value}><input type="checkbox" checked={values.includes(option.value)}
+		{options.map((option) => <label key={option.value}><input type="checkbox" checked={values.includes(option.value)} disabled={option.disabled}
 			onChange={() => onToggle(option.value)} />{option.label}</label>)}</fieldset>;
 }
