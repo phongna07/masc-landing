@@ -313,7 +313,9 @@
         "description": "PDF only - maximum {maxSize} per file.",
         "memberLabel": "CV for {name}",
         "fileType": "Choose a PDF file.",
+        "fileEmpty": "The file \"{filename}\" is empty or could not be read. Choose it again.",
         "fileSize": "The file must be no larger than {maxSize}.",
+        "fileSizeNamed": "The file \"{filename}\" must be no larger than {maxSize}.",
         "uploadError": "The CV files could not be uploaded. Check the files and try again.",
         "download": "Download CV",
         "downloadError": "The CV could not be downloaded."
@@ -331,7 +333,9 @@
         "dialogCount": "{count} / {max} files selected",
         "done": "Done",
         "fileType": "Choose an image, PDF, DOC, DOCX, XLS, XLSX, PPT, or PPTX file.",
+        "fileEmpty": "The proof file \"{filename}\" is empty or could not be read. Choose it again.",
         "fileSize": "Each proof file must be no larger than {maxSize}.",
+        "fileSizeNamed": "The proof file \"{filename}\" must be no larger than {maxSize}.",
         "fileCount": "Choose no more than {count} proof files for each member.",
         "duplicate": "The same proof file cannot be added more than once.",
         "uploadError": "The proof files could not be uploaded. Check the files and try again."
@@ -496,6 +500,7 @@
         "descriptionLength": "The optional question must be 5,000 characters or fewer.",
         "fileRequired": "Choose a submission file.",
         "fileType": "Choose a PDF file.",
+        "fileEmpty": "The selected file is empty or could not be read. Choose it again.",
         "fileSize": "The file must be no larger than {maxSize}.",
         "submit": "The submission could not be uploaded. Check the file and try again.",
         "limit": "Your team has already used all 3 submission attempts.",

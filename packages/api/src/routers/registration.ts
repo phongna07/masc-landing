@@ -45,13 +45,13 @@ const cvFileSchema = z.object({
   uploadId: z.uuid(),
   filename: z.string().trim().min(1).max(255),
   mimeType: z.literal("application/pdf"),
-  fileSize: z.number().int().positive().max(MAX_UPLOAD_LIMIT_BYTES),
+  fileSize: z.number().int().nonnegative().max(MAX_UPLOAD_LIMIT_BYTES),
 });
 const proofFileSchema = z.object({
   uploadId: z.uuid(),
   filename: z.string().trim().min(1).max(255),
   mimeType: z.string().trim().min(1).max(255),
-  fileSize: z.number().int().positive().max(MAX_UPLOAD_LIMIT_BYTES),
+  fileSize: z.number().int().nonnegative().max(MAX_UPLOAD_LIMIT_BYTES),
 });
 const preferenceIdsSchema = z.array(z.string().trim().min(1).max(128)).length(ROUND_ONE_PREFERENCE_COUNT);
 const createRoundOneTeamInputSchema = createRoundOneTeamDetailsInputSchema.safeExtend({

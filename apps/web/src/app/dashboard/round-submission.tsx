@@ -75,13 +75,26 @@ export default function RoundSubmission({ round, maxFileSize, sectionNumber = "0
   if (submission.isPending) return <StateCard loading />;
   if (submission.isError) return <StateCard title={t("round.errors.loadTitle", { roundLabel })} description={t("round.errors.load")} retry={() => submission.refetch()} />;
 
+  const chooseFile = (selected: File | null) => {
+    setFile(selected);
+    if (!selected) return setError(null);
+    const mimeType = mimeTypes[selected.name.split(".").pop()?.toLowerCase() ?? ""];
+    if (!mimeType) return setError(t("round.errors.fileType"));
+    if (selected.size === 0) return setError(t("round.errors.fileEmpty"));
+    if (selected.size > maxFileSize) {
+      return setError(t("round.errors.fileSize", { maxSize: formatUploadLimit(maxFileSize) }));
+    }
+    setError(null);
+  };
+
   const submit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault(); setError(null); const cleanDescription = description.trim();
     if (cleanDescription.length > 5000) return setError(t("round.errors.descriptionLength"));
     if (!file) return setError(t("round.errors.fileRequired"));
     const mimeType = mimeTypes[file.name.split(".").pop()?.toLowerCase() ?? ""];
     if (!mimeType) return setError(t("round.errors.fileType"));
-    if (file.size === 0 || file.size > maxFileSize) {
+    if (file.size === 0) return setError(t("round.errors.fileEmpty"));
+    if (file.size > maxFileSize) {
       return setError(t("round.errors.fileSize", { maxSize: formatUploadLimit(maxFileSize) }));
     }
     const metadata = { round, filename: file.name, mimeType, fileSize: file.size };
@@ -96,6 +109,8 @@ export default function RoundSubmission({ round, maxFileSize, sectionNumber = "0
       if (message === "FILE_TOO_LARGE") {
         const latest = await queryClient.fetchQuery(trpc.uploadLimits.queryOptions());
         setError(t("round.errors.fileSize", { maxSize: formatUploadLimit(latest.roundSubmission) }));
+      } else if (message === "FILE_EMPTY") {
+        setError(t("round.errors.fileEmpty"));
       } else if (message === "ATTEMPT_LIMIT_REACHED" || message === "SUBMISSION_CONFLICT") {
         await submission.refetch();
         setEditing(false);
@@ -123,7 +138,7 @@ export default function RoundSubmission({ round, maxFileSize, sectionNumber = "0
       {existing.mimeType === "application/pdf" && preview.data?.previewUrl && <div className="submission-preview"><Label>{t("round.previewLabel")}</Label><iframe src={preview.data.previewUrl} title={t("round.previewTitle", { filename: existing.originalFilename })} /></div>}
     </CardContent>}
     {showForm && <form onSubmit={submit} className="round-submission-form" noValidate>
-      <CardContent className="round-submission-fields"><Field id="round-submission-file" label={t("round.fileLabel")}><FileInput id="round-submission-file" selectedFileName={file?.name} accept=".pdf,application/pdf" onChange={(event) => setFile(event.target.files?.[0] ?? null)} /><span className="field-hint">{t("round.fileHint", { maxSize: formatUploadLimit(maxFileSize) })}</span></Field>
+      <CardContent className="round-submission-fields"><Field id="round-submission-file" label={t("round.fileLabel")}><FileInput id="round-submission-file" selectedFileName={file ? `${file.name} · ${formatBytes(file.size)}` : null} accept=".pdf,application/pdf" onChange={(event) => chooseFile(event.target.files?.[0] ?? null)} /><span className="field-hint">{t("round.fileHint", { maxSize: formatUploadLimit(maxFileSize) })}</span></Field>
       <Field id="round-submission-question" label={t("round.descriptionLabel")}><Input id="round-submission-question" className="submission-question-input" type="text" value={description} maxLength={5000} onChange={(event) => setDescription(event.target.value)} /><span className="field-hint">{t("round.characters", { count: description.length })}</span></Field></CardContent>
       {error && <p className="form-error" role="alert">{error}</p>}<div className="registration-submit">{editing ? <Button type="button" variant="outline" onClick={() => { setEditing(false); setError(null); }}>{t("round.cancel")}</Button> : <span />}
       <Button type="submit" size="lg" disabled={isSubmitting} aria-busy={isSubmitting}><UploadIcon aria-hidden="true" />{isSubmitting ? t("round.uploading") : t("round.submit", { roundLabel })}</Button></div></form>}
@@ -132,7 +147,7 @@ export default function RoundSubmission({ round, maxFileSize, sectionNumber = "0
 }
 
 function Field({ id, label, children }: { id: string; label: string; children: React.ReactNode }) { return <div className="dashboard-field field-full"><Label htmlFor={id}>{label}</Label>{children}</div>; }
-function formatBytes(bytes: number) { return bytes < 1024 * 1024 ? `${Math.ceil(bytes / 1024)} KB` : `${(bytes / 1024 / 1024).toFixed(1)} MB`; }
+function formatBytes(bytes: number) { return bytes < 1024 * 1024 ? `${Math.ceil(bytes / 1024)} KiB` : `${(bytes / 1024 / 1024).toFixed(1)} MiB`; }
 function formatUploadLimit(bytes: number) { return `${bytes / 1024 / 1024} MiB`; }
 function StateCard({ loading, title, description, retry }: { loading?: boolean; title?: string; description?: string; retry?: () => void }) {
   const t = useTranslations("Dashboard");

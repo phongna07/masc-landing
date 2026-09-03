@@ -40,6 +40,7 @@ import {
 } from "../round-one-preferences";
 import {
   getUploadLimits,
+  MAX_UPLOAD_LIMIT_BYTES,
   MEBIBYTE,
   uploadLimitDatabaseKinds,
   uploadLimitKinds,
@@ -534,7 +535,7 @@ export const adminRouter = router({
   getUploadLimits: overviewProcedure.query(getUploadLimits),
   setUploadLimit: overviewProcedure.input(z.object({
     kind: z.enum(uploadLimitKinds),
-    maxFileSizeMiB: z.number().int().min(1).max(500),
+    maxFileSizeMiB: z.number().int().min(1).max(MAX_UPLOAD_LIMIT_BYTES / MEBIBYTE),
   })).mutation(async ({ input }) => {
     const kind = uploadLimitDatabaseKinds[input.kind];
     await db.insert(uploadLimitSettings).values({

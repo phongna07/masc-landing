@@ -339,6 +339,41 @@ function RegistrationForm({ session, round, maxCvFileSize, preferenceSettings }:
   const awarenessDetailRequired = awarenessSource !== "" &&
     awarenessSourcesRequiringDetail.includes(awarenessSource);
 
+  const cvFileError = (file: File | null) => {
+    if (!file) return t("validation.required");
+    if (!file.name.toLowerCase().endsWith(".pdf")) return t("registration.cv.fileType");
+    if (file.size === 0) return t("registration.cv.fileEmpty", { filename: file.name });
+    if (file.size > maxCvFileSize) {
+      return t("registration.cv.fileSizeNamed", {
+        filename: file.name,
+        maxSize: formatUploadLimit(maxCvFileSize),
+      });
+    }
+    return undefined;
+  };
+
+  const updateCvFile = (index: number, file: File | null) => {
+    setCvFiles((current) => current.map((item, fileIndex) => fileIndex === index ? file : item));
+    setErrors((current) => {
+      const next = { ...current };
+      const error = cvFileError(file);
+      delete next[`cvs.${index}`];
+      delete next.form;
+      if (error) next[`cvs.${index}`] = error;
+      return next;
+    });
+  };
+
+  const updateProofFiles = (memberIndex: number, files: File[]) => {
+    setProofFiles((current) => current.map((item, index) => index === memberIndex ? files : item));
+    setErrors((current) => {
+      const next = { ...current };
+      delete next[`proofs.${memberIndex}`];
+      delete next.form;
+      return next;
+    });
+  };
+
   const selectAwarenessSource = (source: AwarenessSource) => {
     setAwarenessSource(source);
     if (!awarenessSourcesRequiringDetail.includes(source)) {
@@ -433,11 +468,8 @@ function RegistrationForm({ session, round, maxCvFileSize, preferenceSettings }:
       next.form = t("validation.duplicateEmail");
     }
     if (round === "1") cvFiles.forEach((file, index) => {
-      if (!file) next[`cvs.${index}`] = t("validation.required");
-      else if (!file.name.toLowerCase().endsWith(".pdf")) next[`cvs.${index}`] = t("registration.cv.fileType");
-      else if (file.size === 0 || file.size > maxCvFileSize) {
-        next[`cvs.${index}`] = t("registration.cv.fileSize", { maxSize: formatUploadLimit(maxCvFileSize) });
-      }
+      const error = cvFileError(file);
+      if (error) next[`cvs.${index}`] = error;
     });
     if (round === "1") proofFiles.forEach((files, memberIndex) => {
       if (files.length > MAX_ROUND_ONE_CV_PROOFS_PER_MEMBER) {
@@ -452,8 +484,13 @@ function RegistrationForm({ session, round, maxCvFileSize, preferenceSettings }:
             next[`proofs.${memberIndex}`] = t("registration.cvProofs.fileType");
             break;
           }
-          if (file.size === 0 || file.size > maxCvFileSize) {
-            next[`proofs.${memberIndex}`] = t("registration.cvProofs.fileSize", {
+          if (file.size === 0) {
+            next[`proofs.${memberIndex}`] = t("registration.cvProofs.fileEmpty", { filename: file.name });
+            break;
+          }
+          if (file.size > maxCvFileSize) {
+            next[`proofs.${memberIndex}`] = t("registration.cvProofs.fileSizeNamed", {
+              filename: file.name,
               maxSize: formatUploadLimit(maxCvFileSize),
             });
             break;
@@ -493,10 +530,14 @@ function RegistrationForm({ session, round, maxCvFileSize, preferenceSettings }:
     setUploading(true);
     let uploadStage: "cv" | "proof" | "finalize" = "cv";
     try {
-      const cvs = await Promise.all(cvFiles.map(async (file) => {
+      const cvs = await Promise.all(cvFiles.map(async (file, index) => {
         const selected = file!;
         const metadata = { filename: selected.name, mimeType: "application/pdf" as const, fileSize: selected.size };
-        const signed = await createCvUploadUrl.mutateAsync(metadata);
+        const signed = await withRoundOneFileContext(createCvUploadUrl.mutateAsync(metadata), {
+          kind: "cv",
+          memberIndex: index,
+          filename: selected.name,
+        });
         const response = await fetch(signed.uploadUrl, {
           method: "PUT", body: selected,
           headers: { "Content-Type": "application/pdf" }
@@ -512,7 +553,11 @@ function RegistrationForm({ session, round, maxCvFileSize, preferenceSettings }:
         const info = roundOneCvProofFileInfo(file.name, file.type);
         if (!info) throw new Error("UNSUPPORTED_FILE");
         const metadata = { filename: file.name, mimeType: info.mimeType, fileSize: file.size };
-        const signed = await createProofUploadUrl.mutateAsync(metadata);
+        const signed = await withRoundOneFileContext(createProofUploadUrl.mutateAsync(metadata), {
+          kind: "proof",
+          memberIndex: cvIndex,
+          filename: file.name,
+        });
         const response = await fetch(signed.uploadUrl, {
           method: "PUT", body: file, headers: { "Content-Type": info.mimeType },
         });
@@ -530,13 +575,59 @@ function RegistrationForm({ session, round, maxCvFileSize, preferenceSettings }:
       });
     } catch (cause) {
       const message = cause instanceof Error ? cause.message : "";
-      if (message === "FILE_TOO_LARGE") {
-        const latest = await queryClient.fetchQuery(trpc.uploadLimits.queryOptions());
-        setErrors((current) => ({
-          ...current, form: t("registration.cv.fileSize", {
-            maxSize: formatUploadLimit(latest.participantCv),
-          })
-        }));
+      const fileFailure = cause instanceof RoundOneFileUploadError
+        ? cause.reason
+        : uploadFileFailure(cause);
+      if (fileFailure) {
+        createRoundOneTeam.reset();
+        let currentLimit = maxCvFileSize;
+        if (fileFailure === "FILE_TOO_LARGE") {
+          try {
+            const latest = await queryClient.fetchQuery(trpc.uploadLimits.queryOptions());
+            currentLimit = latest.participantCv;
+          } catch { /* Keep the limit shown when the form loaded. */ }
+        }
+        const fileErrors: FormErrors = {};
+        const setFileError = (kind: RoundOneUploadKind, memberIndex: number, filename: string) => {
+          const key = `${kind === "cv" ? "cvs" : "proofs"}.${memberIndex}`;
+          if (fileFailure === "FILE_EMPTY") {
+            fileErrors[key] = t(kind === "cv" ? "registration.cv.fileEmpty" : "registration.cvProofs.fileEmpty", {
+              filename,
+            });
+          } else {
+            fileErrors[key] = t(kind === "cv" ? "registration.cv.fileSizeNamed" : "registration.cvProofs.fileSizeNamed", {
+              filename,
+              maxSize: formatUploadLimit(currentLimit),
+            });
+          }
+        };
+        if (cause instanceof RoundOneFileUploadError) {
+          setFileError(cause.kind, cause.memberIndex, cause.filename);
+        } else {
+          cvFiles.forEach((file, index) => {
+            if (file && (fileFailure === "FILE_EMPTY" ? file.size === 0 : file.size > currentLimit)) {
+              setFileError("cv", index, file.name);
+            }
+          });
+          proofFiles.forEach((files, memberIndex) => files.forEach((file) => {
+            if (fileFailure === "FILE_EMPTY" ? file.size === 0 : file.size > currentLimit) {
+              setFileError("proof", memberIndex, file.name);
+            }
+          }));
+        }
+        setErrors((current) => {
+          const next = { ...current, ...fileErrors };
+          delete next.form;
+          if (!Object.keys(fileErrors).length) {
+            next.form = t(fileFailure === "FILE_TOO_LARGE"
+              ? "registration.cv.fileSize"
+              : "registration.cv.uploadError", {
+              maxSize: formatUploadLimit(currentLimit),
+            });
+          }
+          return next;
+        });
+        setShowValidationWarning(true);
       } else if (message !== "EMAIL_ALREADY_REGISTERED" && message !== "DUPLICATE_EMAILS") {
         setErrors((current) => ({
           ...current,
@@ -608,16 +699,15 @@ function RegistrationForm({ session, round, maxCvFileSize, preferenceSettings }:
           {round === "1" && <Field full error={errors["cvs.0"]}>
             <div className="cv-proof-controls"><div>
               <Label>{t("registration.cv.memberLabel", { name: captainFullName || t("roles.captain") })}</Label>
-              <FileInput selectedFileName={cvFiles[0]?.name} accept=".pdf,application/pdf"
+              <FileInput selectedFileName={selectedFileLabel(cvFiles[0])} accept=".pdf,application/pdf"
               aria-invalid={!!errors["cvs.0"]}
-              onChange={(event) => setCvFiles((current) => current.map((file, fileIndex) =>
-                fileIndex === 0 ? event.target.files?.[0] ?? null : file))} />
+              onChange={(event) => updateCvFile(0, event.target.files?.[0] ?? null)} />
               <span className="field-hint">{t("registration.cv.description", {
                 maxSize: formatUploadLimit(maxCvFileSize),
               })}</span></div>
               <ProofFilesDialog memberName={captainFullName || t("roles.captain")} files={proofFiles[0]!}
                 error={errors["proofs.0"]} maxFileSize={maxCvFileSize} disabled={isSubmitting}
-                onChange={(files) => setProofFiles((current) => current.map((item, index) => index === 0 ? files : item))} />
+                onChange={(files) => updateProofFiles(0, files)} />
             </div>
           </Field>}
         </CardContent>
@@ -665,18 +755,16 @@ function RegistrationForm({ session, round, maxCvFileSize, preferenceSettings }:
                     <Label>{t("registration.cv.memberLabel", {
                       name: member.fullName || t("registration.memberNumber", { number: index + 2 }),
                     })}</Label>
-                    <FileInput selectedFileName={cvFiles[index + 1]?.name} accept=".pdf,application/pdf"
+                    <FileInput selectedFileName={selectedFileLabel(cvFiles[index + 1])} accept=".pdf,application/pdf"
                     aria-invalid={!!errors[`cvs.${index + 1}`]}
-                    onChange={(event) => setCvFiles((current) => current.map((file, fileIndex) =>
-                      fileIndex === index + 1 ? event.target.files?.[0] ?? null : file))} />
+                    onChange={(event) => updateCvFile(index + 1, event.target.files?.[0] ?? null)} />
                     <span className="field-hint">{t("registration.cv.description", {
                       maxSize: formatUploadLimit(maxCvFileSize),
                     })}</span></div>
                     <ProofFilesDialog memberName={member.fullName || t("registration.memberNumber", { number: index + 2 })}
                       files={proofFiles[index + 1]!} error={errors[`proofs.${index + 1}`]}
                       maxFileSize={maxCvFileSize} disabled={isSubmitting}
-                      onChange={(files) => setProofFiles((current) => current.map((item, fileIndex) =>
-                        fileIndex === index + 1 ? files : item))} />
+                      onChange={(files) => updateProofFiles(index + 1, files)} />
                   </div>
                 </Field></>}
               </div>
@@ -1010,8 +1098,15 @@ function ProofFilesDialog({ memberName, files, maxFileSize, disabled, error, onC
         nextError ??= t("registration.cvProofs.fileType");
         continue;
       }
-      if (file.size === 0 || file.size > maxFileSize) {
-        nextError ??= t("registration.cvProofs.fileSize", { maxSize: formatUploadLimit(maxFileSize) });
+      if (file.size === 0) {
+        nextError ??= t("registration.cvProofs.fileEmpty", { filename: file.name });
+        continue;
+      }
+      if (file.size > maxFileSize) {
+        nextError ??= t("registration.cvProofs.fileSizeNamed", {
+          filename: file.name,
+          maxSize: formatUploadLimit(maxFileSize),
+        });
         continue;
       }
       if (files.length + additions.length >= MAX_ROUND_ONE_CV_PROOFS_PER_MEMBER) {
@@ -1085,6 +1180,45 @@ function proofFileIdentity(file: File) {
   return `${file.name}\u0000${file.size}\u0000${file.lastModified}`;
 }
 
+type UploadFileFailure = "FILE_EMPTY" | "FILE_TOO_LARGE";
+type RoundOneUploadKind = "cv" | "proof";
+type RoundOneFileContext = {
+  kind: RoundOneUploadKind;
+  memberIndex: number;
+  filename: string;
+};
+
+class RoundOneFileUploadError extends Error {
+  constructor(
+    readonly reason: UploadFileFailure,
+    readonly kind: RoundOneUploadKind,
+    readonly memberIndex: number,
+    readonly filename: string,
+  ) {
+    super(reason);
+    this.name = "RoundOneFileUploadError";
+  }
+}
+
+function uploadFileFailure(cause: unknown): UploadFileFailure | null {
+  if (!(cause instanceof Error)) return null;
+  return cause.message === "FILE_EMPTY" || cause.message === "FILE_TOO_LARGE"
+    ? cause.message
+    : null;
+}
+
+async function withRoundOneFileContext<Result>(promise: Promise<Result>, context: RoundOneFileContext) {
+  try {
+    return await promise;
+  } catch (cause) {
+    const reason = uploadFileFailure(cause);
+    if (reason) {
+      throw new RoundOneFileUploadError(reason, context.kind, context.memberIndex, context.filename);
+    }
+    throw cause;
+  }
+}
+
 async function mapWithConcurrency<Item, Result>(items: Item[], concurrency: number,
   mapper: (item: Item) => Promise<Result>) {
   const results = new Array<Result>(items.length);
@@ -1109,6 +1243,10 @@ function Detail({ label, value }: { label: string; value: string }) {
 
 function formatUploadLimit(bytes: number) {
   return `${bytes / 1024 / 1024} MiB`;
+}
+
+function selectedFileLabel(file: File | null | undefined) {
+  return file ? `${file.name} · ${formatBytes(file.size)}` : null;
 }
 
 function formatBytes(bytes: number) {
