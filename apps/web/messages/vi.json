@@ -313,7 +313,9 @@
         "description": "Chỉ hỗ trợ PDF - tối đa {maxSize} cho mỗi tệp.",
         "memberLabel": "CV của {name}",
         "fileType": "Vui lòng chọn tệp PDF.",
+        "fileEmpty": "Tệp \"{filename}\" trống hoặc không thể đọc được. Vui lòng chọn lại tệp.",
         "fileSize": "Tệp không được lớn hơn {maxSize}.",
+        "fileSizeNamed": "Tệp \"{filename}\" không được lớn hơn {maxSize}.",
         "uploadError": "Không thể tải CV lên. Vui lòng kiểm tra tệp và thử lại.",
         "download": "Tải CV",
         "downloadError": "Không thể tải CV xuống."
@@ -331,7 +333,9 @@
         "dialogCount": "Đã chọn {count} / {max} tệp",
         "done": "Hoàn tất",
         "fileType": "Vui lòng chọn tệp hình ảnh, PDF, DOC, DOCX, XLS, XLSX, PPT hoặc PPTX.",
+        "fileEmpty": "Tệp minh chứng \"{filename}\" trống hoặc không thể đọc được. Vui lòng chọn lại tệp.",
         "fileSize": "Mỗi tệp minh chứng không được lớn hơn {maxSize}.",
+        "fileSizeNamed": "Tệp minh chứng \"{filename}\" không được lớn hơn {maxSize}.",
         "fileCount": "Mỗi thành viên chỉ được chọn tối đa {count} tệp minh chứng.",
         "duplicate": "Không thể thêm cùng một tệp minh chứng nhiều lần.",
         "uploadError": "Không thể tải tệp minh chứng lên. Vui lòng kiểm tra tệp và thử lại."
@@ -496,6 +500,7 @@
         "descriptionLength": "Câu hỏi không bắt buộc không được vượt quá 5.000 ký tự.",
         "fileRequired": "Hãy chọn tệp bài nộp.",
         "fileType": "Hãy chọn tệp PDF.",
+        "fileEmpty": "Tệp đã chọn trống hoặc không thể đọc được. Vui lòng chọn lại tệp.",
         "fileSize": "Tệp không được lớn hơn {maxSize}.",
         "submit": "Không thể tải bài nộp lên. Hãy kiểm tra tệp và thử lại.",
         "limit": "Đội của bạn đã dùng hết 3 lượt nộp bài.",

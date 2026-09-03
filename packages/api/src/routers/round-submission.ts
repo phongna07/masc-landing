@@ -21,7 +21,7 @@ const allowedFiles: Record<string, string> = { ".pdf": "application/pdf" };
 const roundInput = z.object({ round: roundSchema });
 const fileInput = roundInput.extend({
   filename: z.string().trim().min(1).max(255), mimeType: z.string().trim().min(1).max(160),
-  fileSize: z.number().int().positive().max(MAX_UPLOAD_LIMIT_BYTES),
+  fileSize: z.number().int().nonnegative().max(MAX_UPLOAD_LIMIT_BYTES),
 });
 
 const s3 = new S3Client({

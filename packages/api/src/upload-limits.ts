@@ -1,10 +1,17 @@
 import { db } from "@masc-landing/db";
 import { uploadLimitSettings } from "@masc-landing/db/schema/index";
-import { TRPCError } from "@trpc/server";
 
-export const MEBIBYTE = 1024 * 1024;
-export const MIN_UPLOAD_LIMIT_BYTES = MEBIBYTE;
-export const MAX_UPLOAD_LIMIT_BYTES = 100 * MEBIBYTE;
+import {
+	MEBIBYTE,
+	requireFileWithinUploadLimit,
+} from "./upload-limit-validation";
+
+export {
+	MAX_UPLOAD_LIMIT_BYTES,
+	MEBIBYTE,
+	MIN_UPLOAD_LIMIT_BYTES,
+	requireFileWithinUploadLimit,
+} from "./upload-limit-validation";
 
 export const uploadLimitKinds = ["participantCv", "roundSubmission"] as const;
 export type UploadLimitKind = (typeof uploadLimitKinds)[number];
@@ -33,12 +40,6 @@ export async function getUploadLimits(): Promise<UploadLimits> {
 		if (kind) limits[kind] = row.maxFileSize;
 	}
 	return limits;
-}
-
-export function requireFileWithinUploadLimit(fileSize: number, limit: number) {
-	if (!Number.isInteger(fileSize) || fileSize <= 0 || fileSize > limit) {
-		throw new TRPCError({ code: "BAD_REQUEST", message: "FILE_TOO_LARGE" });
-	}
 }
 
 export async function requireCurrentUploadLimit(kind: UploadLimitKind, fileSize: number) {
