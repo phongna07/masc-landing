@@ -3,11 +3,29 @@ import test from "node:test";
 
 import { getEligibleBirthdateRange } from "./registration";
 import {
+	countRoundOneCvProofMembers,
+	MIN_ROUND_ONE_CV_PROOF_MEMBERS,
+} from "./round-one-cv-proof-files";
+import {
 	createRoundOneTeamDetailsInputSchema,
 	createTeamInputSchema,
 	facebookProfileUrlSchema,
 	normalizeFacebookProfileUrl,
 } from "./registration-schema";
+
+test("requires proof files for at least two distinct Round 1 members", () => {
+	const cases = [
+		{ proofs: [[], [], []], valid: false },
+		{ proofs: [["proof-a"], [], []], valid: false },
+		{ proofs: [["proof-a", "proof-b"], [], []], valid: false },
+		{ proofs: [["proof-a"], ["proof-b"], []], valid: true },
+		{ proofs: [["proof-a"], ["proof-b"], ["proof-c"]], valid: true },
+	] as const;
+
+	for (const { proofs, valid } of cases) {
+		assert.equal(countRoundOneCvProofMembers(proofs) >= MIN_ROUND_ONE_CV_PROOF_MEMBERS, valid);
+	}
+});
 
 test("normalizes supported Facebook and Meta profile links to HTTPS", () => {
 	const cases = [

@@ -1,4 +1,9 @@
 export const MAX_ROUND_ONE_CV_PROOFS_PER_MEMBER = 10;
+export const MIN_ROUND_ONE_CV_PROOF_MEMBERS = 2;
+
+export function countRoundOneCvProofMembers(proofFilesByMember: readonly (readonly unknown[])[]) {
+	return proofFilesByMember.filter((files) => files.length > 0).length;
+}
 
 export const ROUND_ONE_CV_PROOF_ACCEPT = [
 	"image/*",
