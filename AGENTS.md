@@ -128,7 +128,7 @@ There is no automated test runner or coverage threshold currently configured. Do
 - Next.js route/component/config change: web tsc, then the authoritative webpack production build when environment variables are available.
 - Cross-package change: all touched package checks, web tsc, and the authoritative production build.
 - Database schema change: owning-package tsc, pnpm db:generate, and inspection of generated SQL/metadata; migrate/push only with target confirmation.
-- Visible UI change: manually check desktop/mobile layouts, keyboard interaction, and both English and Vietnamese locales when a browser session is available.
+- Visible UI change: do not automatically open or use a browser session for manual validation in T3 Code, because those sessions are not expected to be logged in. Only check desktop/mobile layouts, keyboard interaction, and both English and Vietnamese locales when the user explicitly requests browser validation and provides or confirms a suitably authenticated session. Otherwise, report that manual browser validation was not performed.
 
 If a required command cannot run because Node/pnpm, dependencies, environment variables, network access, or database access are unavailable, report the exact blocker and the validations that did run.
 
