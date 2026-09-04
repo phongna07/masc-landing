@@ -3,7 +3,9 @@
 import type { AppRouter } from "@masc-landing/api/routers/index";
 import { roundIds, type RoundId } from "@masc-landing/api/rounds";
 import {
+  countRoundOneCvProofMembers,
   MAX_ROUND_ONE_CV_PROOFS_PER_MEMBER,
+  MIN_ROUND_ONE_CV_PROOF_MEMBERS,
   ROUND_ONE_CV_PROOF_ACCEPT,
   roundOneCvProofFileInfo,
 } from "@masc-landing/api/round-one-cv-proof-files";
@@ -322,7 +324,9 @@ function RegistrationForm({ session, round, maxCvFileSize, preferenceSettings }:
   const [proofFiles, setProofFiles] = useState<File[][]>([[], [], []]);
   const [uploading, setUploading] = useState(false);
   const [preferenceIds, setPreferenceIds] = useState(["", "", ""]);
+  const proofCoverageErrorId = useId();
   const birthdateRange = getEligibleBirthdateRange();
+  const proofMemberCount = countRoundOneCvProofMembers(proofFiles);
 
   const onCreated = async () => {
     toast.success(t("success.created"));
@@ -365,11 +369,20 @@ function RegistrationForm({ session, round, maxCvFileSize, preferenceSettings }:
   };
 
   const updateProofFiles = (memberIndex: number, files: File[]) => {
-    setProofFiles((current) => current.map((item, index) => index === memberIndex ? files : item));
+    const nextProofFiles = proofFiles.map((item, index) => index === memberIndex ? files : item);
+    setProofFiles(nextProofFiles);
     setErrors((current) => {
       const next = { ...current };
       delete next[`proofs.${memberIndex}`];
+      delete next.proofCoverage;
       delete next.form;
+      if (showValidationWarning &&
+        countRoundOneCvProofMembers(nextProofFiles) < MIN_ROUND_ONE_CV_PROOF_MEMBERS) {
+        next.proofCoverage = t("registration.cvProofs.coverageError", {
+          required: MIN_ROUND_ONE_CV_PROOF_MEMBERS,
+          total: nextProofFiles.length,
+        });
+      }
       return next;
     });
   };
@@ -498,6 +511,12 @@ function RegistrationForm({ session, round, maxCvFileSize, preferenceSettings }:
         }
       }
     });
+    if (round === "1" && proofMemberCount < MIN_ROUND_ONE_CV_PROOF_MEMBERS) {
+      next.proofCoverage = t("registration.cvProofs.coverageError", {
+        required: MIN_ROUND_ONE_CV_PROOF_MEMBERS,
+        total: proofFiles.length,
+      });
+    }
     if (round === "1" && (preferenceIds.some((id) => !id) || new Set(preferenceIds).size !== 3)) {
       next.preferences = t("preferences.validation");
     }
@@ -628,6 +647,16 @@ function RegistrationForm({ session, round, maxCvFileSize, preferenceSettings }:
           return next;
         });
         setShowValidationWarning(true);
+      } else if (message === "INSUFFICIENT_CV_PROOFS") {
+        createRoundOneTeam.reset();
+        setErrors((current) => ({
+          ...current,
+          proofCoverage: t("registration.cvProofs.coverageError", {
+            required: MIN_ROUND_ONE_CV_PROOF_MEMBERS,
+            total: proofFiles.length,
+          }),
+        }));
+        setShowValidationWarning(true);
       } else if (message !== "EMAIL_ALREADY_REGISTERED" && message !== "DUPLICATE_EMAILS") {
         setErrors((current) => ({
           ...current,
@@ -707,6 +736,9 @@ function RegistrationForm({ session, round, maxCvFileSize, preferenceSettings }:
               })}</span></div>
               <ProofFilesDialog memberName={captainFullName || t("roles.captain")} files={proofFiles[0]!}
                 error={errors["proofs.0"]} maxFileSize={maxCvFileSize} disabled={isSubmitting}
+                proofMemberCount={proofMemberCount} proofMemberTotal={proofFiles.length}
+                coverageError={errors.proofCoverage} coverageErrorId={proofCoverageErrorId}
+                showCoverageError
                 onChange={(files) => updateProofFiles(0, files)} />
             </div>
           </Field>}
@@ -764,6 +796,8 @@ function RegistrationForm({ session, round, maxCvFileSize, preferenceSettings }:
                     <ProofFilesDialog memberName={member.fullName || t("registration.memberNumber", { number: index + 2 })}
                       files={proofFiles[index + 1]!} error={errors[`proofs.${index + 1}`]}
                       maxFileSize={maxCvFileSize} disabled={isSubmitting}
+                      proofMemberCount={proofMemberCount} proofMemberTotal={proofFiles.length}
+                      coverageError={errors.proofCoverage} coverageErrorId={proofCoverageErrorId}
                       onChange={(files) => updateProofFiles(index + 1, files)} />
                   </div>
                 </Field></>}
@@ -826,7 +860,7 @@ function RegistrationForm({ session, round, maxCvFileSize, preferenceSettings }:
       <div className="registration-submit">
         <p>{t("registration.submitNote")}</p>
         <div className="registration-submit-action">
-          {showValidationWarning &&
+          {showValidationWarning && Object.keys(errors).length > 0 &&
             <p className="registration-validation-warning" role="alert">{t("registration.validationWarning")}</p>}
           <Button type="submit" size="lg" disabled={isSubmitting} aria-busy={isSubmitting}>
             {isSubmitting ? t("actions.submitting") : t("actions.submit")}
@@ -1073,16 +1107,23 @@ function TeamOverview({ membership }: { membership: Extract<Membership, { regist
   );
 }
 
-function ProofFilesDialog({ memberName, files, maxFileSize, disabled, error, onChange }: {
+function ProofFilesDialog({ memberName, files, maxFileSize, disabled, error, proofMemberCount, proofMemberTotal,
+  coverageError, coverageErrorId, showCoverageError = false, onChange }: {
   memberName: string;
   files: File[];
   maxFileSize: number;
   disabled: boolean;
   error?: string;
+  proofMemberCount: number;
+  proofMemberTotal: number;
+  coverageError?: string;
+  coverageErrorId: string;
+  showCoverageError?: boolean;
   onChange: (files: File[]) => void;
 }) {
   const t = useTranslations("Dashboard");
   const inputId = useId();
+  const coverageProgressId = useId();
   const [open, setOpen] = useState(false);
   const [selectionError, setSelectionError] = useState<string>();
   const addFiles = (selectedFiles: File[]) => {
@@ -1121,11 +1162,25 @@ function ProofFilesDialog({ memberName, files, maxFileSize, disabled, error, onC
   };
   return <div className="cv-proof-manager">
     <Label>{t("registration.cvProofs.mainLabel")}</Label>
-    <Button type="button" variant="outline" disabled={disabled} onClick={() => setOpen(true)}>
+    <Button type="button" variant="outline" disabled={disabled} onClick={() => setOpen(true)}
+      aria-invalid={!!coverageError}
+      aria-describedby={`${coverageProgressId}${coverageError ? ` ${coverageErrorId}` : ""}`}>
       <FilePlus2Icon aria-hidden="true" />{t("registration.cvProofs.manage")}
       <span className="cv-proof-count">{t("registration.cvProofs.selectedCount", { count: files.length })}</span>
     </Button>
-    <span className="cv-proof-description">{t("registration.cvProofs.description")}</span>
+    <span className="cv-proof-description">{t("registration.cvProofs.description", {
+      required: MIN_ROUND_ONE_CV_PROOF_MEMBERS,
+      total: proofMemberTotal,
+    })}</span>
+    <span className="cv-proof-description" id={coverageProgressId}
+      aria-live={showCoverageError ? "polite" : undefined}>
+      {t("registration.cvProofs.coverageProgress", {
+        count: proofMemberCount,
+        required: MIN_ROUND_ONE_CV_PROOF_MEMBERS,
+      })}
+    </span>
+    {showCoverageError && coverageError &&
+      <span className="field-error" id={coverageErrorId} role="alert">{coverageError}</span>}
     {error && <span className="field-error">{error}</span>}
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogContent className="cv-proof-dialog">

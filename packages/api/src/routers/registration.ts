@@ -28,7 +28,9 @@ import {
   ROUND_ONE_PREFERENCE_COUNT,
 } from "../round-one-preferences";
 import {
+  countRoundOneCvProofMembers,
   MAX_ROUND_ONE_CV_PROOFS_PER_MEMBER,
+  MIN_ROUND_ONE_CV_PROOF_MEMBERS,
   roundOneCvProofFileInfo,
 } from "../round-one-cv-proof-files";
 import {
@@ -177,6 +179,9 @@ export const registrationRouter = router({
     }));
     const keys = [...cvKeys, ...proofUploads.map((proof) => proof.key)];
     try {
+      if (countRoundOneCvProofMembers(input.cvs.map((cv) => cv.proofs)) < MIN_ROUND_ONE_CV_PROOF_MEMBERS) {
+        throw new TRPCError({ code: "BAD_REQUEST", message: "INSUFFICIENT_CV_PROOFS" });
+      }
       await requireActiveRoundOnePreferences(input.preferenceIds);
       const limits = await getUploadLimits();
       input.cvs.forEach((cv) => requireFileWithinUploadLimit(cv.fileSize, limits.participantCv));
