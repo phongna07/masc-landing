@@ -9,7 +9,7 @@ import {
 } from "@masc-landing/db/schema/index";
 import { env } from "@masc-landing/env/server";
 import { TRPCError } from "@trpc/server";
-import { and, asc, count, desc, eq, getTableName, gt, inArray, isNotNull, lt, max, ne, or, sql } from "drizzle-orm";
+import { and, asc, count, desc, eq, getTableName, gt, inArray, isNotNull, lt, max, ne, notInArray, or, sql } from "drizzle-orm";
 import { z } from "zod";
 
 import { getAdmissionSettings } from "../admission-settings";
@@ -56,6 +56,16 @@ const roundsProcedure = adminAreaProcedure("rounds");
 const roundOneCvScreeningProcedure = adminAreaProcedure("roundOneCvScreening");
 const activityLogsProcedure = adminAreaProcedure("activityLogs");
 const activityLogPageSize = 25;
+const hiddenActivityLogProcedurePaths = [
+  "admin.createTeamCvUrl",
+  "admin.createRoundOneScreeningCvUrl",
+  "admin.createRoundOneScreeningProofUrl",
+  "admin.createRoundPdfExportDownloadUrl",
+  "admin.createRoundDownloadUrl",
+  "admin.createRoundPreviewUrl",
+  "admin.previewMailCampaign",
+  "roundOneProblemStatement.createAdminDownloadUrl",
+];
 const roundInput = z.object({ round: roundSchema });
 const teamEliminationInput = roundInput.extend({
   teamIds: z.array(z.string().trim().min(1).max(128)).min(1).max(500),
@@ -567,13 +577,16 @@ export const adminRouter = router({
       errorCode: adminActivityLogs.errorCode,
       createdAt: adminActivityLogs.createdAt,
     }).from(adminActivityLogs)
-      .where(input.cursor ? or(
-        lt(adminActivityLogs.createdAt, input.cursor.createdAt),
-        and(
-          eq(adminActivityLogs.createdAt, input.cursor.createdAt),
-          lt(adminActivityLogs.id, input.cursor.id),
-        ),
-      ) : undefined)
+      .where(and(
+        notInArray(adminActivityLogs.procedurePath, hiddenActivityLogProcedurePaths),
+        input.cursor ? or(
+          lt(adminActivityLogs.createdAt, input.cursor.createdAt),
+          and(
+            eq(adminActivityLogs.createdAt, input.cursor.createdAt),
+            lt(adminActivityLogs.id, input.cursor.id),
+          ),
+        ) : undefined,
+      ))
       .orderBy(desc(adminActivityLogs.createdAt), desc(adminActivityLogs.id))
       .limit(activityLogPageSize + 1);
 
