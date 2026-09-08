@@ -2010,11 +2010,7 @@ dialog[open]::backdrop {
   --filter-color: #fb7185;
 }
 
-.admin-status-filter-button[data-status="track_assigned"] {
-  --filter-color: #60a5fa;
-}
-
-.admin-status-filter-button[data-status="track_unassigned"] {
+.admin-status-filter-button[data-status="pending_applications"] {
   --filter-color: #a78bfa;
 }
 
