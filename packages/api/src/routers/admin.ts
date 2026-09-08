@@ -373,10 +373,13 @@ async function decideRoundOneCvTeam(input: { teamId: string; status: "approved" 
   }).from(roundOneTeams)
     .where(eq(roundOneTeams.id, input.teamId)).limit(1);
   if (!existing) throw new TRPCError({ code: "NOT_FOUND", message: "Team not found" });
-  if (existing.admissionMethod !== "cv_screening" || existing.status !== "pending" || existing.preferenceStatus !== "submitted") {
+  const isApproval = input.status === "approved";
+  const isAllowedTransition = isApproval
+    ? existing.status === "pending" || existing.status === "rejected"
+    : existing.status === "pending";
+  if (existing.admissionMethod !== "cv_screening" || !isAllowedTransition || existing.preferenceStatus !== "submitted") {
     throw new TRPCError({ code: "CONFLICT", message: "TEAM_NOT_READY_FOR_SCREENING" });
   }
-  const isApproval = input.status === "approved";
   if (isApproval && (!input.trackId || !existing.preferences.includes(input.trackId))) {
     throw new TRPCError({ code: "BAD_REQUEST", message: "ASSIGNED_TRACK_MUST_BE_SUBMITTED" });
   }
@@ -396,8 +399,9 @@ async function decideRoundOneCvTeam(input: { teamId: string; status: "approved" 
     } : {}),
   }).where(and(
     eq(roundOneTeams.id, existing.id),
-    eq(roundOneTeams.registrationStatus, "pending"),
+    eq(roundOneTeams.registrationStatus, existing.status),
     eq(roundOneTeams.preferenceStatus, "submitted"),
+    ...(isApproval ? [sql`${input.trackId!} = any(${roundOneTeams.preferences})`] : []),
   )).returning({
     id: roundOneTeams.id,
     status: roundOneTeams.registrationStatus,

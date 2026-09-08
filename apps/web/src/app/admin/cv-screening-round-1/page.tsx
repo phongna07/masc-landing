@@ -114,8 +114,10 @@ export default function CvScreeningRoundOnePage() {
 					</tr></thead><tbody>{visible.map((team) => {
 						const selectedTrack = selectedTracks[team.id] ?? team.assignedTrack?.id ?? "";
 						const canChoose = team.preferenceStatus === "submitted" || team.preferenceStatus === "assigned";
-						const canApprove = team.admissionMethod === "cv_screening" && team.registrationStatus === "pending"
-							&& team.preferenceStatus === "submitted" && !!selectedTrack;
+						const canOfferApproval = team.admissionMethod === "cv_screening"
+							&& (team.registrationStatus === "pending" || team.registrationStatus === "rejected")
+							&& team.preferenceStatus === "submitted";
+						const canApprove = canOfferApproval && !!selectedTrack;
 						const canAssign = team.registrationStatus === "approved" && canChoose && !!selectedTrack
 							&& selectedTrack !== team.assignedTrack?.id;
 						return <tr key={team.id}>
@@ -151,21 +153,24 @@ export default function CvScreeningRoundOnePage() {
 									<option value="">{t("screening.selectTrack")}</option>
 									{team.preferences.map((preference) => <option key={preference.id} value={preference.id}>{preference.name}</option>)}
 								</select>}
-								{team.registrationStatus === "pending" && team.admissionMethod === "cv_screening" && <>
-									<ConfirmationDialog trigger={<Button disabled={!canApprove || decide.isPending}><CheckIcon />{t("teams.approve")}</Button>}
-										title={t("screening.approveTitle")} description={t("screening.approveDescription", { team: team.name })}
-										confirmLabel={t("teams.approve")} cancelLabel={t("actions.cancel")} icon={<CheckIcon />} tone="success"
-										onConfirm={() => decide.mutate({ teamId: team.id, status: "approved", trackId: selectedTrack })} />
+								{canOfferApproval && <ConfirmationDialog trigger={<Button disabled={!canApprove || decide.isPending}>
+									<CheckIcon />{team.registrationStatus === "rejected" ? t("screening.reapprove") : t("teams.approve")}</Button>}
+									title={team.registrationStatus === "rejected" ? t("screening.reapproveTitle") : t("screening.approveTitle")}
+									description={team.registrationStatus === "rejected"
+										? t("screening.reapproveDescription", { team: team.name })
+										: t("screening.approveDescription", { team: team.name })}
+									confirmLabel={team.registrationStatus === "rejected" ? t("screening.reapprove") : t("teams.approve")}
+									cancelLabel={t("actions.cancel")} icon={<CheckIcon />} tone="success"
+									onConfirm={() => decide.mutate({ teamId: team.id, status: "approved", trackId: selectedTrack })} />}
+								{team.registrationStatus === "pending" && team.admissionMethod === "cv_screening" &&
 									<ConfirmationDialog trigger={<Button variant="destructive" disabled={team.preferenceStatus !== "submitted" || decide.isPending}><XIcon />{t("teams.reject")}</Button>}
 										title={t("screening.rejectTitle")} description={t("screening.rejectDescription", { team: team.name })}
 										confirmLabel={t("teams.reject")} cancelLabel={t("actions.cancel")} icon={<XIcon />} tone="destructive"
-										onConfirm={() => decide.mutate({ teamId: team.id, status: "rejected" })} />
-								</>}
+										onConfirm={() => decide.mutate({ teamId: team.id, status: "rejected" })} />}
 								{team.registrationStatus === "approved" && canChoose && <Button disabled={!canAssign || assign.isPending}
 									onClick={() => assign.mutate({ teamId: team.id, trackId: selectedTrack })}>
 									{team.preferenceStatus === "assigned" ? t("screening.reassign") : t("screening.assign")}</Button>}
 								{team.preferenceStatus === "not_submitted" && <span>{t("screening.waitingPreferences")}</span>}
-								{team.registrationStatus === "rejected" && <span>{t("screening.finalDecision")}</span>}
 							</div></td>
 						</tr>;
 					})}</tbody></table>
