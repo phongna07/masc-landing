@@ -206,8 +206,10 @@ function RoundHub({ memberships, settings, dashboardTabSettings, roundEndSetting
         ? t("hub.roundOneAlternative") : t(`hub.description.${roundKey}`);
       const state = isEnded ? "ended" : membership.registered ? membership.team.status : canApply ? "open"
         : isDirectAdmissionRound ? "closed" : "locked";
+      const assignedTrackSubmissionOpen = round !== "1" || (membership.registered
+        && membership.round === "1" && membership.team.assignedTrack?.isSubmissionOpen === true);
       const isSubmissionOngoing = membership.registered && membership.team.status === "approved"
-        && submissionSettings[round];
+        && submissionSettings[round] && assignedTrackSubmissionOpen;
       const needsRoundOnePreferences = round === "1" && membership.registered
         && membership.team.admissionMethod === "round_0_5_promotion"
         && "preferenceStatus" in membership.team

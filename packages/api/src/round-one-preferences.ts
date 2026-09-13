@@ -26,6 +26,7 @@ export async function getAdminRoundOnePreferenceSettings() {
 			description: preferencesSettings.description,
 			displayOrder: preferencesSettings.displayOrder,
 			isActive: preferencesSettings.isActive,
+			isSubmissionOpen: preferencesSettings.isSubmissionOpen,
 			problemStatementOriginalFilename: preferencesSettings.problemStatementOriginalFilename,
 			problemStatementFileSize: preferencesSettings.problemStatementFileSize,
 		})

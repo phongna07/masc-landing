@@ -44,6 +44,8 @@ export default function RoundSubmission({ round, maxFileSize, sectionNumber = "0
   const previewedSubmission = useRef<string | null>(null);
   const existing = submission.data?.submission ?? null;
   const isOpen = submission.data?.isSubmissionOpen ?? false;
+  const trackSubmissionClosed = round === "1"
+    && submission.data?.submissionClosedReason === "ROUND_ONE_TRACK_SUBMISSION_CLOSED";
   const attemptsUsed = submission.data?.attemptsUsed ?? 0;
   const maxAttempts = submission.data?.maxAttempts ?? 3;
   const canSubmit = submission.data?.canSubmit ?? false;
@@ -56,14 +58,14 @@ export default function RoundSubmission({ round, maxFileSize, sectionNumber = "0
     : status === "limit"
       ? t("round.limitTitle", { roundLabel })
     : status === "unavailable"
-      ? t("round.unavailableTitle", { roundLabel })
+      ? t(trackSubmissionClosed ? "round.trackUnavailableTitle" : "round.unavailableTitle", { roundLabel })
       : t(existing ? "round.replaceTitle" : "round.openTitle", { roundLabel });
   const statusDescription = status === "submitted"
     ? t("round.submittedAt", { date: format.dateTime(new Date(existing!.updatedAt), { dateStyle: "medium", timeStyle: "short" }) })
     : status === "limit"
       ? t("round.limitDescription")
     : status === "unavailable"
-      ? t("round.unavailableDescription")
+      ? t(trackSubmissionClosed ? "round.trackUnavailableDescription" : "round.unavailableDescription")
       : t(existing ? "round.replaceDescription" : "round.openDescription");
 
   const previewKey = existing ? `${existing.attemptNumber}:${String(existing.updatedAt)}` : null;
@@ -129,7 +131,10 @@ export default function RoundSubmission({ round, maxFileSize, sectionNumber = "0
         <div className="round-status-actions"><p className="round-attempts">{t("round.attemptsUsed", { used: attemptsUsed, max: maxAttempts })}</p>
           {status === "submitted" && canSubmit && <Button variant="outline" onClick={() => { setDescription(existing!.description); setEditing(true); }}>{t("round.replace")}</Button>}</div>
       </CardHeader>
-    {existing && !showForm && <CardContent className="submission-details"><div className="submission-description"><Label>{t("round.descriptionLabel")}</Label><p>{existing.description || t("round.noQuestionProvided")}</p></div>
+    {existing && !showForm && <CardContent className="submission-details">
+      {!isOpen && <p className="round-submission-closed-note">{t(trackSubmissionClosed
+        ? "round.trackUnavailableDescription" : "round.unavailableDescription")}</p>}
+      <div className="submission-description"><Label>{t("round.descriptionLabel")}</Label><p>{existing.description || t("round.noQuestionProvided")}</p></div>
       <div className="submission-file"><FileTextIcon aria-hidden="true" /><div><strong>{existing.originalFilename}</strong><span>{formatBytes(existing.fileSize)}</span></div>
         <Button variant="outline" disabled={download.isPending} onClick={() => download.mutate(input)}><DownloadIcon aria-hidden="true" />{t("round.download")}</Button></div>
       {existing.feedback && <section className="participant-feedback" aria-labelledby={`round-${round}-feedback-title`}>

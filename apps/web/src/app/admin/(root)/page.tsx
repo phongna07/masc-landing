@@ -30,6 +30,7 @@ export default function AdminPage() {
 	const dashboardTabSettings = useQuery(trpc.admin.getDashboardTabSettings.queryOptions());
 	const roundEndSettings = useQuery(trpc.admin.getRoundEndSettings.queryOptions());
 	const settings = useQuery(trpc.admin.getSubmissionSettings.queryOptions());
+	const trackSubmissionSettings = useQuery(trpc.admin.getRoundOnePreferenceSettings.queryOptions());
 	const admissionSettings = useQuery(trpc.admin.getAdmissionSettings.queryOptions());
 	const uploadLimits = useQuery(trpc.admin.getUploadLimits.queryOptions());
 	const updateDashboardTab = useMutation(trpc.admin.setDashboardTabVisible.mutationOptions({
@@ -51,6 +52,13 @@ export default function AdminPage() {
 	const updateAdmission = useMutation(trpc.admin.setRoundAdmissionOpen.mutationOptions({
 		onSuccess: async () => { await admissionSettings.refetch(); toast.success(t("overview.admissionSuccess")); },
 		onError: () => toast.error(t("overview.admissionError")),
+	}));
+	const updateTrackSubmission = useMutation(trpc.admin.setRoundOneTrackSubmissionOpen.mutationOptions({
+		onSuccess: async () => {
+			await trackSubmissionSettings.refetch();
+			toast.success(t("overview.trackSubmissions.success"));
+		},
+		onError: () => toast.error(t("overview.trackSubmissions.error")),
 	}));
 
 	return <>
@@ -116,13 +124,46 @@ export default function AdminPage() {
 					const displayRound = roundLabel(round);
 					const isOpen = settings.data[round];
 					const isUpdating = update.isPending && update.variables?.round === round;
-					return <Card className="admin-round-setting" key={round}>
+					return <Card className={`admin-round-setting${round === "1" ? " admin-round-one-submission-setting" : ""}`} key={round}>
 						<CardHeader><div><CardTitle>{t("overview.roundTitle", { roundLabel: displayRound })}</CardTitle><p>{t("overview.roundDescription", { roundLabel: displayRound })}</p></div>
 							<span className={isOpen ? "is-open" : "is-closed"}>{t(isOpen ? "overview.open" : "overview.closed")}</span>
 						</CardHeader>
-						<CardContent><Button variant={isOpen ? "default" : "outline"} role="switch" aria-checked={isOpen}
+						<CardContent className={round === "1" ? "admin-round-one-submission-content" : undefined}>
+							<Button variant={isOpen ? "default" : "outline"} role="switch" aria-checked={isOpen}
 							disabled={update.isPending} onClick={() => update.mutate({ round, isOpen: !isOpen })}
-						>{isUpdating ? t("overview.updating") : t(isOpen ? "overview.closeAction" : "overview.openAction")}</Button></CardContent>
+							>{isUpdating ? t("overview.updating") : t(isOpen ? "overview.closeAction" : "overview.openAction")}</Button>
+							{round === "1" && <div className="admin-track-submission-settings">
+								<div className="admin-track-submission-heading"><strong>{t("overview.trackSubmissions.title")}</strong>
+									<p>{t("overview.trackSubmissions.description")}</p></div>
+								{!isOpen && <p className="admin-track-submission-master-note">
+									{t("overview.trackSubmissions.masterClosed")}
+								</p>}
+								{trackSubmissionSettings.isPending ? <p className="admin-track-submission-message">{t("actions.loading")}</p>
+									: trackSubmissionSettings.isError ? <div className="admin-track-submission-message admin-track-submission-error">
+										<p>{t("overview.trackSubmissions.loadError")}</p>
+										<Button type="button" size="sm" variant="outline" onClick={() => trackSubmissionSettings.refetch()}>
+											{t("actions.retry")}
+										</Button>
+									</div> : <div className="admin-track-submission-list">
+										{trackSubmissionSettings.data.map((track) => {
+											const isTrackUpdating = updateTrackSubmission.isPending
+												&& updateTrackSubmission.variables?.trackId === track.id;
+											return <div className="admin-track-submission-row" key={track.id}>
+												<div><strong>{track.name}</strong><span>{t(track.isActive
+													? "overview.trackSubmissions.active" : "overview.trackSubmissions.inactive")}</span></div>
+												<span className={track.isSubmissionOpen ? "is-open" : "is-closed"}>{t(track.isSubmissionOpen
+													? "overview.trackSubmissions.configuredOpen" : "overview.trackSubmissions.configuredClosed")}</span>
+												<Button type="button" size="sm" variant={track.isSubmissionOpen ? "default" : "outline"}
+													role="switch" aria-checked={track.isSubmissionOpen} disabled={updateTrackSubmission.isPending}
+													onClick={() => updateTrackSubmission.mutate({ trackId: track.id, isOpen: !track.isSubmissionOpen })}>
+													{isTrackUpdating ? t("overview.updating") : t(track.isSubmissionOpen
+														? "overview.trackSubmissions.closeAction" : "overview.trackSubmissions.openAction")}
+												</Button>
+											</div>;
+										})}
+									</div>}
+							</div>}
+						</CardContent>
 					</Card>;
 				})}
 			</div>}

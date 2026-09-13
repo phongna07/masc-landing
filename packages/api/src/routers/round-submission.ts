@@ -12,7 +12,7 @@ import { z } from "zod";
 import { freshProtectedProcedure, protectedProcedure, router } from "../index";
 import { roundIds, roundSchema, type RoundId } from "../rounds";
 import { attachmentContentDisposition, roundSubmissionFilename } from "../submission-files";
-import { getSubmissionSettings, requireSubmissionOpen } from "../submission-settings";
+import { getSubmissionAvailability, requireSubmissionOpen } from "../submission-settings";
 import { MAX_UPLOAD_LIMIT_BYTES, requireCurrentUploadLimit } from "../upload-limits";
 
 const MAX_ATTEMPTS = 3;
@@ -99,15 +99,6 @@ function requireApprovedTeam(registrationStatus: "pending" | "approved" | "rejec
     throw new TRPCError({ code: "FORBIDDEN", message: "TEAM_NOT_APPROVED" });
   }
 }
-async function requireRoundOneAssigned(round: RoundId, teamId: string) {
-  if (round !== "1") return true;
-  const [team] = await db.select({ preferenceStatus: roundOneTeams.preferenceStatus })
-    .from(roundOneTeams).where(eq(roundOneTeams.id, teamId)).limit(1);
-  if (team?.preferenceStatus !== "assigned") {
-    throw new TRPCError({ code: "FORBIDDEN", message: "ROUND_ONE_TRACK_NOT_ASSIGNED" });
-  }
-  return true;
-}
 function objectKey(round: RoundId, teamId: string, uploadId: string, filename: string) {
   return `round-${round}/${teamId}/${uploadId}/${filename}`;
 }
@@ -140,7 +131,10 @@ export const roundSubmissionRouter = router({
   current: protectedProcedure.input(roundInput).query(async ({ ctx, input }) => {
     const { submission: submissionTable } = tablesForRound(input.round);
     const membership = await membershipFor(input.round, ctx.session.user.id, ctx.session.user.email);
-    const settings = await getSubmissionSettings();
+    const isApproved = membership.registrationStatus === "approved";
+    const availability = isApproved
+      ? await getSubmissionAvailability(input.round, membership.teamId)
+      : { isOpen: false as const, reason: "TEAM_NOT_APPROVED" as const };
     const [submission] = await db.select({
       description: submissionTable.description, originalFilename: submissionTable.originalFilename,
       mimeType: submissionTable.mimeType, fileSize: submissionTable.fileSize,
@@ -151,19 +145,16 @@ export const roundSubmissionRouter = router({
     }).from(submissionTable).where(submissionWhere(submissionTable, membership.teamId, input.round))
       .orderBy(desc(submissionTable.attemptNumber)).limit(1);
     const used = submission?.attemptNumber ?? 0;
-    const isApproved = membership.registrationStatus === "approved";
-    const trackAssigned = input.round !== "1" || await requireRoundOneAssigned(input.round, membership.teamId)
-      .catch(() => false);
-    return { submission: submission ?? null, isSubmissionOpen: isApproved && trackAssigned && settings[input.round], attemptsUsed: used,
+    return { submission: submission ?? null, isSubmissionOpen: availability.isOpen,
+      submissionClosedReason: availability.reason, attemptsUsed: used,
       attemptsRemaining: MAX_ATTEMPTS - used, maxAttempts: MAX_ATTEMPTS,
-      canSubmit: isApproved && trackAssigned && settings[input.round] && used < MAX_ATTEMPTS };
+      canSubmit: availability.isOpen && used < MAX_ATTEMPTS };
   }),
   createUploadUrl: freshProtectedProcedure.input(fileInput).mutation(async ({ ctx, input }) => {
     const { submission } = tablesForRound(input.round);
     const membership = await membershipFor(input.round, ctx.session.user.id, ctx.session.user.email);
     requireApprovedTeam(membership.registrationStatus);
-    await requireRoundOneAssigned(input.round, membership.teamId);
-    await requireSubmissionOpen(input.round);
+    await requireSubmissionOpen(input.round, membership.teamId);
     await requireCurrentUploadLimit("roundSubmission", input.fileSize);
     if (await attemptsUsed(submission, membership.teamId, input.round) >= MAX_ATTEMPTS) {
       throw new TRPCError({ code: "CONFLICT", message: "ATTEMPT_LIMIT_REACHED" });
@@ -181,12 +172,11 @@ export const roundSubmissionRouter = router({
       const { submission } = tablesForRound(input.round);
       const membership = await membershipFor(input.round, ctx.session.user.id, ctx.session.user.email);
       requireApprovedTeam(membership.registrationStatus);
-      await requireRoundOneAssigned(input.round, membership.teamId);
       validateFile(input);
       const filename = roundSubmissionFilename(membership.teamName, input.round);
       const key = objectKey(input.round, membership.teamId, input.uploadId, filename);
       try {
-        await requireSubmissionOpen(input.round);
+        await requireSubmissionOpen(input.round, membership.teamId);
         await requireCurrentUploadLimit("roundSubmission", input.fileSize);
       } catch (error) {
         await bestEffortDelete(key); throw error;

@@ -1,6 +1,7 @@
 import { db } from "@masc-landing/db";
 import {
 	members,
+	preferencesSettings,
 	roundOneMemberCvs,
 	roundOneMembers,
 	roundOneTeams,
@@ -70,7 +71,11 @@ async function roundOneMembership(user: MembershipUser) {
 		preferenceStatus: roundOneTeams.preferenceStatus,
 		preferences: roundOneTeams.preferences,
 		assignedTrackId: roundOneTeams.assignedTrackId,
-	}).from(roundOneMembers).innerJoin(roundOneTeams, eq(roundOneMembers.teamId, roundOneTeams.id)).where(or(
+		assignedTrackName: preferencesSettings.name,
+		assignedTrackSubmissionOpen: preferencesSettings.isSubmissionOpen,
+	}).from(roundOneMembers)
+		.innerJoin(roundOneTeams, eq(roundOneMembers.teamId, roundOneTeams.id))
+		.leftJoin(preferencesSettings, eq(roundOneTeams.assignedTrackId, preferencesSettings.id)).where(or(
 		and(eq(roundOneTeams.captainId, user.id), eq(roundOneMembers.isCaptain, true)),
 		sql`lower(${roundOneMembers.email}) = ${email}`,
 	)).limit(1);
@@ -104,7 +109,13 @@ async function roundOneMembership(user: MembershipUser) {
 			sourceTeamId: membership.sourceTeamId,
 			preferenceStatus: membership.preferenceStatus,
 			preferences: resolvedPreferences,
-			assignedTrack: resolvedPreferences.find((preference) => preference.id === membership.assignedTrackId) ?? null,
+			assignedTrack: membership.assignedTrackId && membership.assignedTrackName
+				? {
+					id: membership.assignedTrackId,
+					name: membership.assignedTrackName,
+					isSubmissionOpen: membership.assignedTrackSubmissionOpen ?? false,
+				}
+				: null,
 			members: roster,
 		},
 	};
