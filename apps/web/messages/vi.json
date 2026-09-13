@@ -496,6 +496,8 @@
       "emptyTitle": "Chưa có bài nộp",
       "unavailableTitle": "Chưa mở nộp bài {roundLabel}",
       "unavailableDescription": "Ban tổ chức sẽ mở vòng này khi bắt đầu nhận bài.",
+      "trackUnavailableTitle": "Track Vòng 1 của đội chưa mở nộp bài",
+      "trackUnavailableDescription": "Ban tổ chức sẽ mở nộp bài cho track được chỉ định của đội khi bắt đầu nhận bài.",
       "errors": {
         "loadTitle": "Không thể tải bài nộp {roundLabel}",
         "load": "Vui lòng kiểm tra kết nối và thử lại.",
@@ -626,6 +628,20 @@
       "loadError": "Không thể tải trạng thái nộp bài. Hãy kiểm tra kết nối và thử lại.",
       "roundTitle": "{roundLabel}",
       "roundDescription": "Cho phép các thành viên trong đội nộp hoặc thay thế bài {roundLabel}.",
+      "trackSubmissions": {
+        "title": "Trạng thái nộp bài theo track Vòng 1",
+        "description": "Chọn các track được phép nộp bài khi Vòng 1 đang mở.",
+        "masterClosed": "Vòng 1 hiện đang đóng. Có thể thiết lập trước trạng thái cho từng track, nhưng chưa đội Vòng 1 nào có thể nộp bài cho đến khi vòng thi được mở.",
+        "active": "Track đang hoạt động",
+        "inactive": "Track ngừng hoạt động",
+        "configuredOpen": "Đã thiết lập mở",
+        "configuredClosed": "Đã thiết lập đóng",
+        "openAction": "Mở nộp bài cho track",
+        "closeAction": "Đóng nộp bài cho track",
+        "success": "Đã cập nhật trạng thái nộp bài của track.",
+        "error": "Không thể cập nhật trạng thái nộp bài của track. Vui lòng thử lại.",
+        "loadError": "Không thể tải trạng thái nộp bài theo track Vòng 1."
+      },
       "uploadLimits": {
         "title": "Giới hạn tệp tải lên của thí sinh",
         "description": "Đặt kích thước tối đa cho từng tệp PDF do thí sinh tải lên. Thay đổi áp dụng cho các lượt tải lên mới ở mọi vòng.",

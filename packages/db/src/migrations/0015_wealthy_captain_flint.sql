@@ -1,0 +1,1 @@
+ALTER TABLE "preferences_settings" ADD COLUMN "is_submission_open" boolean DEFAULT false NOT NULL;

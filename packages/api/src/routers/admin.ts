@@ -457,6 +457,17 @@ export const adminRouter = router({
         throw error;
       }
     }),
+  setRoundOneTrackSubmissionOpen: overviewProcedure.input(z.object({
+    trackId: z.string().trim().min(1).max(128),
+    isOpen: z.boolean(),
+  })).mutation(async ({ input }) => {
+    const [updated] = await db.update(preferencesSettings).set({
+      isSubmissionOpen: input.isOpen,
+      updatedAt: new Date(),
+    }).where(eq(preferencesSettings.id, input.trackId)).returning({ id: preferencesSettings.id });
+    if (!updated) throw new TRPCError({ code: "NOT_FOUND", message: "PREFERENCE_SETTING_NOT_FOUND" });
+    return { trackId: updated.id, isOpen: input.isOpen };
+  }),
   updateRoundOnePreferenceSetting: overviewProcedure.input(z.object({
     id: z.string().trim().min(1).max(128),
     name: preferenceNameSchema.optional(),

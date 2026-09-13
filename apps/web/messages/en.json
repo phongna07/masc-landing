@@ -496,6 +496,8 @@
       "emptyTitle": "No submission yet",
       "unavailableTitle": "{roundLabel} submissions are not available yet",
       "unavailableDescription": "The organizers will open this round when submissions can begin.",
+      "trackUnavailableTitle": "Submissions for your Round 1 track are not available yet",
+      "trackUnavailableDescription": "The organizers will open submissions for your assigned track when they can begin.",
       "errors": {
         "loadTitle": "We could not load the {roundLabel} submission",
         "load": "Check your connection and try again.",
@@ -626,6 +628,20 @@
       "loadError": "Could not load submission availability. Check your connection and try again.",
       "roundTitle": "{roundLabel}",
       "roundDescription": "Allow team members to submit or replace their {roundLabel} work.",
+      "trackSubmissions": {
+        "title": "Round 1 track availability",
+        "description": "Choose which assigned tracks can submit when Round 1 is open.",
+        "masterClosed": "Round 1 is currently closed. These track settings can be prepared now, but no Round 1 team can submit until the round is opened.",
+        "active": "Active track",
+        "inactive": "Inactive track",
+        "configuredOpen": "Configured open",
+        "configuredClosed": "Configured closed",
+        "openAction": "Open track submissions",
+        "closeAction": "Close track submissions",
+        "success": "Track submission availability updated.",
+        "error": "Could not update track submission availability. Please try again.",
+        "loadError": "Could not load Round 1 track submission availability."
+      },
       "uploadLimits": {
         "title": "Participant upload size limits",
         "description": "Set the maximum size of each PDF uploaded by participants. Changes apply to new uploads across all rounds.",

@@ -21,6 +21,7 @@ export const preferencesSettings = pgTable(
 		description: text("description"),
 		displayOrder: integer("display_order").notNull(),
 		isActive: boolean("is_active").default(true).notNull(),
+		isSubmissionOpen: boolean("is_submission_open").default(false).notNull(),
 		problemStatementObjectKey: text("problem_statement_object_key").unique(),
 		problemStatementOriginalFilename: text("problem_statement_original_filename"),
 		problemStatementMimeType: text("problem_statement_mime_type"),

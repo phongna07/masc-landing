@@ -820,6 +820,16 @@ dialog[open]::backdrop {
   margin-inline: clamp(22px, 4vw, 42px);
 }
 
+.round-submission-closed-note {
+  margin: 0;
+  padding: 10px 12px;
+  color: #ffd0a5;
+  border: 1px solid rgba(255, 174, 102, 0.28);
+  background: rgba(255, 174, 102, 0.07);
+  font-size: 13px;
+  line-height: 1.55;
+}
+
 .participant-feedback {
   display: grid;
   gap: clamp(22px, 4vw, 42px);
@@ -3466,6 +3476,101 @@ dialog[open]::backdrop {
   width: 100%;
 }
 
+.admin-round-one-submission-setting {
+  grid-column: span 2;
+}
+
+.admin-round-one-submission-content,
+.admin-track-submission-settings {
+  display: grid;
+  gap: 14px;
+}
+
+.admin-track-submission-settings {
+  padding-top: 18px;
+  border-top: 1px solid rgba(255, 255, 255, .12);
+}
+
+.admin-track-submission-heading {
+  display: grid;
+  gap: 4px;
+}
+
+.admin-track-submission-heading>strong {
+  font-size: 15px;
+}
+
+.admin-track-submission-heading p,
+.admin-track-submission-message p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+.admin-track-submission-master-note {
+  margin: 0;
+  padding: 10px 12px;
+  color: #ffd0a5;
+  border: 1px solid rgba(255, 174, 102, .28);
+  background: rgba(255, 174, 102, .07);
+  font-size: 12px;
+  line-height: 1.55;
+}
+
+.admin-track-submission-list {
+  display: grid;
+  gap: 8px;
+}
+
+.admin-track-submission-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(180px, auto);
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border: 1px solid rgba(255, 255, 255, .1);
+  background: rgba(255, 255, 255, .025);
+}
+
+.admin-track-submission-row>div {
+  display: grid;
+  min-width: 0;
+  gap: 3px;
+}
+
+.admin-track-submission-row>div>strong {
+  overflow-wrap: anywhere;
+  font-size: 13px;
+}
+
+.admin-track-submission-row>div>span {
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.admin-track-submission-row>.is-open,
+.admin-track-submission-row>.is-closed {
+  padding: 5px 7px;
+  border: 1px solid;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+
+.admin-round-setting .admin-track-submission-row [data-slot="button"],
+.admin-track-submission-message [data-slot="button"] {
+  width: auto;
+}
+
+.admin-track-submission-error {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
 .admin-table-card,
 .admin-empty {
   border-color: rgba(255, 255, 255, .19);
@@ -4477,6 +4582,19 @@ dialog[open]::backdrop {
 
   .admin-round-settings {
     grid-template-columns: 1fr;
+  }
+
+  .admin-round-one-submission-setting {
+    grid-column: auto;
+  }
+
+  .admin-track-submission-row {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .admin-track-submission-row [data-slot="button"] {
+    grid-column: 1 / -1;
+    width: 100%;
   }
 
   .admin-upload-limit-settings {
