@@ -22,7 +22,7 @@ export const adminRoleConfig = {
   },
   professional: {
     defaultRoute: "/admin/cv-screening-round-1",
-    allowedAreas: ["roundOneCvScreening"],
+    allowedAreas: ["rounds", "roundOneCvScreening"],
   },
 } as const satisfies Record<
   AdminRole,

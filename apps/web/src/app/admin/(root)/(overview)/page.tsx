@@ -19,8 +19,8 @@ import FileInput from "@/components/file-input";
 import { useRoundLabel } from "@/hooks/use-round-label";
 import { trpc } from "@/utils/trpc";
 
-import { AdminError, AdminHeading, AdminLoading } from "../admin-state";
-import RichTextEditor from "../mail/rich-text-editor";
+import { AdminError, AdminHeading, AdminLoading } from "../../admin-state";
+import RichTextEditor from "../../mail/rich-text-editor";
 
 const MEBIBYTE = 1024 * 1024;
 
