@@ -1186,7 +1186,7 @@ export const adminRouter = router({
   listRoundSubmissions: roundsProcedure.input(roundInput).query(async ({ input }) => {
     const { team, member, submission } = submissionTables(input.round);
     const { captainName, captainEmail } = captainExpressions(team, member);
-    return db.select({
+    const submissions = await db.select({
       id: submission.id, teamId: team.id, teamName: team.teamName,
       teamStatus: team.registrationStatus, captainName, captainEmail,
       originalFilename: submission.originalFilename, mimeType: submission.mimeType,
@@ -1196,6 +1196,42 @@ export const adminRouter = router({
       .from(submission).innerJoin(team, eq(submission.teamId, team.id))
       .where(and(eq(submission.round, input.round), latestSubmission(submission)))
       .orderBy(desc(submission.updatedAt), asc(team.teamName));
+
+    if (input.round !== "1" || submissions.length === 0) {
+      return submissions.map((listedSubmission) => ({ ...listedSubmission, roundOneTeam: null }));
+    }
+
+    const teamRows = await db.select({
+      id: roundOneTeams.id,
+      isEliminated: roundOneTeams.isEliminated,
+      registeredAt: roundOneTeams.createdAt,
+      admissionMethod: roundOneTeams.admissionMethod,
+      captainPhone: roundOneTeams.captainPhone,
+      awarenessSource: roundOneTeams.awarenessSource,
+      awarenessSourceDetail: roundOneTeams.awarenessSourceDetail,
+      preferenceStatus: roundOneTeams.preferenceStatus,
+      preferenceIds: roundOneTeams.preferences,
+      assignedTrackId: roundOneTeams.assignedTrackId,
+      sourceTeamId: roundOneTeams.sourceRoundHalfTeamId,
+      sourceTeamName: teams.teamName,
+    }).from(roundOneTeams)
+      .leftJoin(teams, eq(roundOneTeams.sourceRoundHalfTeamId, teams.id))
+      .where(inArray(roundOneTeams.id, submissions.map((listedSubmission) => listedSubmission.teamId)));
+    const settings = await getRoundOnePreferenceSettings(false);
+    const settingsById = new Map(settings.map((setting) => [setting.id, { id: setting.id, name: setting.name }]));
+    const teamsById = new Map(teamRows.map(({ preferenceIds, assignedTrackId, ...listedTeam }) => [
+      listedTeam.id,
+      {
+        ...listedTeam,
+        preferences: preferenceIds.flatMap((id) => settingsById.get(id) ?? []),
+        assignedTrack: assignedTrackId ? settingsById.get(assignedTrackId) ?? null : null,
+      },
+    ]));
+
+    return submissions.map((listedSubmission) => ({
+      ...listedSubmission,
+      roundOneTeam: teamsById.get(listedSubmission.teamId) ?? null,
+    }));
   }),
   getRoundSubmission: roundsProcedure.input(submissionInput).query(async ({ input }) => {
     const { team, member, submission: submissionTable } = submissionTables(input.round);
