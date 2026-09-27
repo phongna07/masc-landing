@@ -263,7 +263,7 @@
       "registeredTeam": "Registered team",
       "back": "Back to rounds",
       "closedDescription": "The organizers are not accepting applications for this round right now.",
-      "eligibilityDescription": "{roundLabel} is available only after an administrator promotes an eligible team.",
+      "eligibilityDescription": "{roundLabel} is available only after the organizers promotes an eligible team.",
       "roundOneAlternative": "Round 1 uses a separate CV-screening application. You can apply here even if your team already entered Preliminary Round.",
       "preferenceReminder": "Please register for your desired track for Round 1.",
       "elimination": {
@@ -1013,7 +1013,9 @@
       "notFound": "Campaign not found",
       "notFoundDescription": "This campaign does not exist or is no longer available.",
       "openCampaign": "Open {name}",
-      "editor": { "title": "Audience and template" },
+      "editor": {
+        "title": "Audience and template"
+      },
       "fields": {
         "name": "Campaign",
         "round": "Round",
@@ -1043,11 +1045,30 @@
       "audience": {
         "matches": "{count, plural, =0 {No teams currently match} one {# team currently matches} other {# teams currently match}}",
         "matchesUnknown": "Complete the template to calculate the live audience.",
-        "registration": { "pending": "Pending", "approved": "Approved", "rejected": "Rejected" },
-        "elimination": { "any": "Any", "active": "Not eliminated", "eliminated": "Eliminated" },
-        "submission": { "any": "Any", "submitted": "Has submitted", "not_submitted": "Has not submitted" },
-        "preference": { "not_submitted": "Not submitted", "submitted": "Submitted", "assigned": "Track assigned" },
-        "admission": { "cv_screening": "CV screening", "round_0_5_promotion": "Promoted from Preliminary Round" },
+        "registration": {
+          "pending": "Pending",
+          "approved": "Approved",
+          "rejected": "Rejected"
+        },
+        "elimination": {
+          "any": "Any",
+          "active": "Not eliminated",
+          "eliminated": "Eliminated"
+        },
+        "submission": {
+          "any": "Any",
+          "submitted": "Has submitted",
+          "not_submitted": "Has not submitted"
+        },
+        "preference": {
+          "not_submitted": "Not submitted",
+          "submitted": "Submitted",
+          "assigned": "Track assigned"
+        },
+        "admission": {
+          "cv_screening": "CV screening",
+          "round_0_5_promotion": "Promoted from Preliminary Round"
+        },
         "inactiveTrack": "{track} (inactive)"
       },
       "placeholders": {
@@ -1099,8 +1120,18 @@
         "description": "Filter delivery state, select eligible teams, and send manually.",
         "saveBeforeSending": "Save the campaign changes before sending.",
         "filterLabel": "Filter teams by delivery status",
-        "filters": { "all": "All", "not_sent": "Not sent", "failed": "Failed", "sent": "Sent" },
-        "status": { "not_sent": "Not sent", "sending": "Sending", "failed": "Failed", "sent": "Sent" },
+        "filters": {
+          "all": "All",
+          "not_sent": "Not sent",
+          "failed": "Failed",
+          "sent": "Sent"
+        },
+        "status": {
+          "not_sent": "Not sent",
+          "sending": "Sending",
+          "failed": "Failed",
+          "sent": "Sent"
+        },
         "search": "Search team or email",
         "selectAll": "Select up to 50 sendable teams",
         "selectTeam": "Select {team}",
