@@ -596,8 +596,8 @@ function DeadlineCountdown() {
     return () => window.clearInterval(timer);
   }, []);
 
-  const openAt = new Date("2026-09-01T00:00:00+07:00").getTime();
-  const closeAt = new Date("2026-09-18T00:00:00+07:00").getTime();
+  const openAt = new Date("2026-10-03T00:00:00+07:00").getTime();
+  const closeAt = new Date("2026-10-11T00:00:00+07:00").getTime();
   const isBeforeOpen = now !== null && now < openAt;
   const isClosed = now !== null && now >= closeAt;
   const activeTarget = isBeforeOpen ? openAt : closeAt;

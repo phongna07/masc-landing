@@ -45,9 +45,9 @@
       "scroll": "Scroll to discover"
     },
     "countdown": {
-      "applications": "Round 1 applications",
-      "closesIn": "Applications for Round 1 close in",
-      "opensIn": "Round 1 applications open in",
+      "applications": "Round 2",
+      "closesIn": "Round 2 close in",
+      "opensIn": "Round 2 open in",
       "closed": "Submissions closed",
       "aria": "{days} days, {hours} hours, {minutes} minutes, {seconds} seconds",
       "days": "Days",
@@ -115,13 +115,13 @@
           "detail": "Each team chooses 1 of 3 mentor-led tracks to sharpen an initial idea into a compelling proposal. The top 2 teams from each track join the top 2 Qualifying Round teams in Round 2."
         },
         "round2": {
-          "date": "27/09 - 04/10",
+          "date": "03/10 - 11/10",
           "title": "Round 2: The Stellar Forge (Social & Cultural Impact Challenge)",
           "summary": "In this forge of ideas, teams face a true test of courage, creativity, and social and cultural impact.",
           "detail": "Guided by mentors, teams refine their strategies to solve a partner's communications challenge. The 4 strongest strategies advance to the Real-World Execution Round."
         },
         "round3": {
-          "date": "9/10 - 3/11",
+          "date": "17/10 - 03/11",
           "title": "Practical Round: The Cosmic Blast (Real Campaign Execution)",
           "summary": "The top 4 teams transform their ideas into complete campaigns and create a real-world impact in the market.",
           "detail": "With mentor guidance, teams move beyond assumptions to launch, test, and measure genuine results from the market and its customers."
