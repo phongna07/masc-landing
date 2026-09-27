@@ -21,6 +21,7 @@ import { trpc } from "@/utils/trpc";
 
 import { AdminError, AdminHeading, AdminLoading } from "../../admin-state";
 import RichTextEditor from "../../mail/rich-text-editor";
+import CountdownSettingsSection from "./countdown-settings-section";
 
 const MEBIBYTE = 1024 * 1024;
 
@@ -180,6 +181,7 @@ export default function AdminPage() {
 							onSaved={() => uploadLimits.refetch()} />)}
 				</div>}
 		</section>
+		<CountdownSettingsSection />
 	</>;
 }
 

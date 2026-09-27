@@ -2678,6 +2678,68 @@ dialog[open]::backdrop {
   margin-top: 48px;
 }
 
+.admin-countdown-card [data-slot="card-content"] {
+  padding: 24px;
+}
+
+.admin-countdown-form,
+.admin-countdown-locale,
+.admin-countdown-field {
+  display: grid;
+  gap: 10px;
+}
+
+.admin-countdown-form {
+  gap: 20px;
+}
+
+.admin-countdown-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.admin-countdown-locales {
+  display: grid;
+  gap: 24px;
+}
+
+.admin-countdown-locale {
+  min-width: 0;
+  padding: 0;
+  border: 0;
+}
+
+.admin-countdown-locale legend {
+  margin-bottom: 12px;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.admin-countdown-field [data-slot="label"],
+.admin-countdown-timezone {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.admin-countdown-timezone {
+  margin: -10px 0 0;
+}
+
+.admin-countdown-form [data-slot="button"] {
+  justify-self: start;
+}
+
+@media (max-width: 640px) {
+  .admin-countdown-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .admin-countdown-form [data-slot="button"] {
+    width: 100%;
+  }
+}
+
 .admin-preference-settings {
   display: grid;
   gap: 10px;
