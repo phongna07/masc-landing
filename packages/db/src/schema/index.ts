@@ -5,6 +5,7 @@ export * from "./admin-activity-logs";
 export * from "./announcements";
 export * from "./dashboard-tab-settings";
 export * from "./email";
+export * from "./home-countdown-settings";
 export * from "./mail-campaigns";
 export * from "./pdf-exports";
 export * from "./preferences-settings";

@@ -10,10 +10,12 @@ import {
 import { env } from "@masc-landing/env/server";
 import { TRPCError } from "@trpc/server";
 import { and, asc, count, desc, eq, getTableName, gt, inArray, isNotNull, lt, max, ne, notInArray, or, sql } from "drizzle-orm";
+import { revalidateTag } from "next/cache";
 import { z } from "zod";
 
 import { getAdmissionSettings } from "../admission-settings";
 import { getDashboardTabSettings } from "../dashboard-tab-settings";
+import { getHomeCountdownSettings, homeCountdownInputSchema, HOME_COUNTDOWN_CACHE_TAG, saveHomeCountdownSettings } from "../home-countdown-settings";
 import { getProblemStatementPublicationSettings } from "../problem-statement-publication-settings";
 import { getRoundEndSettings } from "../round-end-settings";
 import { adminAreaProcedure, router } from "../index";
@@ -442,6 +444,12 @@ async function assignRoundOneTrack(input: { teamId: string; trackId: string }) {
   return { id: input.teamId, preferenceStatus: "assigned" as const, assignedTrackId: input.trackId };
 }
 export const adminRouter = router({
+  getHomeCountdownSettings: overviewProcedure.query(getHomeCountdownSettings),
+  setHomeCountdownSettings: overviewProcedure.input(homeCountdownInputSchema).mutation(async ({ input }) => {
+    const settings = await saveHomeCountdownSettings(input);
+    revalidateTag(HOME_COUNTDOWN_CACHE_TAG, { expire: 0 });
+    return settings;
+  }),
   getRoundOnePreferenceSettings: overviewProcedure.query(getAdminRoundOnePreferenceSettings),
   createRoundOnePreferenceSetting: overviewProcedure.input(z.object({ name: preferenceNameSchema }))
     .mutation(async ({ input }) => {
