@@ -45,10 +45,10 @@
       "scroll": "Cuộn để khám phá"
     },
     "countdown": {
-      "applications": "Đơn đăng ký Vòng 1",
-      "closesIn": "Thời gian đóng đơn Vòng 1 còn",
-      "opensIn": "Vòng 1 mở đơn sau",
-      "closed": "Đã đóng đơn",
+      "applications": "Vòng 2",
+      "closesIn": "Thời gian kết thúc Vòng 2 còn",
+      "opensIn": "Vòng 2 mở sau",
+      "closed": "Đã đóng cổng nộp bài",
       "aria": "{days} ngày, {hours} giờ, {minutes} phút, {seconds} giây",
       "days": "Ngày",
       "hours": "Giờ",
@@ -115,13 +115,13 @@
           "detail": "Mỗi đội chọn 1 trong 3 track do 3 mentor ra đề để phát triển ý tưởng thành proposal sắc bén. Top 2 đội mỗi track cùng Top 2 từ Vòng Sơ loại tiến vào Vòng 2."
         },
         "round2": {
-          "date": "27/09 - 04/10",
+          "date": "03/10 - 11/10",
           "title": "Vòng 2: The Stellar Forge (Social & Cultural Impact Challenge)",
           "summary": "Tại “lò rèn” ý tưởng, các đội đối mặt thử thách về bản lĩnh, sáng tạo và tác động xã hội – văn hóa.",
           "detail": "Dưới sự đồng hành của mentor, các đội gọt giũa chiến lược để giải bài toán truyền thông từ đối tác. Top 4 chiến lược tốt nhất bước vào Vòng Thực Chiến."
         },
         "round3": {
-          "date": "9/10 - 3/11",
+          "date": "17/10 - 03/11",
           "title": "Vòng Thực Chiến: The Cosmic Blast (Real Campaign Execution)",
           "summary": "Top 4 đội biến ý tưởng thành chiến dịch hoàn chỉnh và tạo nên cú bùng nổ thực tế trên thị trường.",
           "detail": "Với sự định hướng của mentor, các đội bước ra khỏi giả định để triển khai, thử nghiệm và đo lường hiệu quả thật sự từ thị trường và khách hàng."
