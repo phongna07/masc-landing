@@ -263,7 +263,7 @@
       "registeredTeam": "Registered team",
       "back": "Back to rounds",
       "closedDescription": "The organizers are not accepting applications for this round right now.",
-      "eligibilityDescription": "{roundLabel} is available only after the organizers promotes an eligible team.",
+      "eligibilityDescription": "{roundLabel} is available only after the organizers promote an eligible team.",
       "roundOneAlternative": "Round 1 uses a separate CV-screening application. You can apply here even if your team already entered Preliminary Round.",
       "preferenceReminder": "Please register for your desired track for Round 1.",
       "elimination": {
