@@ -263,7 +263,7 @@
       "registeredTeam": "Đội đã đăng ký",
       "back": "Quay lại các vòng",
       "closedDescription": "Ban Tổ chức hiện chưa nhận hồ sơ đăng ký cho vòng này.",
-      "eligibilityDescription": "{roundLabel} chỉ dành cho các đội đủ điều kiện được quản trị viên lựa chọn.",
+      "eligibilityDescription": "{roundLabel} chỉ dành cho các đội đủ điều kiện được Ban Tổ chức lựa chọn.",
       "roundOneAlternative": "Vòng 1 sử dụng hồ sơ sàng lọc CV riêng. Đội của bạn vẫn có thể đăng ký tại đây ngay cả khi đã tham gia Vòng Sơ loại.",
       "preferenceReminder": "Vui lòng đăng ký track mong muốn cho Vòng 1.",
       "elimination": {
@@ -1013,7 +1013,9 @@
       "notFound": "Không tìm thấy chiến dịch",
       "notFoundDescription": "Chiến dịch này không tồn tại hoặc không còn khả dụng.",
       "openCampaign": "Mở {name}",
-      "editor": { "title": "Nhóm nhận và mẫu email" },
+      "editor": {
+        "title": "Nhóm nhận và mẫu email"
+      },
       "fields": {
         "name": "Chiến dịch",
         "round": "Vòng thi",
@@ -1043,11 +1045,30 @@
       "audience": {
         "matches": "Hiện có {count} đội phù hợp",
         "matchesUnknown": "Hoàn thiện mẫu email để tính nhóm nhận trực tiếp.",
-        "registration": { "pending": "Đang chờ", "approved": "Đã duyệt", "rejected": "Bị từ chối" },
-        "elimination": { "any": "Tất cả", "active": "Chưa bị loại", "eliminated": "Đã bị loại" },
-        "submission": { "any": "Tất cả", "submitted": "Đã nộp bài", "not_submitted": "Chưa nộp bài" },
-        "preference": { "not_submitted": "Chưa gửi", "submitted": "Đã gửi", "assigned": "Đã chỉ định track" },
-        "admission": { "cv_screening": "Sàng lọc CV", "round_0_5_promotion": "Được chọn từ Vòng Sơ loại" },
+        "registration": {
+          "pending": "Đang chờ",
+          "approved": "Đã duyệt",
+          "rejected": "Bị từ chối"
+        },
+        "elimination": {
+          "any": "Tất cả",
+          "active": "Chưa bị loại",
+          "eliminated": "Đã bị loại"
+        },
+        "submission": {
+          "any": "Tất cả",
+          "submitted": "Đã nộp bài",
+          "not_submitted": "Chưa nộp bài"
+        },
+        "preference": {
+          "not_submitted": "Chưa gửi",
+          "submitted": "Đã gửi",
+          "assigned": "Đã chỉ định track"
+        },
+        "admission": {
+          "cv_screening": "Sàng lọc CV",
+          "round_0_5_promotion": "Được chọn từ Vòng Sơ loại"
+        },
         "inactiveTrack": "{track} (ngừng hoạt động)"
       },
       "placeholders": {
@@ -1099,8 +1120,18 @@
         "description": "Lọc trạng thái, chọn các đội đủ điều kiện và gửi thủ công.",
         "saveBeforeSending": "Hãy lưu thay đổi của chiến dịch trước khi gửi.",
         "filterLabel": "Lọc đội theo trạng thái gửi",
-        "filters": { "all": "Tất cả", "not_sent": "Chưa gửi", "failed": "Thất bại", "sent": "Đã gửi" },
-        "status": { "not_sent": "Chưa gửi", "sending": "Đang gửi", "failed": "Thất bại", "sent": "Đã gửi" },
+        "filters": {
+          "all": "Tất cả",
+          "not_sent": "Chưa gửi",
+          "failed": "Thất bại",
+          "sent": "Đã gửi"
+        },
+        "status": {
+          "not_sent": "Chưa gửi",
+          "sending": "Đang gửi",
+          "failed": "Thất bại",
+          "sent": "Đã gửi"
+        },
         "search": "Tìm đội hoặc email",
         "selectAll": "Chọn tối đa 50 đội có thể gửi",
         "selectTeam": "Chọn đội {team}",
