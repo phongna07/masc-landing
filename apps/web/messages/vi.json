@@ -285,7 +285,8 @@
         "1": "Đăng ký với CV của từng thành viên trong đội.",
         "2": "Các đội đủ điều kiện sẽ được Ban Tổ chức lựa chọn.",
         "3": "Các đội đủ điều kiện từ Vòng 2 sẽ được Ban Tổ chức lựa chọn."
-      }
+      },
+      "problemStatementPublished": "Đề bài {roundLabel} đã được công bố."
     },
     "nav": {
       "homeLabel": "MASC 2026 - trở về trang chủ"
@@ -540,6 +541,11 @@
         "round_0_5_promotion": "Được chọn từ Vòng Sơ loại",
         "promotion": "Được Ban Tổ chức lựa chọn"
       }
+    },
+    "problemStatement": {
+      "title": "Đề bài {roundLabel}",
+      "fullscreen": "Xem toàn màn hình",
+      "exitFullscreen": "Thoát toàn màn hình"
     }
   },
   "Admin": {
@@ -760,6 +766,19 @@
             "confirm": "Xóa PDF"
           }
         }
+      },
+      "roundProblemStatements": {
+        "title": "Đề bài Vòng 2 và Vòng 3",
+        "description": "Tải lên một tệp PDF cho mỗi vòng và quản lý thời điểm các đội được tuyển vào vòng có thể xem đề bài.",
+        "loadError": "Không thể tải cài đặt đề bài. Vui lòng thử lại.",
+        "uploadTitle": "Tải lên đề bài {roundLabel}",
+        "publishTitle": "Công bố đề bài {roundLabel}",
+        "publishDescription": "Công bố hoặc ẩn đề bài {roundLabel} cho các đội được tuyển vào vòng.",
+        "publish": "Công bố đề bài {roundLabel}",
+        "unpublish": "Ẩn đề bài {roundLabel}",
+        "publicationSuccess": "Đã cập nhật trạng thái công bố đề bài.",
+        "invalidType": "Chọn tệp PDF hợp lệ có đuôi .pdf.",
+        "deleteDescription": "Thao tác này xóa tệp PDF đề bài {roundLabel}. Các đội được tuyển vào vòng sẽ không còn xem được đề bài."
       }
     },
     "announcements": {

@@ -22,6 +22,7 @@ import { trpc } from "@/utils/trpc";
 import { AdminError, AdminHeading, AdminLoading } from "../../admin-state";
 import RichTextEditor from "../../mail/rich-text-editor";
 import CountdownSettingsSection from "./countdown-settings-section";
+import RoundProblemStatementsSection from "./round-problem-statements-section";
 
 const MEBIBYTE = 1024 * 1024;
 
@@ -65,6 +66,7 @@ export default function AdminPage() {
 	return <>
 		<AdminHeading eyebrow={t("eyebrow")} title={t("overview.title")} description={t("overview.description")} />
 		<PreferenceSettingsSection />
+		<RoundProblemStatementsSection />
 		<section className="admin-setting-section" aria-labelledby="dashboard-visibility-settings-title">
 			<div className="admin-setting-section-heading"><h2 id="dashboard-visibility-settings-title">{t("overview.visibilitySectionTitle")}</h2>
 				<p>{t("overview.visibilitySectionDescription")}</p></div>
@@ -362,7 +364,7 @@ function PreferenceSettingRow({ setting, disabled, onChanged, onSave, onSaveDesc
 			<div className="admin-problem-statement-heading"><div><Label htmlFor={inputId}>{t("overview.preferences.problemStatement.label")}</Label>
 				<span className="field-hint">{t("overview.preferences.problemStatement.hint")}</span></div>
 				{setting.problemStatement && <div className="admin-problem-statement-current"><FileTextIcon aria-hidden="true" />
-					<div><strong>{setting.problemStatement.originalFilename}</strong><span>{formatFileSize(setting.problemStatement.fileSize)}</span></div>
+					<div><strong title={setting.problemStatement.originalFilename}>{setting.problemStatement.originalFilename}</strong><span>{formatFileSize(setting.problemStatement.fileSize)}</span></div>
 					<Button type="button" size="sm" variant="outline" disabled={download.isPending}
 						onClick={() => download.mutate({ trackId: setting.id })}><DownloadIcon aria-hidden="true" />
 						{t("overview.preferences.problemStatement.download")}</Button></div>}

@@ -285,7 +285,8 @@
         "1": "Apply with a CV for each of the three team members.",
         "2": "Eligible teams are promoted by the organizers.",
         "3": "Eligible Round 2 teams are promoted by the organizers."
-      }
+      },
+      "problemStatementPublished": "The problem statement for {roundLabel} has been published."
     },
     "nav": {
       "homeLabel": "MASC 2026 - return home"
@@ -540,6 +541,11 @@
         "round_0_5_promotion": "Promoted from Preliminary Round",
         "promotion": "Promoted by the organizers"
       }
+    },
+    "problemStatement": {
+      "title": "{roundLabel} problem statement",
+      "fullscreen": "View fullscreen",
+      "exitFullscreen": "Exit fullscreen"
     }
   },
   "Admin": {
@@ -760,6 +766,19 @@
             "confirm": "Delete PDF"
           }
         }
+      },
+      "roundProblemStatements": {
+        "title": "Round 2 and 3 problem statements",
+        "description": "Upload one PDF for each round and control when admitted teams can view it.",
+        "loadError": "Could not load the problem statement settings. Please try again.",
+        "uploadTitle": "Upload problem statement for {roundLabel}",
+        "publishTitle": "Publish problem statement for {roundLabel}",
+        "publishDescription": "Publish or hide the {roundLabel} problem statement for admitted teams.",
+        "publish": "Publish {roundLabel} problem statement",
+        "unpublish": "Unpublish {roundLabel} problem statement",
+        "publicationSuccess": "Problem statement publication updated.",
+        "invalidType": "Choose a valid PDF file with a .pdf extension.",
+        "deleteDescription": "This removes the problem statement PDF for {roundLabel}. Admitted teams will no longer be able to view it."
       }
     },
     "announcements": {
