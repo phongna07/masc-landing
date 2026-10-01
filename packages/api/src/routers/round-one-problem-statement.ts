@@ -74,6 +74,7 @@ async function assignedProblemStatementFor(user: { id: string; email: string }) 
     .innerJoin(roundOneTeams, eq(roundOneMembers.teamId, roundOneTeams.id))
     .innerJoin(preferencesSettings, eq(roundOneTeams.assignedTrackId, preferencesSettings.id))
     .where(and(
+      eq(roundOneTeams.registrationStatus, "approved"),
       eq(roundOneTeams.preferenceStatus, "assigned"),
       or(
         and(eq(roundOneTeams.captainId, user.id), eq(roundOneMembers.isCaptain, true)),

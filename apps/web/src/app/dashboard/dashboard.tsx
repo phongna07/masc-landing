@@ -2,6 +2,7 @@
 
 import type { AppRouter } from "@masc-landing/api/routers/index";
 import { roundIds, type RoundId } from "@masc-landing/api/rounds";
+import { shouldShowProblemStatementReminder } from "@masc-landing/api/round-problem-statements";
 import {
   countRoundOneCvProofMembers,
   MAX_ROUND_ONE_CV_PROOFS_PER_MEMBER,
@@ -57,6 +58,7 @@ import { queryClient, trpc } from "@/utils/trpc";
 import AnnouncementsSkeleton from "./announcements-skeleton";
 import PromotionAnnouncements from "./promotion-announcements";
 import RoundSubmission from "./round-submission";
+import RoundProblemStatement, { ProblemStatementPreview } from "./problem-statement-preview";
 
 type Session = typeof authClient.$Infer.Session;
 type Membership = inferRouterOutputs<AppRouter>["registration"]["current"];
@@ -96,7 +98,7 @@ const AnnouncementsFeed = dynamic(() => import("./announcements-feed"), {
 });
 
 export default function Dashboard({ session, activeTab, initialMemberships, initialSettings, initialDashboardTabSettings, initialSubmissionSettings,
-  initialRoundEndSettings, initialRoundOnePreferenceSettings, initialSubmissionStatuses, initialUploadLimits, initialUserAnnouncements }: {
+  initialRoundEndSettings, initialRoundOnePreferenceSettings, initialSubmissionStatuses, initialUploadLimits, initialUserAnnouncements, initialProblemStatementPublicationSettings }: {
     session: Session;
     activeTab: DashboardTab;
     initialMemberships: Memberships;
@@ -105,6 +107,7 @@ export default function Dashboard({ session, activeTab, initialMemberships, init
     initialRoundEndSettings: Record<RoundId, boolean>;
     initialRoundOnePreferenceSettings: RoundOnePreferenceSettings;
     initialSubmissionSettings: Record<RoundId, boolean>;
+    initialProblemStatementPublicationSettings: Record<RoundId, boolean>;
     initialSubmissionStatuses: SubmissionStatuses;
     initialUploadLimits: UploadLimits;
     initialUserAnnouncements: UserAnnouncements;
@@ -113,6 +116,10 @@ export default function Dashboard({ session, activeTab, initialMemberships, init
   const roundLabel = useRoundLabel();
   const memberships = useQuery({ ...trpc.registration.memberships.queryOptions(), initialData: initialMemberships });
   const settings = useQuery({ ...trpc.registration.settings.queryOptions(), initialData: initialSettings });
+  const publicationSettings = useQuery({
+    ...trpc.roundProblemStatement.publicationSettings.queryOptions(),
+    initialData: initialProblemStatementPublicationSettings,
+  });
   const submissionStatuses = useQuery({
     ...trpc.roundSubmission.statuses.queryOptions(),
     initialData: initialSubmissionStatuses,
@@ -175,6 +182,7 @@ export default function Dashboard({ session, activeTab, initialMemberships, init
           dashboardTabSettings={initialDashboardTabSettings}
           roundEndSettings={initialRoundEndSettings}
           submissionSettings={initialSubmissionSettings}
+          publicationSettings={publicationSettings.data ?? initialProblemStatementPublicationSettings}
           submissionStatuses={submissionStatuses.data ?? initialSubmissionStatuses} />
           : <RoundDashboard round={activeTab.slice(6) as RoundId} session={session} settings={settings.data!}
             uploadLimits={uploadLimits.data!} preferenceSettings={roundOnePreferenceSettings.data!} />}
@@ -183,12 +191,13 @@ export default function Dashboard({ session, activeTab, initialMemberships, init
   );
 }
 
-function RoundHub({ memberships, settings, dashboardTabSettings, roundEndSettings, submissionSettings, submissionStatuses }: {
+function RoundHub({ memberships, settings, dashboardTabSettings, roundEndSettings, submissionSettings, submissionStatuses, publicationSettings }: {
   memberships: Memberships;
   settings: Record<RoundId, boolean>;
   dashboardTabSettings: Record<RoundId, boolean>;
   roundEndSettings: Record<RoundId, boolean>;
   submissionSettings: Record<RoundId, boolean>;
+  publicationSettings: Record<RoundId, boolean>;
   submissionStatuses: SubmissionStatuses;
 }) {
   const t = useTranslations("Dashboard");
@@ -207,7 +216,8 @@ function RoundHub({ memberships, settings, dashboardTabSettings, roundEndSetting
       const state = isEnded ? "ended" : membership.registered ? membership.team.status : canApply ? "open"
         : isDirectAdmissionRound ? "closed" : "locked";
       const assignedTrackSubmissionOpen = round !== "1" || (membership.registered
-        && membership.round === "1" && membership.team.assignedTrack?.isSubmissionOpen === true);
+        && membership.round === "1" && membership.team.preferenceStatus === "assigned"
+        && membership.team.assignedTrack?.isSubmissionOpen === true);
       const isSubmissionOngoing = membership.registered && membership.team.status === "approved"
         && submissionSettings[round] && assignedTrackSubmissionOpen;
       const needsRoundOnePreferences = round === "1" && membership.registered
@@ -227,6 +237,11 @@ function RoundHub({ memberships, settings, dashboardTabSettings, roundEndSetting
           <ListChecksIcon aria-hidden="true" />
           <p>{t("hub.preferenceReminder")}</p>
         </div>}
+        {shouldShowProblemStatementReminder({ round, membership, isPublished: publicationSettings[round], isSubmissionOpen: submissionSettings[round] })
+          && <div className="round-entry-submission-status round-entry-submission-status-feedback">
+            <FileTextIcon aria-hidden="true" />
+            <p>{t("hub.problemStatementPublished", { roundLabel: roundLabel(round) })}</p>
+          </div>}
         {membership.registered && submissionStatus && <div
           className={`round-entry-submission-status round-entry-submission-status-${submissionStatus}`}>
           {submissionStatus === "feedback" ? <MessageSquareQuoteIcon aria-hidden="true" />
@@ -289,6 +304,7 @@ function RoundDashboard({ round, session, settings, uploadLimits, preferenceSett
       : <><TeamOverview membership={membership.data} />
         {membership.data.round === "1" && <RoundOnePreferences membership={membership.data}
           preferenceSettings={preferenceSettings} />}
+        {membership.data.team.status === "approved" && (round === "2" || round === "3") && <RoundProblemStatement round={round} />}
         {membership.data.team.status === "approved"
           && (membership.data.round !== "1" || membership.data.team.preferenceStatus === "assigned")
           && <RoundSubmission round={round} maxFileSize={uploadLimits.roundSubmission}
@@ -954,7 +970,7 @@ function RoundOnePreferences({ membership, preferenceSettings }: {
           {membership.team.preferenceStatus === "assigned" && membership.team.assignedTrack
             ? <><div className="assigned-track"><span>{t("preferences.assignedTrack")}</span>
               <strong>{membership.team.assignedTrack.name}</strong></div>
-              <AssignedProblemStatement /></>
+              {membership.team.status === "approved" && <AssignedProblemStatement />}</>
             : <p className="preference-message">{t("preferences.waitingAssignment")}</p>}
         </div>}
     </CardContent>
@@ -964,10 +980,6 @@ function RoundOnePreferences({ membership, preferenceSettings }: {
 function AssignedProblemStatement() {
   const t = useTranslations("Dashboard");
   const statement = useQuery(trpc.roundOneProblemStatement.current.queryOptions());
-  const download = useMutation(trpc.roundOneProblemStatement.createDownloadUrl.mutationOptions({
-    onSuccess: ({ downloadUrl }) => window.location.assign(downloadUrl),
-    onError: () => toast.error(t("preferences.problemStatement.downloadError")),
-  }));
 
   if (statement.isPending) {
     return <p className="problem-statement-message">{t("preferences.problemStatement.loading")}</p>;
@@ -984,22 +996,7 @@ function AssignedProblemStatement() {
     return <p className="problem-statement-message">{t("preferences.problemStatement.unavailable")}</p>;
   }
 
-  return <section className="assigned-problem-statement" aria-label={t("preferences.problemStatement.label")}>
-    {statement.data.description && <div className="problem-statement-description"
-      dangerouslySetInnerHTML={{ __html: statement.data.description }} />}
-    <div className="submission-file problem-statement-file">
-      <FileTextIcon aria-hidden="true" />
-      <div><strong>{statement.data.originalFilename}</strong><span>{formatBytes(statement.data.fileSize)}</span></div>
-      <Button type="button" variant="outline" disabled={download.isPending} onClick={() => download.mutate()}>
-        <DownloadIcon aria-hidden="true" />{t("preferences.problemStatement.download")}
-      </Button>
-    </div>
-    <div className="submission-preview">
-      <Label>{t("preferences.problemStatement.label")}</Label>
-      <iframe src={statement.data.previewUrl}
-        title={t("preferences.problemStatement.iframeTitle", { filename: statement.data.originalFilename })} />
-    </div>
-  </section>;
+  return <ProblemStatementPreview statement={statement.data} />;
 }
 
 function TeamOverview({ membership }: { membership: Extract<Membership, { registered: true }> }) {

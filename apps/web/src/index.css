@@ -978,6 +978,55 @@ dialog[open]::backdrop {
   background: #fff;
 }
 
+.problem-statement-preview-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.problem-statement-preview-heading>span {
+  color: var(--muted);
+  font-size: 11px;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+
+.problem-statement-preview:fullscreen,
+[data-slot="dialog-content"].problem-statement-fullscreen-dialog {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  gap: 12px;
+  width: 100vw;
+  height: 100svh;
+  max-width: none;
+  max-height: none;
+  margin: 0;
+  padding: 16px;
+  overflow: hidden;
+  background: var(--background);
+}
+
+[data-slot="dialog-content"].problem-statement-fullscreen-dialog {
+  position: fixed;
+  inset: 0;
+}
+
+.problem-statement-preview:fullscreen iframe,
+.problem-statement-fullscreen-dialog iframe {
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  border: 1px solid rgba(255, 255, 255, .14);
+  background: #fff;
+}
+
+.admin-round-problem-statements {
+  display: grid;
+  gap: 20px;
+}
+
 .dashboard-card,
 .dashboard-state-card {
   border-color: rgba(255, 255, 255, 0.19);
@@ -2892,7 +2941,9 @@ dialog[open]::backdrop {
 .admin-problem-statement-current strong,
 .admin-problem-statement-current span {
   display: block;
-  overflow-wrap: anywhere;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .admin-problem-statement-current strong {
@@ -2905,8 +2956,9 @@ dialog[open]::backdrop {
   font-size: 11px;
 }
 
-.admin-problem-statement-current [data-slot="button"] {
+.admin-problem-statement .admin-problem-statement-current [data-slot="button"] {
   flex: 0 0 auto;
+  width: auto;
   height: 30px;
 }
 
