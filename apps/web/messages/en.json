@@ -1248,7 +1248,7 @@
     "feedback": {
       "title": "Submission feedback",
       "label": "Feedback for the team",
-      "characters": "{count} / 5000 characters",
+      "characters": "{count} / 100000 characters",
       "draftStatus": "Draft - not visible to the team",
       "publishedStatus": "Published - visible to the team",
       "saveDraft": "Save draft",
@@ -1256,7 +1256,7 @@
       "draftSaved": "Feedback draft saved.",
       "published": "Feedback published to the team.",
       "required": "Enter feedback before saving.",
-      "tooLong": "Feedback must be 5,000 characters or fewer.",
+      "tooLong": "Feedback must be 100,000 characters or fewer.",
       "saveError": "Feedback could not be saved. Please try again."
     },
     "fields": {

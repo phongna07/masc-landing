@@ -76,7 +76,7 @@ const teamEliminationInput = roundInput.extend({
 const submissionInput = roundInput.extend({ submissionId: z.string().trim().min(1).max(128) });
 const pdfExportInput = roundInput.extend({ exportId: z.string().trim().min(1).max(128) });
 const feedbackInput = submissionInput.extend({
-  feedback: z.string().trim().min(1).max(5000),
+  feedback: z.string().trim().min(1).max(100_000),
   score: z.number().finite().nonnegative().optional(),
 });
 const registrationDecisionSchema = z.enum(["approved", "rejected"]);
