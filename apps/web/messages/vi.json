@@ -1248,7 +1248,7 @@
     "feedback": {
       "title": "Nhận xét bài nộp",
       "label": "Nhận xét dành cho đội thi",
-      "characters": "{count} / 5000 ký tự",
+      "characters": "{count} / 100000 ký tự",
       "draftStatus": "Bản nháp - đội thi chưa thể xem",
       "publishedStatus": "Đã công bố - đội thi có thể xem",
       "saveDraft": "Lưu bản nháp",
@@ -1256,7 +1256,7 @@
       "draftSaved": "Đã lưu bản nháp nhận xét.",
       "published": "Đã công bố nhận xét cho đội thi.",
       "required": "Hãy nhập nhận xét trước khi lưu.",
-      "tooLong": "Nhận xét không được vượt quá 5.000 ký tự.",
+      "tooLong": "Nhận xét không được vượt quá 100.000 ký tự.",
       "saveError": "Không thể lưu nhận xét. Vui lòng thử lại."
     },
     "fields": {
