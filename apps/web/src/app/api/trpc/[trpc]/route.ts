@@ -5,12 +5,17 @@ import { NextRequest } from "next/server";
 
 export const runtime = "nodejs";
 
-function handler(req: NextRequest) {
-  return fetchRequestHandler({
+async function handler(req: NextRequest) {
+  const response = await fetchRequestHandler({
     endpoint: "/api/trpc",
     req,
     router: appRouter,
     createContext: () => createContext(req),
   });
+  if (req.nextUrl.pathname.includes("tickets.")) {
+    response.headers.set("Cache-Control", "private, no-store");
+    response.headers.set("Referrer-Policy", "no-referrer");
+  }
+  return response;
 }
 export { handler as GET, handler as POST };

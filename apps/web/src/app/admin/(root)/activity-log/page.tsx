@@ -72,6 +72,6 @@ export default function AdminActivityLogPage() {
 }
 
 function formatRole(role: string, t: ReturnType<typeof useTranslations<"Admin">>) {
-  if (role === "root" || role === "professional") return t(`roles.${role}`);
+  if (role === "root" || role === "professional" || role === "entrance-staff") return t(`roles.${role}`);
   return role;
 }

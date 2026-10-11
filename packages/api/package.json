@@ -18,18 +18,22 @@
     "@masc-landing/auth": "workspace:*",
     "@masc-landing/db": "workspace:*",
     "@masc-landing/env": "workspace:*",
+    "@payos/node": "^2.0.5",
     "@trpc/client": "catalog:",
     "@trpc/server": "catalog:",
     "dotenv": "catalog:",
     "drizzle-orm": "^0.45.2",
     "html-to-text": "^10.0.1",
     "next": "catalog:",
+    "qrcode": "^1.5.4",
     "sanitize-html": "^2.17.7",
+    "sharp": "^0.35.5",
     "zod": "catalog:"
   },
   "devDependencies": {
     "@masc-landing/config": "workspace:*",
     "@types/html-to-text": "^9.0.4",
+    "@types/qrcode": "^1.5.6",
     "@types/sanitize-html": "^2.16.1",
     "tsx": "^4.23.12",
     "typescript": "catalog:"

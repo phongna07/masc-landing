@@ -13,6 +13,14 @@ export const env = createEnv({
     R2_SECRET_ACCESS_KEY: z.string().min(1),
     R2_BUCKET: z.string().min(1),
     PDF_EXPORTER_URL: z.url().optional(),
+    PAYOS_CLIENT_ID: z.string().min(1).optional(),
+    PAYOS_API_KEY: z.string().min(1).optional(),
+    PAYOS_CHECKSUM_KEY: z.string().min(1).optional(),
+    TICKET_APP_URL: z.url().refine(value => {
+      const url = new URL(value);
+      return ["http:", "https:"].includes(url.protocol) && !url.username && !url.password && url.pathname === "/" && !url.search && !url.hash;
+    }, "TICKET_APP_URL must be an HTTP(S) application origin without a path, query, or credentials").optional(),
+    TICKET_WORKER_SECRET: z.string().min(32).optional(),
     MAIL_USERNAME: z.string().email(),
     MAILEROO_SENDING_KEY: z.string().min(1),
     PRIMARY_EMAIL_SERVICE: z.enum(["zeptomail", "maileroo"]).default("zeptomail"),

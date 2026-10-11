@@ -1,7 +1,7 @@
 import { sql } from "drizzle-orm";
 import { check, pgEnum, pgTable, text } from "drizzle-orm/pg-core";
 
-export const adminRoleValues = ["root", "professional"] as const;
+export const adminRoleValues = ["root", "professional", "entrance-staff"] as const;
 export type AdminRole = (typeof adminRoleValues)[number];
 export const adminRole = pgEnum("admin_role", adminRoleValues);
 

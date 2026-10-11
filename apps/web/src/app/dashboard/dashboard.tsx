@@ -142,6 +142,7 @@ export default function Dashboard({ session, activeTab, initialMemberships, init
           </span>
         </Link>
         <div className="dashboard-nav-actions">
+          <Button nativeButton={false} render={<Link href="/my-tickets" />} variant="outline">{t("actions.myTickets")}</Button>
           <LanguageSwitcher />
           <UserMenu />
         </div>

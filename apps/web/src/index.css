@@ -5646,6 +5646,74 @@ img {
   margin-left: 16%;
 }
 
+.hero-ticket-actions {
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.hero-ticket-actions .ticket-registration-link {
+  border: 1px solid rgba(255, 255, 255, .3);
+  color: var(--ink);
+  background: rgba(7, 7, 10, .7);
+  backdrop-filter: blur(12px);
+}
+
+.final-ticket-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 14px;
+}
+
+.final-ticket-actions .primary-button.ticket-registration-link {
+  border: 1px solid rgba(255, 255, 255, .4);
+  color: var(--ink);
+  background: transparent;
+}
+
+.header-ticket-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+}
+
+.auth-callback-page {
+  display: grid;
+  place-items: center;
+  padding: 24px;
+}
+
+.auth-callback-card {
+  display: grid;
+  justify-items: center;
+  gap: 20px;
+  width: min(100%, 440px);
+  padding: 48px 28px;
+  border: 1px solid var(--border);
+  background: rgba(17, 16, 20, .88);
+  text-align: center;
+}
+
+.auth-callback-card p {
+  margin: 0;
+}
+
+.auth-callback-status {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.auth-callback-status svg {
+  width: 18px;
+  height: 18px;
+  color: var(--ring);
+}
+
 .hero-bottom p {
   max-width: 480px;
   margin: 0;

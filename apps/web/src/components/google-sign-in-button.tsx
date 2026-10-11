@@ -6,6 +6,7 @@ import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 
 import { authClient } from "@/lib/auth-client";
+import { loginDestination } from "@/lib/login-destination";
 
 import CompetitionRulebook from "./competition-rulebook";
 
@@ -20,7 +21,7 @@ function GoogleLogo() {
   );
 }
 
-export default function GoogleSignInButton() {
+export default function GoogleSignInButton({ next = "/dashboard" }: { next?: string }) {
   const t = useTranslations("Auth");
   const [isPending, setIsPending] = useState(false);
   const [isRulebookOpen, setIsRulebookOpen] = useState(false);
@@ -51,7 +52,7 @@ export default function GoogleSignInButton() {
 
   useEffect(() => {
     const handleGoogleAuthComplete = (event: MessageEvent) => {
-      if (event.origin !== window.location.origin || event.data?.type !== "google-auth-complete") {
+      if (event.origin !== window.location.origin || event.source !== popupRef.current || event.data?.type !== "google-auth-complete") {
         return;
       }
 
@@ -59,15 +60,15 @@ export default function GoogleSignInButton() {
       popupRef.current = null;
 
       if (event.data.success) {
-        window.location.assign("/dashboard");
+        window.location.assign(loginDestination(next));
       } else {
-        toast.error(event.data.error || "Google sign-in was cancelled.");
+        toast.error(t("google.cancelled"));
       }
     };
 
     window.addEventListener("message", handleGoogleAuthComplete);
     return () => window.removeEventListener("message", handleGoogleAuthComplete);
-  }, []);
+  }, [next, t]);
 
   useEffect(() => {
     if (!isPending || !popupRef.current) {
@@ -96,7 +97,7 @@ export default function GoogleSignInButton() {
     );
 
     if (!popup) {
-      toast.error("Please allow popups to continue with Google.");
+      toast.error(t("google.allowPopups"));
       return;
     }
 
@@ -105,8 +106,8 @@ export default function GoogleSignInButton() {
 
     const { data, error } = await authClient.signIn.social({
       provider: "google",
-      callbackURL: "/login/google-callback",
-      errorCallbackURL: "/login/google-callback?error=1",
+      callbackURL: `/login/google-callback?next=${encodeURIComponent(loginDestination(next))}`,
+      errorCallbackURL: `/login/google-callback?error=1&next=${encodeURIComponent(loginDestination(next))}`,
       disableRedirect: true,
     });
 
@@ -114,7 +115,7 @@ export default function GoogleSignInButton() {
       popup.close();
       popupRef.current = null;
       setIsPending(false);
-      toast.error(error?.message || error?.statusText || "Unable to start Google sign-in.");
+      toast.error(t("google.failed"));
       return;
     }
 
@@ -150,7 +151,7 @@ export default function GoogleSignInButton() {
         type="button"
         variant="outline"
         className="google-sign-in-button"
-        onClick={() => setIsRulebookOpen(true)}
+        onClick={() => void signInWithGoogle()}
         disabled={isPending}
       >
         <GoogleLogo />

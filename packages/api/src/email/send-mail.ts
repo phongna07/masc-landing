@@ -12,6 +12,8 @@ type Mail = {
   subject: string;
   text: string;
   html: string;
+  attachments?: { name: string; content: string; mimeType: string }[];
+  confidential?: boolean;
 };
 
 type ProviderFailure = {
@@ -120,13 +122,14 @@ function sanitizeDiagnostic(message: string, mail: Mail) {
     mail.subject,
     mail.text,
     mail.html,
+    ...(mail.attachments?.map(attachment => attachment.content) ?? []),
   ].filter((value) => value.length > 0).sort((left, right) => right.length - left.length);
 
   let sanitized = message;
   for (const sensitiveValue of sensitiveValues) {
     sanitized = sanitized.replaceAll(sensitiveValue, "[REDACTED]");
   }
-  return sanitized.slice(0, maximumDiagnosticLength);
+  return sanitized.replace(/[A-HJ-NP-Z2-9]{20}/gi, "[REDACTED]").slice(0, maximumDiagnosticLength);
 }
 
 function errorMessage(error: unknown) {
@@ -227,6 +230,8 @@ async function sendWithZeptoMail(mail: Mail) {
     subject: mail.subject,
     textbody: mail.text,
     htmlbody: mail.html,
+    ...(mail.attachments?.length ? { attachments: mail.attachments.map(attachment => ({ name: attachment.name, content: attachment.content, mime_type: attachment.mimeType })) } : {}),
+    ...(mail.confidential ? { track_opens: false, track_clicks: false } : {}),
   }, mail);
 }
 
@@ -241,6 +246,8 @@ async function sendWithMaileroo(mail: Mail) {
     subject: mail.subject,
     html: mail.html,
     plain: mail.text,
+    ...(mail.attachments?.length ? { attachments: mail.attachments.map(attachment => ({ file_name: attachment.name, content: attachment.content, content_type: attachment.mimeType, inline: false })) } : {}),
+    ...(mail.confidential ? { tracking: false } : {}),
   }, mail);
 
   if (response.success !== true) {

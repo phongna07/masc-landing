@@ -11,6 +11,8 @@ export const adminAreas = [
   "rounds",
   "roundOneCvScreening",
   "activityLogs",
+  "tickets",
+  "checkIn",
 ] as const;
 
 export type AdminArea = (typeof adminAreas)[number];
@@ -23,6 +25,10 @@ export const adminRoleConfig = {
   professional: {
     defaultRoute: "/admin/cv-screening-round-1",
     allowedAreas: ["rounds", "roundOneCvScreening"],
+  },
+  "entrance-staff": {
+    defaultRoute: "/admin/check-in",
+    allowedAreas: ["checkIn"],
   },
 } as const satisfies Record<
   AdminRole,

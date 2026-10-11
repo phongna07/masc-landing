@@ -22,6 +22,8 @@ const items = [
   { href: "/admin/teams", key: "teams", area: "teams", icon: UsersIcon },
   { href: "/admin/cv-screening-round-1", key: "roundOneCvScreening", area: "roundOneCvScreening", icon: ClipboardCheckIcon },
   { href: "/admin/mail", key: "mail", area: "mail", icon: MailIcon },
+  { href: "/admin/tickets", key: "tickets", area: "tickets", icon: FileTextIcon },
+  { href: "/admin/check-in", key: "checkIn", area: "checkIn", icon: ClipboardCheckIcon },
   ...rounds.map((round) => ({ href: `/admin/${round.slug}`, round: round.id, area: "rounds", icon: FileTextIcon })),
 ] as const;
 
