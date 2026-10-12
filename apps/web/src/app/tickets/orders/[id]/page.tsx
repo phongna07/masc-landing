@@ -8,5 +8,5 @@ export default async function OrderPage({ params }: { params: Promise<{ id: stri
 	const { id } = await params;
 	if (!z.uuid().safeParse(id).success) notFound();
 	await requireTicketBuyer(`/tickets/orders/${id}`);
-	return <TicketShell><OrderStatus id={id} /></TicketShell>;
+	return <TicketShell showNavigation={false}><OrderStatus id={id} /></TicketShell>;
 }
