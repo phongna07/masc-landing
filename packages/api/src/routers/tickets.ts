@@ -27,7 +27,7 @@ const historyInput = idInput.extend({ page: z.number().int().min(0).max(100000).
 
 export const ticketsRouter = router({
 	config: buyer.query(() => safeErrors(getTicketConfig)),
-	checkout: buyer.input(checkoutInput).mutation(({ ctx, input }) => safeErrors(async () => ({ id: (await startCheckout(ctx.session.user, input)).id }))),
+	checkout: buyer.input(checkoutInput).mutation(({ ctx, input }) => safeErrors(async () => buyerOrder(await startCheckout(ctx.session.user, input)))),
 	mine: buyer.input(pageInput).query(({ ctx, input }) => safeErrors(async () => {
 		const page = await listOrders(input, ctx.session.user.id);
 		return { ...page, items: page.items.map(order => ({ ...buyerOrder(order), tickets: order.tickets })) };

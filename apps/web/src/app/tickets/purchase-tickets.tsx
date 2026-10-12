@@ -23,7 +23,17 @@ export default function PurchaseTickets() {
 	const [phone, setPhone] = useState("");
 	const requestKey = useRef<string | null>(null);
 	const submitted = useRef(false);
-	const checkout = useMutation(trpc.tickets.checkout.mutationOptions({ onSuccess: order => { notify.info(t("notifications.orderCreated")); router.push(`/tickets/orders/${order.id}`); }, onError: notify.error }));
+	const checkout = useMutation(trpc.tickets.checkout.mutationOptions({
+		onSuccess: order => {
+			if (order.checkoutUrl && !order.checkoutClosedAt && order.fulfillmentStatus !== "issued" && (["pending", "processing"].includes(order.paymentStatus) || order.issue === "underpaid") && new Date(order.expiresAt).getTime() > Date.now()) {
+				window.location.assign(order.checkoutUrl);
+				return;
+			}
+			notify.info(t("notifications.orderCreated"));
+			router.push(`/tickets/orders/${order.id}`);
+		},
+		onError: notify.error,
+	}));
 	function choose(name: typeof selected) {
 		if (submitted.current) return;
 		setSelected(name);

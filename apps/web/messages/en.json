@@ -1401,7 +1401,7 @@
     "override": "Root-admin override",
     "orderStatus": "Order status",
     "fulfillmentLabel": "Ticket issuance",
-    "confirming": "Confirming payment… We are checking with PayOS.",
+    "confirming": "We are checking your payment status with PayOS. This page will update automatically.",
     "expires": "Checkout expiry",
     "continuePayment": "Continue PayOS payment",
     "cancelCheckout": "Cancel checkout",

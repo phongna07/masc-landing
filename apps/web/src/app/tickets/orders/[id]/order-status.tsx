@@ -1,6 +1,6 @@
 "use client";
 
-import { CreditCardIcon, RefreshCwIcon, TicketIcon, XCircleIcon } from "lucide-react";
+import { CreditCardIcon, LoaderCircleIcon, RefreshCwIcon, TicketIcon, XCircleIcon } from "lucide-react";
 
 import { useTicketNotifications } from "@/components/tickets/use-ticket-notifications";
 import { Button } from "@masc-landing/ui/components/button";
@@ -38,12 +38,12 @@ export default function OrderStatus({ id }: { id: string }) {
 	return <><TicketHeading title={t("orderStatus")} description={t("statusIntro")} action={<Button className="ticket-button-neutral" nativeButton={false} render={<Link href="/my-tickets" />} variant="outline"><TicketIcon aria-hidden="true" />{t("myTickets")}</Button>} /><TicketError error={order.error} />{order.isPending && <TicketLoading />}
 		{value && <><section className="ticket-panel" aria-live="polite"><h2>{t(`payment.${value.paymentStatus}`)}</h2><p>{t("fulfillmentLabel")}: {t(`fulfillment.${value.fulfillmentStatus}`)}</p>
 			<p>{value.snapshot.packageName} · {t("quantity", { count: value.snapshot.quantity })} · {new Intl.NumberFormat(locale, { style: "currency", currency: "VND", maximumFractionDigits: 0 }).format(value.snapshot.totalPrice)}</p>
-			{["creating", "pending", "processing"].includes(value.paymentStatus) && <p role="status">{t("confirming")}</p>}
+			{["creating", "pending", "processing"].includes(value.paymentStatus) && <div className="ticket-payment-status" role="status"><LoaderCircleIcon className="motion-safe:animate-spin" aria-hidden="true" /><p>{t("confirming")}</p></div>}
 			{value.issue && <p className="ticket-warning">{t.has(`issues.${value.issue}`) ? t(`issues.${value.issue}`) : t("issues.providerMismatch")}</p>}
 			<p>{t("expires")}: <EventTime value={value.expiresAt} timezone={value.snapshot.event.timezone} /></p>
 			<div className="ticket-actions">{value.checkoutUrl && !value.checkoutClosedAt && (["pending", "processing"].includes(value.paymentStatus) || value.issue === "underpaid") && new Date(value.expiresAt).getTime() > Date.now() && <Button className="ticket-button-primary" nativeButton={false} render={<a href={value.checkoutUrl} rel="noreferrer" />}><CreditCardIcon aria-hidden="true" />{t("continuePayment")}</Button>}
 			{!value.checkoutClosedAt && (["creating", "pending", "processing"].includes(value.paymentStatus) || value.issue === "underpaid") && <Button className="ticket-button-danger" type="button" variant="outline" disabled={cancel.isPending || verify.isPending} onClick={() => cancel.mutate({ id })}><XCircleIcon aria-hidden="true" />{t("cancelCheckout")}</Button>}
-			<Button className="ticket-button-utility" type="button" disabled={verify.isPending} onClick={() => verify.mutate({ id }, { onSuccess: () => notify.info(t("notifications.statusChecked")), onError: notify.error })}><RefreshCwIcon aria-hidden="true" />{t("refreshStatus")}</Button></div><TicketError error={verify.error || cancel.error} />
+			{value.fulfillmentStatus !== "issued" && <Button className="ticket-button-utility" type="button" disabled={verify.isPending} onClick={() => verify.mutate({ id }, { onSuccess: () => notify.info(t("notifications.statusChecked")), onError: notify.error })}><RefreshCwIcon aria-hidden="true" />{t("refreshStatus")}</Button>}</div><TicketError error={verify.error || cancel.error} />
 			<p>{t("backgroundFulfillment")}</p></section><div className="ticket-grid">{order.data?.tickets.map(ticket => <TicketCard key={ticket.id} ticket={ticket} />)}</div></>}
 	</>;
 }

@@ -1401,7 +1401,7 @@
     "override": "Quản trị viên cấp cao cho phép vào lại",
     "orderStatus": "Trạng thái đơn hàng",
     "fulfillmentLabel": "Trạng thái cấp vé",
-    "confirming": "Hệ thống đang kiểm tra trạng thái thanh toán với PayOS. Thông tin sẽ tự động cập nhật.",
+    "confirming": "Hệ thống đang kiểm tra trạng thái thanh toán của bạn với PayOS. Trang này sẽ tự động cập nhật.",
     "expires": "Hạn thanh toán",
     "continuePayment": "Thanh toán trên PayOS",
     "cancelCheckout": "Hủy phiên thanh toán",
