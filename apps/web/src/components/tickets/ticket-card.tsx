@@ -41,14 +41,14 @@ export default function TicketCard({ ticket, root = false, children }: { ticket:
 	const imageUrl = `/api/tickets/${ticket.id}/image?locale=${locale}&v=${ticket.credentialVersion}&validity=${ticket.validity}`;
 	return <article className={`ticket-card ${ticket.category === "vip" ? "ticket-card-vip" : ""} ${ticket.validity === "revoked" ? "ticket-revoked" : ""}`}>
 		<div className="ticket-actions ticket-card-heading"><h3>{t(`categories.${ticket.category}`)} · #{ticket.ordinal}</h3><span className={`ticket-badge ticket-badge-${ticket.validity}`}>{t(`validity.${ticket.validity}`)}</span></div>
-		<p>{ticket.event.name}</p>
+		<div className="ticket-card-body"><div className="ticket-event-details"><p>{ticket.event.name}</p>
 		<p>{ticket.event.date ? <EventTime value={ticket.event.date} timezone={ticket.event.timezone} /> : t("email.dateUnknown")}</p>
 		<p>{ticket.event.venue || t("email.venueUnknown")}</p>
 		{ticket.benefits.includes("networkingLunch") && <p className="ticket-benefit">{t("networkingLunch")}</p>}
 		<p>{t("acceptedCount", { count: ticket.acceptedCount })}</p>
-		<p className="ticket-warning"><ShieldAlertIcon aria-hidden="true" className="ticket-inline-icon" />{t("confidential")}</p>
-		<Button type="button" variant="outline" onClick={() => { setOpen(!open); if (!open) notify.warning(t("confidential"), { id: `ticket-view:${ticket.id}` }); else notify.dismiss(`ticket-view:${ticket.id}`); }} aria-expanded={open}>{open ? <EyeOffIcon aria-hidden="true" /> : <EyeIcon aria-hidden="true" />}{t(open ? "hide" : "view")}</Button>
-		{open && <div><p><strong>{t("code")}</strong> <code className="ticket-code">{ticket.code}</code></p><p className="ticket-section-label">{t("admissionQr")}</p>{imageError ? <TicketError error={{ message: "imageFailed" }} /> : <img className="ticket-artwork" src={imageUrl} alt={t("imageAlt")} onError={() => { setImageError(true); notify.error({ message: "imageFailed" }); }} />}
+		</div><div className="ticket-card-access"><p className="ticket-warning"><ShieldAlertIcon aria-hidden="true" className="ticket-inline-icon" />{t("confidential")}</p>
+		<Button type="button" variant="outline" onClick={() => { setOpen(!open); if (!open) notify.warning(t("confidential"), { id: `ticket-view:${ticket.id}` }); else notify.dismiss(`ticket-view:${ticket.id}`); }} aria-expanded={open}>{open ? <EyeOffIcon aria-hidden="true" /> : <EyeIcon aria-hidden="true" />}{t(open ? "hide" : "view")}</Button></div></div>
+		{open && <div className="ticket-credential"><p><strong>{t("code")}</strong> <code className="ticket-code">{ticket.code}</code></p><p className="ticket-section-label">{t("admissionQr")}</p>{imageError ? <TicketError error={{ message: "imageFailed" }} /> : <img className="ticket-artwork" src={imageUrl} alt={t("imageAlt")} onError={() => { setImageError(true); notify.error({ message: "imageFailed" }); }} />}
 			<Button className="ticket-button-utility" type="button" disabled={isDownloading} aria-busy={isDownloading} onClick={() => void download(`${imageUrl}&download=1`, `ticket-${ticket.ordinal}.png`, "image/png", "imageFailed")} variant="outline"><DownloadIcon aria-hidden="true" />{t("savePng")}</Button>
 			<details><summary>{t("history")}</summary><TicketHistory id={ticket.id} root={root} timezone={ticket.event.timezone} /></details>
 		</div>}

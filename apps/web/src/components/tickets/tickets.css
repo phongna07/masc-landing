@@ -1,11 +1,13 @@
 /* Ticket compositions use the dashboard theme and shared UI primitives. */
 .ticket-main {
   padding-top: clamp(40px, 6vw, 72px);
+  container-type: inline-size;
 }
 
 .ticket-admin {
   min-width: 0;
   color: var(--ink);
+  container-type: inline-size;
 }
 
 .ticket-nav-container {
@@ -730,7 +732,170 @@ p.ticket-warning {
   flex-shrink: 0;
 }
 
+/* Keep summaries compact and give related controls room beside their content. */
+.ticket-order-grid,
+.ticket-operations-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.ticket-card-grid {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 380px), 1fr));
+}
+
+.ticket-order-header,
+.ticket-toolbar,
+.ticket-sales-summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px 24px;
+  flex-wrap: wrap;
+}
+
+.ticket-order-header > div {
+  min-width: 0;
+}
+
+.ticket-order-header h3,
+.ticket-order-header p,
+.ticket-toolbar p,
+.ticket-sales-summary p {
+  margin: 0;
+}
+
+.ticket-order-header > [data-slot="button"],
+.ticket-toolbar > [data-slot="button"] {
+  flex-shrink: 0;
+}
+
+.ticket-order-header p {
+  margin-top: 6px;
+}
+
+.ticket-toolbar {
+  justify-content: flex-start;
+  margin-block: 20px;
+}
+
+.ticket-toolbar p {
+  max-width: 70ch;
+  font-size: 13px;
+}
+
+.ticket-sales-summary {
+  padding: 16px 20px;
+  border: 1px solid var(--border);
+  background: rgba(17, 16, 20, .76);
+}
+
+.ticket-sales-summary .ticket-warning {
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+
+.ticket-settings-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: start;
+  gap: 28px;
+}
+
+.ticket-settings-grid > *,
+.ticket-scanner-results {
+  min-width: 0;
+}
+
+.ticket-settings-grid > section > h2 {
+  margin-top: 0;
+}
+
+.ticket-operations-grid .ticket-actions {
+  justify-content: flex-start;
+}
+
+.ticket-card-body {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+  align-items: start;
+  gap: 24px;
+}
+
+.ticket-card-body > div {
+  min-width: 0;
+}
+
+.ticket-event-details > p:first-child,
+.ticket-card-access > p:first-child {
+  margin-top: 0;
+}
+
+.ticket-card-access {
+  padding-left: 24px;
+  border-left: 1px solid var(--border);
+}
+
+.ticket-credential {
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid var(--border);
+}
+
+/* Admin content can be narrow even on desktop because of the sidebar. */
+@container (max-width: 760px) {
+  .ticket-settings-grid,
+  .ticket-scanner-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@container (max-width: 620px) {
+  .ticket-order-grid,
+  .ticket-operations-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Cards in a multi-column list need their own breakpoint, independent of the page. */
+.ticket-card:has(.ticket-card-body) {
+  container-type: inline-size;
+}
+
+@container (max-width: 560px) {
+  .ticket-card-body {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .ticket-card-access {
+    padding: 16px 0 0;
+    border-left: 0;
+    border-top: 1px solid var(--border);
+  }
+}
+
+.ticket-filters {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr));
+}
+
+.ticket-scanner-grid {
+  margin-block: 20px;
+}
+
+.ticket-scanner-grid > .ticket-panel,
+.ticket-scanner-results > .ticket-panel:first-child {
+  margin-top: 0;
+}
+
+.ticket-scanner-results > .ticket-panel:last-child {
+  margin-bottom: 0;
+}
+
 @media (max-width: 1000px) {
+  .ticket-settings-grid {
+    grid-template-columns: 1fr;
+  }
+
   .ticket-package-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -765,13 +930,22 @@ p.ticket-warning {
     margin-top: 0;
   }
 
+  .ticket-order-grid,
+  .ticket-operations-grid,
   .ticket-form-grid {
     grid-template-columns: 1fr;
   }
 
+  .ticket-order-header,
+  .ticket-toolbar,
+  .ticket-sales-summary {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
   .ticket-scanner-grid {
     grid-template-columns: 1fr;
-    gap: 0;
+    gap: 20px;
   }
 
   .ticket-checkout-footer [data-slot="button"] {
