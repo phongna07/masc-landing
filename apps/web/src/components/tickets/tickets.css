@@ -327,6 +327,21 @@ p.ticket-warning {
   font-weight: 600;
 }
 
+.ticket-credential-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.ticket-credential-heading > strong {
+  flex-shrink: 0;
+}
+
+.ticket-credential-heading > [data-slot="button"] {
+  min-width: 0;
+}
+
 .ticket-code {
   display: block;
   padding: 14px;
@@ -730,6 +745,35 @@ p.ticket-warning {
   width: 28px;
   height: 28px;
   flex-shrink: 0;
+}
+
+.ticket-confirmation-dialog {
+  margin: 0;
+  max-height: calc(100dvh - 2rem);
+  overscroll-behavior: contain;
+  background: #111014;
+}
+
+.ticket-confirmation-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.ticket-confirmation-heading > [data-slot="dialog-close"] {
+  flex-shrink: 0;
+}
+
+.ticket-confirmation-heading > [data-slot="dialog-title"] {
+  margin: 0;
+  font-size: clamp(22px, 4vw, 28px);
+}
+
+.ticket-confirmation-dialog button {
+  height: auto;
+  min-height: 44px;
+  white-space: normal;
 }
 
 /* Keep summaries compact and give related controls room beside their content. */

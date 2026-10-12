@@ -48,8 +48,9 @@ export default function TicketCard({ ticket, root = false, children }: { ticket:
 		<p>{t("acceptedCount", { count: ticket.acceptedCount })}</p>
 		</div><div className="ticket-card-access"><p className="ticket-warning"><ShieldAlertIcon aria-hidden="true" className="ticket-inline-icon" />{t("confidential")}</p>
 		<Button type="button" variant="outline" onClick={() => { setOpen(!open); if (!open) notify.warning(t("confidential"), { id: `ticket-view:${ticket.id}` }); else notify.dismiss(`ticket-view:${ticket.id}`); }} aria-expanded={open}>{open ? <EyeOffIcon aria-hidden="true" /> : <EyeIcon aria-hidden="true" />}{t(open ? "hide" : "view")}</Button></div></div>
-		{open && <div className="ticket-credential"><p><strong>{t("code")}</strong> <code className="ticket-code">{ticket.code}</code></p><p className="ticket-section-label">{t("admissionQr")}</p>{imageError ? <TicketError error={{ message: "imageFailed" }} /> : <img className="ticket-artwork" src={imageUrl} alt={t("imageAlt")} onError={() => { setImageError(true); notify.error({ message: "imageFailed" }); }} />}
+		{open && <div className="ticket-credential"><div className="ticket-credential-heading"><strong>{t("code")}</strong>
 			<Button className="ticket-button-utility" type="button" disabled={isDownloading} aria-busy={isDownloading} onClick={() => void download(`${imageUrl}&download=1`, `ticket-${ticket.ordinal}.png`, "image/png", "imageFailed")} variant="outline"><DownloadIcon aria-hidden="true" />{t("savePng")}</Button>
+			</div><code className="ticket-code">{ticket.code}</code><p className="ticket-section-label">{t("admissionQr")}</p>{imageError ? <TicketError error={{ message: "imageFailed" }} /> : <img className="ticket-artwork" src={imageUrl} alt={t("imageAlt")} onError={() => { setImageError(true); notify.error({ message: "imageFailed" }); }} />}
 			<details><summary>{t("history")}</summary><TicketHistory id={ticket.id} root={root} timezone={ticket.event.timezone} /></details>
 		</div>}
 		{children}

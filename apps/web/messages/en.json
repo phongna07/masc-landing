@@ -1369,7 +1369,7 @@
     "buy": "Buy tickets",
     "myTickets": "My tickets",
     "dashboard": "Dashboard",
-    "purchaseIntro": "Sign in to buy and manage event tickets. Competition registration is not required. Choose one package per order; you may place repeated orders.",
+    "purchaseIntro": "Chọn hạng vé tham dự chung kết Marketing All-Star Challenge. Bạn không cần đăng ký dự thi để mua vé",
     "ownershipNotice": "Purchased tickets stay in your account. Share a QR image with your attendee if needed; account ownership cannot be transferred. Gifted tickets are distributed separately.",
     "loading": "Loading…",
     "salesOpen": "Ticket sales are open.",
@@ -1406,10 +1406,10 @@
     "continuePayment": "Continue PayOS payment",
     "cancelCheckout": "Cancel checkout",
     "refreshStatus": "Refresh verified status",
-    "backgroundFulfillment": "You may close this page. Payment verification, ticket issuance and email delivery continue in the background.",
+    "backgroundFulfillment": "You may close this page. You can recheck the result in the My tickets section.",
     "noOrders": "You have no ticket orders yet.",
-    "pendingOrders": "Pending and unresolved orders",
-    "issuedOrders": "Orders with issued tickets",
+    "pendingOrders": "Unpaid orders",
+    "issuedOrders": "Successfully paid orders",
     "noPending": "No pending orders on this page.",
     "previous": "Previous",
     "next": "Next",
@@ -1496,7 +1496,7 @@
     "batchDetails": "Gift batch details",
     "internalNote": "Internal note",
     "recipientSearch": "Search recipient name or email",
-    "checkInHelp": "Scan or enter a ticket code to review it. Admission is recorded only after you press confirmation and the server accepts it.",
+    "checkInHelp": "Scan or enter a ticket code to review it. Press “Confirm check-in” and wait for the success message before allowing entry.",
     "onlineRequired": "Internet access is required. Offline admission is unavailable.",
     "offline": "You are offline. Reconnect before lookup or confirmation.",
     "cameraScanner": "Camera QR scanner",
@@ -1513,7 +1513,9 @@
     "repeatWarning": "WARNING: This ticket has already been admitted. Only a root admin can authorize repeat admission with a reason.",
     "overrideReason": "Root-admin repeat-admission reason",
     "confirmOverride": "Confirm repeat-admission override",
-    "confirmAdmission": "Confirm admission",
+    "confirmAdmission": "Confirm check-in",
+    "confirmCheckInHelp": "Press “Confirm check-in” to record this attendee’s check-in. Wait for the success message before allowing entry.",
+    "dismissConfirmation": "Close",
     "rejectedAttempts": "Rejected attempts",
     "categories": {
       "normal": "Normal",
@@ -1538,8 +1540,8 @@
       "review": "Payment requires admin review"
     },
     "fulfillment": {
-      "pending": "Awaiting issuance",
-      "issued": "Tickets issued",
+      "pending": "Awaiting payment",
+      "issued": "Payment successful",
       "review": "Issuance held for review"
     },
     "emailStatus": {

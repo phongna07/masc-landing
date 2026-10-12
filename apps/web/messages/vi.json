@@ -1369,7 +1369,7 @@
     "buy": "Mua vé",
     "myTickets": "Vé của tôi",
     "dashboard": "Trang cá nhân",
-    "purchaseIntro": "Chọn gói vé để tham dự sự kiện của Marketing All-Star Challenge. Bạn không cần đăng ký dự thi để mua vé. Mỗi đơn gồm một gói vé; bạn có thể mua thêm bằng cách tạo đơn mới.",
+    "purchaseIntro": "Chọn hạng vé tham dự chung kết Marketing All-Star Challenge. Bạn không cần đăng ký dự thi để mua vé",
     "ownershipNotice": "Xem vé đã mua và theo dõi đơn hàng tại đây. Vé được quản lý trong tài khoản đã mua và không thể chuyển sang tài khoản khác. Nếu mua hộ, bạn có thể gửi ảnh vé cho người tham dự.",
     "loading": "Đang tải…",
     "salesOpen": "Đang mở bán vé.",
@@ -1406,10 +1406,10 @@
     "continuePayment": "Thanh toán trên PayOS",
     "cancelCheckout": "Hủy phiên thanh toán",
     "refreshStatus": "Kiểm tra thanh toán",
-    "backgroundFulfillment": "Sau khi thanh toán, bạn có thể đóng trang này. Hệ thống sẽ tiếp tục xác nhận thanh toán, cấp vé và gửi email. Bạn có thể xem lại kết quả tại mục Vé của tôi.",
+    "backgroundFulfillment": "Sau khi thanh toán, bạn có thể đóng trang này. Bạn có thể xem lại kết quả tại mục Vé của tôi.",
     "noOrders": "Bạn chưa có đơn mua vé nào.",
-    "pendingOrders": "Đơn chưa được cấp vé",
-    "issuedOrders": "Đơn đã cấp vé",
+    "pendingOrders": "Đơn chưa thanh toán",
+    "issuedOrders": "Đơn đã thanh toán thành công",
     "noPending": "Không có đơn nào chưa được cấp vé trên trang này.",
     "previous": "Trang trước",
     "next": "Trang sau",
@@ -1496,7 +1496,7 @@
     "batchDetails": "Chi tiết nhóm vé tặng",
     "internalNote": "Ghi chú nội bộ",
     "recipientSearch": "Tìm theo tên hoặc email người nhận",
-    "checkInHelp": "Quét mã QR trên vé hoặc nhập mã vé để tra cứu. Khi vé hợp lệ, bấm Xác nhận vào cửa và chờ thông báo thành công trước khi cho khách vào.",
+    "checkInHelp": "Quét mã QR trên vé hoặc nhập mã vé để tra cứu. Khi vé hợp lệ, bấm “Xác nhận check-in” và chờ thông báo thành công trước khi cho khách vào cửa.",
     "onlineRequired": "Thiết bị cần có kết nối Internet để tra cứu vé và xác nhận vào cửa.",
     "offline": "Thiết bị đang mất kết nối Internet. Vui lòng kết nối lại để tra cứu vé và xác nhận vào cửa.",
     "cameraScanner": "Quét mã QR trên vé",
@@ -1513,7 +1513,9 @@
     "repeatWarning": "Vé này đã được sử dụng để vào cửa. Chỉ quản trị viên cấp cao mới có thể cho phép vào lại và phải ghi rõ lý do.",
     "overrideReason": "Lý do cho phép vào lại",
     "confirmOverride": "Cho phép vào lại",
-    "confirmAdmission": "Xác nhận vào cửa",
+    "confirmAdmission": "Xác nhận check-in",
+    "confirmCheckInHelp": "Bấm “Xác nhận check-in” để ghi nhận check-in của khách. Chờ thông báo thành công trước khi cho khách vào cửa.",
+    "dismissConfirmation": "Đóng",
     "rejectedAttempts": "Lịch sử từ chối vào cửa",
     "categories": {
       "normal": "Vé thường",
@@ -1538,8 +1540,8 @@
       "review": "Cần kiểm tra thanh toán"
     },
     "fulfillment": {
-      "pending": "Chờ cấp vé",
-      "issued": "Đã cấp vé",
+      "pending": "Chờ thanh toán",
+      "issued": "Đã thanh toán",
       "review": "Tạm dừng cấp vé để kiểm tra"
     },
     "emailStatus": {
