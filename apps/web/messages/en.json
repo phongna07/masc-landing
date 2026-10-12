@@ -1463,6 +1463,7 @@
     "revoke": "Revoke this ticket",
     "replace": "Replace compromised code",
     "replacementHelp": "Replacement invalidates the previous code and keeps the ticket’s ownership and check-in history. Distribute the new image separately. Revocation prevents further admission.",
+    "purchasedReplacementHelp": "Replacement invalidates the previous code and keeps the ticket’s ownership and check-in history. Distribute the new image separately.",
     "optionalRecipient": "Optional gifted-recipient information",
     "recipientName": "Recipient name (optional)",
     "recipientPhone": "Recipient phone (optional)",

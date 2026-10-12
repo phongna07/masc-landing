@@ -1463,6 +1463,7 @@
     "revoke": "Thu hồi vé này",
     "replace": "Thay mã bị lộ",
     "replacementHelp": "Thay mã sẽ vô hiệu hóa mã cũ, giữ nguyên chủ sở hữu và lịch sử vào cửa. Phân phối ảnh mới riêng. Thu hồi vé ngăn các lượt vào cửa tiếp theo.",
+    "purchasedReplacementHelp": "Thay mã sẽ vô hiệu hóa mã cũ, giữ nguyên chủ sở hữu và lịch sử vào cửa. Phân phối ảnh mới riêng.",
     "optionalRecipient": "Thông tin người nhận vé tặng (tùy chọn)",
     "recipientName": "Họ tên người nhận (tùy chọn)",
     "recipientPhone": "Số điện thoại người nhận (tùy chọn)",
