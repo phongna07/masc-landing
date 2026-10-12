@@ -215,7 +215,8 @@
       "cancelled": "Google sign-in was cancelled. Please try again.",
       "allowPopups": "Allow popups to continue with Google.",
       "failed": "Unable to start Google sign-in. Please retry.",
-      "completing": "Completing Google sign-in…"
+      "completing": "Completing Google sign-in…",
+      "opened": "Complete Google sign-in in the popup window."
     },
     "rulebookTitle": "MASC '26 competition rulebook",
     "assurance": {
@@ -1626,7 +1627,8 @@
       "notIssued": "This order has no issued tickets to deliver.",
       "recipientEmailRequired": "Save a recipient email on this gifted ticket before emailing it.",
       "imageFailed": "The private ticket image could not load. Retry while signed in.",
-      "existingAdminRole": "This email already has a root or professional admin role. Use its existing role management workflow."
+      "existingAdminRole": "This email already has a root or professional admin role. Use its existing role management workflow.",
+      "exportFailed": "Unable to download the order export. Please try again."
     },
     "email": {
       "subject": "Your ticket purchase is confirmed",
@@ -1708,6 +1710,34 @@
     "batchDetailsIntro": "Manage individual gifted tickets and prepare private images for distribution.",
     "noMatchingOrders": "No orders match these filters.",
     "noBatches": "No gifted batches match these filters.",
-    "noIssued": "No issued tickets on this page."
+    "noIssued": "No issued tickets on this page.",
+    "notifications": {
+      "orderCreated": "Your order has been created. Continue payment or review its status.",
+      "batchCreated": "{count, plural, one {# gifted ticket has been generated successfully.} other {# gifted tickets have been generated successfully.}}",
+      "settingsSaved": "Ticket settings have been saved successfully.",
+      "recipientSaved": "Recipient information has been saved successfully.",
+      "staffGranted": "Entrance-staff access has been granted.",
+      "staffRemoved": "Entrance-staff access has been removed.",
+      "reconciled": "Reconciliation finished. Review the current payment status and any unresolved issues.",
+      "webhookConfirmed": "The PayOS webhook has been registered and confirmed.",
+      "revoked": "This ticket has been revoked successfully.",
+      "replaced": "The ticket code has been replaced. Distribute the new ticket image.",
+      "emailQueued": "The ticket email has been queued. Check delivery status for the result.",
+      "confirmationQueued": "The confirmation email has been queued for resending. Check delivery status for the result.",
+      "latePaymentResolved": "The late payment has been approved and the tickets have been issued.",
+      "refundRecorded": "The manual refund record has been saved successfully.",
+      "resolutionRecorded": "The resolution note has been saved successfully.",
+      "statusChecked": "The payment status check has finished. Review the current order status.",
+      "statisticsRefreshed": "Ticket statistics have been refreshed.",
+      "cancelled": "The checkout has been cancelled.",
+      "cancellationChecked": "The cancellation request has finished. Review the current order status.",
+      "downloadStarted": "Your file is ready and the download has started.",
+      "sheetPreparing": "Preparing the printable sheet. Wait for all ticket images to load.",
+      "sheetReady": "The ticket sheet is ready to print or save as PDF.",
+      "printOpened": "The print dialog is opening. Select a printer or save as PDF.",
+      "cameraStarted": "The camera scanner is ready. Scan a ticket to look it up.",
+      "cameraPaused": "The camera scanner has been paused.",
+      "cameraSelected": "Camera selection updated. Start the scanner to use it."
+    }
   }
 }

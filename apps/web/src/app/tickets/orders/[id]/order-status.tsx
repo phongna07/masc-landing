@@ -1,5 +1,6 @@
 "use client";
 
+import { useTicketNotifications } from "@/components/tickets/use-ticket-notifications";
 import { Button } from "@masc-landing/ui/components/button";
 import { useEffect } from "react";
 import { useMutation, useQuery } from "@tanstack/react-query";
@@ -11,10 +12,19 @@ import { TicketHeading, TicketLoading, TicketError } from "@/components/tickets/
 
 export default function OrderStatus({ id }: { id: string }) {
 	const t = useTranslations("Tickets");
+	const notify = useTicketNotifications();
 	const locale = useLocale();
 	const order = useQuery({ ...trpc.tickets.order.queryOptions({ id }), refetchInterval: query => ["creating", "pending", "processing"].includes(query.state.data?.order.paymentStatus ?? "") ? 5000 : false });
 	const verify = useMutation(trpc.tickets.verifyOrder.mutationOptions({ onSuccess: () => { void order.refetch(); } }));
-	const cancel = useMutation(trpc.tickets.cancel.mutationOptions({ onSuccess: () => { void order.refetch(); } }));
+	const cancel = useMutation(trpc.tickets.cancel.mutationOptions({
+		onSuccess: async () => {
+			const current = await order.refetch();
+			if (current.error) { notify.error(current.error); return; }
+			if (current.data?.order.paymentStatus === "cancelled") notify.success(t("notifications.cancelled"));
+			else notify.info(t("notifications.cancellationChecked"));
+		},
+		onError: notify.error,
+	}));
 	const paymentStatus = order.data?.order.paymentStatus;
 	const verifyPayment = verify.mutate;
 	useEffect(() => {
@@ -31,7 +41,7 @@ export default function OrderStatus({ id }: { id: string }) {
 			<p>{t("expires")}: <EventTime value={value.expiresAt} timezone={value.snapshot.event.timezone} /></p>
 			<div className="ticket-actions">{value.checkoutUrl && !value.checkoutClosedAt && (["pending", "processing"].includes(value.paymentStatus) || value.issue === "underpaid") && new Date(value.expiresAt).getTime() > Date.now() && <Button nativeButton={false} render={<a href={value.checkoutUrl} rel="noreferrer" />}>{t("continuePayment")}</Button>}
 			{!value.checkoutClosedAt && (["creating", "pending", "processing"].includes(value.paymentStatus) || value.issue === "underpaid") && <Button type="button" variant="outline" disabled={cancel.isPending || verify.isPending} onClick={() => cancel.mutate({ id })}>{t("cancelCheckout")}</Button>}
-			<Button type="button" disabled={verify.isPending} onClick={() => verify.mutate({ id })}>{t("refreshStatus")}</Button></div><TicketError error={verify.error || cancel.error} />
+			<Button type="button" disabled={verify.isPending} onClick={() => verify.mutate({ id }, { onSuccess: () => notify.info(t("notifications.statusChecked")), onError: notify.error })}>{t("refreshStatus")}</Button></div><TicketError error={verify.error || cancel.error} />
 			<p>{t("backgroundFulfillment")}</p></section><div className="ticket-grid">{order.data?.tickets.map(ticket => <TicketCard key={ticket.id} ticket={ticket} />)}</div></>}
 	</>;
 }

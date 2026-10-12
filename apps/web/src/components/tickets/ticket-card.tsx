@@ -9,6 +9,8 @@ import type { AppRouter } from "@masc-landing/api/routers/index";
 import { trpc } from "@/utils/trpc";
 import { DownloadIcon, EyeIcon, EyeOffIcon, ShieldAlertIcon } from "lucide-react";
 import { Pagination, TicketError } from "./ticket-ui";
+import { useTicketNotifications } from "./use-ticket-notifications";
+import { useTicketDownload } from "./use-ticket-download";
 
 export type TicketRecord = inferRouterOutputs<AppRouter>["tickets"]["order"]["tickets"][number];
 export function EventTime({ value, timezone }: { value: string | Date; timezone: string }) {
@@ -31,6 +33,8 @@ export function TicketHistory({ id, root = false, timezone }: { id: string; root
 
 export default function TicketCard({ ticket, root = false, children }: { ticket: TicketRecord; root?: boolean; children?: React.ReactNode }) {
 	const t = useTranslations("Tickets");
+	const notify = useTicketNotifications();
+	const { download, isDownloading } = useTicketDownload();
 	const locale = useLocale();
 	const [open, setOpen] = useState(false);
 	const [imageError, setImageError] = useState(false);
@@ -43,9 +47,9 @@ export default function TicketCard({ ticket, root = false, children }: { ticket:
 		{ticket.benefits.includes("networkingLunch") && <p className="ticket-benefit">{t("networkingLunch")}</p>}
 		<p>{t("acceptedCount", { count: ticket.acceptedCount })}</p>
 		<p className="ticket-warning"><ShieldAlertIcon aria-hidden="true" className="ticket-inline-icon" />{t("confidential")}</p>
-		<Button type="button" variant="outline" onClick={() => setOpen(!open)} aria-expanded={open}>{open ? <EyeOffIcon aria-hidden="true" /> : <EyeIcon aria-hidden="true" />}{t(open ? "hide" : "view")}</Button>
-		{open && <div><p><strong>{t("code")}</strong> <code className="ticket-code">{ticket.code}</code></p><p className="ticket-section-label">{t("admissionQr")}</p>{imageError ? <TicketError error={{ message: "imageFailed" }} /> : <img className="ticket-artwork" src={imageUrl} alt={t("imageAlt")} onError={() => setImageError(true)} />}
-			<Button nativeButton={false} render={<a href={`${imageUrl}&download=1`} download />} variant="outline"><DownloadIcon aria-hidden="true" />{t("savePng")}</Button>
+		<Button type="button" variant="outline" onClick={() => { setOpen(!open); if (!open) notify.warning(t("confidential"), { id: `ticket-view:${ticket.id}` }); else notify.dismiss(`ticket-view:${ticket.id}`); }} aria-expanded={open}>{open ? <EyeOffIcon aria-hidden="true" /> : <EyeIcon aria-hidden="true" />}{t(open ? "hide" : "view")}</Button>
+		{open && <div><p><strong>{t("code")}</strong> <code className="ticket-code">{ticket.code}</code></p><p className="ticket-section-label">{t("admissionQr")}</p>{imageError ? <TicketError error={{ message: "imageFailed" }} /> : <img className="ticket-artwork" src={imageUrl} alt={t("imageAlt")} onError={() => { setImageError(true); notify.error({ message: "imageFailed" }); }} />}
+			<Button type="button" disabled={isDownloading} aria-busy={isDownloading} onClick={() => void download(`${imageUrl}&download=1`, `ticket-${ticket.ordinal}.png`, "image/png", "imageFailed")} variant="outline"><DownloadIcon aria-hidden="true" />{t("savePng")}</Button>
 			<details><summary>{t("history")}</summary><TicketHistory id={ticket.id} root={root} timezone={ticket.event.timezone} /></details>
 		</div>}
 		{children}

@@ -1,5 +1,6 @@
 "use client";
 
+import { useTicketNotifications } from "@/components/tickets/use-ticket-notifications";
 import { Button } from "@masc-landing/ui/components/button";
 import { Input } from "@masc-landing/ui/components/input";
 import { useRef, useState } from "react";
@@ -12,6 +13,7 @@ import { TicketHeading, TicketLoading, TicketError } from "@/components/tickets/
 
 export default function PurchaseTickets() {
 	const t = useTranslations("Tickets");
+	const notify = useTicketNotifications();
 	const locale = useLocale();
 	const router = useRouter();
 	const config = useQuery(trpc.tickets.config.queryOptions());
@@ -20,7 +22,7 @@ export default function PurchaseTickets() {
 	const [phone, setPhone] = useState("");
 	const requestKey = useRef<string | null>(null);
 	const submitted = useRef(false);
-	const checkout = useMutation(trpc.tickets.checkout.mutationOptions({ onSuccess: order => { router.push(`/tickets/orders/${order.id}`); } }));
+	const checkout = useMutation(trpc.tickets.checkout.mutationOptions({ onSuccess: order => { notify.info(t("notifications.orderCreated")); router.push(`/tickets/orders/${order.id}`); }, onError: notify.error }));
 	function choose(name: typeof selected) {
 		if (submitted.current) return;
 		setSelected(name);

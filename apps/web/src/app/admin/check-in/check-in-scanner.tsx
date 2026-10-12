@@ -1,5 +1,6 @@
 "use client";
 
+import { useTicketNotifications } from "@/components/tickets/use-ticket-notifications";
 import { Button } from "@masc-landing/ui/components/button";
 import { Textarea } from "@masc-landing/ui/components/textarea";
 import { Input } from "@masc-landing/ui/components/input";
@@ -14,6 +15,7 @@ import { CheckCircle2Icon, XCircleIcon, ScanLineIcon } from "lucide-react";
 
 export default function CheckInScanner({ isRoot }: { isRoot: boolean }) {
 	const t = useTranslations("Tickets");
+	const notify = useTicketNotifications();
 	const [code, setCode] = useState("");
 	const [online, setOnline] = useState(true);
 	const [cameraState, setCameraState] = useState("idle");
@@ -25,8 +27,21 @@ export default function CheckInScanner({ isRoot }: { isRoot: boolean }) {
 	const detectionRef = useRef(false);
 	const confirmKey = useRef<string | null>(null);
 	const cameraGeneration = useRef(0);
-	const lookup = useMutation(trpc.tickets.lookup.mutationOptions());
-	const admission = useMutation(trpc.tickets.checkIn.mutationOptions());
+	const lookup = useMutation(trpc.tickets.lookup.mutationOptions({
+		onSuccess: result => {
+			if (result.outcome === "ready") notify.info(t("scan.ready"), { id: "ticket-lookup" });
+			else notify.warning(t.has(`scan.${result.outcome}`) ? t(`scan.${result.outcome}`) : t("errors.operationFailed"), { id: "ticket-lookup" });
+		},
+		onError: notify.error,
+	}));
+	const admission = useMutation(trpc.tickets.checkIn.mutationOptions({
+		onSuccess: result => {
+			notify.dismiss("ticket-lookup");
+			if (result.outcome === "accepted") notify.success(t("admissionAccepted"), { id: "ticket-admission" });
+			else notify.warning(t.has(`scan.${result.reason}`) ? t(`scan.${result.reason}`) : t("errors.operationFailed"), { id: "ticket-admission" });
+		},
+		onError: notify.error,
+	}));
 	const busy = lookup.isPending || admission.isPending;
 
 	function stopCamera() { cameraGeneration.current++; controlsRef.current?.stop(); controlsRef.current = null; }
@@ -37,16 +52,18 @@ export default function CheckInScanner({ isRoot }: { isRoot: boolean }) {
 	}, []);
 
 	function lookupCode(value: string) {
+		notify.dismiss("ticket-admission"); notify.dismiss("ticket-lookup");
 		stopCamera(); setCameraState("paused"); detectionRef.current = true;
 		admission.reset(); lookup.reset(); setOverrideReason(""); confirmKey.current = crypto.randomUUID();
 		setCode(value.slice(0, 120)); lookup.mutate({ code: value.slice(0, 120), requestKey: crypto.randomUUID() });
 	}
 
 	async function startCamera() {
+		notify.dismiss("ticket-admission"); notify.dismiss("ticket-lookup");
 		stopCamera(); detectionRef.current = false; setCameraState("starting");
 		lookup.reset(); admission.reset(); confirmKey.current = null;
 		const generation = cameraGeneration.current;
-		if (!navigator.mediaDevices?.getUserMedia || !window.isSecureContext) { setCameraState("unavailable"); return; }
+		if (!navigator.mediaDevices?.getUserMedia || !window.isSecureContext) { setCameraState("unavailable"); notify.warning(t("camera.unavailable")); return; }
 		try {
 			const { BrowserQRCodeReader } = await import("@zxing/browser");
 			if (generation !== cameraGeneration.current || !videoRef.current) return;
@@ -61,10 +78,13 @@ export default function CheckInScanner({ isRoot }: { isRoot: boolean }) {
 			if (generation !== cameraGeneration.current) { controls.stop(); return; }
 			setDevices(cameras);
 			setCameraState("scanning");
+			notify.info(t("notifications.cameraStarted"));
 		} catch (error) {
 			if (generation !== cameraGeneration.current) return;
+			stopCamera();
 			const name = error instanceof Error ? error.name : "";
-			setCameraState(name === "NotAllowedError" || name === "SecurityError" ? "denied" : name === "NotFoundError" || name === "NotReadableError" ? "unavailable" : "error");
+			const state = name === "NotAllowedError" || name === "SecurityError" ? "denied" : name === "NotFoundError" || name === "NotReadableError" ? "unavailable" : "error";
+			setCameraState(state); notify.warning(t(`camera.${state}`));
 		}
 	}
 	const ticket = lookup.data?.ticket;
@@ -72,9 +92,9 @@ export default function CheckInScanner({ isRoot }: { isRoot: boolean }) {
 	const outcome = admission.data?.outcome === "rejected" ? admission.data.reason : lookup.data?.outcome;
 	return <><TicketHeading admin title={t("checkIn")} description={t("checkInHelp")} /><p className="ticket-warning">{t("onlineRequired")}</p>{!online && <p role="alert" className="ticket-danger">{t("offline")}</p>}
 		<div className="ticket-scanner-grid"><section className="ticket-panel"><h2>{t("cameraScanner")}</h2><p>{t("cameraCompatibility")}</p><video ref={videoRef} className="ticket-video" muted playsInline aria-label={t("cameraPreview")} />
-			{devices.length > 1 && <label>{t("selectCamera")}<select value={deviceId} onChange={e => { stopCamera(); setCameraState("idle"); setDeviceId(e.target.value); }}><option value="">{t("rearCamera")}</option>{devices.map((device, index) => <option key={device.deviceId} value={device.deviceId}>{device.label || t("cameraNumber", { number: index + 1 })}</option>)}</select></label>}
-			<p role="status">{t(`camera.${cameraState}`)}</p><div className="ticket-actions"><Button type="button" disabled={!online || busy || cameraState === "starting" || cameraState === "scanning"} onClick={() => void startCamera()}><ScanLineIcon aria-hidden="true" />{t("startScanner")}</Button><Button type="button" variant="outline" disabled={cameraState !== "scanning"} onClick={() => { stopCamera(); setCameraState("paused"); }}>{t("pauseScanner")}</Button></div>
-		</section><form className="ticket-panel" onSubmit={e => { e.preventDefault(); lookupCode(code); }}><h2>{t("lookupTicket")}</h2><label>{t("manualCode")}<Input maxLength={120} onFocus={() => { stopCamera(); setCameraState("paused"); }} autoComplete="off" autoCapitalize="characters" spellCheck={false} value={code} onChange={e => { setCode(e.target.value); lookup.reset(); admission.reset(); }} disabled={busy} /></label><Button type="submit" disabled={!online || busy || !code.trim()}>{t("lookupTicket")}</Button><TicketError error={lookup.error} /></form></div>
+			{devices.length > 1 && <label>{t("selectCamera")}<select value={deviceId} onChange={e => { stopCamera(); setCameraState("idle"); setDeviceId(e.target.value); notify.info(t("notifications.cameraSelected")); }}><option value="">{t("rearCamera")}</option>{devices.map((device, index) => <option key={device.deviceId} value={device.deviceId}>{device.label || t("cameraNumber", { number: index + 1 })}</option>)}</select></label>}
+			<p role="status">{t(`camera.${cameraState}`)}</p><div className="ticket-actions"><Button type="button" disabled={!online || busy || cameraState === "starting" || cameraState === "scanning"} onClick={() => void startCamera()}><ScanLineIcon aria-hidden="true" />{t("startScanner")}</Button><Button type="button" variant="outline" disabled={cameraState !== "scanning"} onClick={() => { stopCamera(); setCameraState("paused"); notify.info(t("notifications.cameraPaused")); }}>{t("pauseScanner")}</Button></div>
+		</section><form className="ticket-panel" onSubmit={e => { e.preventDefault(); lookupCode(code); }}><h2>{t("lookupTicket")}</h2><label>{t("manualCode")}<Input maxLength={120} onFocus={() => { stopCamera(); setCameraState("paused"); }} autoComplete="off" autoCapitalize="characters" spellCheck={false} value={code} onChange={e => { setCode(e.target.value); lookup.reset(); admission.reset(); notify.dismiss("ticket-admission"); notify.dismiss("ticket-lookup"); }} disabled={busy} /></label><Button type="submit" disabled={!online || busy || !code.trim()}>{t("lookupTicket")}</Button><TicketError error={lookup.error} /></form></div>
 		{lookup.data && <section className={`ticket-panel ${admitted ? "ticket-success" : outcome !== "ready" ? "ticket-danger" : ""}`} aria-live="assertive"><h2 className="ticket-outcome-heading">{admitted ? <CheckCircle2Icon aria-hidden="true" /> : outcome === "ready" ? <ScanLineIcon aria-hidden="true" /> : <XCircleIcon aria-hidden="true" />}{t(admitted ? "admissionAccepted" : `scan.${outcome}`)}</h2>
 			{admitted && <p><EventTime value={admission.data!.createdAt} timezone={ticket?.event.timezone ?? "Asia/Ho_Chi_Minh"} /></p>}
 			{ticket && <><h3>{t(`categories.${ticket.category}`)} · {t(`validity.${ticket.validity}`)}</h3>{ticket.recipientName && <p>{t("recipientName")}: {ticket.recipientName}</p>}<p>{t("acceptedCount", { count: admission.data?.acceptedCount ?? ticket.acceptedCount })}</p>{ticket.benefits.includes("networkingLunch") && <p className="ticket-benefit">{t("networkingLunch")}</p>}

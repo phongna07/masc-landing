@@ -1,5 +1,6 @@
 "use client";
 
+import { useTicketNotifications } from "@/components/tickets/use-ticket-notifications";
 import { Button } from "@masc-landing/ui/components/button";
 import { Textarea } from "@masc-landing/ui/components/textarea";
 import { Input } from "@masc-landing/ui/components/input";
@@ -13,14 +14,15 @@ import { TicketHeading, TicketLoading, TicketError } from "@/components/tickets/
 
 export default function AdminOrderDetail({ id }: { id: string }) {
 	const t = useTranslations("Tickets");
+	const notify = useTicketNotifications();
 	const locale = useLocale();
 	const detail = useQuery(trpc.tickets.orderDetail.queryOptions({ id }));
 	const refresh = () => { void detail.refetch(); };
-	const reconcile = useMutation(trpc.tickets.reconcile.mutationOptions({ onSuccess: refresh }));
-	const deliver = useMutation(trpc.tickets.deliver.mutationOptions({ onSuccess: refresh }));
-	const resolve = useMutation(trpc.tickets.resolveLate.mutationOptions({ onSuccess: refresh }));
-	const refund = useMutation(trpc.tickets.refund.mutationOptions({ onSuccess: refresh }));
-	const resolution = useMutation(trpc.tickets.recordResolution.mutationOptions({ onSuccess: refresh }));
+	const reconcile = useMutation(trpc.tickets.reconcile.mutationOptions({ onSuccess: () => { notify.info(t("notifications.reconciled")); refresh(); }, onError: notify.error }));
+	const deliver = useMutation(trpc.tickets.deliver.mutationOptions({ onSuccess: () => { notify.info(t("notifications.confirmationQueued")); refresh(); }, onError: notify.error }));
+	const resolve = useMutation(trpc.tickets.resolveLate.mutationOptions({ onSuccess: () => { notify.success(t("notifications.latePaymentResolved")); refresh(); }, onError: notify.error }));
+	const refund = useMutation(trpc.tickets.refund.mutationOptions({ onSuccess: () => { notify.success(t("notifications.refundRecorded")); refresh(); }, onError: notify.error }));
+	const resolution = useMutation(trpc.tickets.recordResolution.mutationOptions({ onSuccess: () => { notify.success(t("notifications.resolutionRecorded")); refresh(); }, onError: notify.error }));
 	const [reason, setReason] = useState("");
 	const [refundStatus, setRefundStatus] = useState<"pending" | "completed" | "failed">("completed");
 	const [amount, setAmount] = useState(0);

@@ -104,22 +104,30 @@ export default function GoogleSignInButton({ next = "/dashboard" }: { next?: str
     popupRef.current = popup;
     setIsPending(true);
 
-    const { data, error } = await authClient.signIn.social({
-      provider: "google",
-      callbackURL: `/login/google-callback?next=${encodeURIComponent(loginDestination(next))}`,
-      errorCallbackURL: `/login/google-callback?error=1&next=${encodeURIComponent(loginDestination(next))}`,
-      disableRedirect: true,
-    });
+    try {
+      const { data, error } = await authClient.signIn.social({
+        provider: "google",
+        callbackURL: `/login/google-callback?next=${encodeURIComponent(loginDestination(next))}`,
+        errorCallbackURL: `/login/google-callback?error=1&next=${encodeURIComponent(loginDestination(next))}`,
+        disableRedirect: true,
+      });
 
-    if (error || !data?.url) {
+      if (error || !data?.url) {
+        popup.close();
+        popupRef.current = null;
+        setIsPending(false);
+        toast.error(t("google.failed"));
+        return;
+      }
+
+      popup.location.href = data.url;
+      toast.info(t("google.opened"));
+    } catch {
       popup.close();
       popupRef.current = null;
       setIsPending(false);
       toast.error(t("google.failed"));
-      return;
     }
-
-    popup.location.href = data.url;
   };
 
   const discardRulebook = () => {

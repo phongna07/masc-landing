@@ -215,7 +215,8 @@
       "cancelled": "Đăng nhập Google đã bị hủy. Vui lòng thử lại.",
       "allowPopups": "Cho phép cửa sổ bật lên để tiếp tục với Google.",
       "failed": "Không thể bắt đầu đăng nhập Google. Vui lòng thử lại.",
-      "completing": "Đang hoàn tất đăng nhập Google…"
+      "completing": "Đang hoàn tất đăng nhập Google…",
+      "opened": "Hoàn tất đăng nhập Google trong cửa sổ bật lên."
     },
     "rulebookTitle": "Bộ luật dự thi MASC '26",
     "assurance": {
@@ -1626,7 +1627,8 @@
       "notIssued": "Đơn chưa có vé đã cấp để gửi.",
       "recipientEmailRequired": "Lưu email người nhận cho vé tặng này trước khi gửi.",
       "imageFailed": "Không tải được ảnh vé riêng tư. Thử lại khi đã đăng nhập.",
-      "existingAdminRole": "Email này đã có vai trò quản trị viên gốc hoặc chuyên môn. Dùng quy trình quản lý vai trò hiện có."
+      "existingAdminRole": "Email này đã có vai trò quản trị viên gốc hoặc chuyên môn. Dùng quy trình quản lý vai trò hiện có.",
+      "exportFailed": "Không thể tải bản xuất đơn hàng. Vui lòng thử lại."
     },
     "email": {
       "subject": "Xác nhận mua vé của bạn",
@@ -1708,6 +1710,34 @@
     "batchDetailsIntro": "Quản lý từng vé tặng và chuẩn bị ảnh riêng tư để phân phối.",
     "noMatchingOrders": "Không có đơn hàng khớp với bộ lọc.",
     "noBatches": "Không có lô vé tặng khớp với bộ lọc.",
-    "noIssued": "Chưa có vé đã cấp trên trang này."
+    "noIssued": "Chưa có vé đã cấp trên trang này.",
+    "notifications": {
+      "orderCreated": "Đơn hàng đã được tạo. Tiếp tục thanh toán hoặc kiểm tra trạng thái đơn.",
+      "batchCreated": "Đã tạo thành công {count} vé tặng.",
+      "settingsSaved": "Đã lưu cài đặt vé thành công.",
+      "recipientSaved": "Đã lưu thông tin người nhận thành công.",
+      "staffGranted": "Đã cấp quyền nhân viên kiểm soát vào cửa.",
+      "staffRemoved": "Đã gỡ quyền nhân viên kiểm soát vào cửa.",
+      "reconciled": "Đã hoàn tất lượt đối soát. Kiểm tra trạng thái thanh toán hiện tại và các vấn đề chưa xử lý.",
+      "webhookConfirmed": "Đã đăng ký và xác nhận webhook PayOS.",
+      "revoked": "Đã thu hồi vé này thành công.",
+      "replaced": "Đã thay mã vé. Hãy phân phối ảnh vé mới.",
+      "emailQueued": "Email vé đã được đưa vào hàng đợi. Kiểm tra trạng thái gửi để biết kết quả.",
+      "confirmationQueued": "Email xác nhận đã được đưa vào hàng đợi gửi lại. Kiểm tra trạng thái gửi để biết kết quả.",
+      "latePaymentResolved": "Đã duyệt thanh toán muộn và cấp vé.",
+      "refundRecorded": "Đã lưu bản ghi hoàn tiền thủ công thành công.",
+      "resolutionRecorded": "Đã lưu ghi chú xử lý thành công.",
+      "statusChecked": "Đã hoàn tất lượt kiểm tra thanh toán. Kiểm tra trạng thái đơn hiện tại.",
+      "statisticsRefreshed": "Đã cập nhật số liệu thống kê vé.",
+      "cancelled": "Đã hủy phiên thanh toán.",
+      "cancellationChecked": "Đã hoàn tất yêu cầu hủy. Kiểm tra trạng thái đơn hiện tại.",
+      "downloadStarted": "Tệp đã sẵn sàng và đã bắt đầu tải xuống.",
+      "sheetPreparing": "Đang chuẩn bị bản in. Chờ tải xong tất cả ảnh vé.",
+      "sheetReady": "Bản vé đã sẵn sàng để in hoặc lưu PDF.",
+      "printOpened": "Đang mở hộp thoại in. Chọn máy in hoặc lưu PDF.",
+      "cameraStarted": "Máy quét camera đã sẵn sàng. Quét vé để tra cứu.",
+      "cameraPaused": "Đã tạm dừng máy quét camera.",
+      "cameraSelected": "Đã đổi lựa chọn camera. Khởi động máy quét để sử dụng."
+    }
   }
 }
