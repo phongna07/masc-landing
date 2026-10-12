@@ -8,6 +8,7 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { useLocale, useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { TicketIcon } from "lucide-react";
 import { trpc } from "@/utils/trpc";
 import { TicketHeading, TicketLoading, TicketError } from "@/components/tickets/ticket-ui";
 
@@ -27,7 +28,7 @@ export default function PurchaseTickets() {
 		if (submitted.current) return;
 		setSelected(name);
 	}
-	return <><TicketHeading title={t("buy")} description={t("purchaseIntro")} action={<Button nativeButton={false} render={<Link href="/my-tickets" />} variant="outline">{t("myTickets")}</Button>} />
+	return <><TicketHeading title={t("buy")} description={t("purchaseIntro")} action={<Button nativeButton={false} render={<Link href="/my-tickets" />} className="ticket-heading-action" size="lg"><TicketIcon aria-hidden="true" />{t("myTickets")}</Button>} />
 		{config.isPending && <TicketLoading />}<TicketError error={config.error} />
 		{config.data && <><p className="ticket-warning">{t(config.data.isSalesOpened ? "salesOpen" : "salesClosed")}</p><p>{t("vipAvailability", { available: config.data.vipAvailable, limit: config.data.vipCapacity })}</p>
 			<form onSubmit={event => { event.preventDefault(); requestKey.current ??= crypto.randomUUID(); submitted.current = true; checkout.mutate({ requestKey: requestKey.current, packageName: selected, buyerName: name, buyerPhone: phone, locale: locale === "en" ? "en" : "vi" }); }}>

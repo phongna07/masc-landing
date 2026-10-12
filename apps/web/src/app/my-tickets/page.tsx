@@ -4,5 +4,5 @@ import MyTickets from "./my-tickets";
 
 export default async function MyTicketsPage() {
 	await requireTicketBuyer("/my-tickets");
-	return <TicketShell><MyTickets /></TicketShell>;
+	return <TicketShell showNavigation={false}><MyTickets /></TicketShell>;
 }

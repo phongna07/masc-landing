@@ -4,5 +4,5 @@ import PurchaseTickets from "./purchase-tickets";
 
 export default async function TicketsPage() {
 	await requireTicketBuyer("/tickets");
-	return <TicketShell><PurchaseTickets /></TicketShell>;
+	return <TicketShell showNavigation={false}><PurchaseTickets /></TicketShell>;
 }
