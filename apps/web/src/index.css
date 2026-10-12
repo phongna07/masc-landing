@@ -2380,6 +2380,9 @@ dialog[open]::backdrop {
   position: sticky;
   top: 76px;
   height: calc(100svh - 76px);
+  height: calc(100dvh - 76px);
+  overflow-y: auto;
+  overscroll-behavior-y: contain;
   padding: 34px 22px;
   border-right: 1px solid var(--line);
   background: rgba(10, 9, 13, .82);
@@ -4644,6 +4647,10 @@ dialog[open]::backdrop {
 }
 
 @media (max-width: 850px) {
+  .admin-navbar {
+    height: 68px;
+  }
+
   .admin-layout {
     display: block;
   }
@@ -4659,6 +4666,7 @@ dialog[open]::backdrop {
     left: 0;
     width: min(82vw, 300px);
     height: calc(100svh - 68px);
+    height: calc(100dvh - 68px);
     transform: translateX(-101%);
     transition: transform .2s ease;
   }
