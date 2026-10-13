@@ -29,6 +29,7 @@
     "nextjs-toploader": "^3.9.17",
     "react": "catalog:",
     "react-dom": "catalog:",
+    "sharp": "^0.35.5",
     "sonner": "catalog:",
     "write-excel-file": "^4.1.1",
     "zod": "catalog:"
@@ -37,7 +38,7 @@
     "@masc-landing/config": "workspace:*",
     "@tailwindcss/postcss": "catalog:",
     "@tanstack/react-query-devtools": "^5.101.2",
-    "@types/node": "^20",
+    "@types/node": "^22.13.14",
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
     "tailwindcss": "catalog:",
