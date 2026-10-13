@@ -664,6 +664,20 @@ p.ticket-warning {
   overflow-wrap: anywhere;
 }
 
+.ticket-check-in-logs-table {
+  min-width: 1200px;
+}
+
+.ticket-log-sort[data-slot="button"] {
+  height: auto;
+  padding: 0;
+  color: inherit;
+  font: inherit;
+  letter-spacing: inherit;
+  text-transform: inherit;
+  white-space: normal;
+}
+
 .ticket-main details,
 .ticket-admin details {
   margin-top: 20px;

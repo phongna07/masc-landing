@@ -1427,6 +1427,45 @@
     "purchased": "Purchased tickets and orders",
     "gifted": "Gifted tickets and batches",
     "checkIn": "Entrance check-in",
+    "checkInLogs": "Check-in Logs",
+    "logs": {
+      "intro": "Review check-ins for purchased and gifted tickets, including rejected attempts and admin overrides.",
+      "searchPlaceholder": "Name, email, phone, ticket ID, order or gift batch",
+      "staff": "Staff",
+      "staffPlaceholder": "Staff name, email or account ID",
+      "admissionType": "Admission type",
+      "types": {
+        "standard": "Without override",
+        "override": "Admin override"
+      },
+      "from": "From date",
+      "to": "To date",
+      "sortBy": "Sort by",
+      "direction": "Sort direction",
+      "asc": "Ascending",
+      "desc": "Descending",
+      "pageSize": "Rows per page",
+      "reset": "Reset filters",
+      "refresh": "Refresh logs",
+      "timezone": "Dates and times use Vietnam time (UTC+7).",
+      "empty": "No check-in records match these filters.",
+      "ticketNumber": "Ticket #{number}",
+      "columns": {
+        "createdAt": "Check-in time",
+        "ticket": "Ticket / order / gift batch",
+        "source": "Ticket source",
+        "category": "Category",
+        "recipient": "Recipient / buyer",
+        "actor": "Staff",
+        "outcome": "Outcome",
+        "reason": "Reason"
+      },
+      "sources": {
+        "purchased": "Purchased",
+        "gifted": "Gifted",
+        "unknown": "Unidentified ticket"
+      }
+    },
     "settings": "Ticket settings",
     "salesToggle": "Open new ticket purchases",
     "salesToggleHelp": "Closing sales blocks new orders and preserves existing unexpired checkouts.",
@@ -1618,6 +1657,7 @@
       "deliveryFailed": "Email delivery failed. Your issued tickets remain available; an admin can resend the email."
     },
     "errors": {
+      "invalidDateRange": "The end date must be on or after the start date.",
       "operationFailed": "The operation could not be completed. Please retry or contact the organizer.",
       "rateLimited": "Too many requests. Please wait a minute before retrying.",
       "notFound": "This ticket or order was not found in your authorized records.",
