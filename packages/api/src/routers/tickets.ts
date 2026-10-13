@@ -10,6 +10,7 @@ import { confirmCheckIn, lookupTicket } from "../tickets/check-in";
 import { batchDetail, batchInput, changeTicket, createGiftBatch, enqueueDelivery, listBatches, listOrders, orderDetail, pageInput, recipientInput, recordRefund, recordResolution, refundInput, setEntranceStaff, settingsInput, ticketHistory, updateRecipient, updateSettings } from "../tickets/management";
 import { cancelCheckout, checkoutInput, reconcileOrder, resolveLatePayment, runReconciliation, startCheckout } from "../tickets/payments";
 import { payos } from "../tickets/payos";
+import { runTicketEmailJobs } from "../tickets/email";
 import { env } from "@masc-landing/env/server";
 
 // Do not surface SQL/provider errors that could contain admission credentials.
@@ -69,6 +70,12 @@ export const ticketsRouter = router({
 		await rateLimit(ctx.session.user.id, "admin-reconcile", 6);
 		if (input.id) await reconcileOrder(input.id, true); else await runReconciliation();
 		await ticketTransaction(tx => audit(tx, ctx.session.user.id, "reconciled", input.id ?? null));
+	})),
+	triggerEmailSending: root.mutation(({ ctx }) => safeErrors(async () => {
+		await rateLimit(ctx.session.user.id, "admin-ticket-email", 6);
+		const result = await runTicketEmailJobs(2);
+		await ticketTransaction(tx => audit(tx, ctx.session.user.id, "emailSendingTriggered", null));
+		return result;
 	})),
 	resolveLate: root.input(z.object({ id: z.uuid(), reason: z.string().trim().min(1).max(1000) })).mutation(({ ctx, input }) => safeErrors(() => resolveLatePayment(input.id, ctx.session.user.id, input.reason))),
 	recordResolution: root.input(z.object({ id: z.uuid(), reason: z.string().trim().min(1).max(1000) })).mutation(({ ctx, input }) => safeErrors(() => recordResolution(input.id, input.reason, ctx.session.user.id))),

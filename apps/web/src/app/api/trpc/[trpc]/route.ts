@@ -4,6 +4,7 @@ import { fetchRequestHandler } from "@trpc/server/adapters/fetch";
 import { NextRequest } from "next/server";
 
 export const runtime = "nodejs";
+export const maxDuration = 300;
 
 async function handler(req: NextRequest) {
   const response = await fetchRequestHandler({
