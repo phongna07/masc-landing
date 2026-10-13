@@ -48,6 +48,8 @@ export const ticketOrders = pgTable("ticket_orders", {
 	reconcileAttempts: integer("reconcile_attempts").notNull().default(0),
 	nextReconcileAt: time("next_reconcile_at").notNull().defaultNow(),
 	reconcileLeaseUntil: time("reconcile_lease_until"),
+	reconcileLeaseId: text("reconcile_lease_id"),
+	reconcileRequestId: text("reconcile_request_id"),
 	lastVerifiedAt: time("last_verified_at"),
 	providerStatus: text("provider_status"),
 	checkoutClosedAt: time("checkout_closed_at"),

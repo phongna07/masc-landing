@@ -148,6 +148,13 @@
       "when": 1791713246389,
       "tag": "0020_messy_serpent_society",
       "breakpoints": true
+    },
+    {
+      "idx": 21,
+      "version": "7",
+      "when": 1791863680609,
+      "tag": "0021_curious_gunslinger",
+      "breakpoints": true
     }
   ]
 }

@@ -3,10 +3,11 @@ import { APIError, InvalidSignatureError, WebhookError } from "@payos/node";
 import { db } from "@masc-landing/db";
 import { ticketTransaction, type TicketTransaction } from "@masc-landing/db/ticket-transaction";
 import { ticketEmailJobs, ticketOrders, ticketPackages, ticketPaymentEvents } from "@masc-landing/db/schema/tickets";
-import { and, eq, isNull, lte, or, sql } from "drizzle-orm";
+import { and, eq, isNull, sql } from "drizzle-orm";
 import { z } from "zod";
 import { audit, issueTicket, lockSales, ownedOrder, rateLimit, releaseExpiredReservations, ticketError, vipUsage, type Order } from "./core";
 import { checkoutUrl, orderReturnUrl, payos, validCheckoutUrl } from "./payos";
+import { reconciliationClaim, reconciliationCompletion, reconciliationDue, reconciliationOwner, reconciliationRequest } from "./reconciliation";
 
 export const checkoutInput = z.object({
 	requestKey: z.uuid(), packageName: z.enum(["Silver", "Golden", "Platinum", "VIP"]),
@@ -78,7 +79,7 @@ async function createPaymentLink(orderId: string) {
 			await tx.update(ticketOrders).set({
 				paymentStatus: rejected ? "failed" : "creating", issue: rejected ? "creationFailed" : "creationUnknown",
 				reservation: rejected && current.reservation === "held" ? "released" : current.reservation,
-				nextReconcileAt: sql`now() + interval '30 seconds'`, updatedAt: sql`now()`,
+				nextReconcileAt: sql`case when ${ticketOrders.reconcileRequestId} is not null then ${ticketOrders.nextReconcileAt} else now() + interval '30 seconds' end`, updatedAt: sql`now()`,
 			}).where(eq(ticketOrders.id, order.id));
 		});
 	}
@@ -102,13 +103,14 @@ async function fulfill(tx: TicketTransaction, order: Order) {
 	await tx.update(ticketOrders).set({ paymentStatus: "paid", fulfillmentStatus: "issued", paidAt: sql`coalesce(${ticketOrders.paidAt}, now())`, reservation: order.snapshot.category === "vip" ? "consumed" : "none", issue: null, updatedAt: sql`now()` }).where(eq(ticketOrders.id, order.id));
 }
 
-export async function applyProviderStatus(orderId: string, rawStatus: unknown) {
+export async function applyProviderStatus(orderId: string, rawStatus: unknown, leaseId?: string) {
 	const result = providerStatus.safeParse(rawStatus);
 	return ticketTransaction(async tx => {
 		await lockSales(tx);
 		await releaseExpiredReservations(tx);
 		const [order] = await tx.select().from(ticketOrders).where(eq(ticketOrders.id, orderId)).for("update");
 		if (!order) ticketError("notFound", "NOT_FOUND");
+		if (leaseId && order.reconcileLeaseId !== leaseId) return;
 		let issue: string | null = null;
 		if (!result.success) issue = "providerMismatch";
 		const status = result.success ? result.data : null;
@@ -160,21 +162,21 @@ export async function applyProviderStatus(orderId: string, rawStatus: unknown) {
 export async function reconcileOrder(orderId: string, force = false) {
 	// Persist a lease before network I/O: browser polling, staff and workers share
 	// this throttle. A crashed worker's lease expires; no in-memory dependency.
-	const [order] = await db.update(ticketOrders).set({ reconcileLeaseUntil: sql`now() + interval '30 seconds'` })
-		.where(and(eq(ticketOrders.id, orderId), or(isNull(ticketOrders.reconcileLeaseUntil), lte(ticketOrders.reconcileLeaseUntil, sql`now()`)), force ? undefined : and(lte(ticketOrders.nextReconcileAt, sql`now()`), or(isNull(ticketOrders.lastVerifiedAt), sql`${ticketOrders.lastVerifiedAt} < now() - interval '10 seconds'`)))).returning();
-	if (!order) return;
+	const claim = reconciliationClaim(orderId, force);
+	const [order] = await db.update(ticketOrders).set(claim.set).where(claim.where).returning();
+	if (!order?.reconcileLeaseId) return;
 	let failed = false;
 	try {
 		if (!order.createAttemptedAt && order.paymentStatus === "creating") await createPaymentLink(order.id);
-		await applyProviderStatus(order.id, await payos().paymentRequests.get(order.providerOrderCode));
+		await applyProviderStatus(order.id, await payos().paymentRequests.get(order.providerOrderCode), order.reconcileLeaseId);
 	} catch (error) {
 		failed = true;
 		// No provider payload, personal data or credentials enter diagnostics.
 		const issue = error instanceof APIError && (error.status === 404 || error.code === "231") ? "linkNotFound" : "verificationUnavailable";
-		await db.update(ticketOrders).set({ issue }).where(and(eq(ticketOrders.id, orderId), sql`${ticketOrders.fulfillmentStatus} <> 'issued'`, sql`${ticketOrders.paymentStatus} <> 'review'`));
+		await db.update(ticketOrders).set({ issue }).where(and(reconciliationOwner(orderId, order.reconcileLeaseId), sql`${ticketOrders.fulfillmentStatus} <> 'issued'`, sql`${ticketOrders.paymentStatus} <> 'review'`));
 	} finally {
-		const seconds = failed ? Math.min(3600, 30 * 2 ** Math.min(order.reconcileAttempts, 7)) : order.fulfillmentStatus === "issued" ? 3600 : Math.min(3600, 30 * 2 ** Math.min(order.reconcileAttempts, 7));
-		await db.update(ticketOrders).set({ reconcileLeaseUntil: null, reconcileAttempts: sql`${ticketOrders.reconcileAttempts} + 1`, nextReconcileAt: new Date(Date.now() + seconds * 1000) }).where(eq(ticketOrders.id, orderId));
+		const completion = reconciliationCompletion(order, failed);
+		await db.update(ticketOrders).set(completion.set).where(completion.where);
 	}
 }
 
@@ -205,7 +207,7 @@ export async function receiveWebhook(raw: unknown) {
 			const [event] = await tx.insert(ticketPaymentEvents).values({ id: randomUUID(), eventKey, orderId: order?.id, providerOrderCode: data.orderCode, paymentLinkId: data.paymentLinkId, reference: data.reference, amount: data.amount, currency: data.currency, kind: sample ? "sample" : "webhook", outcome: sample ? "sample" : !order ? "unmatched" : mismatch ? "mismatch" : "received" }).onConflictDoNothing().returning({ id: ticketPaymentEvents.id });
 			recorded = Boolean(event);
 		}
-		if (order && !sample && recorded) await tx.update(ticketOrders).set({ nextReconcileAt: sql`now()` }).where(eq(ticketOrders.id, order.id));
+		if (order && !sample && recorded) await tx.update(ticketOrders).set(reconciliationRequest()).where(eq(ticketOrders.id, order.id));
 		return sample || !recorded ? null : order?.id;
 	});
 	// Receipt is already durable. The scheduled worker can finish after any failure.
@@ -238,11 +240,7 @@ export async function runReconciliation(limit = 4) {
 	await ticketTransaction(async tx => { await lockSales(tx); await releaseExpiredReservations(tx); });
 	// Include recently issued/terminal orders to detect duplicate and late transfers.
 	const orders = await db.select({ id: ticketOrders.id }).from(ticketOrders)
-		.where(and(lte(ticketOrders.nextReconcileAt, sql`now()`), or(
-			sql`${ticketOrders.createdAt} > now() - interval '90 days'`,
-			sql`${ticketOrders.paymentStatus} in ('creating', 'pending', 'processing', 'review')`,
-			sql`exists (select 1 from ticket_payment_events e where e.order_id = ${ticketOrders.id} and e.kind = 'webhook' and e.created_at > coalesce(${ticketOrders.lastVerifiedAt}, 'epoch'::timestamptz))`,
-		), or(isNull(ticketOrders.reconcileLeaseUntil), lte(ticketOrders.reconcileLeaseUntil, sql`now()`))))
+		.where(reconciliationDue())
 		.orderBy(ticketOrders.nextReconcileAt).limit(limit);
 	for (const order of orders) await reconcileOrder(order.id);
 	return orders.length;

@@ -10,7 +10,7 @@
     }
   },
   "scripts": {
-		"test": "tsx --test src/admin-activity-input.test.ts src/email/mail-campaign-template.test.ts src/home-countdown-input.test.ts src/mail-campaign-audience.test.ts src/registration-schema.test.ts src/round-one-track-description.test.ts src/round-problem-statements.test.ts src/submission-availability-policy.test.ts src/upload-limit-validation.test.ts"
+		"test": "tsx --test src/admin-activity-input.test.ts src/email/mail-campaign-template.test.ts src/home-countdown-input.test.ts src/mail-campaign-audience.test.ts src/registration-schema.test.ts src/round-one-track-description.test.ts src/round-problem-statements.test.ts src/submission-availability-policy.test.ts src/tickets/reconciliation.test.ts src/upload-limit-validation.test.ts"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1085.0",
@@ -31,6 +31,7 @@
     "zod": "catalog:"
   },
   "devDependencies": {
+    "@electric-sql/pglite": "^0.5.8",
     "@masc-landing/config": "workspace:*",
     "@types/html-to-text": "^9.0.4",
     "@types/qrcode": "^1.5.6",
