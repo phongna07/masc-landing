@@ -1362,7 +1362,7 @@
   "UserMenu": {
     "signIn": "Sign In",
     "account": "My Account",
-    "profile": "My Profile",
+    "profile": "Dashboard",
     "signOut": "Sign Out"
   },
   "Tickets": {

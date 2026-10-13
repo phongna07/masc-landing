@@ -1362,7 +1362,7 @@
   "UserMenu": {
     "signIn": "Đăng nhập",
     "account": "Tài khoản của tôi",
-    "profile": "Thông tin cá nhân",
+    "profile": "Cổng thông tin",
     "signOut": "Đăng xuất"
   },
   "Tickets": {
@@ -1378,8 +1378,8 @@
     "selectPackage": "Chọn gói vé",
     "packageQuantity": "Gói {name} gồm {count} vé",
     "quantity": "{count} vé",
-    "vipDescription": "Vé VIP bao gồm bữa trưa giao lưu (Networking Lunch). Số lượng có hạn.",
-    "networkingLunch": "Bao gồm bữa trưa giao lưu (Networking Lunch)",
+    "vipDescription": "Vé VIP bao gồm Networking Lunch. Số lượng có hạn.",
+    "networkingLunch": "Bao gồm Networking Lunch",
     "buyerContact": "Thông tin người mua",
     "optionalContact": "Bạn có thể để lại họ tên và số điện thoại để ban tổ chức tiện liên hệ. Không bắt buộc cung cấp thông tin của từng người tham dự.",
     "buyerName": "Họ tên người mua (tùy chọn)",
@@ -1630,8 +1630,8 @@
       "invalidTemplateConfig": "Kiểm tra tiêu đề thương hiệu, độ dài văn bản và cỡ chữ. Ảnh QR code: tiêu đề 28–48 px, nội dung 18–26 px. Email: tiêu đề 24–40 px, nội dung 12–18 px, rộng 480–800 px. Màu phải là mã hex sáu ký tự."
     },
     "email": {
-      "subject": "Xác nhận mua vé tham dự Marketing All-Star Challenge",
-      "giftSubject": "Bạn nhận được vé mời tham dự Marketing All-Star Challenge",
+      "subject": "Xác nhận mua vé tham dự chung kết Marketing All-Star Challenge",
+      "giftSubject": "Bạn nhận được vé mời tham dự chung kết Marketing All-Star Challenge",
       "intro": "Ban tổ chức đã xác nhận thanh toán của bạn. Mỗi vé trong đơn được gửi kèm dưới dạng ảnh PNG có mã QR để vào cửa.",
       "giftIntro": "Ban tổ chức gửi tặng bạn một vé tham dự sự kiện của Marketing All-Star Challenge. Bạn chỉ cần xuất trình mã QR trên vé khi đến, không cần đăng nhập tài khoản.",
       "attachments": "Vui lòng tải và lưu các ảnh vé đính kèm để xuất trình khi đến sự kiện. Nếu không mở được ảnh, vui lòng liên hệ ban tổ chức để được hỗ trợ.",
@@ -1642,7 +1642,7 @@
       "valid": "Hợp lệ",
       "revoked": "Đã thu hồi",
       "admissionQr": "Mã QR vào cửa (không dùng để thanh toán)",
-      "networkingLunch": "Bao gồm bữa trưa giao lưu (Networking Lunch)",
+      "networkingLunch": "Bao gồm Networking Lunch",
       "confidential": "Mã vé và mã QR có thể được dùng để vào cửa. Vui lòng không đăng công khai và chỉ gửi cho người sẽ sử dụng vé.",
       "code": "Mã vé",
       "package": "Gói vé",
@@ -1695,7 +1695,7 @@
       "latePayment": "Thanh toán sau khi hủy hoặc hết hạn",
       "other": "Kết quả kiểm tra khác"
     },
-    "eyebrow": "Vé tham dự Marketing All-Star Challenge",
+    "eyebrow": "Vé tham dự chung kết Marketing All-Star Challenge",
     "navigation": "Các mục mua và quản lý vé",
     "pagination": "Chuyển trang danh sách",
     "statistics": "Thống kê vé",
