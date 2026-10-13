@@ -2,16 +2,14 @@ import { sql } from "drizzle-orm";
 import { bigint, boolean, check, foreignKey, index, integer, jsonb, pgTable, text, timestamp, uniqueIndex } from "drizzle-orm/pg-core";
 import { user } from "./auth";
 
-export type TicketEvent = { name: string; date: string | null; venue: string | null; timezone: string };
 export type TicketBenefit = "networkingLunch";
-export type OrderSnapshot = { packageName: string; category: "normal" | "vip"; quantity: number; benefits: TicketBenefit[]; currency: "VND"; totalPrice: number; event: TicketEvent };
+export type OrderSnapshot = { packageName: string; category: "normal" | "vip"; quantity: number; benefits: TicketBenefit[]; currency: "VND"; totalPrice: number };
 const time = (name: string) => timestamp(name, { withTimezone: true, mode: "date" });
 
 export const ticketSettings = pgTable("ticket_settings", {
 	id: integer("id").primaryKey().default(1),
 	isSalesOpened: boolean("is_sales_opened").notNull().default(false),
 	vipCapacity: integer("vip_capacity").notNull().default(30),
-	event: jsonb("event").$type<TicketEvent>().notNull().default({ name: "Marketing All-Star Challenge 2026", date: null, venue: null, timezone: "Asia/Ho_Chi_Minh" }),
 	updatedAt: time("updated_at").notNull().defaultNow(),
 }, t => [check("ticket_settings_singleton", sql`${t.id} = 1`), check("ticket_capacity_nonnegative", sql`${t.vipCapacity} >= 0`)]);
 
@@ -65,7 +63,6 @@ export const giftBatches = pgTable("ticket_gift_batches", {
 	quantity: integer("quantity").notNull(),
 	title: text("title").notNull(),
 	note: text("note"),
-	event: jsonb("event").$type<TicketEvent>().notNull(),
 	createdBy: text("created_by").notNull(),
 	createdAt: time("created_at").notNull().defaultNow(),
 }, t => [check("gift_batch_bounded", sql`${t.quantity} between 1 and 100`)]);
@@ -81,7 +78,6 @@ export const admissionTickets = pgTable("admission_tickets", {
 	code: text("code").notNull().unique(),
 	validity: text("validity", { enum: ["valid", "revoked"] }).notNull().default("valid"),
 	benefits: jsonb("benefits").$type<TicketBenefit[]>().notNull().default([]),
-	event: jsonb("event").$type<TicketEvent>().notNull(),
 	recipientName: text("recipient_name"),
 	recipientPhone: text("recipient_phone"),
 	recipientEmail: text("recipient_email"),

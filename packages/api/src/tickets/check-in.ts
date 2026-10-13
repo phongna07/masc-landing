@@ -6,7 +6,7 @@ import { and, desc, eq, sql } from "drizzle-orm";
 import { codePattern, hashCode, rateLimit, ticketError, type Ticket } from "./core";
 
 function admissionDetails(ticket: Ticket) {
-	return { id: ticket.id, category: ticket.category, validity: ticket.validity, recipientName: ticket.recipientName, acceptedCount: ticket.acceptedCount, benefits: ticket.benefits, credentialVersion: ticket.credentialVersion, event: ticket.event };
+	return { id: ticket.id, category: ticket.category, validity: ticket.validity, recipientName: ticket.recipientName, acceptedCount: ticket.acceptedCount, benefits: ticket.benefits, credentialVersion: ticket.credentialVersion };
 }
 
 export async function lookupTicket(actorId: string, rawCode: string, requestKey: string) {

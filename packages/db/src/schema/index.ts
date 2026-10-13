@@ -17,3 +17,4 @@ export * from "./submission-settings";
 export * from "./upload-limit-settings";
 export * from "./user-announcements";
 export * from "./tickets";
+export * from "./ticket-templates";

@@ -40,6 +40,7 @@ type RichTextEditorProps = {
 	ariaDescribedBy?: string;
 	value: string;
 	disabled?: boolean;
+	tabIndentsLists?: boolean;
 	maxLength: number;
 	labels: RichTextEditorLabels;
 	onChange: (value: string) => void;
@@ -135,7 +136,7 @@ export function richTextHasContent(value: string) {
 		.trim().length > 0;
 }
 
-export default function RichTextEditor({ id, ariaLabel, ariaInvalid, ariaDescribedBy, value, disabled = false, maxLength, labels, onChange }: RichTextEditorProps) {
+export default function RichTextEditor({ id, ariaLabel, ariaInvalid, ariaDescribedBy, value, disabled = false, tabIndentsLists = true, maxLength, labels, onChange }: RichTextEditorProps) {
 	const editorRef = useRef<HTMLDivElement>(null);
 	const acceptedValueRef = useRef(value);
 	const savedRangeRef = useRef<Range | null>(null);
@@ -268,7 +269,7 @@ export default function RichTextEditor({ id, ariaLabel, ariaInvalid, ariaDescrib
 	};
 
 	const handleKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
-		if (event.key === "Tab") {
+		if (event.key === "Tab" && tabIndentsLists) {
 			event.preventDefault();
 			const editor = editorRef.current;
 			const selection = window.getSelection();

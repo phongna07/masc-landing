@@ -35,7 +35,6 @@ before(async () => {
 		CREATE TABLE ticket_settings (
 			id integer PRIMARY KEY DEFAULT 1, is_sales_opened boolean NOT NULL DEFAULT false,
 			vip_capacity integer NOT NULL DEFAULT 30,
-			event jsonb NOT NULL DEFAULT '{"name":"Event","date":null,"venue":null,"timezone":"Asia/Ho_Chi_Minh"}',
 			updated_at timestamptz NOT NULL DEFAULT now()
 		);
 		CREATE TABLE ticket_packages (

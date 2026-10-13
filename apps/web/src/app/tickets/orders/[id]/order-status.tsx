@@ -9,7 +9,7 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { useLocale, useTranslations } from "next-intl";
 import Link from "next/link";
 import { trpc } from "@/utils/trpc";
-import TicketCard, { EventTime } from "@/components/tickets/ticket-card";
+import TicketCard, { TicketTime } from "@/components/tickets/ticket-card";
 import { TicketHeading, TicketLoading, TicketError } from "@/components/tickets/ticket-ui";
 
 export default function OrderStatus({ id }: { id: string }) {
@@ -40,7 +40,7 @@ export default function OrderStatus({ id }: { id: string }) {
 			<p>{value.snapshot.packageName} · {t("quantity", { count: value.snapshot.quantity })} · {new Intl.NumberFormat(locale, { style: "currency", currency: "VND", maximumFractionDigits: 0 }).format(value.snapshot.totalPrice)}</p>
 			{["creating", "pending", "processing"].includes(value.paymentStatus) && <div className="ticket-payment-status" role="status"><LoaderCircleIcon className="motion-safe:animate-spin" aria-hidden="true" /><p>{t("confirming")}</p></div>}
 			{value.issue && <p className="ticket-warning">{t.has(`issues.${value.issue}`) ? t(`issues.${value.issue}`) : t("issues.providerMismatch")}</p>}
-			<p>{t("expires")}: <EventTime value={value.expiresAt} timezone={value.snapshot.event.timezone} /></p>
+			<p>{t("expires")}: <TicketTime value={value.expiresAt} /></p>
 			<div className="ticket-actions">{value.checkoutUrl && !value.checkoutClosedAt && (["pending", "processing"].includes(value.paymentStatus) || value.issue === "underpaid") && new Date(value.expiresAt).getTime() > Date.now() && <Button className="ticket-button-primary" nativeButton={false} render={<a href={value.checkoutUrl} rel="noreferrer" />}><CreditCardIcon aria-hidden="true" />{t("continuePayment")}</Button>}
 			{!value.checkoutClosedAt && (["creating", "pending", "processing"].includes(value.paymentStatus) || value.issue === "underpaid") && <Button className="ticket-button-danger" type="button" variant="outline" disabled={cancel.isPending || verify.isPending} onClick={() => cancel.mutate({ id })}><XCircleIcon aria-hidden="true" />{t("cancelCheckout")}</Button>}
 			{value.fulfillmentStatus !== "issued" && <Button className="ticket-button-utility" type="button" disabled={verify.isPending} onClick={() => verify.mutate({ id }, { onSuccess: () => notify.info(t("notifications.statusChecked")), onError: notify.error })}><RefreshCwIcon aria-hidden="true" />{t("refreshStatus")}</Button>}</div><TicketError error={verify.error || cancel.error} />

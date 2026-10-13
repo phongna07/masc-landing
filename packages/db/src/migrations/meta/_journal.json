@@ -155,6 +155,20 @@
       "when": 1791863680609,
       "tag": "0021_curious_gunslinger",
       "breakpoints": true
+    },
+    {
+      "idx": 22,
+      "version": "7",
+      "when": 1791869282984,
+      "tag": "0022_same_zaran",
+      "breakpoints": true
+    },
+    {
+      "idx": 23,
+      "version": "7",
+      "when": 1791873069431,
+      "tag": "0023_moaning_snowbird",
+      "breakpoints": true
     }
   ]
 }

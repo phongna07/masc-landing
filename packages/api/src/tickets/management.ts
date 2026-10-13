@@ -8,14 +8,13 @@ import { z } from "zod";
 import { audit, issueTicket, lockSales, reserveCode, releaseExpiredReservations, ticketError, vipUsage } from "./core";
 
 const optionalText = (max: number) => z.string().trim().max(max).nullable().optional();
-export const eventInput = z.object({ name: z.string().trim().min(1).max(120), date: z.iso.datetime({ offset: true }).nullable(), venue: z.string().trim().max(160).nullable(), timezone: z.string().refine(value => { try { new Intl.DateTimeFormat("en", { timeZone: value }); return true; } catch { return false; } }) });
-export const settingsInput = z.object({ isSalesOpened: z.boolean(), vipCapacity: z.number().int().min(0).max(100000), event: eventInput, prices: z.object({ Silver: z.number().int().min(1000).max(1000000000), Golden: z.number().int().min(1000).max(1000000000), Platinum: z.number().int().min(1000).max(1000000000), VIP: z.number().int().min(1000).max(1000000000) }) });
+export const settingsInput = z.object({ isSalesOpened: z.boolean(), vipCapacity: z.number().int().min(0).max(100000), prices: z.object({ Silver: z.number().int().min(1000).max(1000000000), Golden: z.number().int().min(1000).max(1000000000), Platinum: z.number().int().min(1000).max(1000000000), VIP: z.number().int().min(1000).max(1000000000) }) });
 export async function updateSettings(input: z.infer<typeof settingsInput>, actorId: string) {
 	await ticketTransaction(async tx => {
 		await lockSales(tx);
 		await releaseExpiredReservations(tx);
 		if (input.vipCapacity < await vipUsage(tx)) ticketError("capacityTooLow", "CONFLICT");
-		await tx.update(ticketSettings).set({ isSalesOpened: input.isSalesOpened, vipCapacity: input.vipCapacity, event: input.event, updatedAt: sql`now()` }).where(eq(ticketSettings.id, 1));
+		await tx.update(ticketSettings).set({ isSalesOpened: input.isSalesOpened, vipCapacity: input.vipCapacity, updatedAt: sql`now()` }).where(eq(ticketSettings.id, 1));
 		for (const name of ["Silver", "Golden", "Platinum", "VIP"] as const) await tx.update(ticketPackages).set({ price: input.prices[name] }).where(eq(ticketPackages.name, name));
 		await audit(tx, actorId, "settingsUpdated", "1");
 	});
@@ -24,14 +23,14 @@ export async function updateSettings(input: z.infer<typeof settingsInput>, actor
 export const batchInput = z.object({ requestKey: z.uuid(), quantity: z.number().int().min(1).max(100), category: z.enum(["normal", "vip"]), title: z.string().trim().min(1).max(120), note: optionalText(1000) });
 export async function createGiftBatch(input: z.infer<typeof batchInput>, actorId: string) {
 	return ticketTransaction(async tx => {
-		const settings = await lockSales(tx);
+		await lockSales(tx);
 		const [existing] = await tx.select().from(giftBatches).where(eq(giftBatches.requestKey, input.requestKey));
 		if (existing) {
 			if (existing.category !== input.category || existing.quantity !== input.quantity || existing.title !== input.title || existing.note !== (input.note || null)) ticketError("requestChanged", "CONFLICT");
 			return existing;
 		}
-		const [batch] = await tx.insert(giftBatches).values({ id: randomUUID(), ...input, note: input.note || null, event: settings.event, createdBy: actorId }).returning();
-		for (let ordinal = 1; ordinal <= input.quantity; ordinal++) await issueTicket(tx, { source: "gifted", category: input.category, batchId: batch!.id, ordinal, event: settings.event, benefits: input.category === "vip" ? ["networkingLunch"] : [] });
+		const [batch] = await tx.insert(giftBatches).values({ id: randomUUID(), ...input, note: input.note || null, createdBy: actorId }).returning();
+		for (let ordinal = 1; ordinal <= input.quantity; ordinal++) await issueTicket(tx, { source: "gifted", category: input.category, batchId: batch!.id, ordinal, benefits: input.category === "vip" ? ["networkingLunch"] : [] });
 		await audit(tx, actorId, "giftBatchCreated", batch!.id);
 		return batch!;
 	});

@@ -11,7 +11,7 @@ import { useTranslations } from "next-intl";
 import type { IScannerControls } from "@zxing/browser";
 import { trpc } from "@/utils/trpc";
 import { TicketHeading, TicketError } from "@/components/tickets/ticket-ui";
-import { EventTime } from "@/components/tickets/ticket-card";
+import { TicketTime } from "@/components/tickets/ticket-card";
 import { CheckCircle2Icon, XCircleIcon, ScanLineIcon, PauseIcon, SearchIcon, ShieldAlertIcon } from "lucide-react";
 
 export default function CheckInScanner({ isRoot }: { isRoot: boolean }) {
@@ -96,12 +96,12 @@ export default function CheckInScanner({ isRoot }: { isRoot: boolean }) {
 	const outcome = admission.data?.outcome === "rejected" ? admission.data.reason : lookup.data?.outcome;
 	const needsConfirmation = lookup.data?.outcome === "ready" && !admission.data;
 	const ticketDetails = lookup.data && <>
-			{admitted && <p><EventTime value={admission.data!.createdAt} timezone={ticket?.event.timezone ?? "Asia/Ho_Chi_Minh"} /></p>}
+			{admitted && <p><TicketTime value={admission.data!.createdAt} /></p>}
 			{ticket && <><h3>{t(`categories.${ticket.category}`)} · {t(`validity.${ticket.validity}`)}</h3>{ticket.recipientName && <p>{t("recipientName")}: {ticket.recipientName}</p>}<p>{t("acceptedCount", { count: admission.data?.acceptedCount ?? ticket.acceptedCount })}</p>{ticket.benefits.includes("networkingLunch") && <p className="ticket-benefit">{t("networkingLunch")}</p>}
 				{ticket.acceptedCount > 0 && <p className="ticket-warning">{t("repeatWarning")}</p>}
 				{ticket.validity === "valid" && !admitted && <>{isRoot && ticket.acceptedCount > 0 && <label>{t("overrideReason")}<Textarea maxLength={1000} value={overrideReason} onChange={e => setOverrideReason(e.target.value)} /></label>}<Button className={ticket.acceptedCount > 0 ? "ticket-button-warning" : "ticket-button-success"} type="button" disabled={!online || busy || (ticket.acceptedCount > 0 && (!isRoot || !overrideReason.trim()))} onClick={() => { confirmKey.current ??= crypto.randomUUID(); admission.mutate({ ticketId: ticket.id, credentialVersion: ticket.credentialVersion, requestKey: confirmKey.current, ...(ticket.acceptedCount > 0 && isRoot ? { overrideReason } : {}) }); }}>{ticket.acceptedCount > 0 ? <ShieldAlertIcon aria-hidden="true" /> : <CheckCircle2Icon aria-hidden="true" />}{t(ticket.acceptedCount > 0 ? "confirmOverride" : "confirmAdmission")}</Button></>}
-				<h3>{t("history")}</h3>{lookup.data.history.filter(event => event.outcome === "accepted").map(event => <p className="ticket-warning" key={event.id}>{t("outcomes.accepted")} · <EventTime value={event.createdAt} timezone={ticket.event.timezone} /></p>)}
-				<details><summary>{t("rejectedAttempts")}</summary>{lookup.data.history.filter(event => event.outcome === "rejected").map(event => <p key={event.id}>{t("outcomes.rejected")} · <EventTime value={event.createdAt} timezone={ticket.event.timezone} /></p>)}</details>
+				<h3>{t("history")}</h3>{lookup.data.history.filter(event => event.outcome === "accepted").map(event => <p className="ticket-warning" key={event.id}>{t("outcomes.accepted")} · <TicketTime value={event.createdAt} /></p>)}
+				<details><summary>{t("rejectedAttempts")}</summary>{lookup.data.history.filter(event => event.outcome === "rejected").map(event => <p key={event.id}>{t("outcomes.rejected")} · <TicketTime value={event.createdAt} /></p>)}</details>
 			</>}<TicketError error={admission.error} />
 	</>;
 	return <><TicketHeading admin title={t("checkIn")} description={t("checkInHelp")} />{!online && <p role="alert" className="ticket-danger">{t("offline")}</p>}
