@@ -12,7 +12,7 @@ import type { IScannerControls } from "@zxing/browser";
 import { trpc } from "@/utils/trpc";
 import { TicketHeading, TicketError } from "@/components/tickets/ticket-ui";
 import { TicketTime } from "@/components/tickets/ticket-card";
-import { CheckCircle2Icon, XCircleIcon, ScanLineIcon, PauseIcon, SearchIcon, ShieldAlertIcon } from "lucide-react";
+import { CheckCircle2Icon, XCircleIcon, ScanLineIcon, PauseIcon, SearchIcon, ShieldAlertIcon, Loader2Icon } from "lucide-react";
 
 export default function CheckInScanner({ isRoot }: { isRoot: boolean }) {
 	const t = useTranslations("Tickets");
@@ -30,13 +30,7 @@ export default function CheckInScanner({ isRoot }: { isRoot: boolean }) {
 	const detectionRef = useRef(false);
 	const confirmKey = useRef<string | null>(null);
 	const cameraGeneration = useRef(0);
-	const lookup = useMutation(trpc.tickets.lookup.mutationOptions({
-		onSuccess: result => {
-			if (result.outcome === "ready") setConfirmationOpen(true);
-			else notify.warning(t.has(`scan.${result.outcome}`) ? t(`scan.${result.outcome}`) : t("errors.operationFailed"), { id: "ticket-lookup" });
-		},
-		onError: notify.error,
-	}));
+	const lookup = useMutation(trpc.tickets.lookup.mutationOptions());
 	const admission = useMutation(trpc.tickets.checkIn.mutationOptions({
 		onSuccess: result => {
 			notify.dismiss("ticket-lookup");
@@ -58,7 +52,7 @@ export default function CheckInScanner({ isRoot }: { isRoot: boolean }) {
 	function lookupCode(value: string) {
 		notify.dismiss("ticket-admission"); notify.dismiss("ticket-lookup");
 		stopCamera(); setCameraState("paused"); detectionRef.current = true;
-		setConfirmationOpen(false); admission.reset(); lookup.reset(); setOverrideReason(""); confirmKey.current = crypto.randomUUID();
+		setConfirmationOpen(true); admission.reset(); lookup.reset(); setOverrideReason(""); confirmKey.current = crypto.randomUUID();
 		setCode(value.slice(0, 120)); lookup.mutate({ code: value.slice(0, 120), requestKey: crypto.randomUUID() });
 	}
 
@@ -94,10 +88,15 @@ export default function CheckInScanner({ isRoot }: { isRoot: boolean }) {
 	const ticket = lookup.data?.ticket;
 	const admitted = admission.data?.outcome === "accepted";
 	const outcome = admission.data?.outcome === "rejected" ? admission.data.reason : lookup.data?.outcome;
-	const needsConfirmation = lookup.data?.outcome === "ready" && !admission.data;
+	const lookupTitle = t(lookup.isPending ? "lookupLoading" : lookup.isError ? "lookupFailed" : `scan.${lookup.data?.outcome ?? "ready"}`);
+	const lookupDescription = t(lookup.isPending ? "lookupLoadingHelp" : lookup.isError || lookup.data?.outcome !== "ready" ? "lookupFailureHelp" : "confirmCheckInHelp");
 	const ticketDetails = lookup.data && <>
 			{admitted && <p><TicketTime value={admission.data!.createdAt} /></p>}
-			{ticket && <><h3>{t(`categories.${ticket.category}`)} · {t(`validity.${ticket.validity}`)}</h3>{ticket.recipientName && <p>{t("recipientName")}: {ticket.recipientName}</p>}<p>{t("acceptedCount", { count: admission.data?.acceptedCount ?? ticket.acceptedCount })}</p>{ticket.benefits.includes("networkingLunch") && <p className="ticket-benefit">{t("networkingLunch")}</p>}
+			{ticket && <><h3>{t(`categories.${ticket.category}`)} · {t(`validity.${ticket.validity}`)}</h3>
+				<p>{t("code")}: <code className="ticket-code">{ticket.code}</code></p>
+				<p>{t("checkInName")}: {ticket.recipientName?.trim() || t("notAvailable")}</p>
+				<p>{t("checkInPhone")}: {ticket.recipientPhone?.trim() || t("notAvailable")}</p>
+				<p>{t("acceptedCount", { count: admission.data?.acceptedCount ?? ticket.acceptedCount })}</p>{ticket.benefits.includes("networkingLunch") && <p className="ticket-benefit">{t("networkingLunch")}</p>}
 				{ticket.acceptedCount > 0 && <p className="ticket-warning">{t("repeatWarning")}</p>}
 				{ticket.validity === "valid" && !admitted && <>{isRoot && ticket.acceptedCount > 0 && <label>{t("overrideReason")}<Textarea maxLength={1000} value={overrideReason} onChange={e => setOverrideReason(e.target.value)} /></label>}<Button className={ticket.acceptedCount > 0 ? "ticket-button-warning" : "ticket-button-success"} type="button" disabled={!online || busy || (ticket.acceptedCount > 0 && (!isRoot || !overrideReason.trim()))} onClick={() => { confirmKey.current ??= crypto.randomUUID(); admission.mutate({ ticketId: ticket.id, credentialVersion: ticket.credentialVersion, requestKey: confirmKey.current, ...(ticket.acceptedCount > 0 && isRoot ? { overrideReason } : {}) }); }}>{ticket.acceptedCount > 0 ? <ShieldAlertIcon aria-hidden="true" /> : <CheckCircle2Icon aria-hidden="true" />}{t(ticket.acceptedCount > 0 ? "confirmOverride" : "confirmAdmission")}</Button></>}
 				<h3>{t("history")}</h3>{lookup.data.history.filter(event => event.outcome === "accepted").map(event => <p className="ticket-warning" key={event.id}>{t("outcomes.accepted")} · <TicketTime value={event.createdAt} /></p>)}
@@ -108,20 +107,21 @@ export default function CheckInScanner({ isRoot }: { isRoot: boolean }) {
 		<div className="ticket-scanner-grid"><section className="ticket-panel"><h2>{t("cameraScanner")}</h2><p>{t("cameraCompatibility")}</p><video ref={videoRef} className="ticket-video" muted playsInline aria-label={t("cameraPreview")} />
 			{devices.length > 1 && <label>{t("selectCamera")}<select value={deviceId} onChange={e => { stopCamera(); setCameraState("idle"); setDeviceId(e.target.value); notify.info(t("notifications.cameraSelected")); }}><option value="">{t("rearCamera")}</option>{devices.map((device, index) => <option key={device.deviceId} value={device.deviceId}>{device.label || t("cameraNumber", { number: index + 1 })}</option>)}</select></label>}
 			<p role="status">{t(`camera.${cameraState}`)}</p><div className="ticket-actions"><Button className="ticket-button-utility" type="button" disabled={!online || busy || cameraState === "starting" || cameraState === "scanning"} onClick={() => void startCamera()}><ScanLineIcon aria-hidden="true" />{t("startScanner")}</Button><Button type="button" variant="outline" disabled={cameraState !== "scanning"} onClick={() => { stopCamera(); setCameraState("paused"); notify.info(t("notifications.cameraPaused")); }}><PauseIcon aria-hidden="true" />{t("pauseScanner")}</Button></div>
-		</section><div className="ticket-scanner-results"><form className="ticket-panel" onSubmit={e => { e.preventDefault(); lookupCode(code); }}><h2 ref={lookupHeadingRef} tabIndex={-1}>{t("lookupTicket")}</h2><label>{t("manualCode")}<Input maxLength={120} onFocus={() => { stopCamera(); setCameraState("paused"); }} autoComplete="off" autoCapitalize="characters" spellCheck={false} value={code} onChange={e => { setCode(e.target.value); setConfirmationOpen(false); lookup.reset(); admission.reset(); notify.dismiss("ticket-admission"); notify.dismiss("ticket-lookup"); }} disabled={busy} /></label><Button className="ticket-button-utility" type="submit" disabled={!online || busy || !code.trim()}><SearchIcon aria-hidden="true" />{t("lookupTicket")}</Button><TicketError error={lookup.error} /></form>
-		{lookup.data && !needsConfirmation && <section className={`ticket-panel ${admitted ? "ticket-success" : outcome !== "ready" ? "ticket-danger" : ""}`} aria-live="assertive"><h2 className="ticket-outcome-heading">{admitted ? <CheckCircle2Icon aria-hidden="true" /> : outcome === "ready" ? <ScanLineIcon aria-hidden="true" /> : <XCircleIcon aria-hidden="true" />}{t(admitted ? "admissionAccepted" : `scan.${outcome}`)}</h2>
+		</section><div className="ticket-scanner-results"><form className="ticket-panel" onSubmit={e => { e.preventDefault(); lookupCode(code); }}><h2 ref={lookupHeadingRef} tabIndex={-1}>{t("lookupTicket")}</h2><label>{t("manualCode")}<Input maxLength={120} onFocus={() => { stopCamera(); setCameraState("paused"); }} autoComplete="off" autoCapitalize="characters" spellCheck={false} value={code} onChange={e => { setCode(e.target.value); setConfirmationOpen(false); lookup.reset(); admission.reset(); notify.dismiss("ticket-admission"); notify.dismiss("ticket-lookup"); }} disabled={busy} /></label><Button className="ticket-button-utility" type="submit" disabled={!online || busy || !code.trim()}><SearchIcon aria-hidden="true" />{t("lookupTicket")}</Button>{!confirmationOpen && <TicketError error={lookup.error} />}</form>
+		{lookup.data && !confirmationOpen && <section className={`ticket-panel ${admitted ? "ticket-success" : outcome !== "ready" ? "ticket-danger" : ""}`} aria-live="assertive"><h2 className="ticket-outcome-heading">{admitted ? <CheckCircle2Icon aria-hidden="true" /> : outcome === "ready" ? <ScanLineIcon aria-hidden="true" /> : <XCircleIcon aria-hidden="true" />}{t(admitted ? "admissionAccepted" : `scan.${outcome}`)}</h2>
 			{ticketDetails}
 		</section>}</div></div>
-		<Dialog open={confirmationOpen && needsConfirmation} onOpenChange={setConfirmationOpen}>
+		<Dialog open={confirmationOpen} onOpenChange={setConfirmationOpen}>
 			<DialogContent className="ticket-admin ticket-panel ticket-confirmation-dialog" finalFocus={lookupHeadingRef}>
 				<DialogHeader>
 					<div className="ticket-confirmation-heading">
-						<DialogTitle className="ticket-outcome-heading"><ScanLineIcon aria-hidden="true" />{t("scan.ready")}</DialogTitle>
+						<DialogTitle className="ticket-outcome-heading" aria-live="polite">{lookup.isPending ? <Loader2Icon aria-hidden="true" className="motion-safe:animate-spin" /> : lookup.data?.outcome === "ready" ? <ScanLineIcon aria-hidden="true" /> : <XCircleIcon aria-hidden="true" />}{lookupTitle}</DialogTitle>
 						<DialogClose render={<Button type="button" variant="outline" />}>{t("dismissConfirmation")}</DialogClose>
 					</div>
-					<DialogDescription>{t("confirmCheckInHelp")}</DialogDescription>
+					<DialogDescription aria-live="polite" role={lookup.isPending ? "status" : undefined}>{lookupDescription}</DialogDescription>
 				</DialogHeader>
 				{!online && <p role="alert" className="ticket-danger">{t("offline")}</p>}
+				<TicketError error={lookup.error} />
 				{ticketDetails}
 			</DialogContent>
 		</Dialog>

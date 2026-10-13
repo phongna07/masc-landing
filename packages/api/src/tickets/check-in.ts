@@ -1,18 +1,19 @@
 import { randomUUID } from "node:crypto";
 import { db } from "@masc-landing/db";
 import { ticketTransaction } from "@masc-landing/db/ticket-transaction";
-import { admissionTickets, ticketCheckIns, ticketCredentials } from "@masc-landing/db/schema/tickets";
+import { admissionTickets, ticketCheckIns, ticketCredentials, ticketOrders } from "@masc-landing/db/schema/tickets";
 import { and, desc, eq, sql } from "drizzle-orm";
-import { codePattern, hashCode, rateLimit, ticketError, type Ticket } from "./core";
-
-function admissionDetails(ticket: Ticket) {
-	return { id: ticket.id, category: ticket.category, validity: ticket.validity, recipientName: ticket.recipientName, acceptedCount: ticket.acceptedCount, benefits: ticket.benefits, credentialVersion: ticket.credentialVersion };
-}
+import { codePattern, hashCode, rateLimit, ticketError } from "./core";
 
 export async function lookupTicket(actorId: string, rawCode: string, requestKey: string) {
 	await rateLimit(actorId, "admission-lookup", 30);
 	const code = rawCode.trim().toUpperCase();
-	const [ticket] = codePattern.test(code) ? await db.select().from(admissionTickets).where(eq(admissionTickets.code, code)) : [];
+	const [ticket] = codePattern.test(code) ? await db.select({
+		id: admissionTickets.id, code: admissionTickets.code, category: admissionTickets.category, validity: admissionTickets.validity,
+		recipientName: sql<string | null>`coalesce(${admissionTickets.recipientName}, ${ticketOrders.buyerName})`,
+		recipientPhone: sql<string | null>`coalesce(${admissionTickets.recipientPhone}, ${ticketOrders.buyerPhone})`,
+		acceptedCount: admissionTickets.acceptedCount, benefits: admissionTickets.benefits, credentialVersion: admissionTickets.credentialVersion,
+	}).from(admissionTickets).leftJoin(ticketOrders, eq(admissionTickets.orderId, ticketOrders.id)).where(eq(admissionTickets.code, code)) : [];
 	if (!ticket) {
 		const [credential] = codePattern.test(code) ? await db.select().from(ticketCredentials).where(eq(ticketCredentials.codeHash, hashCode(code))) : [];
 		const reason = credential ? "replaced" : "notFound";
@@ -26,7 +27,7 @@ export async function lookupTicket(actorId: string, rawCode: string, requestKey:
 	const recent = (outcome: "accepted" | "rejected") => db.select({ id: ticketCheckIns.id, outcome: ticketCheckIns.outcome, reason: ticketCheckIns.reason, isOverride: ticketCheckIns.isOverride, createdAt: ticketCheckIns.createdAt }).from(ticketCheckIns).where(and(eq(ticketCheckIns.ticketId, ticket.id), eq(ticketCheckIns.outcome, outcome))).orderBy(desc(ticketCheckIns.createdAt)).limit(100);
 	const [accepted, rejected] = await Promise.all([recent("accepted"), recent("rejected")]);
 	const history = [...accepted, ...rejected].sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
-	return { outcome: ticket.validity === "revoked" ? "revoked" : ticket.acceptedCount > 0 ? "alreadyAdmitted" : "ready", ticket: admissionDetails(ticket), history };
+	return { outcome: ticket.validity === "revoked" ? "revoked" : ticket.acceptedCount > 0 ? "alreadyAdmitted" : "ready", ticket, history };
 }
 
 export async function confirmCheckIn(input: { ticketId: string; credentialVersion: number; requestKey: string; overrideReason?: string }, actorId: string, isRoot: boolean) {
