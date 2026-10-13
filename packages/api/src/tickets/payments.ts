@@ -29,7 +29,17 @@ export async function startCheckout(buyer: Buyer, input: z.infer<typeof checkout
 		if (!settings.isSalesOpened) ticketError("salesClosed", "PRECONDITION_FAILED");
 		const [pack] = await tx.select().from(ticketPackages).where(eq(ticketPackages.name, input.packageName));
 		if (!pack) ticketError("notFound", "NOT_FOUND");
-		if (pack.category === "vip" && await vipUsage(tx) >= settings.vipCapacity) ticketError("vipSoldOut", "CONFLICT");
+		if (pack.category === "vip") {
+			// lockSales serializes this check with reservation creation across instances.
+			// Count uncertain/review orders too while they still hold a place.
+			const [held] = await tx.select({ id: ticketOrders.id }).from(ticketOrders)
+				.where(and(eq(ticketOrders.buyerId, buyer.id), eq(ticketOrders.reservation, "held"))).limit(1);
+			if (held) {
+				await audit(tx, buyer.id, "vipReservationBlocked", held.id, null, "rejected");
+				return null;
+			}
+			if (await vipUsage(tx) >= settings.vipCapacity) ticketError("vipSoldOut", "CONFLICT");
+		}
 		for (let attempt = 0; attempt < 8; attempt++) {
 			const [created] = await tx.insert(ticketOrders).values({
 				id: randomUUID(), buyerId: buyer.id, requestKey: input.requestKey, providerOrderCode: randomInt(1_000_000_000_000, 10_000_000_000_000),
@@ -42,6 +52,8 @@ export async function startCheckout(buyer: Buyer, input: z.infer<typeof checkout
 		}
 		throw new Error("Unable to allocate provider order identifier");
 	});
+	// Reject after committing so the audit entry survives the failed checkout.
+	if (!order) ticketError("vipReservationExists", "CONFLICT");
 	await createPaymentLink(order.id);
 	return ownedOrder(order.id, buyer.id);
 }
