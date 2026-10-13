@@ -30,8 +30,8 @@ export const ticketOrders = pgTable("ticket_orders", {
 	checkoutUrl: text("checkout_url"),
 	snapshot: jsonb("snapshot").$type<OrderSnapshot>().notNull(),
 	buyerEmail: text("buyer_email").notNull(),
-	buyerName: text("buyer_name"),
-	buyerPhone: text("buyer_phone"),
+	buyerName: text("buyer_name").notNull(),
+	buyerPhone: text("buyer_phone").notNull(),
 	locale: text("locale", { enum: ["en", "vi"] }).notNull(),
 	paymentStatus: text("payment_status", { enum: ["creating", "pending", "processing", "paid", "cancelled", "expired", "failed", "review"] }).notNull().default("creating"),
 	fulfillmentStatus: text("fulfillment_status", { enum: ["pending", "issued", "review"] }).notNull().default("pending"),
@@ -54,7 +54,7 @@ export const ticketOrders = pgTable("ticket_orders", {
 	resolutionNote: text("resolution_note"),
 	resolvedAt: time("resolved_at"),
 	resolvedBy: text("resolved_by"),
-}, t => [uniqueIndex("ticket_order_request_unique").on(t.buyerId, t.requestKey), uniqueIndex("ticket_order_buyer_pair_unique").on(t.id, t.buyerId), index("ticket_order_recovery_idx").on(t.nextReconcileAt), index("ticket_order_buyer_idx").on(t.buyerId), check("ticket_order_amount_nonnegative", sql`${t.settledAmount} >= 0`), check("ticket_order_snapshot_shape", sql`${t.snapshot}->>'currency' = 'VND' and (${t.snapshot}->>'totalPrice')::integer > 0 and ((${t.snapshot}->>'packageName' = 'Silver' and ${t.snapshot}->>'category' = 'normal' and (${t.snapshot}->>'quantity')::integer = 1) or (${t.snapshot}->>'packageName' = 'Golden' and ${t.snapshot}->>'category' = 'normal' and (${t.snapshot}->>'quantity')::integer = 2) or (${t.snapshot}->>'packageName' = 'Platinum' and ${t.snapshot}->>'category' = 'normal' and (${t.snapshot}->>'quantity')::integer = 3) or (${t.snapshot}->>'packageName' = 'VIP' and ${t.snapshot}->>'category' = 'vip' and (${t.snapshot}->>'quantity')::integer = 1))`)]);
+}, t => [uniqueIndex("ticket_order_request_unique").on(t.buyerId, t.requestKey), uniqueIndex("ticket_order_buyer_pair_unique").on(t.id, t.buyerId), index("ticket_order_recovery_idx").on(t.nextReconcileAt), index("ticket_order_buyer_idx").on(t.buyerId), check("ticket_order_buyer_name_required", sql`${t.buyerName} ~ '[^[:space:]]'`), check("ticket_order_buyer_phone_required", sql`${t.buyerPhone} ~ '[^[:space:]]'`), check("ticket_order_amount_nonnegative", sql`${t.settledAmount} >= 0`), check("ticket_order_snapshot_shape", sql`${t.snapshot}->>'currency' = 'VND' and (${t.snapshot}->>'totalPrice')::integer > 0 and ((${t.snapshot}->>'packageName' = 'Silver' and ${t.snapshot}->>'category' = 'normal' and (${t.snapshot}->>'quantity')::integer = 1) or (${t.snapshot}->>'packageName' = 'Golden' and ${t.snapshot}->>'category' = 'normal' and (${t.snapshot}->>'quantity')::integer = 2) or (${t.snapshot}->>'packageName' = 'Platinum' and ${t.snapshot}->>'category' = 'normal' and (${t.snapshot}->>'quantity')::integer = 3) or (${t.snapshot}->>'packageName' = 'VIP' and ${t.snapshot}->>'category' = 'vip' and (${t.snapshot}->>'quantity')::integer = 1))`)]);
 
 export const giftBatches = pgTable("ticket_gift_batches", {
 	id: text("id").primaryKey(),

@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import { randomUUID } from "node:crypto";
+import { readFile } from "node:fs/promises";
 import { after, before, beforeEach, mock, test } from "node:test";
 import { PGlite } from "@electric-sql/pglite";
 import { ticketAudit, ticketOrders, ticketSettings } from "@masc-landing/db/schema/tickets";
@@ -13,7 +14,7 @@ const client = new PGlite();
 const db = drizzle(client);
 const buyer = { id: "buyer", email: "buyer@example.com" };
 const otherBuyer = { id: "other-buyer", email: "other@example.com" };
-const createPayment = mock.fn(async (input: { orderCode: number; amount: number }) => ({
+const createPayment = mock.fn(async (input: { orderCode: number; amount: number; buyerName: string; buyerPhone: string }) => ({
 	orderCode: input.orderCode, amount: input.amount, currency: "VND",
 	paymentLinkId: String(input.orderCode), checkoutUrl: `https://pay.payos.vn/web/${input.orderCode}`,
 }));
@@ -28,7 +29,7 @@ mock.module(new URL("./payos.ts", import.meta.url).href, { namedExports: {
 	checkoutUrl: (id: string) => `https://pay.payos.vn/web/${id}`,
 	validCheckoutUrl: (url: string) => url.startsWith("https://pay.payos.vn/web/"),
 } });
-const { startCheckout } = await import("./payments");
+const { checkoutInput, startCheckout } = await import("./payments");
 
 before(async () => {
 	await client.exec(`
@@ -64,6 +65,7 @@ before(async () => {
 			key text PRIMARY KEY, window_start timestamptz NOT NULL DEFAULT now(), count integer NOT NULL DEFAULT 1
 		);
 	`);
+	await client.exec(await readFile(new URL("../../../db/src/migrations/0024_fancy_iron_man.sql", import.meta.url), "utf8"));
 });
 after(() => client.close());
 beforeEach(async () => {
@@ -73,7 +75,7 @@ beforeEach(async () => {
 });
 
 function checkout(packageName: "VIP" | "Silver" = "VIP", requestKey = randomUUID(), actor = buyer) {
-	return startCheckout(actor, { requestKey, packageName });
+	return startCheckout(actor, { requestKey, packageName, buyerName: "Nguyễn Gia Khánh", buyerPhone: "0901234567" });
 }
 
 const reservationConflict = { code: "CONFLICT", message: "vipReservationExists" };
@@ -154,4 +156,58 @@ test("consumed VIP purchases continue to count toward inventory capacity", async
 	const order = await checkout();
 	await db.update(ticketOrders).set({ paymentStatus: "paid", reservation: "consumed" }).where(eq(ticketOrders.id, order.id));
 	await assert.rejects(checkout(), { code: "CONFLICT", message: "vipSoldOut" });
+});
+
+for (const field of ["buyerName", "buyerPhone"] as const) {
+	for (const value of [undefined, null, "", " ", "\t\n"]) {
+		test(`checkout rejects ${field} = ${JSON.stringify(value)}`, () => {
+			const input = { requestKey: randomUUID(), packageName: "Silver", buyerName: "Nguyễn Gia Khánh", buyerPhone: "0901234567", [field]: value };
+			const result = checkoutInput.safeParse(input);
+			assert.equal(result.success, false);
+			if (!result.success) assert.ok(result.error.issues.some(issue => issue.path[0] === field));
+		});
+	}
+}
+
+test("checkout trims and stores buyer details and passes them to the payment provider", async () => {
+	const order = await startCheckout(buyer, { requestKey: randomUUID(), packageName: "Silver", buyerName: "  Nguyễn Gia Khánh  ", buyerPhone: "  +84 901 234 567  " });
+	assert.equal(order.buyerName, "Nguyễn Gia Khánh");
+	assert.equal(order.buyerPhone, "+84 901 234 567");
+	assert.ok(createPayment.mock.calls[0]);
+	assert.equal(createPayment.mock.calls[0].arguments[0].buyerName, order.buyerName);
+	assert.equal(createPayment.mock.calls[0].arguments[0].buyerPhone, order.buyerPhone);
+});
+
+test("direct checkout calls reject blank contact details before creating an order or payment", async () => {
+	await assert.rejects(startCheckout(buyer, { requestKey: randomUUID(), packageName: "Silver", buyerName: " ", buyerPhone: "0901234567" }));
+	assert.equal((await db.select().from(ticketOrders)).length, 0);
+	assert.equal(createPayment.mock.callCount(), 0);
+});
+
+test("database constraints reject missing or blank buyer details independently of the API", async () => {
+	const order = await checkout("Silver");
+	for (const column of ["buyer_name", "buyer_phone"]) {
+		for (const value of [null, "", " ", "\t\n"]) {
+			await assert.rejects(client.query(`UPDATE ticket_orders SET ${column} = $1 WHERE id = $2`, [value, order.id]));
+		}
+	}
+});
+
+test("migration blocks incomplete legacy orders and preserves corrected contact details", async () => {
+	const legacy = new PGlite();
+	try {
+		const migration = await readFile(new URL("../../../db/src/migrations/0024_fancy_iron_man.sql", import.meta.url), "utf8");
+		await legacy.exec("CREATE TABLE ticket_orders (buyer_name text, buyer_phone text);");
+		for (const [name, phone] of [[null, "0901234567"], ["Nguyễn Gia Khánh", null], [" ", "0901234567"], ["Nguyễn Gia Khánh", "\t"]]) {
+			await legacy.query("INSERT INTO ticket_orders VALUES ($1, $2)", [name, phone]);
+			await assert.rejects(legacy.exec(migration), /Correct missing or blank buyer names and phone numbers/);
+			await legacy.exec("DELETE FROM ticket_orders;");
+		}
+		await legacy.query("INSERT INTO ticket_orders VALUES ($1, $2)", ["Nguyễn Gia Khánh", "0901234567"]);
+		await legacy.exec(migration);
+		const result = await legacy.query("SELECT buyer_name, buyer_phone FROM ticket_orders");
+		assert.deepEqual(result.rows, [{ buyer_name: "Nguyễn Gia Khánh", buyer_phone: "0901234567" }]);
+	} finally {
+		await legacy.close();
+	}
 });

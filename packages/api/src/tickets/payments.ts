@@ -11,11 +11,12 @@ import { reconciliationClaim, reconciliationCompletion, reconciliationDue, recon
 
 export const checkoutInput = z.object({
 	requestKey: z.uuid(), packageName: z.enum(["Silver", "Golden", "Platinum", "VIP"]),
-	buyerName: z.string().trim().max(120).optional(), buyerPhone: z.string().trim().max(40).optional(),
+	buyerName: z.string().trim().min(1).max(120), buyerPhone: z.string().trim().min(1).max(40),
 });
 type Buyer = { id: string; email: string };
 
 export async function startCheckout(buyer: Buyer, input: z.infer<typeof checkoutInput>) {
+	input = checkoutInput.parse(input);
 	payos(); // Fail closed before reserving if configuration is missing.
 	await rateLimit(buyer.id, "checkout", 10);
 	const order = await ticketTransaction(async tx => {
@@ -43,7 +44,7 @@ export async function startCheckout(buyer: Buyer, input: z.infer<typeof checkout
 		for (let attempt = 0; attempt < 8; attempt++) {
 			const [created] = await tx.insert(ticketOrders).values({
 				id: randomUUID(), buyerId: buyer.id, requestKey: input.requestKey, providerOrderCode: randomInt(1_000_000_000_000, 10_000_000_000_000),
-				buyerEmail: buyer.email, buyerName: input.buyerName || null, buyerPhone: input.buyerPhone || null, locale: "vi",
+				buyerEmail: buyer.email, buyerName: input.buyerName, buyerPhone: input.buyerPhone, locale: "vi",
 				snapshot: { packageName: pack.name, category: pack.category, quantity: pack.quantity, benefits: pack.benefits, currency: "VND", totalPrice: pack.price },
 				reservation: pack.category === "vip" ? "held" : "none",
 				expiresAt: sql`date_trunc('second', now()) + interval '15 minutes'`, nextReconcileAt: sql`now() + interval '30 seconds'`,
@@ -68,7 +69,7 @@ async function createPaymentLink(orderId: string) {
 		const result = await payos().paymentRequests.create({
 			orderCode: order.providerOrderCode, amount: order.snapshot.totalPrice, description: "MASC" + String(order.providerOrderCode).slice(-5),
 			returnUrl: orderReturnUrl(order.id), cancelUrl: orderReturnUrl(order.id), expiredAt: Math.floor(order.expiresAt.getTime() / 1000),
-			buyerEmail: order.buyerEmail, ...(order.buyerName ? { buyerName: order.buyerName } : {}), ...(order.buyerPhone ? { buyerPhone: order.buyerPhone } : {}),
+			buyerEmail: order.buyerEmail, buyerName: order.buyerName, buyerPhone: order.buyerPhone,
 			items: [{ name: order.snapshot.packageName, quantity: 1, price: order.snapshot.totalPrice }],
 		});
 		await ticketTransaction(async tx => {
