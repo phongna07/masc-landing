@@ -7,11 +7,8 @@ import { and, eq, inArray, isNull, lte, or, sql } from "drizzle-orm";
 import { sendMail } from "../email/send-mail";
 import { ticketPng } from "./artwork";
 import { renderTicketEmail } from "./email-template";
-import { getTicketTemplates } from "./template-settings";
-import type { TicketEmailCopy } from "./template-input";
-export type { TicketEmailCopy } from "./template-input";
 
-export async function runTicketEmailJobs(messages: Record<"en" | "vi", TicketEmailCopy>, limit = 5) {
+export async function runTicketEmailJobs(limit = 5) {
 	let processed = 0;
 	for (let i = 0; i < limit; i++) {
 		const job = await ticketTransaction(async tx => {
@@ -26,15 +23,12 @@ export async function runTicketEmailJobs(messages: Record<"en" | "vi", TicketEma
 		if (!job) break;
 		processed++;
 		try {
-			const copy = messages[job.locale];
 			const tickets = await db.select().from(admissionTickets).where(job.orderId ? eq(admissionTickets.orderId, job.orderId) : eq(admissionTickets.id, job.ticketId!)).orderBy(admissionTickets.ordinal);
 			if (!tickets.length) throw new Error("No tickets for delivery");
 			const [order] = job.orderId ? await db.select().from(ticketOrders).where(eq(ticketOrders.id, job.orderId)) : [];
-			// Use one saved revision for the email and every attachment in this attempt.
-			const { config } = await getTicketTemplates();
-			const { subject, html, text } = renderTicketEmail(tickets, order, job.locale, copy, config);
+			const { subject, html, text } = renderTicketEmail(tickets, order);
 			const attachments = [];
-			for (const ticket of tickets) attachments.push({ name: `ticket-${ticket.ordinal}.png`, content: (await ticketPng(ticket, job.locale, copy, config)).toString("base64"), mimeType: "image/png" });
+			for (const ticket of tickets) attachments.push({ name: `ticket-${ticket.ordinal}.png`, content: (await ticketPng(ticket)).toString("base64"), mimeType: "image/png" });
 			await sendMail({ id: job.id, from: env.MAIL_USERNAME, to: job.toAddress, cc: [], subject, text, html, attachments, confidential: true });
 			await db.update(ticketEmailJobs).set({ status: "sent", sentAt: sql`now()`, leaseUntil: null, lastError: null }).where(and(eq(ticketEmailJobs.id, job.id), eq(ticketEmailJobs.attempts, job.attempts)));
 		} catch {

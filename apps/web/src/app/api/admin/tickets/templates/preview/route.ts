@@ -2,10 +2,9 @@ import { getAdminByEmail } from "@masc-landing/api/admin-access";
 import { canAccessAdminArea } from "@masc-landing/api/admin-roles";
 import { rateLimit } from "@masc-landing/api/tickets/core";
 import { previewTicketTemplatesInput } from "@masc-landing/api/tickets/template-input";
-import { getTicketTemplatePreview } from "@masc-landing/api/tickets/template-settings";
+import { previewTicketTemplates } from "@masc-landing/api/tickets/template-preview";
 import { TRPCError } from "@trpc/server";
 import { getFreshServerSession } from "@/lib/server-session";
-import { ticketMessages } from "@/lib/ticket-messages";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -24,7 +23,7 @@ export async function POST(request: Request) {
 		if (raw.length > 100_000) return Response.json({ message: "invalidTemplateConfig" }, { status: 413, headers });
 		const parsed = previewTicketTemplatesInput.safeParse(JSON.parse(raw));
 		if (!parsed.success) return Response.json({ message: "invalidTemplateConfig" }, { status: 400, headers });
-		const result = await getTicketTemplatePreview(parsed.data, ticketMessages);
+		const result = await previewTicketTemplates(parsed.data);
 		return Response.json(result, { headers });
 	} catch (error) {
 		const message = error instanceof TRPCError ? error.message : error instanceof SyntaxError ? "invalidTemplateConfig" : "operationFailed";

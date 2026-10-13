@@ -73,20 +73,19 @@ export async function recordRefund(input: z.infer<typeof refundInput>, actorId: 
 	});
 }
 
-export async function enqueueDelivery(input: { orderId?: string; ticketId?: string; requestKey: string; locale?: "en" | "vi" }, actorId: string) {
+export async function enqueueDelivery(input: { orderId?: string; ticketId?: string; requestKey: string }, actorId: string) {
 	return ticketTransaction(async tx => {
 		let toAddress: string;
-		let locale: "en" | "vi";
 		if (input.orderId) {
 			const [order] = await tx.select().from(ticketOrders).where(eq(ticketOrders.id, input.orderId));
 			if (!order || order.fulfillmentStatus !== "issued") ticketError("notIssued", "CONFLICT");
-			toAddress = order.buyerEmail; locale = order.locale;
+			toAddress = order.buyerEmail;
 		} else {
 			const [ticket] = await tx.select().from(admissionTickets).where(eq(admissionTickets.id, input.ticketId!));
 			if (!ticket || ticket.source !== "gifted" || !ticket.recipientEmail) ticketError("recipientEmailRequired");
-			toAddress = ticket.recipientEmail; locale = input.locale ?? "vi";
+			toAddress = ticket.recipientEmail;
 		}
-		const [job] = await tx.insert(ticketEmailJobs).values({ id: randomUUID(), dedupeKey: `resend:${input.requestKey}`, orderId: input.orderId, ticketId: input.ticketId, toAddress, locale }).onConflictDoNothing().returning();
+		const [job] = await tx.insert(ticketEmailJobs).values({ id: randomUUID(), dedupeKey: `resend:${input.requestKey}`, orderId: input.orderId, ticketId: input.ticketId, toAddress, locale: "vi" }).onConflictDoNothing().returning();
 		if (job) await audit(tx, actorId, "emailQueued", input.orderId ?? input.ticketId!, null);
 	});
 }

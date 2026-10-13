@@ -1,80 +1,21 @@
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
-import { after, before, beforeEach, mock, test } from "node:test";
+import { test } from "node:test";
 import { PGlite } from "@electric-sql/pglite";
 import { drizzle } from "drizzle-orm/pglite";
-import { ticketAudit } from "@masc-landing/db/schema/tickets";
-import { ticketTemplateSettings } from "@masc-landing/db/schema/ticket-templates";
-import { defaultTicketTemplates } from "./template-input";
+import { ticketTemplateSettings, type TicketTemplateConfig } from "@masc-landing/db/schema/ticket-templates";
 
-const client = new PGlite();
-const db = drizzle(client);
-mock.module("@masc-landing/db", { namedExports: { db } });
-mock.module("@masc-landing/db/ticket-transaction", { namedExports: {
-	ticketTransaction: (work: Parameters<typeof db.transaction>[0]) => db.transaction(work),
-} });
-const { getTicketTemplates, saveTicketTemplates } = await import("./template-settings");
-
-before(async () => {
-	// Apply the actual generated migration only inside this in-memory database.
-	await client.exec(await readFile(new URL("../../../db/src/migrations/0022_same_zaran.sql", import.meta.url), "utf8"));
-	await client.exec(`CREATE TABLE ticket_audit (
-		id text PRIMARY KEY, actor_id text NOT NULL, action text NOT NULL,
-		entity_id text, reason text, outcome text NOT NULL, created_at timestamptz NOT NULL DEFAULT now()
-	)`);
+// Historical migration coverage; runtime templates no longer use this table.
+const legacyTemplateFixture = (): TicketTemplateConfig => ({
+	artwork: { brand: "MASC · HYPERNOVA", palette: { ...palette }, headingFont: "serif", titleSize: 36, bodySize: 22 },
+	email: { brand: "MASC · HYPERNOVA", palette: { ...palette }, headingFont: "serif", titleSize: 30, bodySize: 14, width: 650 },
+	locales: { en: { copy: {}, purchaseBody: "", giftBody: "" }, vi: { copy: {}, purchaseBody: "", giftBody: "" } },
 });
-after(() => client.close());
-beforeEach(async () => { await client.exec("TRUNCATE ticket_template_settings, ticket_audit"); });
-
-test("reads fall back to original defaults without creating settings or audit records", async () => {
-	const initial = await getTicketTemplates();
-	assert.deepEqual(initial, { config: defaultTicketTemplates, revision: 0, updatedAt: null });
-	assert.equal((await db.select().from(ticketTemplateSettings)).length, 0);
-	initial.config.artwork.brand = "Local draft";
-	assert.notEqual((await getTicketTemplates()).config.artwork.brand, "Local draft");
-});
-
-test("saves persist normalized bilingual settings, advance revisions, and record an audit", async () => {
-	const config = structuredClone(defaultTicketTemplates);
-	config.artwork.brand = "New brand";
-	config.locales.en.purchaseBody = "<div><b>Hello</b></div>";
-	config.locales.vi.copy.subject = "Đã mua vé";
-	const saved = await saveTicketTemplates({ config, revision: 0 }, "admin-a");
-	assert.equal(saved.revision, 1);
-	assert.equal(saved.config.locales.en.purchaseBody, "<p><strong>Hello</strong></p>");
-	assert.equal(saved.config.locales.vi.copy.subject, "Đã mua vé");
-	assert.deepEqual(await getTicketTemplates(), saved);
-	const [entry] = await db.select().from(ticketAudit);
-	assert.equal(entry!.action, "templatesUpdated");
-	assert.equal(entry!.actorId, "admin-a");
-	assert.equal(entry!.entityId, "1");
-	assert.equal((await saveTicketTemplates({ config: saved.config, revision: 1 }, "admin-a")).revision, 2);
-});
-
-test("a stale or simultaneous save cannot overwrite a newer revision or add a success audit", async () => {
-	const first = structuredClone(defaultTicketTemplates);
-	first.artwork.brand = "First";
-	const second = structuredClone(defaultTicketTemplates);
-	second.artwork.brand = "Second";
-	const results = await Promise.allSettled([
-		saveTicketTemplates({ config: first, revision: 0 }, "admin-a"),
-		saveTicketTemplates({ config: second, revision: 0 }, "admin-b"),
-	]);
-	assert.equal(results.filter(result => result.status === "fulfilled").length, 1);
-	const failure = results.find(result => result.status === "rejected") as PromiseRejectedResult;
-	assert.equal(failure.reason.message, "templatesChanged");
-	assert.equal(failure.reason.code, "CONFLICT");
-	assert.equal((await getTicketTemplates()).revision, 1);
-	assert.equal((await db.select().from(ticketAudit)).length, 1);
-});
-
-test("invalid HTML in the inactive locale cannot be persisted", async () => {
-	const config = structuredClone(defaultTicketTemplates);
-	config.locales.vi.giftBody = '<a href="https://example.com/{{orderId}}">Hello</a>';
-	await assert.rejects(saveTicketTemplates({ config, revision: 0 }, "admin-a"), { message: "invalidTemplateBody" });
-	assert.equal((await db.select().from(ticketTemplateSettings)).length, 0);
-	assert.equal((await db.select().from(ticketAudit)).length, 0);
-});
+const palette = {
+	background: "#07070a", surface: "#111014", border: "#38343d", text: "#f4f0e8", muted: "#c2bec6",
+	accent: "#d2a66c", highlight: "#f2d584", highlightBackground: "#201c16",
+	normal: "#d8d0ff", vip: "#f2d584", valid: "#bde7ad", revoked: "#ff6b62",
+};
 
 test("metadata migration removes existing event data and keeps unrelated template customization", async () => {
 	const migrationClient = new PGlite();
@@ -91,7 +32,7 @@ test("metadata migration removes existing event data and keeps unrelated templat
 		`);
 		await migrationClient.exec(await readFile(new URL("../../../db/src/migrations/0022_same_zaran.sql", import.meta.url), "utf8"));
 		const migrationDb = drizzle(migrationClient);
-		const config = structuredClone(defaultTicketTemplates);
+		const config = legacyTemplateFixture();
 		config.artwork.brand = "Keep this brand";
 		config.locales.en.copy.subject = "Keep this subject";
 		Object.assign(config.locales.en.copy, { dateUnknown: "Old date", venueUnknown: "Old venue" });
@@ -103,7 +44,7 @@ test("metadata migration removes existing event data and keeps unrelated templat
 		await migrationDb.insert(ticketTemplateSettings).values({ id: 1, config, revision: 4 });
 		await migrationClient.exec(await readFile(new URL("../../../db/src/migrations/0023_moaning_snowbird.sql", import.meta.url), "utf8"));
 		const [saved] = await migrationDb.select().from(ticketTemplateSettings);
-		const expected = structuredClone(defaultTicketTemplates);
+		const expected = legacyTemplateFixture();
 		expected.artwork.brand = config.artwork.brand;
 		expected.locales.en.copy.subject = config.locales.en.copy.subject;
 		expected.locales.vi.purchaseBody = config.locales.vi.purchaseBody;

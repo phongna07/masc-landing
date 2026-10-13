@@ -1,4 +1,3 @@
-import TicketTemplateEditor from "./ticket-template-editor";
-import { ticketMessages } from "@/lib/ticket-messages";
+import TicketTemplatePreview from "./ticket-template-preview";
 
-export default function TicketTemplatesPage() { return <TicketTemplateEditor baseCopies={ticketMessages} />; }
+export default function TicketTemplatesPage() { return <TicketTemplatePreview />; }

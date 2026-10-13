@@ -35,10 +35,9 @@ export default function TicketCard({ ticket, root = false, children }: { ticket:
 	const t = useTranslations("Tickets");
 	const notify = useTicketNotifications();
 	const { download, isDownloading } = useTicketDownload();
-	const locale = useLocale();
 	const [open, setOpen] = useState(false);
 	const [imageError, setImageError] = useState(false);
-	const imageUrl = `/api/tickets/${ticket.id}/image?locale=${locale}&v=${ticket.credentialVersion}&validity=${ticket.validity}`;
+	const imageUrl = `/api/tickets/${ticket.id}/image?v=${ticket.credentialVersion}&validity=${ticket.validity}`;
 	return <article className={`ticket-card ${ticket.category === "vip" ? "ticket-card-vip" : ""} ${ticket.validity === "revoked" ? "ticket-revoked" : ""}`}>
 		<div className="ticket-actions ticket-card-heading"><h3>{t(`categories.${ticket.category}`)} · #{ticket.ordinal}</h3><span className={`ticket-badge ticket-badge-${ticket.validity}`}>{t(`validity.${ticket.validity}`)}</span></div>
 		<div className="ticket-card-body"><div className="ticket-details">

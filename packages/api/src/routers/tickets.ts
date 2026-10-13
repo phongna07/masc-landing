@@ -10,8 +10,6 @@ import { confirmCheckIn, lookupTicket } from "../tickets/check-in";
 import { batchDetail, batchInput, changeTicket, createGiftBatch, enqueueDelivery, listBatches, listOrders, orderDetail, pageInput, recipientInput, recordRefund, recordResolution, refundInput, setEntranceStaff, settingsInput, ticketHistory, updateRecipient, updateSettings } from "../tickets/management";
 import { cancelCheckout, checkoutInput, reconcileOrder, resolveLatePayment, runReconciliation, startCheckout } from "../tickets/payments";
 import { payos } from "../tickets/payos";
-import { getTicketTemplates, saveTicketTemplates } from "../tickets/template-settings";
-import { saveTicketTemplatesInput } from "../tickets/template-input";
 import { env } from "@masc-landing/env/server";
 
 // Do not surface SQL/provider errors that could contain admission credentials.
@@ -50,8 +48,6 @@ export const ticketsRouter = router({
 		const history = await ticketHistory(input.id, input.page);
 		return { checkIns: history.checkIns.map(({ outcome, createdAt, isOverride }) => ({ outcome, createdAt, isOverride })), total: history.checkInTotal, pageSize: history.pageSize };
 	})),
-	templates: root.query(() => safeErrors(getTicketTemplates)),
-	saveTemplates: root.input(saveTicketTemplatesInput).mutation(({ ctx, input }) => safeErrors(() => saveTicketTemplates(input, ctx.session.user.id))),
 	adminConfig: root.query(() => safeErrors(getTicketConfig)),
 	stats: root.query(() => safeErrors(async () => {
 		const [tickets] = await db.select({ purchased: sql<number>`count(*) filter (where ${admissionTickets.source} = 'purchased')::int`, gifted: sql<number>`count(*) filter (where ${admissionTickets.source} = 'gifted')::int`, revoked: sql<number>`count(*) filter (where ${admissionTickets.validity} = 'revoked')::int` }).from(admissionTickets);
@@ -67,7 +63,7 @@ export const ticketsRouter = router({
 	recipient: root.input(recipientInput).mutation(({ ctx, input }) => safeErrors(() => updateRecipient(input, ctx.session.user.id))),
 	changeTicket: root.input(z.object({ ticketId: z.uuid(), action: z.enum(["revoke", "replace"]), reason: z.string().trim().min(1).max(1000) })).mutation(({ ctx, input }) => safeErrors(() => changeTicket(input.ticketId, input.action, input.reason, ctx.session.user.id))),
 	refund: root.input(refundInput).mutation(({ ctx, input }) => safeErrors(() => recordRefund(input, ctx.session.user.id))),
-	deliver: root.input(z.object({ orderId: z.uuid().optional(), ticketId: z.uuid().optional(), requestKey: z.uuid(), locale: z.enum(["en", "vi"]).optional() }).refine(input => Boolean(input.orderId) !== Boolean(input.ticketId))).mutation(({ ctx, input }) => safeErrors(() => enqueueDelivery(input, ctx.session.user.id))),
+	deliver: root.input(z.object({ orderId: z.uuid().optional(), ticketId: z.uuid().optional(), requestKey: z.uuid() }).refine(input => Boolean(input.orderId) !== Boolean(input.ticketId))).mutation(({ ctx, input }) => safeErrors(() => enqueueDelivery(input, ctx.session.user.id))),
 	adminHistory: root.input(historyInput).query(({ input }) => safeErrors(() => ticketHistory(input.id, input.page))),
 	reconcile: root.input(z.object({ id: z.uuid().optional() })).mutation(({ ctx, input }) => safeErrors(async () => {
 		await rateLimit(ctx.session.user.id, "admin-reconcile", 6);

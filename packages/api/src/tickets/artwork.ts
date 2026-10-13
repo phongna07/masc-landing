@@ -1,10 +1,8 @@
 import QRCode from "qrcode";
 import sharp from "sharp";
 import type { Ticket } from "./core";
-import type { TicketTemplateConfig } from "@masc-landing/db/schema/ticket-templates";
-import { defaultTicketTemplates, templateHeadingFont, ticketTemplateCopy } from "./template-input";
+import { ticketTemplateAppearance, ticketTemplatePalette, ticketTemplateCopy } from "./template-input";
 
-export type ArtworkCopy = { admissionQr: string; normal: string; vip: string; networkingLunch: string; confidential: string; code: string; validity: string; valid: string; revoked: string };
 export const escapeXml = (value: string) => value.replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]!);
 
 function textLines(text: string, limit = 48) {
@@ -17,11 +15,12 @@ function textLines(text: string, limit = 48) {
 	return lines;
 }
 
-export function renderTicketArtworkSvg(ticket: Ticket, locale: "en" | "vi", baseCopy: ArtworkCopy, config: TicketTemplateConfig = defaultTicketTemplates) {
-	const copy = ticketTemplateCopy(baseCopy, config, locale);
-	const { palette: p, brand, titleSize, bodySize, headingFont } = config.artwork;
+export function renderTicketArtworkSvg(ticket: Ticket) {
+	const copy = ticketTemplateCopy;
+	const p = ticketTemplatePalette;
+	const { brand, titleSize, bodySize, headingFont } = ticketTemplateAppearance.artwork;
 	let y = 145;
-	const category = `<text x="450" y="${y}" text-anchor="middle" font-family="${templateHeadingFont(headingFont)}" font-size="${titleSize}" fill="${ticket.category === "vip" ? p.vip : p.normal}">${escapeXml(copy[ticket.category])}</text>`;
+	const category = `<text x="450" y="${y}" text-anchor="middle" font-family="${headingFont}" font-size="${titleSize}" fill="${ticket.category === "vip" ? p.vip : p.normal}">${escapeXml(copy[ticket.category])}</text>`;
 	y += titleSize + 12;
 	const benefits = ticket.benefits.flatMap(() => textLines(copy.networkingLunch, Math.floor(1056 / bodySize)).map(line => {
 		const tag = `<text x="450" y="${y}" text-anchor="middle" font-size="${bodySize}" fill="${p.normal}">${escapeXml(line)}</text>`;
@@ -32,7 +31,7 @@ export function renderTicketArtworkSvg(ticket: Ticket, locale: "en" | "vi", base
 	const warningLines = textLines(copy.confidential, 60);
 	const height = codeTop + 175 + warningLines.length * 28;
 	const warning = warningLines.map((line, i) => `<text x="450" y="${codeTop + 140 + i * 28}" text-anchor="middle" font-size="20" fill="${p.muted}">${escapeXml(line)}</text>`).join("");
-	// Only bounded, validated settings and escaped text enter the SVG.
+	// Fixed appearance and escaped text enter the SVG.
 	// No external images or fonts are loaded; QR geometry stays fixed.
 	const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="900" height="${height}">
 		<rect width="900" height="${height}" fill="${p.background}"/>
@@ -53,8 +52,8 @@ export function renderTicketArtworkSvg(ticket: Ticket, locale: "en" | "vi", base
 	return { svg, qrTop };
 }
 
-export async function ticketPng(ticket: Ticket, locale: "en" | "vi", baseCopy: ArtworkCopy, config: TicketTemplateConfig = defaultTicketTemplates) {
-	const { svg, qrTop } = renderTicketArtworkSvg(ticket, locale, baseCopy, config);
+export async function ticketPng(ticket: Ticket) {
+	const { svg, qrTop } = renderTicketArtworkSvg(ticket);
 	// Payload is exactly the code. Four-module quiet zone, solid white surrounding
 	// space, and no branding, decorative marks or metadata inside the QR area.
 	const qr = await QRCode.toBuffer(ticket.code, { type: "png", errorCorrectionLevel: "M", width: 520, margin: 4, color: { dark: "#000000", light: "#ffffff" } });

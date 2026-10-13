@@ -11,7 +11,7 @@ import { reconciliationClaim, reconciliationCompletion, reconciliationDue, recon
 
 export const checkoutInput = z.object({
 	requestKey: z.uuid(), packageName: z.enum(["Silver", "Golden", "Platinum", "VIP"]),
-	buyerName: z.string().trim().max(120).optional(), buyerPhone: z.string().trim().max(40).optional(), locale: z.enum(["en", "vi"]),
+	buyerName: z.string().trim().max(120).optional(), buyerPhone: z.string().trim().max(40).optional(),
 });
 type Buyer = { id: string; email: string };
 
@@ -43,7 +43,7 @@ export async function startCheckout(buyer: Buyer, input: z.infer<typeof checkout
 		for (let attempt = 0; attempt < 8; attempt++) {
 			const [created] = await tx.insert(ticketOrders).values({
 				id: randomUUID(), buyerId: buyer.id, requestKey: input.requestKey, providerOrderCode: randomInt(1_000_000_000_000, 10_000_000_000_000),
-				buyerEmail: buyer.email, buyerName: input.buyerName || null, buyerPhone: input.buyerPhone || null, locale: input.locale,
+				buyerEmail: buyer.email, buyerName: input.buyerName || null, buyerPhone: input.buyerPhone || null, locale: "vi",
 				snapshot: { packageName: pack.name, category: pack.category, quantity: pack.quantity, benefits: pack.benefits, currency: "VND", totalPrice: pack.price },
 				reservation: pack.category === "vip" ? "held" : "none",
 				expiresAt: sql`date_trunc('second', now()) + interval '15 minutes'`, nextReconcileAt: sql`now() + interval '30 seconds'`,
@@ -111,7 +111,7 @@ async function fulfill(tx: TicketTransaction, order: Order) {
 	for (let ordinal = 1; ordinal <= order.snapshot.quantity; ordinal++) {
 		await issueTicket(tx, { source: "purchased", category: order.snapshot.category, ownerId: order.buyerId, orderId: order.id, ordinal, benefits: order.snapshot.benefits });
 	}
-	await tx.insert(ticketEmailJobs).values({ id: randomUUID(), dedupeKey: `initial:${order.id}`, orderId: order.id, toAddress: order.buyerEmail, locale: order.locale }).onConflictDoNothing();
+	await tx.insert(ticketEmailJobs).values({ id: randomUUID(), dedupeKey: `initial:${order.id}`, orderId: order.id, toAddress: order.buyerEmail, locale: "vi" }).onConflictDoNothing();
 	await tx.update(ticketOrders).set({ paymentStatus: "paid", fulfillmentStatus: "issued", paidAt: sql`coalesce(${ticketOrders.paidAt}, now())`, reservation: order.snapshot.category === "vip" ? "consumed" : "none", issue: null, updatedAt: sql`now()` }).where(eq(ticketOrders.id, order.id));
 }
 

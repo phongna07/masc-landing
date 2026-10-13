@@ -73,7 +73,7 @@ beforeEach(async () => {
 });
 
 function checkout(packageName: "VIP" | "Silver" = "VIP", requestKey = randomUUID(), actor = buyer) {
-	return startCheckout(actor, { requestKey, packageName, locale: "en" });
+	return startCheckout(actor, { requestKey, packageName });
 }
 
 const reservationConflict = { code: "CONFLICT", message: "vipReservationExists" };
