@@ -238,6 +238,12 @@
     }
   },
   "Dashboard": {
+    "ticketSale": {
+      "eyebrow": "Marketing All-Star Challenge 2026 finals",
+      "title": "Tickets to the grand finale are now on sale",
+      "description": "Be part of the Marketing All-Star Challenge grand finale. Get your tickets to watch the teams compete live!",
+      "buy": "Buy tickets now"
+    },
     "eyebrow": "Competition portal",
     "title": "Competition rounds",
     "welcome": "Welcome {name}",

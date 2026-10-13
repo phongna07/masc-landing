@@ -114,6 +114,37 @@ dialog[open]::backdrop {
   background: rgba(255, 255, 255, 0.04);
 }
 
+.dashboard-ticket-nav {
+  display: inline-flex;
+  min-height: 40px;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 10px;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 500;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: color 180ms ease, background 180ms ease;
+}
+
+.dashboard-ticket-nav svg {
+  width: 16px;
+  height: 16px;
+  color: #d2a66c;
+}
+
+.dashboard-ticket-nav:hover {
+  color: var(--ink);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.dashboard-ticket-nav:focus-visible,
+.dashboard-ticket-secondary:focus-visible {
+  outline: 2px solid #f2d584;
+  outline-offset: 4px;
+}
+
 .user-menu-avatar {
   display: inline-block;
   width: 24px;
@@ -149,6 +180,85 @@ dialog[open]::backdrop {
 
 .dashboard-heading {
   max-width: 760px;
+}
+
+.dashboard-ticket-promo {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 32px;
+  margin: -14px 0 46px;
+  padding: clamp(24px, 3vw, 36px);
+  border: 1px solid rgba(210, 166, 108, 0.4);
+  background: linear-gradient(110deg, rgba(210, 166, 108, 0.14), rgba(123, 102, 255, 0.08));
+}
+
+.dashboard-ticket-promo .dashboard-eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin: 0 0 14px;
+}
+
+.dashboard-ticket-promo .dashboard-eyebrow svg {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
+.dashboard-ticket-promo h2 {
+  max-width: 680px;
+  margin: 0 0 12px;
+  font-family: var(--font-castela), Georgia, serif;
+  font-size: clamp(28px, 3vw, 38px);
+  font-weight: 400;
+  line-height: 1.2;
+}
+
+.dashboard-ticket-promo-copy > p:last-child {
+  max-width: 650px;
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.7;
+}
+
+.dashboard-ticket-promo-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 14px;
+}
+
+.dashboard-ticket-buy {
+  min-height: 48px;
+  gap: 12px;
+  padding-inline: 24px;
+  border-color: #f2d584;
+  color: var(--night);
+  background: #f2d584;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.dashboard-ticket-buy:hover {
+  border-color: #ffe5a0;
+  color: var(--night);
+  background: #ffe5a0;
+}
+
+.dashboard-ticket-secondary {
+  align-self: center;
+  padding: 4px;
+  color: var(--muted);
+  font-size: 13px;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  cursor: pointer;
+}
+
+.dashboard-ticket-secondary:hover {
+  color: var(--ink);
 }
 
 .dashboard-announcement-jump {
@@ -1828,6 +1938,15 @@ dialog[open]::backdrop {
     align-items: flex-start;
     flex-direction: column;
     gap: 22px;
+  }
+
+  .dashboard-ticket-nav {
+    padding-inline: 4px;
+  }
+
+  .dashboard-ticket-promo {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 24px;
   }
 
   .dashboard-fields,

@@ -238,6 +238,12 @@
     }
   },
   "Dashboard": {
+    "ticketSale": {
+      "eyebrow": "Chung kết Marketing All-Star Challenge 2026",
+      "title": "Vé tham dự vòng chung kết đã chính thức mở bán",
+      "description": "Sẵn sàng hòa mình vào vòng chung kết Marketing All-Star Challenge. Mua vé ngay để trực tiếp theo dõi màn tranh tài của các đội thi!",
+      "buy": "Mua vé ngay"
+    },
     "eyebrow": "Cổng thông tin",
     "title": "Các vòng thi",
     "welcome": "Chào mừng {name}",
@@ -1368,7 +1374,7 @@
   "Tickets": {
     "buy": "Mua vé",
     "myTickets": "Vé của tôi",
-    "dashboard": "Trang cá nhân",
+    "dashboard": "Cổng thông tin",
     "purchaseIntro": "Chọn hạng vé tham dự chung kết Marketing All-Star Challenge. Bạn không cần đăng ký dự thi để mua vé",
     "ownershipNotice": "Xem vé đã mua và theo dõi đơn hàng tại đây. Vé được quản lý trong tài khoản đã mua và không thể chuyển sang tài khoản khác. Nếu mua hộ, bạn có thể gửi ảnh vé cho người tham dự.",
     "loading": "Đang tải…",
