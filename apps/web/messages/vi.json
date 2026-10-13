@@ -16,7 +16,7 @@
     "preliminary": "Vòng Sơ loại",
     "round1": "Vòng 1",
     "round2": "Vòng 2",
-    "round3": "Vòng 3",
+    "round3": "Vòng thực chiến",
     "numbered": "Vòng {round}"
   },
   "Home": {
@@ -461,7 +461,7 @@
       "round": "{roundLabel}",
       "round1": "Vòng 1",
       "round2": "Vòng 2",
-      "round3": "Vòng 3"
+      "round3": "Vòng thực chiến"
     },
     "round": {
       "title": "Bài nộp {roundLabel}",
@@ -768,7 +768,7 @@
         }
       },
       "roundProblemStatements": {
-        "title": "Đề bài Vòng 2 và Vòng 3",
+        "title": "Đề bài Vòng 2 và Vòng thực chiến",
         "description": "Tải lên một tệp PDF cho mỗi vòng và quản lý thời điểm các đội được tuyển vào vòng có thể xem đề bài.",
         "loadError": "Không thể tải cài đặt đề bài. Vui lòng thử lại.",
         "uploadTitle": "Tải lên đề bài {roundLabel}",

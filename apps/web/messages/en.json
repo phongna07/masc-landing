@@ -16,7 +16,7 @@
     "preliminary": "Preliminary Round",
     "round1": "Round 1",
     "round2": "Round 2",
-    "round3": "Round 3",
+    "round3": "Practical Round",
     "numbered": "Round {round}"
   },
   "Home": {
@@ -461,7 +461,7 @@
       "round": "{roundLabel}",
       "round1": "Round 1",
       "round2": "Round 2",
-      "round3": "Round 3"
+      "round3": "Practical Round"
     },
     "round": {
       "title": "{roundLabel} submission",
@@ -768,7 +768,7 @@
         }
       },
       "roundProblemStatements": {
-        "title": "Round 2 and 3 problem statements",
+        "title": "Round 2 and Practical Round problem statements",
         "description": "Upload one PDF for each round and control when admitted teams can view it.",
         "loadError": "Could not load the problem statement settings. Please try again.",
         "uploadTitle": "Upload problem statement for {roundLabel}",
