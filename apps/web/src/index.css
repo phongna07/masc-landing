@@ -5654,19 +5654,6 @@ img {
   margin-left: 16%;
 }
 
-.hero-ticket-actions {
-  flex-direction: column;
-  align-items: center;
-  gap: 12px;
-}
-
-.hero-ticket-actions .ticket-registration-link {
-  border: 1px solid rgba(255, 255, 255, .3);
-  color: var(--ink);
-  background: rgba(7, 7, 10, .7);
-  backdrop-filter: blur(12px);
-}
-
 .final-ticket-actions {
   display: flex;
   flex-wrap: wrap;

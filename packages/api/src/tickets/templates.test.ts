@@ -23,7 +23,7 @@ test("preview input accepts sample choices and rejects all configuration overrid
 	for (const quantity of [0, 4, 1.5]) assert.equal(previewTicketTemplatesInput.safeParse({ ...input, quantity }).success, false);
 });
 
-test("purchase emails escape order data and include every ticket and Vietnamese instructions", () => {
+test("purchase emails escape order data and keep ticket details out of both email bodies", () => {
 	const { tickets, order } = sample(3);
 	order!.snapshot.packageName = '<img src=x onerror="x()"> & VIP';
 	const rendered = renderTicketEmail(tickets, order);
@@ -33,8 +33,13 @@ test("purchase emails escape order data and include every ticket and Vietnamese 
 	assert.match(rendered.html, /lang="vi"/);
 	assert.ok(rendered.html.includes(`color:${ticketTemplatePalette.accent}`));
 	for (const ticket of tickets) {
-		assert.ok(rendered.html.includes(ticket.code));
-		assert.ok(rendered.text.includes(ticket.code));
+		assert.equal(rendered.html.includes(ticket.code), false);
+		assert.equal(rendered.text.includes(ticket.code), false);
+	}
+	for (const body of [rendered.html, rendered.text]) {
+		for (const label of [copy.normal, copy.vip, copy.code + ":", copy.validity + ":", copy.networkingLunch]) {
+			assert.equal(body.includes(label), false);
+		}
 	}
 	for (const text of [copy.intro, copy.confidential, copy.attachments, "PREVIEW-ORDER", `${copy.quantity}: 3`]) assert.ok(rendered.text.includes(text));
 });
@@ -44,7 +49,8 @@ test("gift emails use fixed Vietnamese content and include revoked warnings with
 	tickets[0]!.validity = "revoked";
 	const rendered = renderTicketEmail(tickets, undefined);
 	assert.equal(rendered.subject, copy.giftSubject);
-	for (const text of [copy.giftIntro, copy.revokedNotice, copy.confidential, copy.revoked]) assert.ok(rendered.text.includes(text));
+	for (const text of [copy.giftIntro, copy.revokedNotice, copy.confidential]) assert.ok(rendered.text.includes(text));
+	for (const body of [rendered.html, rendered.text]) assert.equal(body.includes(tickets[0]!.code), false);
 	assert.doesNotMatch(rendered.text, /PREVIEW-ORDER|199/);
 });
 
@@ -106,10 +112,11 @@ test("all preview scenarios match delivery output and use unusable admission cre
 				assert.equal(tickets.length, source === "gifted" ? 1 : 2);
 				assert.deepEqual({ subject: result.subject, html: result.html, text: result.text }, renderTicketEmail(tickets, order));
 				assert.equal(result.png, `data:image/png;base64,${(await ticketPng(tickets[0]!)).toString("base64")}`);
-				assert.ok(result.text.includes(copy[category]));
-				assert.ok(result.text.includes(copy[validity]));
-				assert.equal(result.text.includes(copy.networkingLunch), category === "vip");
-				for (const ticket of tickets) assert.doesNotMatch(ticket.code, /^[A-HJ-NP-Z2-9]{20}$/);
+				assert.equal(result.text.includes(copy.revokedNotice), validity === "revoked");
+				for (const ticket of tickets) {
+					assert.doesNotMatch(ticket.code, /^[A-HJ-NP-Z2-9]{20}$/);
+					for (const body of [result.html, result.text]) assert.equal(body.includes(ticket.code), false);
+				}
 			}
 		}
 	}
@@ -128,8 +135,9 @@ test("legacy event metadata is absent from all outputs and English orders still 
 		assert.equal(email.subject, source === "purchased" ? copy.subject : copy.giftSubject);
 		for (const output of [email.subject, email.html, email.text, renderTicketArtworkSvg(tickets[0]!).svg]) {
 			assert.doesNotMatch(output, /REMOVED-|dateUnknown|venueUnknown/);
-			assert.ok(output.includes(tickets[0]!.code) || output === email.subject);
 		}
+		assert.ok(renderTicketArtworkSvg(tickets[0]!).svg.includes(tickets[0]!.code));
+		for (const body of [email.subject, email.html, email.text]) assert.equal(body.includes(tickets[0]!.code), false);
 		if (order) assert.ok(email.text.includes(new Intl.NumberFormat("vi-VN", { style: "currency", currency: "VND", maximumFractionDigits: 0 }).format(order.snapshot.totalPrice)));
 	}
 });

@@ -272,15 +272,8 @@ export default function HomePageClient({ countdown }: { countdown: CountdownConf
               </h1>
               <div className="hero-bottom reveal">
                 <p>{t("hero.description")}</p>
-                <div className="hero-brand-action hero-ticket-actions">
+                <div className="hero-brand-action">
                   <SessionAwareLink className="primary-button hero-brand-button" destination="/tickets" signedInLabel={t("hero.buyTickets")} signedOutLabel={t("hero.buyTickets")} />
-                  {env.NEXT_PUBLIC_IS_REGISTRATION_OPENED && (
-                    <SessionAwareLink
-                      className="primary-button hero-brand-button ticket-registration-link"
-                      signedInLabel={t("hero.portal")}
-                      signedOutLabel={t("hero.apply")}
-                    />
-                  )}
                 </div>
               </div>
             </div>

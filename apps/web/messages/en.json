@@ -1632,9 +1632,9 @@
     "email": {
       "subject": "Your ticket purchase is confirmed",
       "giftSubject": "Your gifted admission ticket",
-      "intro": "Your payment is verified. Every individual ticket in this order is listed below and attached as a private PNG with its admission QR.",
+      "intro": "Your payment is verified. Each ticket in this order is attached as a private PNG with its admission QR.",
       "giftIntro": "You have received an individual event ticket. No account is needed to use its admission QR.",
-      "attachments": "Save the attached PNG ticket images. If images are unavailable, the entrance staff can look up the ticket codes listed here.",
+      "attachments": "Save the attached PNG ticket images to present at the event. If you cannot open an image, please contact the organizer for help.",
       "revokedNotice": "This ticket has been revoked and cannot be admitted.",
       "normal": "Normal admission",
       "vip": "VIP admission",

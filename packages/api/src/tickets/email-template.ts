@@ -10,10 +10,7 @@ export function renderTicketEmail(tickets: Ticket[], order: Order | undefined) {
 	const bodyHtml = `<p>${escapeXml(order ? copy.intro : copy.giftIntro)}</p>`;
 	const lines: string[] = [copy.confidential, copy.attachments];
 	if (order) lines.push(`${copy.order}: ${order.id}`, `${copy.package}: ${order.snapshot.packageName}`, `${copy.quantity}: ${order.snapshot.quantity}`, `${copy.total}: ${total}`);
-	for (const ticket of tickets) {
-		lines.push(copy[ticket.category], `${copy.code}: ${ticket.code}`, `${copy.validity}: ${copy[ticket.validity]}`, ...ticket.benefits.map(() => copy.networkingLunch));
-		if (ticket.validity === "revoked") lines.push(copy.revokedNotice);
-	}
+	if (tickets.some(ticket => ticket.validity === "revoked")) lines.push(copy.revokedNotice);
 	const heading = order ? copy.subject : copy.giftSubject;
 	const subject = heading.replace(/[\r\n]+/g, " ");
 	const p = ticketTemplatePalette;
