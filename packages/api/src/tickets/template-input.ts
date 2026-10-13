@@ -30,7 +30,7 @@ export const ticketTemplatePalette = Object.freeze({
 });
 
 export const ticketTemplateAppearance = Object.freeze({
-	artwork: Object.freeze({ brand: "Chung kết Marketing All-Star Challenge 2026", headingFont: "Georgia, serif", titleSize: 36, bodySize: 22 }),
+	artwork: Object.freeze({ brand: "Chung kết Marketing All-Star Challenge 2026", titleSize: 36, bodySize: 22 }),
 	email: Object.freeze({ brand: "Chung kết Marketing All-Star Challenge 2026", headingFont: "Georgia, serif", titleSize: 30, bodySize: 14, width: 650 }),
 });
 

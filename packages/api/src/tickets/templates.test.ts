@@ -1,8 +1,13 @@
 import assert from "node:assert/strict";
+import { execFileSync } from "node:child_process";
+import { mkdtempSync, mkdirSync, rmSync, writeFileSync } from "node:fs";
+import os from "node:os";
+import path from "node:path";
 import test from "node:test";
 import QRCode from "qrcode";
 import sharp from "sharp";
 import { renderTicketArtworkSvg, ticketPng } from "./artwork";
+import { ticketTextPath } from "./artwork-fonts";
 import { renderTicketEmail } from "./email-template";
 import { previewTicketTemplatesInput, ticketTemplateCopy as copy, ticketTemplatePalette } from "./template-input";
 import { previewTicketTemplates, sampleTicketDelivery } from "./template-preview";
@@ -50,6 +55,8 @@ test("artwork escapes ticket codes and preserves the exact admission QR bitmap",
 	assert.match(malicious.svg, /&lt;script&gt; &amp; &quot;code&quot;/);
 	assert.doesNotMatch(malicious.svg, /<script>/);
 	const { svg, qrTop } = renderTicketArtworkSvg(ticket);
+	assert.doesNotMatch(svg, /<text\b|font-family/);
+	assert.doesNotMatch(svg, /NaN|Infinity/);
 	for (const label of [copy.vip, copy.networkingLunch, copy.admissionQr]) assert.ok(svg.includes(label));
 	const png = await ticketPng(ticket);
 	const metadata = await sharp(png).metadata();
@@ -57,6 +64,36 @@ test("artwork escapes ticket codes and preserves the exact admission QR bitmap",
 	const crop = await sharp(png).extract({ left: 162, top: qrTop - 28, width: 576, height: 576 }).removeAlpha().raw().toBuffer();
 	const original = await QRCode.toBuffer(ticket.code, { type: "png", errorCorrectionLevel: "M", width: 576, margin: 2, color: { dark: "#000000", light: "#ffffff" } });
 	assert.deepEqual(crop, await sharp(original).removeAlpha().raw().toBuffer());
+});
+
+test("bundled artwork fonts cover Vietnamese letters and admission code characters", () => {
+	const vietnamese = "ĂÂĐÊÔƠƯăâđêôơư" + String.fromCodePoint(...Array.from({ length: 0x1efa - 0x1ea0 }, (_, index) => 0x1ea0 + index));
+	for (const family of ["body", "heading", "code"] as const) {
+		const outline = ticketTextPath(vietnamese, 450, 100, 20, family);
+		assert.ok(outline.length > 0);
+		assert.doesNotMatch(outline, /NaN|Infinity/);
+	}
+	assert.ok(ticketTextPath("ABCDEFGHJKLMNPQRSTUVWXYZ23456789", 450, 100, 30, "code").length > 0);
+	assert.equal(ticketTextPath("Hợp lệ", 450, 100, 20), ticketTextPath("Hợp lệ".normalize("NFD"), 450, 100, 20));
+});
+
+test("ticket PNG output is identical without system fonts", async () => {
+	const ticket = sample().tickets[0]!;
+	const expected = await ticketPng(ticket);
+	const directory = mkdtempSync(path.join(os.tmpdir(), "ticket-no-fonts-"));
+	try {
+		mkdirSync(path.join(directory, "empty"));
+		const config = path.join(directory, "fonts.conf");
+		writeFileSync(config, '<fontconfig><dir prefix="relative">empty</dir><cachedir prefix="relative">cache</cachedir></fontconfig>');
+		const script = `import { ticketPng } from ${JSON.stringify(new URL("./artwork.ts", import.meta.url).href)}; process.stdout.write(await ticketPng(${JSON.stringify(ticket)}));`;
+		const actual = execFileSync(process.execPath, ["--import", "tsx", "--input-type=module", "--eval", script], {
+			env: { ...process.env, FONTCONFIG_FILE: config, FONTCONFIG_PATH: directory },
+			maxBuffer: 2 * 1024 * 1024,
+		});
+		assert.deepEqual(actual, expected);
+	} finally {
+		rmSync(directory, { recursive: true, force: true });
+	}
 });
 
 test("all preview scenarios match delivery output and use unusable admission credentials", async () => {

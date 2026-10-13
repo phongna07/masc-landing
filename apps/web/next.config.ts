@@ -14,6 +14,7 @@ const nextConfig: NextConfig = {
     "/*": [
       "../../node_modules/.pnpm/@img+sharp-{darwin,linux,linuxmusl,win32}-*/node_modules/@img/sharp-{darwin,linux,linuxmusl,win32}-*/lib/**/*",
       "../../node_modules/.pnpm/@img+sharp-libvips-*/node_modules/@img/sharp-libvips-*/lib/**/*",
+      "../../packages/api/src/tickets/fonts/*.ttf",
     ],
   },
 };

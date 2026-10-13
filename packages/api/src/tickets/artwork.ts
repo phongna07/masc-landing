@@ -1,9 +1,14 @@
 import QRCode from "qrcode";
 import sharp from "sharp";
 import type { Ticket } from "./core";
+import { ticketTextPath, type TicketArtworkFont } from "./artwork-fonts";
 import { ticketTemplateAppearance, ticketTemplatePalette, ticketTemplateCopy } from "./template-input";
 
 export const escapeXml = (value: string) => value.replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]!);
+
+function artworkText(text: string, y: number, size: number, color: string, font: TicketArtworkFont = "body", letterSpacing = 0) {
+	return `<g aria-label="${escapeXml(text)}"><path d="${ticketTextPath(text, 450, y, size, font, letterSpacing)}" fill="${color}"/></g>`;
+}
 
 function textLines(text: string, limit = 48) {
 	const words = text.split(/\s+/).flatMap(word => word.match(new RegExp(`.{1,${limit}}`, "gu")) ?? []);
@@ -18,33 +23,33 @@ function textLines(text: string, limit = 48) {
 export function renderTicketArtworkSvg(ticket: Ticket) {
 	const copy = ticketTemplateCopy;
 	const p = ticketTemplatePalette;
-	const { brand, titleSize, bodySize, headingFont } = ticketTemplateAppearance.artwork;
+	const { brand, titleSize, bodySize } = ticketTemplateAppearance.artwork;
 	let y = 145;
-	const category = `<text x="450" y="${y}" text-anchor="middle" font-family="${headingFont}" font-size="${titleSize}" fill="${ticket.category === "vip" ? p.vip : p.normal}">${escapeXml(copy[ticket.category])}</text>`;
+	const category = artworkText(copy[ticket.category], y, titleSize, ticket.category === "vip" ? p.vip : p.normal, "heading");
 	y += titleSize + 12;
 	const benefits = ticket.benefits.flatMap(() => textLines(copy.networkingLunch, Math.floor(1056 / bodySize)).map(line => {
-		const tag = `<text x="450" y="${y}" text-anchor="middle" font-size="${bodySize}" fill="${p.normal}">${escapeXml(line)}</text>`;
+		const tag = artworkText(line, y, bodySize, p.normal);
 		y += bodySize + 9; return tag;
 	})).join("");
 	const qrTop = y + 49;
 	const codeTop = qrTop + 600;
 	const warningLines = textLines(copy.confidential, 60);
 	const height = codeTop + 175 + warningLines.length * 28;
-	const warning = warningLines.map((line, i) => `<text x="450" y="${codeTop + 140 + i * 28}" text-anchor="middle" font-size="20" fill="${p.muted}">${escapeXml(line)}</text>`).join("");
-	// Fixed appearance and escaped text enter the SVG.
-	// No external images or fonts are loaded; QR geometry stays fixed.
+	const warning = warningLines.map((line, i) => artworkText(line, codeTop + 140 + i * 28, 20, p.muted)).join("");
+	// Bundled fonts become paths so Sharp never needs server-installed fonts.
+	// Text remains escaped in accessibility labels; QR geometry stays fixed.
 	const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="900" height="${height}">
 		<rect width="900" height="${height}" fill="${p.background}"/>
 		<rect x="24" y="24" width="852" height="${height - 48}" fill="${p.surface}" stroke="${p.border}"/>
 		<path d="M60 74H160M740 74H840" stroke="${p.accent}" stroke-width="1"/>
-		<g font-family="Arial, sans-serif">
-			<text x="450" y="81" text-anchor="middle" font-size="18" letter-spacing="4" fill="${p.accent}">${escapeXml(brand)}</text>
+		<g>
+			${artworkText(brand, 81, 18, p.accent, "body", 4)}
 			${category}${benefits}
-			<text x="450" y="${qrTop - 52}" text-anchor="middle" font-size="18" fill="${p.muted}">${escapeXml(copy.admissionQr)}</text>
+			${artworkText(copy.admissionQr, qrTop - 52, 18, p.muted)}
 			<rect x="162" y="${qrTop - 28}" width="576" height="576" fill="#ffffff"/>
-			<text x="450" y="${codeTop}" text-anchor="middle" font-size="18" fill="${p.accent}">${escapeXml(copy.code)}</text>
-			<text x="450" y="${codeTop + 44}" text-anchor="middle" font-size="30" font-family="monospace" letter-spacing="2" fill="${p.text}">${escapeXml(ticket.code)}</text>
-			<text x="450" y="${codeTop + 86}" text-anchor="middle" font-size="20" fill="${ticket.validity === "valid" ? p.valid : p.revoked}">${escapeXml(copy.validity)}: ${escapeXml(copy[ticket.validity])}</text>
+			${artworkText(copy.code, codeTop, 18, p.accent)}
+			${artworkText(ticket.code, codeTop + 44, 30, p.text, "code", 2)}
+			${artworkText(`${copy.validity}: ${copy[ticket.validity]}`, codeTop + 86, 20, ticket.validity === "valid" ? p.valid : p.revoked)}
 			<path d="M120 ${codeTop + 108}H780" stroke="${p.border}"/>
 			${warning}
 		</g>
