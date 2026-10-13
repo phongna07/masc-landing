@@ -9,9 +9,12 @@ const nextConfig: NextConfig = {
   serverExternalPackages: ["sharp"],
   outputFileTracingRoot: path.resolve(__dirname, "../.."),
   outputFileTracingIncludes: {
-    // Sharp's native binaries and libvips live in pnpm's optional @img packages.
-    // Include them for image routes and ticket email delivery (worker/tRPC).
-    "/*": ["../../node_modules/.pnpm/@img+sharp-*/node_modules/@img/sharp-*/lib/**/*"],
+    // Trace each @img package's real directory. A broad sharp-* glob also
+    // follows libvips symlinks inside native packages, which Vercel rejects.
+    "/*": [
+      "../../node_modules/.pnpm/@img+sharp-{darwin,linux,linuxmusl,win32}-*/node_modules/@img/sharp-{darwin,linux,linuxmusl,win32}-*/lib/**/*",
+      "../../node_modules/.pnpm/@img+sharp-libvips-*/node_modules/@img/sharp-libvips-*/lib/**/*",
+    ],
   },
 };
 
