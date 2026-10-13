@@ -14,7 +14,7 @@ export const ticketTemplateCopy = Object.freeze({
 	"valid": "Hợp lệ",
 	"revoked": "Đã thu hồi",
 	"admissionQr": "Mã QR vào cửa (không dùng để thanh toán)",
-	"networkingLunch": "Bao gồm bữa trưa giao lưu (Networking Lunch)",
+	"networkingLunch": "Bao gồm Networking Lunch",
 	"confidential": "Mã vé và mã QR có thể được dùng để vào cửa. Vui lòng không đăng công khai và chỉ gửi cho người sẽ sử dụng vé.",
 	"code": "Mã vé",
 	"package": "Gói vé",
@@ -30,8 +30,8 @@ export const ticketTemplatePalette = Object.freeze({
 });
 
 export const ticketTemplateAppearance = Object.freeze({
-	artwork: Object.freeze({ brand: "MASC · HYPERNOVA", headingFont: "Georgia, serif", titleSize: 36, bodySize: 22 }),
-	email: Object.freeze({ brand: "MASC · HYPERNOVA", headingFont: "Georgia, serif", titleSize: 30, bodySize: 14, width: 650 }),
+	artwork: Object.freeze({ brand: "Chung kết Marketing All-Star Challenge 2026", headingFont: "Georgia, serif", titleSize: 36, bodySize: 22 }),
+	email: Object.freeze({ brand: "Chung kết Marketing All-Star Challenge 2026", headingFont: "Georgia, serif", titleSize: 30, bodySize: 14, width: 650 }),
 });
 
 // Preview callers can choose sample scenarios, never text or appearance overrides.

@@ -54,8 +54,8 @@ test("artwork escapes ticket codes and preserves the exact admission QR bitmap",
 	const png = await ticketPng(ticket);
 	const metadata = await sharp(png).metadata();
 	assert.equal(metadata.width, 900);
-	const crop = await sharp(png).extract({ left: 190, top: qrTop, width: 520, height: 520 }).removeAlpha().raw().toBuffer();
-	const original = await QRCode.toBuffer(ticket.code, { type: "png", errorCorrectionLevel: "M", width: 520, margin: 4, color: { dark: "#000000", light: "#ffffff" } });
+	const crop = await sharp(png).extract({ left: 162, top: qrTop - 28, width: 576, height: 576 }).removeAlpha().raw().toBuffer();
+	const original = await QRCode.toBuffer(ticket.code, { type: "png", errorCorrectionLevel: "M", width: 576, margin: 2, color: { dark: "#000000", light: "#ffffff" } });
 	assert.deepEqual(crop, await sharp(original).removeAlpha().raw().toBuffer());
 });
 
@@ -90,7 +90,7 @@ test("legacy event metadata is absent from all outputs and English orders still 
 		const email = renderTicketEmail(tickets, order);
 		assert.equal(email.subject, source === "purchased" ? copy.subject : copy.giftSubject);
 		for (const output of [email.subject, email.html, email.text, renderTicketArtworkSvg(tickets[0]!).svg]) {
-			assert.doesNotMatch(output, /REMOVED-|2026|dateUnknown|venueUnknown/);
+			assert.doesNotMatch(output, /REMOVED-|dateUnknown|venueUnknown/);
 			assert.ok(output.includes(tickets[0]!.code) || output === email.subject);
 		}
 		if (order) assert.ok(email.text.includes(new Intl.NumberFormat("vi-VN", { style: "currency", currency: "VND", maximumFractionDigits: 0 }).format(order.snapshot.totalPrice)));

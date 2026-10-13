@@ -26,7 +26,7 @@ export function renderTicketArtworkSvg(ticket: Ticket) {
 		const tag = `<text x="450" y="${y}" text-anchor="middle" font-size="${bodySize}" fill="${p.normal}">${escapeXml(line)}</text>`;
 		y += bodySize + 9; return tag;
 	})).join("");
-	const qrTop = y + 85;
+	const qrTop = y + 49;
 	const codeTop = qrTop + 600;
 	const warningLines = textLines(copy.confidential, 60);
 	const height = codeTop + 175 + warningLines.length * 28;
@@ -36,7 +36,7 @@ export function renderTicketArtworkSvg(ticket: Ticket) {
 	const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="900" height="${height}">
 		<rect width="900" height="${height}" fill="${p.background}"/>
 		<rect x="24" y="24" width="852" height="${height - 48}" fill="${p.surface}" stroke="${p.border}"/>
-		<path d="M60 74H280M620 74H840" stroke="${p.accent}" stroke-width="1"/>
+		<path d="M60 74H160M740 74H840" stroke="${p.accent}" stroke-width="1"/>
 		<g font-family="Arial, sans-serif">
 			<text x="450" y="81" text-anchor="middle" font-size="18" letter-spacing="4" fill="${p.accent}">${escapeXml(brand)}</text>
 			${category}${benefits}
@@ -54,8 +54,8 @@ export function renderTicketArtworkSvg(ticket: Ticket) {
 
 export async function ticketPng(ticket: Ticket) {
 	const { svg, qrTop } = renderTicketArtworkSvg(ticket);
-	// Payload is exactly the code. Four-module quiet zone, solid white surrounding
+	// Payload is exactly the code. Two-module quiet zone, solid white surrounding
 	// space, and no branding, decorative marks or metadata inside the QR area.
-	const qr = await QRCode.toBuffer(ticket.code, { type: "png", errorCorrectionLevel: "M", width: 520, margin: 4, color: { dark: "#000000", light: "#ffffff" } });
-	return sharp(Buffer.from(svg)).composite([{ input: qr, left: 190, top: qrTop }]).png().toBuffer();
+	const qr = await QRCode.toBuffer(ticket.code, { type: "png", errorCorrectionLevel: "M", width: 576, margin: 2, color: { dark: "#000000", light: "#ffffff" } });
+	return sharp(Buffer.from(svg)).composite([{ input: qr, left: 162, top: qrTop - 28 }]).png().toBuffer();
 }
