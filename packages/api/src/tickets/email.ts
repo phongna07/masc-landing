@@ -29,7 +29,7 @@ export async function runTicketEmailJobs(limit = 5) {
 			const { subject, html, text } = renderTicketEmail(tickets, order);
 			const attachments = [];
 			for (const ticket of tickets) attachments.push({ name: `ticket-${ticket.ordinal}.png`, content: (await ticketPng(ticket)).toString("base64"), mimeType: "image/png" });
-			await sendMail({ id: job.id, from: env.MAIL_USERNAME, to: job.toAddress, cc: [], subject, text, html, attachments, confidential: true });
+			await sendMail({ id: job.id, from: `Ban Tổ chức MASC <${env.MAIL_USERNAME}>`, to: job.toAddress, cc: [], subject, text, html, attachments, confidential: true });
 			await db.update(ticketEmailJobs).set({ status: "sent", sentAt: sql`now()`, leaseUntil: null, lastError: null }).where(and(eq(ticketEmailJobs.id, job.id), eq(ticketEmailJobs.attempts, job.attempts)));
 		} catch {
 			await db.update(ticketEmailJobs).set({ status: job.attempts >= 6 ? "failed" : "pending", nextAttemptAt: new Date(Date.now() + Math.min(3600, 30 * 2 ** job.attempts) * 1000), leaseUntil: null, lastError: "deliveryFailed" }).where(and(eq(ticketEmailJobs.id, job.id), eq(ticketEmailJobs.attempts, job.attempts)));

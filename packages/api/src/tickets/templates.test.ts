@@ -9,7 +9,7 @@ import sharp from "sharp";
 import { renderTicketArtworkSvg, ticketPng } from "./artwork";
 import { ticketTextPath } from "./artwork-fonts";
 import { renderTicketEmail } from "./email-template";
-import { previewTicketTemplatesInput, ticketTemplateCopy as copy, ticketTemplatePalette } from "./template-input";
+import { previewTicketTemplatesInput, ticketTemplateCopy as copy } from "./template-input";
 import { previewTicketTemplates, sampleTicketDelivery } from "./template-preview";
 
 const sample = (quantity = 1, source: "purchased" | "gifted" = "purchased") => sampleTicketDelivery({ category: "vip", validity: "valid", source, quantity });
@@ -28,10 +28,16 @@ test("purchase emails escape order data and keep ticket details out of both emai
 	order!.snapshot.packageName = '<img src=x onerror="x()"> & VIP';
 	const rendered = renderTicketEmail(tickets, order);
 	assert.match(rendered.html, /&lt;img src=x onerror=/);
-	assert.doesNotMatch(rendered.html, /<img|<script|PREVIEW-ONLY-4/);
+	assert.doesNotMatch(rendered.html, /<img src=x|<script|PREVIEW-ONLY-4/);
 	assert.equal(rendered.subject, copy.subject);
 	assert.match(rendered.html, /lang="vi"/);
-	assert.ok(rendered.html.includes(`color:${ticketTemplatePalette.accent}`));
+	assert.match(rendered.html, /background-color: #ffffff/);
+	assert.match(rendered.html, /https:\/\/marketingallstarchallenge.com\/banner.jpg/);
+	assert.match(rendered.html, /mailto:masc26.work@gmail.com/);
+	for (const body of [rendered.html, rendered.text]) {
+		assert.match(body, /Nếu bạn cần hỗ trợ/);
+		assert.doesNotMatch(body, /Đội thi cần hỗ trợ/);
+	}
 	for (const ticket of tickets) {
 		assert.equal(rendered.html.includes(ticket.code), false);
 		assert.equal(rendered.text.includes(ticket.code), false);
