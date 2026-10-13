@@ -2,8 +2,8 @@ import { z } from "zod";
 
 // Shared by previews, downloaded artwork, and delivery emails. Always Vietnamese.
 export const ticketTemplateCopy = Object.freeze({
-	"subject": "Xác nhận mua vé tham dự Marketing All-Star Challenge",
-	"giftSubject": "Bạn nhận được vé mời tham dự Marketing All-Star Challenge",
+	"subject": "Xác nhận mua vé tham dự chung kết Marketing All-Star Challenge",
+	"giftSubject": "Bạn nhận được vé mời tham dự chung kết Marketing All-Star Challenge",
 	"intro": "Ban tổ chức đã xác nhận thanh toán của bạn. Mỗi vé trong đơn được gửi kèm dưới dạng ảnh PNG có mã QR để vào cửa.",
 	"giftIntro": "Ban tổ chức gửi tặng bạn một vé tham dự sự kiện của Marketing All-Star Challenge. Bạn chỉ cần xuất trình mã QR trên vé khi đến, không cần đăng nhập tài khoản.",
 	"attachments": "Vui lòng tải và lưu các ảnh vé đính kèm để xuất trình khi đến sự kiện. Nếu không mở được ảnh, vui lòng liên hệ ban tổ chức để được hỗ trợ.",
