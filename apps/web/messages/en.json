@@ -565,9 +565,39 @@
     }
   },
   "Admin": {
+    "manageAdmins": {
+      "title": "Manage admins",
+      "description": "Manage admin access by email and assign root, professional, or entrance-staff roles.",
+      "developerNotice": "Developer records are read-only. Developer access can only be configured directly in the database.",
+      "create": "Add admin",
+      "edit": "Edit",
+      "delete": "Delete",
+      "actions": "Actions",
+      "readOnly": "Read-only",
+      "editAdmin": "Edit admin {email}",
+      "deleteAdmin": "Delete admin {email}",
+      "editTitle": "Edit admin",
+      "formDescription": "This email grants admin access when its owner signs in. Choose the role they need.",
+      "save": "Save admin",
+      "saving": "Saving…",
+      "saved": "Admin access saved.",
+      "deleted": "Admin access removed.",
+      "deleteTitle": "Remove admin access?",
+      "deleteDescription": "Remove admin access for {email}? Their user account will be kept.",
+      "loadErrorTitle": "Could not load admins",
+      "loadError": "Check your connection and try again.",
+      "emptyTitle": "No admins found",
+      "emptyDescription": "Add an email to grant admin access.",
+      "errors": {
+        "emailExists": "This email already has admin access.",
+        "recordProtectedOrMissing": "This record is protected or no longer exists. Refresh the list and try again.",
+        "operationFailed": "Could not save the change. Check your access and try again."
+      }
+    },
     "eyebrow": "Administration",
     "title": "Admin dashboard",
     "roles": {
+      "developer": "Developer",
       "root": "Root admin",
       "professional": "Professional admin",
       "user": "User",
@@ -580,6 +610,7 @@
       "close": "Close admin navigation"
     },
     "tabs": {
+      "manageAdmins": "Manage admins",
       "overview": "Overview",
       "announcements": "Announcements",
       "users": "Users",
@@ -1752,7 +1783,7 @@
       "notIssued": "This order has no issued tickets to deliver.",
       "recipientEmailRequired": "Save a recipient email on this gifted ticket before emailing it.",
       "imageFailed": "The private ticket image could not load. Retry while signed in.",
-      "existingAdminRole": "This email already has a root or professional admin role. Use its existing role management workflow.",
+      "existingAdminRole": "This email already has another admin role. Only entrance-staff access can be changed here.",
       "exportFailed": "Unable to download the order export. Please try again.",
       "templatesChanged": "Another admin changed these templates. Reload before saving again.",
       "invalidTemplateBody": "The message contains an unknown or malformed variable, a variable inside an HTML attribute, or no readable text. Check the supported variables and HTML.",
@@ -1793,7 +1824,7 @@
       "created": "Created at"
     },
     "entranceStaff": "Entrance-staff access",
-    "entranceStaffHelp": "Grant or remove check-in-only access by the staff member’s Google email. This cannot modify existing root or professional roles. Staff see only admission details.",
+    "entranceStaffHelp": "Grant or remove check-in-only access by the staff member’s Google email. Existing developer, root, and professional roles cannot be changed here. Staff see only admission details.",
     "staffEmail": "Staff Google email",
     "grantStaff": "Grant entrance-staff access",
     "removeStaff": "Remove entrance-staff access",

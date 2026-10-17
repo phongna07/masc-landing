@@ -1,3 +1,4 @@
+import { canAccessAdminArea } from "@masc-landing/api/admin-roles";
 import { getLocale } from "next-intl/server";
 import { getAdminByEmail } from "@masc-landing/api/admin-access";
 import { exportOrders } from "@masc-landing/api/tickets/export";
@@ -17,7 +18,7 @@ export async function GET() {
 	const session = await getFreshServerSession();
 	if (!session) return new Response(null, { status: 401 });
 	const admin = await getAdminByEmail(session.user.email);
-	if (admin?.role !== "root") return new Response(null, { status: 403 });
+	if (!admin || !canAccessAdminArea(admin.role, "tickets")) return new Response(null, { status: 403 });
 	try {
 		await rateLimit(session.user.id, "ticket-export", 2);
 		const locale = await getLocale();

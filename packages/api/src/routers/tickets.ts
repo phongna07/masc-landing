@@ -4,6 +4,7 @@ import { ticketTransaction } from "@masc-landing/db/ticket-transaction";
 import { and, desc, eq, sql } from "drizzle-orm";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
+import { canAccessAdminArea } from "../admin-roles";
 import { adminAreaProcedure, freshProtectedProcedure, router } from "../index";
 import { accessibleTicket, audit, buyerOrder, getTicketConfig, ownedOrder, rateLimit } from "../tickets/core";
 import { confirmCheckIn, lookupTicket } from "../tickets/check-in";
@@ -93,5 +94,5 @@ export const ticketsRouter = router({
 	activity: root.input(z.object({ page: z.number().int().min(0) })).query(({ input }) => safeErrors(() => db.select().from(ticketAudit).orderBy(desc(ticketAudit.createdAt)).limit(30).offset(input.page * 30))),
 	alerts: root.query(() => safeErrors(() => db.select().from(ticketPaymentEvents).where(sql`${ticketPaymentEvents.outcome} in ('unmatched', 'mismatch')`).orderBy(desc(ticketPaymentEvents.createdAt)).limit(100))),
 	lookup: staff.input(z.object({ code: z.string().max(120), requestKey: z.uuid() })).mutation(({ ctx, input }) => safeErrors(() => lookupTicket(ctx.session.user.id, input.code, input.requestKey))),
-	checkIn: staff.input(z.object({ ticketId: z.uuid(), credentialVersion: z.number().int().positive(), requestKey: z.uuid(), overrideReason: z.string().trim().min(1).max(1000).optional() })).mutation(({ ctx, input }) => safeErrors(() => confirmCheckIn(input, ctx.session.user.id, ctx.admin.role === "root"))),
+	checkIn: staff.input(z.object({ ticketId: z.uuid(), credentialVersion: z.number().int().positive(), requestKey: z.uuid(), overrideReason: z.string().trim().min(1).max(1000).optional() })).mutation(({ ctx, input }) => safeErrors(() => confirmCheckIn(input, ctx.session.user.id, canAccessAdminArea(ctx.admin.role, "tickets")))),
 });

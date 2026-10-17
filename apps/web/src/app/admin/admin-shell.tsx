@@ -15,6 +15,7 @@ import UserMenu from "@/components/user-menu";
 const items = [
   { href: "/admin", key: "overview", area: "overview", icon: LayoutDashboardIcon },
   { href: "/admin/announcements", key: "announcements", area: "announcements", icon: MegaphoneIcon },
+  { href: "/admin/manage-admins", key: "manageAdmins", area: "manageAdmins", icon: UsersIcon },
   { href: "/admin/users", key: "users", area: "users", icon: UsersIcon },
   { href: "/admin/activity-log", key: "activityLogs", area: "activityLogs", icon: HistoryIcon },
   { href: "/admin/teams", key: "teams", area: "teams", icon: UsersIcon },

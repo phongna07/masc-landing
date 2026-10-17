@@ -26,7 +26,7 @@ const { ticketsRouter } = await import("../routers/tickets");
 
 before(async () => {
 	await client.exec(`
-		CREATE TYPE admin_role AS ENUM ('root', 'professional', 'entrance-staff');
+		CREATE TYPE admin_role AS ENUM ('root', 'professional', 'entrance-staff', 'developer');
 		CREATE TABLE admin_emails (email text PRIMARY KEY, role admin_role NOT NULL);
 		CREATE TABLE ticket_rate_limits (
 			key text PRIMARY KEY, window_start timestamptz NOT NULL DEFAULT now(), count integer NOT NULL DEFAULT 1
@@ -100,6 +100,12 @@ test("ticket admins process the worker's email batch without a worker secret and
 	const [activity] = await db.select().from(adminActivityLogs);
 	assert.equal(activity?.procedurePath, "triggerEmailSending");
 	assert.equal(activity?.outcome, "success");
+});
+
+test("developers inherit ticket management access", async () => {
+	const developer = await admin("developer");
+	assert.deepEqual(await developer.triggerEmailSending(), { processed: 2, runId: "test-run" });
+	assert.equal((await developer.emailJobs({})).total, 0);
 });
 
 test("repeated triggers are rate limited before invoking the email service", async () => {

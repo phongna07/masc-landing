@@ -4328,6 +4328,7 @@ dialog[open]::backdrop {
   gap: 8px;
 }
 
+.admin-management-form select,
 .mail-form-field>select,
 .mail-campaign-preview-card select {
   width: 100%;
@@ -4339,6 +4340,7 @@ dialog[open]::backdrop {
   padding: 6px 9px;
 }
 
+.admin-management-form select option,
 .mail-form-field>select option,
 .mail-campaign-preview-card select option {
   background: #17161b;
