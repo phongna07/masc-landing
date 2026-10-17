@@ -4,6 +4,7 @@ import { afterEach, beforeEach, mock, test } from "node:test";
 const env = {
   ZEPTOMAIL_URL: "https://api.zeptomail.com/v1.1/email",
   ZEPTOMAIL_TOKEN: "test-zepto-token",
+  MAIL_REPLY_TO: "replies@example.com",
 };
 mock.module("@masc-landing/env/server", { namedExports: { env } });
 const { sendMail } = await import("./send-mail");
@@ -40,6 +41,7 @@ test("sends confidential email and attachments through ZeptoMail without provide
   });
   assert.deepEqual(JSON.parse(options?.body as string), {
     from: { address: "sender@example.com", name: "MASC Team" },
+    reply_to: [{ address: env.MAIL_REPLY_TO }],
     to: [{ email_address: { address: mail.to, name: "" } }],
     cc: [{ email_address: { address: mail.cc[0], name: "" } }],
     subject: mail.subject,
@@ -75,7 +77,7 @@ test("HTTP failures are reported after one request, including rate limits and se
 });
 
 test("network failures are reported once and redact credentials, message contents and attachments", async () => {
-  const sensitiveValues = [env.ZEPTOMAIL_TOKEN, mail.from, mail.to, ...mail.cc, mail.subject, mail.text, mail.html, mail.attachments[0]!.content];
+  const sensitiveValues = [env.ZEPTOMAIL_TOKEN, env.MAIL_REPLY_TO, mail.from, mail.to, ...mail.cc, mail.subject, mail.text, mail.html, mail.attachments[0]!.content];
   const fetchMock = mock.method(globalThis, "fetch", async () => {
     throw new Error(`Network failure: ${sensitiveValues.join(" | ")}`);
   });

@@ -92,6 +92,7 @@ function providerResponseMessage(body: unknown, statusText: string) {
 function sanitizeDiagnostic(message: string, mail: Mail) {
   const sensitiveValues = [
     env.ZEPTOMAIL_TOKEN,
+    env.MAIL_REPLY_TO,
     mail.from,
     mail.to,
     ...mail.cc,
@@ -191,6 +192,7 @@ async function sendWithZeptoMail(mail: Mail) {
   const sender = parseMailbox(mail.from);
   await postJson({
     from: sender,
+    reply_to: [{ address: env.MAIL_REPLY_TO }],
     to: [zeptoRecipient(mail.to)],
     cc: mail.cc.map(zeptoRecipient),
     subject: mail.subject,
