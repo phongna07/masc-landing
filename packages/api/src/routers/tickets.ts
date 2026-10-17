@@ -16,6 +16,8 @@ import { runTicketEmailJobs } from "../tickets/email";
 import { emailJobsInput, listTicketEmailJobs } from "../tickets/email-jobs";
 import { env } from "@masc-landing/env/server";
 
+import { checkPromo, checkPromoInput, listPromos, promoInput, savePromo, updatePromoInput } from "../tickets/promos";
+
 // Do not surface SQL/provider errors that could contain admission credentials.
 const safeErrors = async <T>(work: () => Promise<T>): Promise<T> => {
 	try { return await work(); } catch (error) {
@@ -30,6 +32,10 @@ const idInput = z.object({ id: z.uuid() });
 const historyInput = idInput.extend({ page: z.number().int().min(0).max(100000).default(0) });
 
 export const ticketsRouter = router({
+	checkPromo: buyer.input(checkPromoInput).mutation(({ ctx, input }) => safeErrors(() => checkPromo(input.code, ctx.session.user.id))),
+	promos: root.query(() => safeErrors(listPromos)),
+	createPromo: root.input(promoInput).mutation(({ ctx, input }) => safeErrors(() => savePromo(input, ctx.session.user.id))),
+	updatePromo: root.input(updatePromoInput).mutation(({ ctx, input }) => safeErrors(() => savePromo(input, ctx.session.user.id, true))),
 	config: buyer.query(() => safeErrors(getTicketConfig)),
 	checkout: buyer.input(checkoutInput).mutation(({ ctx, input }) => safeErrors(async () => buyerOrder(await startCheckout(ctx.session.user, input)))),
 	mine: buyer.input(pageInput).query(({ ctx, input }) => safeErrors(async () => {

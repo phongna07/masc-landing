@@ -16,7 +16,7 @@ export function reconciliationOwner(orderId: string, leaseId: string) {
 export function reconciliationClaim(orderId: string, force = false) {
 	return {
 		set: { reconcileLeaseId: randomUUID(), reconcileLeaseUntil: sql`now() + interval '30 seconds'` },
-		where: and(eq(ticketOrders.id, orderId), or(isNull(ticketOrders.reconcileLeaseUntil), lte(ticketOrders.reconcileLeaseUntil, sql`now()`)), force ? undefined : and(lte(ticketOrders.nextReconcileAt, sql`now()`), or(isNull(ticketOrders.lastVerifiedAt), sql`${ticketOrders.lastVerifiedAt} < now() - interval '10 seconds'`))),
+		where: and(sql`(${ticketOrders.snapshot}->>'totalPrice')::integer > 0`, eq(ticketOrders.id, orderId), or(isNull(ticketOrders.reconcileLeaseUntil), lte(ticketOrders.reconcileLeaseUntil, sql`now()`)), force ? undefined : and(lte(ticketOrders.nextReconcileAt, sql`now()`), or(isNull(ticketOrders.lastVerifiedAt), sql`${ticketOrders.lastVerifiedAt} < now() - interval '10 seconds'`))),
 	};
 }
 
@@ -39,7 +39,7 @@ export function reconciliationCompletion(order: ReconciliationOrder, failed: boo
 }
 
 export function reconciliationDue() {
-	return and(lte(ticketOrders.nextReconcileAt, sql`now()`), or(
+	return and(sql`(${ticketOrders.snapshot}->>'totalPrice')::integer > 0`, lte(ticketOrders.nextReconcileAt, sql`now()`), or(
 		sql`${ticketOrders.createdAt} > now() - interval '90 days'`,
 		sql`${ticketOrders.paymentStatus} in ('creating', 'pending', 'processing', 'review')`,
 		isNotNull(ticketOrders.reconcileRequestId),

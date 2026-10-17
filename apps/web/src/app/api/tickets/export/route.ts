@@ -25,7 +25,7 @@ export async function GET() {
 		const copy = (locale === "en" ? en : vi).Tickets;
 		const rows = await exportOrders(session.user.id);
 		const header = Object.values(copy.exportHeaders).map(csv).join(",");
-		const body = rows.map(row => [row.id, row.providerOrder, row.buyerEmail, row.snapshot.packageName, copy.categories[row.snapshot.category], row.snapshot.quantity, row.snapshot.totalPrice, row.settled, copy.payment[row.payment], copy.fulfillment[row.fulfillment], row.created.toISOString()].map(csv).join(",")).join("\r\n");
+		const body = rows.map(row => [row.id, row.providerOrder, row.buyerEmail, row.snapshot.packageName, copy.categories[row.snapshot.category], row.snapshot.quantity, row.snapshot.totalPrice, row.settled, copy.payment[row.payment], copy.fulfillment[row.fulfillment], row.created.toISOString(), row.snapshot.promo?.code ?? ""].map(csv).join(",")).join("\r\n");
 		return new Response(`\ufeff${header}\r\n${body}`, { headers: { "Content-Type": "text/csv; charset=utf-8", "Content-Disposition": 'attachment; filename="ticket-orders.csv"', "Cache-Control": "private, no-store", "Referrer-Policy": "no-referrer" } });
 	} catch { return new Response(null, { status: 500 }); }
 }

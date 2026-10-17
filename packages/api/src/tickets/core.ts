@@ -40,6 +40,8 @@ export async function lockSales(tx: TicketTransaction) {
 }
 
 export async function releaseExpiredReservations(tx: TicketTransaction) {
+	await tx.update(ticketOrders).set({ promoReservation: "released", updatedAt: sql`now()` })
+		.where(and(eq(ticketOrders.promoReservation, "held"), lte(ticketOrders.expiresAt, sql`now()`)));
 	await tx.update(ticketOrders).set({ reservation: "released", updatedAt: sql`now()` })
 		.where(and(eq(ticketOrders.reservation, "held"), lte(ticketOrders.expiresAt, sql`now()`)));
 	await tx.update(ticketOrders).set({ paymentStatus: "expired", updatedAt: sql`now()` })
@@ -75,10 +77,10 @@ export async function rateLimit(actorId: string, scope: string, limit: number) {
 	if (row!.count > limit) throw new TRPCError({ code: "TOO_MANY_REQUESTS", message: "rateLimited" });
 }
 
-export async function audit(tx: TicketTransaction, actorId: string, action: string, entityId: string | null, reason: string | null = null, outcome = "success") {
+export async function audit(tx: TicketTransaction, actorId: string, action: string, entityId: string | null, reason: string | null = null, outcome = "success", metadata: typeof ticketAudit.$inferInsert.metadata = null) {
 	// Reasons are free text: strip any admission-shaped credential before storage.
 	const safeReason = reason?.replace(/[A-HJ-NP-Z2-9]{20}/gi, "[REDACTED]") ?? null;
-	await tx.insert(ticketAudit).values({ id: randomUUID(), actorId, action, entityId, reason: safeReason, outcome });
+	await tx.insert(ticketAudit).values({ id: randomUUID(), actorId, action, entityId, reason: safeReason, outcome, metadata });
 }
 
 export async function reserveCode(tx: TicketTransaction, ticketId: string) {

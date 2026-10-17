@@ -704,10 +704,82 @@ p.ticket-warning {
   line-height: 1.25;
 }
 
-.ticket-package .ticket-price {
+.ticket-package-pricing {
+  width: 100%;
   margin-top: auto;
   padding-top: 16px;
+}
+
+.ticket-package .ticket-original-price {
+  margin: 0 0 4px;
+  color: var(--muted);
+  font-size: 15px;
+  line-height: 1.4;
+}
+
+.ticket-original-price s {
+  text-decoration-thickness: 1.5px;
+}
+
+.ticket-package .ticket-price {
+  margin: 0;
+  padding: 0;
   font-size: clamp(25px, 2.5vw, 32px);
+}
+
+.ticket-package-pricing[data-promo] .ticket-price {
+  color: #bde7ad;
+}
+
+.ticket-promo-form {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+  gap: 12px 16px;
+  margin-block: 24px 16px;
+}
+
+.ticket-main .ticket-promo-form > label {
+  margin: 0;
+}
+
+.ticket-main .ticket-promo-form > [data-slot="button"] {
+  min-width: 144px;
+  min-height: 44px;
+  height: 44px;
+  padding: 10px 20px;
+  gap: 8px;
+  white-space: nowrap;
+}
+
+.ticket-promo-status {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.ticket-promo-status > svg {
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+  margin-top: 2px;
+}
+
+.ticket-main .ticket-promo-status > p {
+  margin: 0;
+}
+
+.ticket-promo-status.is-applied {
+  padding: 16px 18px;
+  border: 1px solid rgba(189, 231, 173, .4);
+  background: rgba(189, 231, 173, .08);
+  color: #bde7ad;
+}
+
+.ticket-main .ticket-promo-status.is-applied > p {
+  color: inherit;
+  font-size: 15px;
+  font-weight: 600;
 }
 
 .ticket-form-grid {
@@ -1112,6 +1184,7 @@ p.ticket-warning {
   }
 
   .ticket-order-grid,
+  .ticket-promo-form,
   .ticket-form-grid {
     grid-template-columns: 1fr;
   }

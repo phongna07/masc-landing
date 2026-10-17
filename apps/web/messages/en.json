@@ -1733,7 +1733,11 @@
       "entranceStaffGranted": "Entrance-staff access granted",
       "entranceStaffRemoved": "Entrance-staff access removed",
       "paymentResolutionRecorded": "External payment resolution recorded",
-      "templatesUpdated": "Ticket artwork and email templates updated"
+      "templatesUpdated": "Ticket artwork and email templates updated",
+      "promoCreated": "Promo code created",
+      "promoUpdated": "Promo code updated",
+      "promoApplied": "Promo code applied to order",
+      "freeOrderCompleted": "Free promo order completed"
     },
     "camera": {
       "idle": "Camera is stopped.",
@@ -1787,7 +1791,16 @@
       "exportFailed": "Unable to download the order export. Please try again.",
       "templatesChanged": "Another admin changed these templates. Reload before saving again.",
       "invalidTemplateBody": "The message contains an unknown or malformed variable, a variable inside an HTML attribute, or no readable text. Check the supported variables and HTML.",
-      "invalidTemplateConfig": "Check brand headings, text lengths and font sizes. Artwork: title 28–48 px, body 18–26 px. Email: title 24–40 px, body 12–18 px, width 480–800 px. Colors must use six-digit hex values."
+      "invalidTemplateConfig": "Check brand headings, text lengths and font sizes. Artwork: title 28–48 px, body 18–26 px. Email: title 24–40 px, body 12–18 px, width 480–800 px. Colors must use six-digit hex values.",
+      "promoCodeFormat": "Use 1–64 letters, digits, hyphens, or underscores for the promo code.",
+      "promoPriceInvalid": "Each price must be 0 or a whole VND amount from 1,000 to 1,000,000,000.",
+      "promoUnavailable": "This promo code is invalid or disabled. Check another code or clear the field to continue.",
+      "promoChanged": "This promo code has changed. Check it again to see the current prices and settings.",
+      "promoLimitReached": "This promo code has reached its total usage limit.",
+      "promoBuyerLimitReached": "You have reached the order limit for this promo code.",
+      "promoLimitTooLow": "The limit cannot be lower than completed orders plus reserved uses.",
+      "promoDuplicate": "A promo code with this name already exists.",
+      "promoCheckRequired": "Check your promo code before placing the order, or clear the field."
     },
     "email": {
       "subject": "Your ticket purchase is confirmed",
@@ -1821,7 +1834,8 @@
       "settled": "Settled VND",
       "payment": "Payment status",
       "fulfillment": "Fulfillment status",
-      "created": "Created at"
+      "created": "Created at",
+      "promoCode": "Promo code"
     },
     "recordResolution": "Record external payment resolution",
     "resolutionHelp": "Record how the organizer handled the issue. This note does not change verified settlement, issue tickets, refund money, revoke tickets, or restore capacity. Financial and payment records remain visible.",
@@ -1885,7 +1899,8 @@
       "downloadStarted": "Your file is ready and the download has started.",
       "cameraStarted": "The camera scanner is ready. Scan a ticket to look it up.",
       "cameraPaused": "The camera scanner has been paused.",
-      "cameraSelected": "Camera selection updated. Start the scanner to use it."
+      "cameraSelected": "Camera selection updated. Start the scanner to use it.",
+      "promoSaved": "Promo code saved."
     },
     "templates": "QR code & email",
     "templatePreview": {
@@ -1917,6 +1932,35 @@
         "normal": "Normal admission",
         "vip": "VIP admission"
       }
+    },
+    "promo": {
+      "management": "Promo codes",
+      "managementHelp": "Set a separate price for each package. Changes apply to new orders; existing orders retain their saved prices.",
+      "create": "Create promo code",
+      "edit": "Edit promo code",
+      "code": "Promo code",
+      "enabled": "Enable promo code",
+      "active": "Enabled",
+      "inactive": "Disabled",
+      "priceHelp": "Enter 0 for free tickets, or a whole VND amount from 1,000 to 1,000,000,000.",
+      "totalLimit": "Total order limit",
+      "perBuyerLimit": "Order limit per buyer",
+      "totalLimitUnlimited": "Unlimited total orders",
+      "perBuyerLimitUnlimited": "Unlimited orders per buyer",
+      "unlimited": "Unlimited",
+      "limitHelp": "One package order counts as one use. Pending checkouts reserve a use for up to 15 minutes. Paid and free orders consume a use.",
+      "usage": "Reserved: {held} · Completed: {consumed}",
+      "save": "Save promo code",
+      "heading": "Have a promo code?",
+      "originalPrice": "Original price",
+      "promoPrice": "Promo price",
+      "check": "Check code",
+      "checking": "Checking…",
+      "applied": "Promo code {code} applied. Package prices have been updated.",
+      "checkHelp": "Optional. If you enter a code, check it before placing your order.",
+      "freeHelp": "This package is free with your promo code. Confirm to receive your tickets immediately.",
+      "confirmFree": "Confirm and receive tickets",
+      "used": "Promo code: {code}"
     }
   }
 }

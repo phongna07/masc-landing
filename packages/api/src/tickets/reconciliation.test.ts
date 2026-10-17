@@ -26,6 +26,7 @@ before(async () => {
 	await client.exec(`
 		CREATE TABLE ticket_orders (
 			id text PRIMARY KEY,
+			snapshot jsonb NOT NULL DEFAULT '{"totalPrice":1000}',
 			reconcile_lease_id text,
 			reconcile_lease_until timestamptz,
 			reconcile_request_id text,

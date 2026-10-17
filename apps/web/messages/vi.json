@@ -1733,7 +1733,11 @@
       "entranceStaffGranted": "Đã cấp quyền check-in",
       "entranceStaffRemoved": "Đã gỡ quyền check-in",
       "paymentResolutionRecorded": "Đã lưu ghi chú xử lý thanh toán",
-      "templatesUpdated": "Đã cập nhật mẫu vé và email"
+      "templatesUpdated": "Đã cập nhật mẫu vé và email",
+      "promoCreated": "Đã tạo mã ưu đãi",
+      "promoUpdated": "Đã cập nhật mã ưu đãi",
+      "promoApplied": "Đã áp dụng mã ưu đãi cho đơn vé",
+      "freeOrderCompleted": "Đã hoàn tất đơn vé miễn phí"
     },
     "camera": {
       "idle": "Camera chưa bật. Bấm “Bật camera” để bắt đầu quét.",
@@ -1787,7 +1791,16 @@
       "exportFailed": "Không tải được danh sách đơn hàng. Vui lòng thử lại.",
       "templatesChanged": "Một quản trị viên khác vừa cập nhật mẫu. Vui lòng tải lại trang trước khi lưu.",
       "invalidTemplateBody": "Nội dung có biến không được hỗ trợ, biến sai định dạng, biến nằm trong thuộc tính HTML hoặc không có văn bản hiển thị. Vui lòng kiểm tra các biến và định dạng HTML được phép.",
-      "invalidTemplateConfig": "Vui lòng kiểm tra tên thương hiệu, độ dài nội dung và cỡ chữ. Ảnh vé: tiêu đề 28–48 px, nội dung 18–26 px. Email: tiêu đề 24–40 px, nội dung 12–18 px, chiều rộng 480–800 px. Mã màu cần ở dạng hex 6 ký tự."
+      "invalidTemplateConfig": "Vui lòng kiểm tra tên thương hiệu, độ dài nội dung và cỡ chữ. Ảnh vé: tiêu đề 28–48 px, nội dung 18–26 px. Email: tiêu đề 24–40 px, nội dung 12–18 px, chiều rộng 480–800 px. Mã màu cần ở dạng hex 6 ký tự.",
+      "promoCodeFormat": "Mã ưu đãi gồm 1–64 ký tự: chữ cái, chữ số, dấu gạch ngang hoặc gạch dưới.",
+      "promoPriceInvalid": "Giá mỗi gói phải bằng 0 hoặc là số tiền nguyên từ 1.000 đến 1.000.000.000 VND.",
+      "promoUnavailable": "Mã ưu đãi không hợp lệ hoặc đã bị tắt. Vui lòng kiểm tra mã khác hoặc xóa mã để tiếp tục.",
+      "promoChanged": "Thiết lập mã ưu đãi đã thay đổi. Vui lòng kiểm tra lại để cập nhật giá và điều kiện sử dụng.",
+      "promoLimitReached": "Mã ưu đãi đã hết lượt sử dụng.",
+      "promoBuyerLimitReached": "Bạn đã dùng hết số lượt dành cho mỗi người mua của mã này.",
+      "promoLimitTooLow": "Giới hạn không được thấp hơn số lượt đã sử dụng cộng với số lượt đang giữ.",
+      "promoDuplicate": "Mã ưu đãi này đã tồn tại.",
+      "promoCheckRequired": "Vui lòng kiểm tra mã ưu đãi trước khi đặt vé, hoặc xóa mã để tiếp tục."
     },
     "email": {
       "subject": "Xác nhận mua vé tham dự chung kết Marketing All-Star Challenge",
@@ -1821,7 +1834,8 @@
       "settled": "Số tiền đã nhận và xác minh (VND)",
       "payment": "Trạng thái thanh toán",
       "fulfillment": "Trạng thái cấp vé",
-      "created": "Ngày tạo"
+      "created": "Ngày tạo",
+      "promoCode": "Mã ưu đãi"
     },
     "recordResolution": "Ghi chú xử lý thanh toán",
     "resolutionHelp": "Ghi lại cách Ban tổ chức đã xử lý vấn đề với người mua. Lưu ghi chú không thay đổi số tiền đã xác minh, không cấp vé, hoàn tiền, thu hồi vé hay tăng số vé có thể bán. Lịch sử thanh toán vẫn được giữ nguyên.",
@@ -1885,7 +1899,8 @@
       "downloadStarted": "Đã bắt đầu tải tệp.",
       "cameraStarted": "Camera đã sẵn sàng. Đưa mã QR trên vé vào khung hình để tra cứu.",
       "cameraPaused": "Đã tạm dừng quét mã QR.",
-      "cameraSelected": "Đã chọn camera. Bấm “Bật camera” để bắt đầu quét."
+      "cameraSelected": "Đã chọn camera. Bấm “Bật camera” để bắt đầu quét.",
+      "promoSaved": "Đã lưu mã ưu đãi."
     },
     "templates": "Mẫu vé và email",
     "templatePreview": {
@@ -1917,6 +1932,35 @@
         "normal": "Vé thường",
         "vip": "Vé VIP"
       }
+    },
+    "promo": {
+      "management": "Mã ưu đãi",
+      "managementHelp": "Thiết lập giá riêng cho từng gói vé. Thay đổi chỉ áp dụng cho đơn mới; các đơn đã tạo vẫn giữ giá đã đặt.",
+      "create": "Tạo mã ưu đãi",
+      "edit": "Chỉnh sửa mã ưu đãi",
+      "code": "Mã ưu đãi",
+      "enabled": "Cho phép sử dụng mã",
+      "active": "Đang hoạt động",
+      "inactive": "Đã tắt",
+      "priceHelp": "Nhập 0 để miễn phí vé, hoặc số tiền nguyên từ 1.000 đến 1.000.000.000 VND.",
+      "totalLimit": "Tổng số đơn được áp dụng",
+      "perBuyerLimit": "Số đơn tối đa mỗi người mua",
+      "totalLimitUnlimited": "Không giới hạn tổng số đơn",
+      "perBuyerLimitUnlimited": "Không giới hạn số đơn mỗi người mua",
+      "unlimited": "Không giới hạn",
+      "limitHelp": "Mỗi đơn mua một gói vé được tính là một lượt. Đơn chờ thanh toán giữ lượt tối đa 15 phút. Đơn đã thanh toán và đơn miễn phí đều tính là đã sử dụng.",
+      "usage": "Đang giữ lượt: {held} · Đã sử dụng: {consumed}",
+      "save": "Lưu mã ưu đãi",
+      "heading": "Bạn có mã ưu đãi?",
+      "originalPrice": "Giá gốc",
+      "promoPrice": "Giá ưu đãi",
+      "check": "Kiểm tra mã",
+      "checking": "Đang kiểm tra…",
+      "applied": "Đã áp dụng mã {code}. Giá các gói vé đã được cập nhật.",
+      "checkHelp": "Không bắt buộc. Nếu nhập mã ưu đãi, bạn cần kiểm tra mã trước khi đặt vé.",
+      "freeHelp": "Gói vé này được miễn phí theo mã ưu đãi. Xác nhận để nhận vé ngay.",
+      "confirmFree": "Xác nhận và nhận vé",
+      "used": "Mã ưu đãi: {code}"
     }
   }
 }

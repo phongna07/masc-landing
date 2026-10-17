@@ -33,7 +33,7 @@ before(async () => {
 		);
 		CREATE TABLE ticket_audit (
 			id text PRIMARY KEY, actor_id text NOT NULL, action text NOT NULL, entity_id text,
-			reason text, outcome text NOT NULL, created_at timestamptz NOT NULL DEFAULT now()
+			reason text, metadata jsonb, outcome text NOT NULL, created_at timestamptz NOT NULL DEFAULT now()
 		);
 		CREATE TABLE admin_activity_logs (
 			id text PRIMARY KEY, actor_user_id text NOT NULL, actor_name text NOT NULL, actor_email text NOT NULL,
