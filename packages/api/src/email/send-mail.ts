@@ -1,7 +1,5 @@
 import { env } from "@masc-landing/env/server";
 
-type EmailProvider = "zeptomail" | "maileroo";
-type ProviderRole = "primary" | "fallback";
 type FailureCategory = "http" | "network" | "protocol" | "timeout" | "validation";
 
 type Mail = {
@@ -16,48 +14,35 @@ type Mail = {
   confidential?: boolean;
 };
 
-type ProviderFailure = {
-  provider: EmailProvider;
-  role: ProviderRole;
+type DeliveryFailure = {
   category: FailureCategory;
   message: string;
-  transient: boolean;
   statusCode?: number;
 };
 
-const mailerooUrl = "https://smtp.maileroo.com/api/v2/emails";
 const providerTimeoutMs = 30_000;
 const maximumDiagnosticLength = 1_000;
 
 class EmailProviderError extends Error {
-  readonly provider: EmailProvider;
   readonly category: FailureCategory;
-  readonly transient: boolean;
   readonly statusCode?: number;
 
   constructor(options: {
-    provider: EmailProvider;
     category: FailureCategory;
     message: string;
-    transient: boolean;
     statusCode?: number;
   }) {
     super(options.message);
     this.name = "EmailProviderError";
-    this.provider = options.provider;
     this.category = options.category;
-    this.transient = options.transient;
     this.statusCode = options.statusCode;
   }
 }
 
 class EmailDeliveryError extends Error {
-  constructor(failures: ProviderFailure[]) {
-    const attempts = failures.map((failure) => {
-      const status = failure.statusCode ? ` HTTP ${failure.statusCode}` : "";
-      return `${failure.provider} (${failure.role}, ${failure.category}${status}): ${failure.message}`;
-    });
-    super(`Email delivery failed: ${attempts.join("; ")}`);
+  constructor(failure: DeliveryFailure) {
+    const status = failure.statusCode ? ` HTTP ${failure.statusCode}` : "";
+    super(`Email delivery failed: zeptomail (${failure.category}${status}): ${failure.message}`);
     this.name = "EmailDeliveryError";
   }
 }
@@ -87,14 +72,6 @@ function zeptoRecipient(address: string) {
   };
 }
 
-function mailerooRecipient(address: string, displayName = "") {
-  return displayName ? { address, display_name: displayName } : { address };
-}
-
-function isTransientHttpStatus(statusCode: number) {
-  return statusCode === 408 || statusCode === 429 || statusCode >= 500;
-}
-
 function providerResponseMessage(body: unknown, statusText: string) {
   if (isRecord(body)) {
     if (typeof body.message === "string" && body.message.trim()) return body.message;
@@ -114,7 +91,6 @@ function providerResponseMessage(body: unknown, statusText: string) {
 
 function sanitizeDiagnostic(message: string, mail: Mail) {
   const sensitiveValues = [
-    env.MAILEROO_SENDING_KEY,
     env.ZEPTOMAIL_TOKEN,
     mail.from,
     mail.to,
@@ -138,7 +114,7 @@ function errorMessage(error: unknown) {
   return "Unknown provider error";
 }
 
-async function postJson(provider: EmailProvider, url: string, headers: Record<string, string>, payload: unknown, mail: Mail) {
+async function postJson(payload: unknown, mail: Mail) {
   const controller = new AbortController();
   let timedOut = false;
   const timeout = setTimeout(() => {
@@ -149,18 +125,18 @@ async function postJson(provider: EmailProvider, url: string, headers: Record<st
   try {
     let response: Response;
     try {
-      response = await fetch(url, {
+      response = await fetch(env.ZEPTOMAIL_URL, {
         method: "POST",
-        headers: { "Content-Type": "application/json", ...headers },
+        headers: { "Content-Type": "application/json", Authorization: env.ZEPTOMAIL_TOKEN },
         body: JSON.stringify(payload),
         signal: controller.signal,
       });
     } catch (error) {
       const message = sanitizeDiagnostic(errorMessage(error), mail);
       if (timedOut || (error instanceof Error && error.name === "AbortError")) {
-        throw new EmailProviderError({ provider, category: "timeout", message: "Request timed out after 30 seconds", transient: true });
+        throw new EmailProviderError({ category: "timeout", message: "Request timed out after 30 seconds" });
       }
-      throw new EmailProviderError({ provider, category: "network", message, transient: true });
+      throw new EmailProviderError({ category: "network", message });
     }
 
     let rawBody: string;
@@ -168,10 +144,8 @@ async function postJson(provider: EmailProvider, url: string, headers: Record<st
       rawBody = await response.text();
     } catch (error) {
       throw new EmailProviderError({
-        provider,
         category: "network",
         message: sanitizeDiagnostic(errorMessage(error), mail),
-        transient: true,
       });
     }
 
@@ -181,37 +155,29 @@ async function postJson(provider: EmailProvider, url: string, headers: Record<st
     } catch {
       if (!response.ok) {
         throw new EmailProviderError({
-          provider,
           category: "http",
           statusCode: response.status,
           message: response.statusText || "The provider returned a non-JSON error response",
-          transient: isTransientHttpStatus(response.status),
         });
       }
       throw new EmailProviderError({
-        provider,
         category: "protocol",
         message: "The provider returned an invalid JSON response",
-        transient: false,
       });
     }
 
     if (!response.ok) {
       throw new EmailProviderError({
-        provider,
         category: "http",
         statusCode: response.status,
         message: sanitizeDiagnostic(providerResponseMessage(body, response.statusText), mail),
-        transient: isTransientHttpStatus(response.status),
       });
     }
 
     if (!isRecord(body)) {
       throw new EmailProviderError({
-        provider,
         category: "protocol",
         message: "The provider returned an empty or unexpected response",
-        transient: false,
       });
     }
 
@@ -223,7 +189,7 @@ async function postJson(provider: EmailProvider, url: string, headers: Record<st
 
 async function sendWithZeptoMail(mail: Mail) {
   const sender = parseMailbox(mail.from);
-  await postJson("zeptomail", env.ZEPTOMAIL_URL, { Authorization: env.ZEPTOMAIL_TOKEN }, {
+  await postJson({
     from: sender,
     to: [zeptoRecipient(mail.to)],
     cc: mail.cc.map(zeptoRecipient),
@@ -235,111 +201,32 @@ async function sendWithZeptoMail(mail: Mail) {
   }, mail);
 }
 
-async function sendWithMaileroo(mail: Mail) {
-  const sender = parseMailbox(mail.from);
-  const response = await postJson("maileroo", mailerooUrl, {
-    Authorization: `Bearer ${env.MAILEROO_SENDING_KEY}`,
-  }, {
-    from: mailerooRecipient(sender.address, sender.name),
-    to: [mailerooRecipient(mail.to)],
-    ...(mail.cc.length > 0 ? { cc: mail.cc.map((address) => mailerooRecipient(address)) } : {}),
-    subject: mail.subject,
-    html: mail.html,
-    plain: mail.text,
-    ...(mail.attachments?.length ? { attachments: mail.attachments.map(attachment => ({ file_name: attachment.name, content: attachment.content, content_type: attachment.mimeType, inline: false })) } : {}),
-    ...(mail.confidential ? { tracking: false } : {}),
-  }, mail);
-
-  if (response.success !== true) {
-    throw new EmailProviderError({
-      provider: "maileroo",
-      category: "validation",
-      message: sanitizeDiagnostic(providerResponseMessage(response, "Maileroo rejected the request"), mail),
-      transient: false,
-    });
-  }
-}
-
-const providerSenders: Record<EmailProvider, (mail: Mail) => Promise<void>> = {
-  zeptomail: sendWithZeptoMail,
-  maileroo: sendWithMaileroo,
-};
-
-function normalizeFailure(error: unknown, provider: EmailProvider, role: ProviderRole, mail: Mail): ProviderFailure {
+function normalizeFailure(error: unknown, mail: Mail): DeliveryFailure {
   if (error instanceof EmailProviderError) {
     return {
-      provider,
-      role,
       category: error.category,
       message: sanitizeDiagnostic(error.message, mail),
-      transient: error.transient,
       ...(error.statusCode === undefined ? {} : { statusCode: error.statusCode }),
     };
   }
 
   return {
-    provider,
-    role,
     category: "validation",
     message: sanitizeDiagnostic(errorMessage(error), mail),
-    transient: false,
   };
-}
-
-function failureForLog(failure: ProviderFailure) {
-  return {
-    provider: failure.provider,
-    role: failure.role,
-    category: failure.category,
-    transient: failure.transient,
-    ...(failure.statusCode === undefined ? {} : { statusCode: failure.statusCode }),
-    message: failure.message,
-  };
-}
-
-function logDeliveryFailure(mailId: string, failures: ProviderFailure[]) {
-  console.error({
-    event: "email_delivery_failed",
-    mailId,
-    attempts: failures.map(failureForLog),
-  });
 }
 
 export async function sendMail(mail: Mail) {
-  const primary: EmailProvider = env.PRIMARY_EMAIL_SERVICE ?? "zeptomail";
-  const fallback: EmailProvider = primary === "zeptomail" ? "maileroo" : "zeptomail";
-  const failures: ProviderFailure[] = [];
-
   try {
-    await providerSenders[primary](mail);
-    return;
+    await sendWithZeptoMail(mail);
   } catch (error) {
-    const failure = normalizeFailure(error, primary, "primary", mail);
-    failures.push(failure);
-    if (!failure.transient) {
-      logDeliveryFailure(mail.id, failures);
-      throw new EmailDeliveryError(failures);
-    }
-
-    console.warn({
-      event: "email_primary_provider_failed",
+    const failure = normalizeFailure(error, mail);
+    console.error({
+      event: "email_delivery_failed",
       mailId: mail.id,
-      attempt: failureForLog(failure),
-      fallbackProvider: fallback,
+      provider: "zeptomail",
+      ...failure,
     });
-  }
-
-  try {
-    await providerSenders[fallback](mail);
-    console.info({
-      event: "email_fallback_succeeded",
-      mailId: mail.id,
-      primaryFailure: failureForLog(failures[0]!),
-      fallbackProvider: fallback,
-    });
-  } catch (error) {
-    failures.push(normalizeFailure(error, fallback, "fallback", mail));
-    logDeliveryFailure(mail.id, failures);
-    throw new EmailDeliveryError(failures);
+    throw new EmailDeliveryError(failure);
   }
 }

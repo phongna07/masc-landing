@@ -22,8 +22,6 @@ export const env = createEnv({
     }, "TICKET_APP_URL must be an HTTP(S) application origin without a path, query, or credentials").optional(),
     TICKET_WORKER_SECRET: z.string().min(32).optional(),
     MAIL_USERNAME: z.string().email(),
-    MAILEROO_SENDING_KEY: z.string().min(1),
-    PRIMARY_EMAIL_SERVICE: z.enum(["zeptomail", "maileroo"]).default("zeptomail"),
     ZEPTOMAIL_URL: z.url(),
     ZEPTOMAIL_TOKEN: z.string().min(1),
     NODE_ENV: z.enum(["development", "production", "test"]).default("development"),
