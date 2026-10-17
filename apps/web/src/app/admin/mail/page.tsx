@@ -11,6 +11,7 @@ import { useState } from "react";
 import { useRoundLabel } from "@/hooks/use-round-label";
 import { trpc } from "@/utils/trpc";
 import { AdminEmpty, AdminError, AdminHeading, AdminLoading, formatDate } from "../admin-state";
+import TicketMailQueue from "./ticket-mail-queue";
 
 export default function AdminMailPage() {
 	const t = useTranslations("Admin.mail");
@@ -39,5 +40,6 @@ export default function AdminMailPage() {
 						<td><Link className="admin-view-link" href={`/admin/mail/${campaign.id}`} aria-label={t("openCampaign", { name: campaign.name })}>
 							<ChevronRightIcon /></Link></td></tr>)}</tbody>
 				</table></CardContent></Card>}
+		<TicketMailQueue />
 	</>;
 }

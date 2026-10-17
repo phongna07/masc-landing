@@ -40,11 +40,18 @@ before(async () => {
 			actor_role text NOT NULL, procedure_path text NOT NULL, procedure_type text NOT NULL,
 			input jsonb, outcome text NOT NULL, error_code text, created_at timestamp NOT NULL DEFAULT now()
 		);
+		CREATE TABLE ticket_orders (id text PRIMARY KEY, provider_order_code bigint);
+		CREATE TABLE ticket_email_jobs (
+			id text PRIMARY KEY, order_id text, ticket_id text, to_address text, status text,
+			attempts integer DEFAULT 0, next_attempt_at timestamptz DEFAULT now(),
+			sent_at timestamptz, created_at timestamptz DEFAULT now(),
+			dedupe_key text DEFAULT 'PRIVATE_DEDUPE_KEY', last_error text DEFAULT 'PRIVATE_PROVIDER_ERROR'
+		);
 	`);
 });
 after(() => client.close());
 beforeEach(async () => {
-	await client.exec("TRUNCATE admin_emails, ticket_rate_limits, ticket_audit, admin_activity_logs;");
+	await client.exec("TRUNCATE admin_emails, ticket_rate_limits, ticket_audit, admin_activity_logs, ticket_orders, ticket_email_jobs;");
 	runTicketEmailJobs.mock.resetCalls();
 	emailFailure = null;
 });
@@ -109,4 +116,62 @@ test("email service errors are sanitized and recorded as failed admin actions", 
 	const [activity] = await db.select().from(adminActivityLogs);
 	assert.equal(activity?.outcome, "failure");
 	assert.equal(activity?.errorCode, "INTERNAL_SERVER_ERROR");
+});
+
+test("email queue listing requires a fresh session and ticket-management access", async () => {
+	await admin("root");
+	await assert.rejects(caller(null).emailJobs({}), { code: "UNAUTHORIZED" });
+	await assert.rejects(caller("buyer@example.com").emailJobs({}), { code: "FORBIDDEN" });
+	for (const role of ["entrance-staff", "professional"] as const) {
+		await assert.rejects((await admin(role)).emailJobs({}), { code: "FORBIDDEN" });
+	}
+});
+
+test("email queue includes purchases and gifts, filters statuses and preserves global counts", async () => {
+	const root = await admin("root");
+	await client.exec(`
+		INSERT INTO ticket_orders VALUES ('order', 123456);
+		INSERT INTO ticket_email_jobs (id, order_id, ticket_id, to_address, status, attempts, sent_at) VALUES
+			('pending', 'order', NULL, 'buyer@example.com', 'pending', 1, NULL),
+			('sending', NULL, 'gift', 'gift@example.com', 'sending', 2, NULL),
+			('sent', 'order', NULL, 'buyer@example.com', 'sent', 1, '2026-10-17T00:00:00Z'),
+			('failed', NULL, 'gift', 'gift@example.com', 'failed', 6, NULL);
+	`);
+	const result = await root.emailJobs({});
+	assert.equal(result.total, 4);
+	assert.deepEqual(result.counts, { all: 4, pending: 1, sending: 1, sent: 1, failed: 1 });
+	assert.equal(result.items.find(job => job.id === "pending")?.orderCode, 123456);
+	assert.equal(result.items.find(job => job.id === "sending")?.ticketId, "gift");
+	assert.equal(JSON.stringify(result).includes("PRIVATE_"), false);
+	for (const status of ["pending", "sending", "sent", "failed"] as const) {
+		const filtered = await root.emailJobs({ status });
+		assert.equal(filtered.total, 1);
+		assert.deepEqual(filtered.items.map(job => job.id), [status]);
+		assert.deepEqual(filtered.counts, result.counts);
+	}
+});
+
+test("email queue pagination uses a stable order and reports the full count", async () => {
+	const root = await admin("root");
+	await client.exec(`INSERT INTO ticket_email_jobs (id, to_address, status, created_at)
+		SELECT 'job-' || lpad(n::text, 2, '0'), 'buyer@example.com', 'sent', '2026-10-17T00:00:00Z'
+		FROM generate_series(1, 30) n`);
+	const first = await root.emailJobs({ status: "sent" });
+	const second = await root.emailJobs({ status: "sent", page: 1 });
+	assert.equal(first.total, 30);
+	assert.equal(second.total, 30);
+	assert.equal(first.items.length, 25);
+	assert.equal(second.items.length, 5);
+	assert.equal(first.items[0]?.id, "job-01");
+	assert.equal(second.items[0]?.id, "job-26");
+	assert.equal(new Set([...first.items, ...second.items].map(job => job.id)).size, 30);
+});
+
+test("empty email queues have zero counts and invalid filters are rejected", async () => {
+	const root = await admin("root");
+	const result = await root.emailJobs({});
+	assert.deepEqual(result.items, []);
+	assert.equal(result.total, 0);
+	assert.deepEqual(result.counts, { all: 0, pending: 0, sending: 0, sent: 0, failed: 0 });
+	await assert.rejects(root.emailJobs({ page: -1 }), { code: "BAD_REQUEST" });
 });

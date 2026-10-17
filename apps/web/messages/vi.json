@@ -1171,6 +1171,40 @@
       "sendSuccess": "Đã gửi email thành công.",
       "sendError": "Không thể gửi email. Chi tiết lỗi đã được lưu.",
       "batchComplete": "Hoàn tất gửi: {succeeded} thành công, {failed} thất bại.",
+      "queue": {
+        "title": "Hàng đợi email vé",
+        "description": "Theo dõi email vé đang chờ gửi và lịch sử gửi. Mỗi lần bấm sẽ xử lý tối đa 2 email đã đến lượt gửi, theo lịch tự động thử lại của hệ thống.",
+        "summary": "Thống kê email vé",
+        "statuses": {
+          "all": "Tất cả email",
+          "pending": "Đang chờ gửi",
+          "sending": "Đang gửi",
+          "sent": "Đã gửi",
+          "failed": "Gửi thất bại"
+        },
+        "filterLabel": "Lọc email vé theo trạng thái gửi",
+        "refresh": "Làm mới",
+        "retry": "Thử lại",
+        "loadErrorTitle": "Không tải được hàng đợi email vé",
+        "loadError": "Chưa thể tải hàng đợi email vé. Vui lòng thử lại.",
+        "empty": "Chưa có email",
+        "emptyDescription": "Không có email vé nào ở trạng thái này.",
+        "columns": {
+          "recipient": "Người nhận",
+          "reference": "Vé / đơn hàng",
+          "status": "Trạng thái",
+          "attempts": "Số lần thử gửi",
+          "created": "Thời điểm vào hàng đợi",
+          "nextAttempt": "Lần gửi tiếp theo",
+          "sent": "Thời điểm gửi thành công"
+        },
+        "order": "Đơn hàng {code}",
+        "giftTicket": "Vé tặng",
+        "pagination": "Phân trang hàng đợi email vé",
+        "previous": "Trang trước",
+        "next": "Trang sau",
+        "page": "Trang {page} · {total} email"
+      },
       "teams": {
         "title": "Gửi email cho đội",
         "description": "Lọc trạng thái, chọn các đội đủ điều kiện và gửi thủ công.",

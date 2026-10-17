@@ -4517,6 +4517,21 @@ dialog[open]::backdrop {
   margin-top: 28px;
 }
 
+.mail-queue {
+  margin-top: 48px;
+  padding-top: 32px;
+  border-top: 1px solid var(--line);
+}
+
+.mail-queue-table {
+  min-width: 1080px;
+}
+
+.mail-queue-recipient {
+  max-width: 280px;
+  overflow-wrap: anywhere;
+}
+
 .mail-team-heading {
   align-items: center;
   margin-bottom: 16px;

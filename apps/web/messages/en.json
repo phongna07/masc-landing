@@ -1171,6 +1171,40 @@
       "sendSuccess": "Email sent successfully.",
       "sendError": "The email could not be sent. Failure details were saved.",
       "batchComplete": "Selected sending finished: {succeeded} sent, {failed} failed.",
+      "queue": {
+        "title": "Ticket email queue",
+        "description": "Review ticket emails waiting to be sent and their delivery history. Each click processes up to two emails that are due, following the automatic retry schedule.",
+        "summary": "Ticket email delivery counts",
+        "statuses": {
+          "all": "All emails",
+          "pending": "Queued",
+          "sending": "Sending",
+          "sent": "Sent",
+          "failed": "Failed"
+        },
+        "filterLabel": "Filter ticket emails by delivery status",
+        "refresh": "Refresh",
+        "retry": "Try again",
+        "loadErrorTitle": "Could not load the ticket email queue",
+        "loadError": "The ticket email queue could not be loaded. Please try again.",
+        "empty": "No emails found",
+        "emptyDescription": "There are no ticket emails with this delivery status.",
+        "columns": {
+          "recipient": "Recipient",
+          "reference": "Related ticket / order",
+          "status": "Status",
+          "attempts": "Attempts",
+          "created": "Queued at",
+          "nextAttempt": "Next attempt",
+          "sent": "Sent at"
+        },
+        "order": "Order {code}",
+        "giftTicket": "Gifted ticket",
+        "pagination": "Ticket email queue pages",
+        "previous": "Previous",
+        "next": "Next",
+        "page": "Page {page} · {total} emails"
+      },
       "teams": {
         "title": "Team delivery",
         "description": "Filter delivery state, select eligible teams, and send manually.",

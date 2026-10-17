@@ -12,6 +12,7 @@ import { batchDetail, batchInput, changeTicket, createGiftBatch, enqueueDelivery
 import { cancelCheckout, checkoutInput, reconcileOrder, resolveLatePayment, runReconciliation, startCheckout } from "../tickets/payments";
 import { payos } from "../tickets/payos";
 import { runTicketEmailJobs } from "../tickets/email";
+import { emailJobsInput, listTicketEmailJobs } from "../tickets/email-jobs";
 import { env } from "@masc-landing/env/server";
 
 // Do not surface SQL/provider errors that could contain admission credentials.
@@ -51,6 +52,7 @@ export const ticketsRouter = router({
 		return { checkIns: history.checkIns.map(({ outcome, createdAt, isOverride }) => ({ outcome, createdAt, isOverride })), total: history.checkInTotal, pageSize: history.pageSize };
 	})),
 	adminConfig: root.query(() => safeErrors(getTicketConfig)),
+	emailJobs: root.input(emailJobsInput).query(({ input }) => safeErrors(() => listTicketEmailJobs(input))),
 	checkInLogs: root.input(checkInLogsInput).query(({ input }) => safeErrors(() => listCheckInLogs(input))),
 	stats: root.query(() => safeErrors(async () => {
 		const [tickets] = await db.select({ purchased: sql<number>`count(*) filter (where ${admissionTickets.source} = 'purchased')::int`, gifted: sql<number>`count(*) filter (where ${admissionTickets.source} = 'gifted')::int`, revoked: sql<number>`count(*) filter (where ${admissionTickets.validity} = 'revoked')::int` }).from(admissionTickets);
