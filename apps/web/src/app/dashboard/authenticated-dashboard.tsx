@@ -8,8 +8,7 @@ import { getUploadLimits } from "@masc-landing/api/upload-limits";
 import { getUserAnnouncements } from "@masc-landing/api/routers/user-announcements";
 import { getRoundOnePreferenceSettings } from "@masc-landing/api/round-one-preferences";
 import { getProblemStatementPublicationSettings } from "@masc-landing/api/problem-statement-publication-settings";
-import { redirect } from "next/navigation";
-
+import { redirectToLogin } from "@/lib/login-redirect";
 import { getServerSession } from "@/lib/server-session";
 
 import Dashboard, { type DashboardTab } from "./dashboard";
@@ -18,7 +17,7 @@ export default async function AuthenticatedDashboard({ activeTab }: { activeTab:
   const session = await getServerSession();
 
   if (!session?.user) {
-    redirect("/login");
+    return redirectToLogin(activeTab === "overview" ? "/dashboard" : `/dashboard/${activeTab}`);
   }
 
   const user = { id: session.user.id, email: session.user.email };
