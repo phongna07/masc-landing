@@ -609,6 +609,20 @@
     "overview": {
       "title": "Overview",
       "description": "Control participant access, submission availability, upload limits, and the homepage countdown.",
+      "groups": {
+        "participation": {
+          "title": "Applications and submissions",
+          "description": "Open or close applications and submissions, manage Round 1 track availability, and set participant upload limits."
+        },
+        "content": {
+          "title": "Tracks and problem statements",
+          "description": "Configure Round 1 tracks and manage problem statement files and publication across rounds."
+        },
+        "display": {
+          "title": "Participant-facing display",
+          "description": "Manage Dashboard round visibility, ended statuses, and the homepage countdown."
+        }
+      },
       "countdown": {
         "title": "Homepage countdown",
         "description": "Edit the countdown dates and public text. These settings do not change application or submission availability.",

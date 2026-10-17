@@ -23,7 +23,7 @@ export default function RoundProblemStatementsSection() {
 	const publication = useQuery(trpc.admin.getProblemStatementPublicationSettings.queryOptions());
 	return <section className="admin-setting-section" aria-labelledby="later-round-problem-statements-title">
 		<div className="admin-setting-section-heading">
-			<h2 id="later-round-problem-statements-title">{t("overview.roundProblemStatements.title")}</h2>
+			<h3 id="later-round-problem-statements-title">{t("overview.roundProblemStatements.title")}</h3>
 			<p>{t("overview.roundProblemStatements.description")}</p>
 		</div>
 		{metadata.isPending || publication.isPending ? <AdminLoading /> : metadata.isError || publication.isError ?

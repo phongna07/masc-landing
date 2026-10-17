@@ -2845,6 +2845,79 @@ dialog[open]::backdrop {
   }
 }
 
+.admin-settings-accordion {
+  display: grid;
+  gap: 18px;
+}
+
+.admin-settings-group {
+  min-width: 0;
+  border: 1px solid rgba(255, 255, 255, .19);
+  background: rgba(17, 16, 20, .88);
+}
+
+.admin-settings-group-heading {
+  margin: 0;
+}
+
+.admin-settings-group-trigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  width: 100%;
+  padding: clamp(18px, 3vw, 28px);
+  color: var(--ink);
+  text-align: left;
+  cursor: pointer;
+}
+
+.admin-settings-group-trigger:hover,
+.admin-settings-group-trigger[data-panel-open] {
+  background: rgba(123, 102, 255, .08);
+}
+
+.admin-settings-group-trigger:focus-visible {
+  outline: 2px solid #f2d584;
+  outline-offset: -3px;
+}
+
+.admin-settings-group-copy {
+  display: grid;
+  min-width: 0;
+  gap: 8px;
+}
+
+.admin-settings-group-title {
+  font-family: var(--font-castela), Georgia, serif;
+  font-size: clamp(24px, 3vw, 30px);
+  font-weight: 400;
+  line-height: 1.2;
+}
+
+.admin-settings-group-description {
+  color: var(--muted);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.65;
+}
+
+.admin-settings-group-trigger>svg {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  color: #f2d584;
+}
+
+.admin-settings-group-trigger[data-panel-open]>svg {
+  transform: rotate(180deg);
+}
+
+.admin-settings-group-content {
+  padding: clamp(18px, 3vw, 28px);
+  border-top: 1px solid var(--line);
+}
+
 .admin-setting-section+.admin-setting-section {
   margin-top: 48px;
 }
@@ -3649,7 +3722,7 @@ dialog[open]::backdrop {
   margin-bottom: 20px;
 }
 
-.admin-setting-section-heading h2 {
+.admin-setting-section-heading h3 {
   margin: 0 0 8px;
   font-family: var(--font-castela), Georgia, serif;
   font-size: 28px;

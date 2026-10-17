@@ -320,7 +320,7 @@
       "memberNumber": "Thành viên {number}",
       "memberEmailNotice": "Nhập địa chỉ email mà mỗi thành viên dùng để đăng nhập. Đây cũng là email dùng để nộp bài, cập nhật thông tin và nhận thông báo từ Ban tổ chức.",
       "cv": {
-        "section": "Sàng lọc CV",
+        "section": "Lọc CV",
         "title": "CV của các thành viên",
         "description": "Mỗi CV cần ở định dạng PDF, dung lượng tối đa {maxSize}.",
         "memberLabel": "CV của {name}",
@@ -553,7 +553,7 @@
       "admissionMethod": "Hình thức tham gia",
       "admissionMethods": {
         "direct": "Đăng ký trực tiếp",
-        "cv_screening": "Sàng lọc CV",
+        "cv_screening": "Lọc CV",
         "round_0_5_promotion": "Vượt qua Vòng Sơ loại",
         "promotion": "Được chọn từ vòng trước"
       }
@@ -585,7 +585,7 @@
       "users": "Người dùng",
       "activityLogs": "Nhật ký hoạt động",
       "teams": "Đội thi",
-      "roundOneCvScreening": "Sàng lọc CV Vòng 1",
+      "roundOneCvScreening": "Lọc CV Vòng 1",
       "mail": "Email",
       "submissions": "Bài nộp",
       "tickets": "Quản lý vé",
@@ -609,6 +609,20 @@
     "overview": {
       "title": "Tổng quan",
       "description": "Quản lý hiển thị vòng thi, mở đăng ký và nhận bài, thiết lập giới hạn dung lượng tệp và đồng hồ đếm ngược trên trang chủ.",
+      "groups": {
+        "participation": {
+          "title": "Đăng ký và nhận bài",
+          "description": "Mở hoặc đóng đăng ký, nhận bài theo vòng và track vòng 1, thiết lập giới hạn dung lượng tệp thí sinh tải lên."
+        },
+        "content": {
+          "title": "Track và đề bài",
+          "description": "Thiết lập track vòng 1, quản lý tệp đề bài và thời điểm công bố cho từng vòng thi."
+        },
+        "display": {
+          "title": "Hiển thị cho thí sinh",
+          "description": "Quản lý hiển thị vòng thi, trạng thái kết thúc trên Dashboard và đồng hồ đếm ngược trên trang chủ."
+        }
+      },
       "countdown": {
         "title": "Đồng hồ đếm ngược trên trang chủ",
         "description": "Thiết lập thời gian và nội dung cho đồng hồ đếm ngược trên trang chủ. Trạng thái mở đăng ký và nhận bài được quản lý riêng.",
@@ -884,9 +898,9 @@
       }
     },
     "screening": {
-      "title": "Sàng lọc CV Vòng 1",
+      "title": "Lọc CV Vòng 1",
       "description": "Xét hồ sơ CV và nguyện vọng Vòng 1, duyệt đội thi và phân track theo nguyện vọng đội đã đăng ký.",
-      "summaryLabel": "Tổng quan sàng lọc CV",
+      "summaryLabel": "Tổng quan lọc CV",
       "stats": {
         "waitingForPreferences": "Chờ gửi nguyện vọng",
         "pendingScreening": "Hồ sơ chờ xét duyệt",
@@ -953,7 +967,7 @@
       "approveDescription": "Duyệt hồ sơ đội {team} và phân đội vào track đã chọn.",
       "rejectTitle": "Không duyệt hồ sơ đội này?",
       "rejectDescription": "Hồ sơ đội {team} sẽ chuyển sang trạng thái không được duyệt.",
-      "decisionSuccess": "Đã lưu kết quả sàng lọc.",
+      "decisionSuccess": "Đã lưu kết quả lọc.",
       "assignmentSuccess": "Đã lưu kết quả phân track.",
       "conflict": "Thông tin đội vừa được cập nhật trong lúc bạn thao tác. Hệ thống đã tải dữ liệu mới nhất.",
       "loadError": "Không thể tải danh sách xét CV Vòng 1.",
@@ -1009,7 +1023,7 @@
       "admissionMethod": "Hình thức tham gia",
       "admissionMethods": {
         "direct": "Đăng ký trực tiếp",
-        "cv_screening": "Sàng lọc CV",
+        "cv_screening": "Lọc CV",
         "round_0_5_promotion": "Vượt qua Vòng Sơ loại",
         "promotion": "Được chọn từ vòng trước"
       },
@@ -1122,7 +1136,7 @@
           "assigned": "Đã phân track"
         },
         "admission": {
-          "cv_screening": "Sàng lọc CV",
+          "cv_screening": "Lọc CV",
           "round_0_5_promotion": "Vượt qua Vòng Sơ loại"
         },
         "inactiveTrack": "{track} (ngừng hoạt động)"

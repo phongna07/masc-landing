@@ -49,7 +49,7 @@ export default function CountdownSettingsSection() {
 
 	return <section className="admin-setting-section" aria-labelledby="home-countdown-settings-title">
 		<div className="admin-setting-section-heading">
-			<h2 id="home-countdown-settings-title">{t("overview.countdown.title")}</h2>
+			<h3 id="home-countdown-settings-title">{t("overview.countdown.title")}</h3>
 			<p>{t("overview.countdown.description")}</p>
 		</div>
 		{settings.isPending ? <AdminLoading /> : settings.isError ?
