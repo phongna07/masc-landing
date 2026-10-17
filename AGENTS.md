@@ -122,7 +122,12 @@ Before creating or changing UI, inspect existing components and comparable scree
 
 Use the existing Sonner integration and shared toast components for toast notifications and transient alerts. Display them at the bottom right of the screen (`position="bottom-right"`) and follow existing toast usage patterns.
 
-User-facing text must be added to both apps/web/messages/en.json and apps/web/messages/vi.json. Write Vietnamese copy for the context, audience, and purpose of each screen using natural phrasing that feels appropriate on a Vietnamese website. Do not translate English word for word. Individual Vietnamese entries may differ in wording and meaning from their English counterparts when that better serves the context; preserve essential facts, required actions, and interpolation placeholders.
+User-facing text must be added to both apps/web/messages/en.json and apps/web/messages/vi.json. Follow these translation guidelines:
+
+- Write Vietnamese copy for the context, audience, and purpose of each page using natural language appropriate for a Vietnamese website. Do not translate English into Vietnamese word for word.
+- Individual Vietnamese entries may differ in wording and meaning from their English counterparts when that better serves the context; preserve essential facts, required actions, and interpolation placeholders.
+- Keep English terms when a Vietnamese translation would feel unnatural or less appropriate. For example, retain "Dashboard", "Email" (do not translate it as "Thư"), and "Check-in" where suitable; "Timeline cuộc thi" may be more appropriate than "Lịch cuộc thi".
+- Preserve brand names exactly, including "Marketing All-Star Challenge", "Hypernova", and "VinUni House of Marketers".
 
 No formatter or linter is configured, so avoid unrelated formatting churn and do not invent lint/format commands.
 
