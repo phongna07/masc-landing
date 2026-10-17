@@ -1,7 +1,6 @@
 "use client";
 
 import { canAccessAdminArea, type AdminArea, type AdminRole } from "@masc-landing/api/admin-roles";
-import { rounds } from "@masc-landing/api/rounds";
 import { ClipboardCheckIcon, FileTextIcon, HistoryIcon, LayoutDashboardIcon, MailIcon, MegaphoneIcon, MenuIcon, UsersIcon, XIcon } from "lucide-react";
 import Link from "next/link";
 import type { Route } from "next";
@@ -12,7 +11,6 @@ import { useState } from "react";
 import { BrandLogo } from "@/components/hero-brand-logo";
 import LanguageSwitcher from "@/components/language-switcher";
 import UserMenu from "@/components/user-menu";
-import { useRoundLabel } from "@/hooks/use-round-label";
 
 const items = [
   { href: "/admin", key: "overview", area: "overview", icon: LayoutDashboardIcon },
@@ -24,12 +22,11 @@ const items = [
   { href: "/admin/mail", key: "mail", area: "mail", icon: MailIcon },
   { href: "/admin/tickets", key: "tickets", area: "tickets", icon: FileTextIcon },
   { href: "/admin/check-in", key: "checkIn", area: "checkIn", icon: ClipboardCheckIcon },
-  ...rounds.map((round) => ({ href: `/admin/${round.slug}`, round: round.id, area: "rounds", icon: FileTextIcon })),
+  { href: "/admin/submissions", key: "submissions", area: "rounds", icon: FileTextIcon },
 ] as const;
 
 export default function AdminShell({ children, role }: { children: React.ReactNode; role: AdminRole }) {
   const t = useTranslations("Admin");
-  const roundLabel = useRoundLabel();
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const visibleItems = items.filter((item) => canAccessAdminArea(role, item.area as AdminArea));
@@ -75,7 +72,7 @@ export default function AdminShell({ children, role }: { children: React.ReactNo
                   aria-current={active ? "page" : undefined}
                   onClick={() => setOpen(false)}
                 >
-                  <Icon aria-hidden="true" /> {"round" in item ? t("tabs.round", { roundLabel: roundLabel(item.round) }) : t(`tabs.${item.key}`)}
+                  <Icon aria-hidden="true" /> {t(`tabs.${item.key}`)}
                 </Link>
               );
             })}

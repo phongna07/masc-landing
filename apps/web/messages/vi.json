@@ -587,7 +587,7 @@
       "teams": "Đội thi",
       "roundOneCvScreening": "Sàng lọc CV Vòng 1",
       "mail": "Thư",
-      "round": "{roundLabel}",
+      "submissions": "Bài nộp",
       "tickets": "Quản lý vé",
       "checkIn": "Kiểm soát vào cửa"
     },
@@ -1236,6 +1236,12 @@
         "emptyDescription": "Không có đội phù hợp với trạng thái và nội dung tìm kiếm này.",
         "loadError": "Không thể tải danh sách gửi email của chiến dịch."
       }
+    },
+    "submissions": {
+      "title": "Quản lý bài nộp",
+      "description": "Chọn vòng thi để xem bài nộp của các đội và quản lý nhận xét.",
+      "openRound": "Xem bài nộp {roundLabel}",
+      "backToRounds": "Về danh sách vòng thi"
     },
     "round": {
       "title": "{roundLabel}",

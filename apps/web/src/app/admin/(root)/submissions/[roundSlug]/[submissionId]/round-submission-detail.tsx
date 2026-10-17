@@ -13,7 +13,7 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { useRoundLabel } from "@/hooks/use-round-label";
 import { queryClient, trpc } from "@/utils/trpc";
-import { AdminEmpty, AdminError, AdminLoading, formatBirthdate, formatDate } from "../../../admin-state";
+import { AdminEmpty, AdminError, AdminLoading, formatBirthdate, formatDate } from "@/app/admin/admin-state";
 
 export default function RoundSubmissionDetail({ round, submissionId }: { round: RoundId; submissionId: string }) {
   const t = useTranslations("Admin"); const locale = useLocale(); const input = { round, submissionId };
@@ -30,7 +30,7 @@ export default function RoundSubmissionDetail({ round, submissionId }: { round: 
   const preview = useMutation(trpc.admin.createRoundPreviewUrl.mutationOptions({ onSuccess: ({ previewUrl: url }) => { setFileError(null); setPreviewUrl(url); }, onError: () => setFileError(t("errors.preview")) }));
   if (submission.isPending) return <AdminLoading />;
   if (submission.isError) return submission.error.data?.code === "NOT_FOUND" ? <AdminEmpty title={t("round.notFoundTitle")} description={t("round.notFoundDescription")} /> : <AdminError title={t("errors.loadTitle")} description={t("errors.roundDetail")} retry={() => submission.refetch()} retryLabel={t("actions.retry")} />;
-  const data = submission.data; const backHref = `/admin/round-${round}`; const canPreview = data.mimeType === "application/pdf";
+  const data = submission.data; const backHref = `/admin/submissions/round-${round}`; const canPreview = data.mimeType === "application/pdf";
   const submitFeedback = (published: boolean) => { const clean = feedback.trim(); setFeedbackError(null); if (!clean) return setFeedbackError(t("feedback.required")); if (clean.length > 100_000) return setFeedbackError(t("feedback.tooLong")); (published ? publish : saveDraft).mutate({ ...input, feedback: clean }); };
   return <><Link className="admin-back-link" href={backHref as Route}><ArrowLeftIcon />{t("actions.backToRound", { roundLabel })}</Link>
     <div className="admin-detail-heading"><div><p>{t("round.detailEyebrow", { roundLabel })}</p><h1>{data.teamName}</h1></div><span className={`status-badge status-${data.teamStatus}`}>{t(`values.status.${data.teamStatus}`)}</span></div>

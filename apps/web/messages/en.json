@@ -587,7 +587,7 @@
       "teams": "Teams",
       "roundOneCvScreening": "CV Screening Round 1",
       "mail": "Mail",
-      "round": "{roundLabel}",
+      "submissions": "Submissions",
       "tickets": "Tickets",
       "checkIn": "Entrance check-in"
     },
@@ -1236,6 +1236,12 @@
         "emptyDescription": "No teams match this delivery filter and search.",
         "loadError": "The campaign team delivery list could not be loaded."
       }
+    },
+    "submissions": {
+      "title": "Submissions",
+      "description": "Select a round to review team submissions and manage feedback.",
+      "openRound": "View {roundLabel} submissions",
+      "backToRounds": "Back to all rounds"
     },
     "round": {
       "title": "{roundLabel}",
