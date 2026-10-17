@@ -1823,11 +1823,6 @@
       "fulfillment": "Fulfillment status",
       "created": "Created at"
     },
-    "entranceStaff": "Entrance-staff access",
-    "entranceStaffHelp": "Grant or remove check-in-only access by the staff member’s Google email. Existing developer, root, and professional roles cannot be changed here. Staff see only admission details.",
-    "staffEmail": "Staff Google email",
-    "grantStaff": "Grant entrance-staff access",
-    "removeStaff": "Remove entrance-staff access",
     "recordResolution": "Record external payment resolution",
     "resolutionHelp": "Record how the organizer handled the issue. This note does not change verified settlement, issue tickets, refund money, revoke tickets, or restore capacity. Financial and payment records remain visible.",
     "eventKinds": {
@@ -1873,8 +1868,6 @@
       "batchCreated": "{count, plural, one {# gifted ticket has been generated successfully.} other {# gifted tickets have been generated successfully.}}",
       "settingsSaved": "Ticket settings have been saved successfully.",
       "recipientSaved": "Recipient information has been saved successfully.",
-      "staffGranted": "Entrance-staff access has been granted.",
-      "staffRemoved": "Entrance-staff access has been removed.",
       "reconciled": "Reconciliation finished. Review the current payment status and any unresolved issues.",
       "webhookConfirmed": "The PayOS webhook has been registered and confirmed.",
       "revoked": "This ticket has been revoked successfully.",

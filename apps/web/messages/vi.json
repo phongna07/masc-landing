@@ -1823,11 +1823,6 @@
       "fulfillment": "Trạng thái cấp vé",
       "created": "Ngày tạo"
     },
-    "entranceStaff": "Phân quyền check-in",
-    "entranceStaffHelp": "Nhập Email Google của nhân viên để cấp hoặc gỡ quyền tra cứu vé và xác nhận check-in. Quyền này không cho phép quản lý vé hay đơn hàng. Bạn không thể thay đổi quyền của Developer, quản trị viên cấp cao hoặc Ban chuyên môn tại đây.",
-    "staffEmail": "Email đăng nhập Google của nhân viên",
-    "grantStaff": "Cấp quyền check-in",
-    "removeStaff": "Gỡ quyền check-in",
     "recordResolution": "Ghi chú xử lý thanh toán",
     "resolutionHelp": "Ghi lại cách Ban tổ chức đã xử lý vấn đề với người mua. Lưu ghi chú không thay đổi số tiền đã xác minh, không cấp vé, hoàn tiền, thu hồi vé hay tăng số vé có thể bán. Lịch sử thanh toán vẫn được giữ nguyên.",
     "eventKinds": {
@@ -1873,8 +1868,6 @@
       "batchCreated": "Đã tạo {count} vé tặng.",
       "settingsSaved": "Đã lưu thiết lập bán vé.",
       "recipientSaved": "Đã lưu thông tin người nhận.",
-      "staffGranted": "Đã cấp quyền check-in.",
-      "staffRemoved": "Đã gỡ quyền check-in.",
       "reconciled": "Đã đối soát với PayOS. Vui lòng xem trạng thái thanh toán và các vấn đề cần xử lý để biết kết quả.",
       "webhookConfirmed": "Đã kết nối thông báo thanh toán từ PayOS.",
       "revoked": "Đã thu hồi vé. Vé không còn được dùng để vào cửa.",

@@ -910,8 +910,7 @@ p.ticket-warning {
 }
 
 /* Keep summaries compact and give related controls room beside their content. */
-.ticket-order-grid,
-.ticket-operations-grid {
+.ticket-order-grid {
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
@@ -987,10 +986,6 @@ p.ticket-warning {
   margin-top: 0;
 }
 
-.ticket-operations-grid .ticket-actions {
-  justify-content: flex-start;
-}
-
 .ticket-card-body {
   display: grid;
   grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
@@ -1027,8 +1022,7 @@ p.ticket-warning {
 }
 
 @container (max-width: 620px) {
-  .ticket-order-grid,
-  .ticket-operations-grid {
+  .ticket-order-grid {
     grid-template-columns: 1fr;
   }
 }
@@ -1118,7 +1112,6 @@ p.ticket-warning {
   }
 
   .ticket-order-grid,
-  .ticket-operations-grid,
   .ticket-form-grid {
     grid-template-columns: 1fr;
   }
