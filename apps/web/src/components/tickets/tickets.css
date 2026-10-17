@@ -286,6 +286,107 @@ p.ticket-warning {
   line-height: 1.6;
 }
 
+.ticket-payment-success {
+  border-color: rgba(137, 210, 110, .4);
+  background: radial-gradient(ellipse at 0 0, rgba(137, 210, 110, .12), transparent 65%), rgba(17, 16, 20, .92);
+}
+
+.ticket-payment-success-heading {
+  display: flex;
+  align-items: flex-start;
+  gap: 24px;
+}
+
+.ticket-payment-success-icon {
+  display: grid;
+  width: 64px;
+  height: 64px;
+  flex-shrink: 0;
+  place-items: center;
+  border: 1px solid rgba(137, 210, 110, .45);
+  border-radius: 50%;
+  background: rgba(137, 210, 110, .12);
+  color: #bde7ad;
+  box-shadow: 0 0 40px rgba(137, 210, 110, .08);
+}
+
+.ticket-payment-success-icon svg {
+  width: 32px;
+  height: 32px;
+}
+
+.ticket-main .ticket-payment-success-label {
+  margin: 0 0 10px;
+  color: #bde7ad;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+}
+
+.ticket-payment-success-heading h2 {
+  margin: 0;
+  font-size: clamp(28px, 3.5vw, 42px);
+}
+
+.ticket-payment-success-heading p:last-child {
+  max-width: 65ch;
+  margin-bottom: 0;
+}
+
+.ticket-payment-success-summary {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 24px;
+  padding-block: 24px;
+  margin-top: 28px;
+  border-block: 1px solid rgba(137, 210, 110, .18);
+}
+
+.ticket-payment-success-summary dt {
+  margin-bottom: 8px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.ticket-payment-success-summary dd {
+  margin: 0;
+  color: var(--ink);
+  font-size: clamp(18px, 2vw, 24px);
+  font-weight: 600;
+}
+
+.ticket-payment-success-summary > div:last-child dd {
+  color: #bde7ad;
+}
+
+.ticket-payment-success-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px 24px;
+  padding-top: 24px;
+}
+
+.ticket-payment-success-footer .ticket-actions,
+.ticket-payment-success-footer .ticket-payment-success-time {
+  margin: 0;
+}
+
+.ticket-payment-success-footer .ticket-payment-success-time {
+  font-size: 12px;
+}
+
+.ticket-payment-success-footer [data-slot="button"] {
+  min-height: 44px;
+  padding-inline: 20px;
+}
+
+.ticket-order-tickets {
+  scroll-margin-top: 24px;
+}
+
 .ticket-error {
   display: flex;
   align-items: flex-start;
@@ -978,6 +1079,16 @@ p.ticket-warning {
 }
 
 @media (max-width: 700px) {
+  .ticket-payment-success-heading {
+    flex-direction: column;
+    gap: 18px;
+  }
+
+  .ticket-payment-success-summary {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
   .ticket-navbar {
     height: auto;
     min-height: 76px;
