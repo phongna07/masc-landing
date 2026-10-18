@@ -1800,7 +1800,8 @@
       "promoBuyerLimitReached": "Bạn đã dùng hết số lượt dành cho mỗi người mua của mã này.",
       "promoLimitTooLow": "Giới hạn không được thấp hơn số lượt đã sử dụng cộng với số lượt đang giữ.",
       "promoDuplicate": "Mã ưu đãi này đã tồn tại.",
-      "promoCheckRequired": "Vui lòng kiểm tra mã ưu đãi trước khi đặt vé, hoặc xóa mã để tiếp tục."
+      "promoCheckRequired": "Vui lòng kiểm tra mã ưu đãi trước khi đặt vé, hoặc xóa mã để tiếp tục.",
+      "referralCodeFormat": "Mã giới thiệu có tối đa 64 ký tự, gồm chữ cái không dấu, chữ số, dấu gạch ngang hoặc gạch dưới."
     },
     "email": {
       "subject": "Xác nhận mua vé tham dự chung kết Marketing All-Star Challenge",
@@ -1835,7 +1836,8 @@
       "payment": "Trạng thái thanh toán",
       "fulfillment": "Trạng thái cấp vé",
       "created": "Ngày tạo",
-      "promoCode": "Mã ưu đãi"
+      "promoCode": "Mã ưu đãi",
+      "referralCode": "Mã giới thiệu"
     },
     "recordResolution": "Ghi chú xử lý thanh toán",
     "resolutionHelp": "Ghi lại cách Ban tổ chức đã xử lý vấn đề với người mua. Lưu ghi chú không thay đổi số tiền đã xác minh, không cấp vé, hoàn tiền, thu hồi vé hay tăng số vé có thể bán. Lịch sử thanh toán vẫn được giữ nguyên.",
@@ -1961,6 +1963,20 @@
       "freeHelp": "Gói vé này được miễn phí theo mã ưu đãi. Xác nhận để nhận vé ngay.",
       "confirmFree": "Xác nhận và nhận vé",
       "used": "Mã ưu đãi: {code}"
+    },
+    "referral": {
+      "heading": "Bạn có mã giới thiệu?",
+      "code": "Mã giới thiệu",
+      "format": "Tối đa 64 ký tự, gồm chữ cái không dấu, chữ số, dấu gạch ngang hoặc gạch dưới.",
+      "help": "Không bắt buộc. Nhập mã của người giới thiệu bạn mua vé. Mã được lưu cùng đơn hàng và không làm thay đổi giá vé.",
+      "used": "Mã giới thiệu: {code}",
+      "usage": "Thống kê mã giới thiệu",
+      "usageHelp": "Thống kê trên tất cả các trang theo bộ lọc bên trên. Mỗi đơn hàng được tính là một lượt sử dụng, kể cả đơn chưa thanh toán. Số đơn đã thanh toán và số vé đã phát hành được hiển thị riêng. Mã không phân biệt chữ hoa, chữ thường.",
+      "filter": "Lọc đơn hàng theo mã giới thiệu",
+      "orders": "Số đơn hàng",
+      "paidOrders": "Đơn đã thanh toán",
+      "issuedTickets": "Vé đã phát hành",
+      "empty": "Chưa có mã giới thiệu phù hợp với bộ lọc."
     }
   }
 }

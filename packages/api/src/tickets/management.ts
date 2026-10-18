@@ -92,14 +92,30 @@ export async function enqueueDelivery(input: { orderId?: string; ticketId?: stri
 
 export const pageInput = z.object({ page: z.number().int().min(0).max(100000).default(0), search: z.string().trim().max(100).default(""), status: z.string().max(40).default(""), category: z.enum(["", "normal", "vip"]).default(""), validity: z.enum(["", "valid", "revoked"]).default(""), fulfillment: z.enum(["", "pending", "issued", "review"]).default(""), emailStatus: z.enum(["", "pending", "sending", "sent", "failed"]).default("") });
 const pageSize = 20;
-export async function listOrders(input: z.infer<typeof pageInput>, buyerId?: string) {
-	const filter = and(buyerId ? eq(ticketOrders.buyerId, buyerId) : undefined,
+export const orderPageInput = pageInput.extend({ referralCode: z.string().trim().max(64).toUpperCase().default("") });
+function orderFilter(input: z.infer<typeof pageInput>, buyerId?: string) {
+	return and(buyerId ? eq(ticketOrders.buyerId, buyerId) : undefined,
 		input.search ? or(ilike(ticketOrders.id, `%${input.search}%`), ilike(ticketOrders.buyerEmail, `%${input.search}%`), ilike(ticketOrders.buyerName, `%${input.search}%`)) : undefined,
 		input.status ? sql`${ticketOrders.paymentStatus} = ${input.status}` : undefined,
 		input.category ? sql`${ticketOrders.snapshot}->>'category' = ${input.category}` : undefined,
 		input.fulfillment ? eq(ticketOrders.fulfillmentStatus, input.fulfillment) : undefined,
 		input.validity ? sql`exists (select 1 from admission_tickets t where t.order_id = ${ticketOrders.id} and t.validity = ${input.validity})` : undefined,
 		input.emailStatus ? sql`exists (select 1 from ticket_email_jobs j where j.order_id = ${ticketOrders.id} and j.status = ${input.emailStatus})` : undefined);
+}
+
+// Counts cover every matching order, independently of pagination and the selected referral.
+export async function listReferralUsage(input: z.infer<typeof pageInput>) {
+	return db.select({
+		code: ticketOrders.referralCode,
+		orders: sql<number>`count(*)::int`,
+		paidOrders: sql<number>`count(*) filter (where ${ticketOrders.paymentStatus} = 'paid')::int`,
+		issuedTickets: sql<number>`coalesce(sum((${ticketOrders.snapshot}->>'quantity')::int) filter (where ${ticketOrders.fulfillmentStatus} = 'issued'), 0)::int`,
+	}).from(ticketOrders).where(and(orderFilter(input), sql`${ticketOrders.referralCode} is not null`))
+		.groupBy(ticketOrders.referralCode).orderBy(sql`count(*) desc`, ticketOrders.referralCode);
+}
+
+export async function listOrders(input: z.infer<typeof pageInput> & { referralCode?: string }, buyerId?: string) {
+	const filter = and(orderFilter(input, buyerId), input.referralCode ? eq(ticketOrders.referralCode, input.referralCode) : undefined);
 	const [rows, totals] = await Promise.all([
 		db.select().from(ticketOrders).where(filter).orderBy(desc(ticketOrders.createdAt), ticketOrders.id).limit(pageSize).offset(input.page * pageSize),
 		db.select({ total: sql<number>`count(*)::int` }).from(ticketOrders).where(filter),

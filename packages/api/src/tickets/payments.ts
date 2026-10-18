@@ -13,6 +13,7 @@ import { checkedPromoInput, eligiblePromo, reacquirePromo } from "./promos";
 export const checkoutInput = z.object({
 	requestKey: z.uuid(), packageName: z.enum(["Silver", "Golden", "Platinum", "VIP"]),
 	promo: checkedPromoInput.optional(),
+	referralCode: z.string().trim().max(64).regex(/^[A-Za-z0-9_-]*$/).toUpperCase().optional(),
 	buyerName: z.string().trim().min(1).max(120), buyerPhone: z.string().trim().min(1).max(40),
 });
 type Buyer = { id: string; email: string };
@@ -25,7 +26,7 @@ export async function startCheckout(buyer: Buyer, input: z.infer<typeof checkout
 		await releaseExpiredReservations(tx);
 		const [existing] = await tx.select().from(ticketOrders).where(and(eq(ticketOrders.buyerId, buyer.id), eq(ticketOrders.requestKey, input.requestKey)));
 		if (existing) {
-			if (existing.snapshot.packageName !== input.packageName || (existing.snapshot.promo?.code ?? null) !== (input.promo?.code ?? null)) ticketError("requestChanged", "CONFLICT");
+			if (existing.snapshot.packageName !== input.packageName || (existing.snapshot.promo?.code ?? null) !== (input.promo?.code ?? null) || existing.referralCode !== (input.referralCode || null)) ticketError("requestChanged", "CONFLICT");
 			return existing;
 		}
 		if (!settings.isSalesOpened) ticketError("salesClosed", "PRECONDITION_FAILED");
@@ -48,6 +49,7 @@ export async function startCheckout(buyer: Buyer, input: z.infer<typeof checkout
 		for (let attempt = 0; attempt < 8; attempt++) {
 			const [created] = await tx.insert(ticketOrders).values({
 				id: randomUUID(), buyerId: buyer.id, requestKey: input.requestKey, providerOrderCode: randomInt(1_000_000_000_000, 10_000_000_000_000),
+				referralCode: input.referralCode || null,
 				buyerEmail: buyer.email, buyerName: input.buyerName, buyerPhone: input.buyerPhone, locale: "vi",
 				snapshot: { packageName: pack.name, category: pack.category, quantity: pack.quantity, benefits: pack.benefits, currency: "VND", totalPrice, ...(promo ? { promo: { code: promo.code, revision: promo.revision, originalPrice: pack.price } } : {}) },
 				promoId: promo?.id, promoReservation: promo ? "held" : "none",

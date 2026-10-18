@@ -107,6 +107,7 @@ before(async () => {
 	`);
 	await client.exec(await readFile(new URL("../../../db/src/migrations/0024_fancy_iron_man.sql", import.meta.url), "utf8"));
 	await client.exec(await readFile(new URL("../../../db/src/migrations/0026_little_marvel_apes.sql", import.meta.url), "utf8"));
+	await client.exec(await readFile(new URL("../../../db/src/migrations/0027_marvelous_franklin_storm.sql", import.meta.url), "utf8"));
 });
 after(() => client.close());
 beforeEach(async () => {
@@ -500,4 +501,68 @@ test("paid promo checkout validates provider configuration before committing an 
 	await assert.rejects(promoCheckout(created));
 	assert.equal((await db.select().from(ticketOrders)).length, 0);
 	assert.equal((await listPromos())[0]?.held, 0);
+});
+
+
+test("referral codes are optional, normalized, immutable on retry, and never discount prices", async () => {
+	const input = { requestKey: randomUUID(), packageName: "Golden" as const, buyerName: "Buyer", buyerPhone: "123", referralCode: "  sale_team-1  " };
+	const order = await startCheckout(buyer, input);
+	assert.equal(order.referralCode, "SALE_TEAM-1");
+	assert.equal(order.snapshot.totalPrice, 249000);
+	assert.equal(order.snapshot.promo, undefined);
+	assert.equal((await startCheckout(buyer, { ...input, referralCode: "SALE_TEAM-1" })).id, order.id);
+	assert.equal(createPayment.mock.callCount(), 1);
+	for (const referralCode of ["OTHER", ""]) await assert.rejects(startCheckout(buyer, { ...input, referralCode }), { message: "requestChanged" });
+	assert.equal((await checkout("Silver")).referralCode, null);
+	assert.equal((await startCheckout(otherBuyer, { ...input, requestKey: randomUUID(), referralCode: "  " })).referralCode, null);
+	for (const referralCode of ["A".repeat(65), "bad code", "bad?code", "bad\ncode"]) assert.equal(checkoutInput.safeParse({ ...input, referralCode }).success, false);
+	await assert.rejects(db.update(ticketOrders).set({ referralCode: "lowercase" }).where(eq(ticketOrders.id, order.id)));
+});
+
+test("referrals coexist with promos, filter orders exactly, and count all matching pages", async () => {
+	await client.query("INSERT INTO admin_emails VALUES ('root@example.com', 'root')");
+	const api = caller("root@example.com");
+	const checked = await promo({ prices: { ...promoPrices, Golden: 0 } });
+	const paid = await startCheckout(buyer, { requestKey: randomUUID(), packageName: "Golden", buyerName: "Buyer", buyerPhone: "123", referralCode: "sale", promo: checked });
+	assert.equal(paid.referralCode, "SALE");
+	assert.equal(paid.snapshot.promo?.code, checked.code);
+	assert.equal(paid.snapshot.totalPrice, 0);
+	const pending = await checkout("Silver");
+	// Add history beyond one page without invoking a payment provider.
+	for (let index = 0; index < 21; index++) await db.insert(ticketOrders).values({
+		...pending, id: randomUUID(), requestKey: randomUUID(), providerOrderCode: pending.providerOrderCode + index + 1,
+		paymentLinkId: null, checkoutUrl: null, referralCode: "SALE",
+	});
+	await db.update(ticketOrders).set({ referralCode: "SALE_OTHER" }).where(eq(ticketOrders.id, pending.id));
+	const usage = await api.referrals({});
+	assert.deepEqual(usage, [{ code: "SALE", orders: 22, paidOrders: 1, issuedTickets: 2 }, { code: "SALE_OTHER", orders: 1, paidOrders: 0, issuedTickets: 0 }]);
+	assert.deepEqual(await api.referrals({ status: "paid" }), [{ code: "SALE", orders: 1, paidOrders: 1, issuedTickets: 2 }]);
+	assert.deepEqual(await api.referrals({ category: "vip" }), []);
+	assert.deepEqual(await api.referrals({ emailStatus: "pending", validity: "valid" }), [{ code: "SALE", orders: 1, paidOrders: 1, issuedTickets: 2 }]);
+	const firstPage = await api.orders({ referralCode: "sale" });
+	assert.equal(firstPage.total, 22);
+	assert.equal(firstPage.items.length, 20);
+	assert.ok(firstPage.items.every(order => order.referralCode === "SALE"));
+	assert.equal((await api.orders({ referralCode: "SALE", page: 1 })).items.length, 2);
+	assert.equal((await api.orders({ referralCode: "SALE", status: "paid" })).total, 1);
+	assert.equal((await api.orders({ referralCode: "MISSING" })).total, 0);
+});
+
+test("referral reporting is restricted to ticket admins", async () => {
+	await client.query("INSERT INTO admin_emails VALUES ('staff@example.com', 'entrance-staff'), ('professional@example.com', 'professional')");
+	for (const email of [null, buyer.email, "staff@example.com", "professional@example.com"]) {
+		const api = caller(email);
+		const code = email ? "FORBIDDEN" : "UNAUTHORIZED";
+		await assert.rejects(api.referrals({}), { code });
+		await assert.rejects(api.orders({ referralCode: "SALE" }), { code });
+	}
+});
+
+test("referral migration preserves existing orders without assigning a code", async () => {
+	const legacy = new PGlite();
+	try {
+		await legacy.exec("CREATE TABLE ticket_orders (id text PRIMARY KEY); INSERT INTO ticket_orders VALUES ('legacy');");
+		await legacy.exec(await readFile(new URL("../../../db/src/migrations/0027_marvelous_franklin_storm.sql", import.meta.url), "utf8"));
+		assert.deepEqual((await legacy.query("SELECT * FROM ticket_orders")).rows, [{ id: "legacy", referral_code: null }]);
+	} finally { await legacy.close(); }
 });

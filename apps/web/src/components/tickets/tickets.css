@@ -731,6 +731,16 @@ p.ticket-warning {
   color: #bde7ad;
 }
 
+.ticket-code-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.ticket-referral-form {
+  margin-block: 24px 16px;
+}
+
 .ticket-promo-form {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
@@ -1135,6 +1145,7 @@ p.ticket-warning {
 }
 
 @media (max-width: 1000px) {
+  .ticket-code-grid,
   .ticket-settings-grid {
     grid-template-columns: 1fr;
   }
@@ -1183,6 +1194,7 @@ p.ticket-warning {
     margin-top: 0;
   }
 
+  .ticket-code-grid,
   .ticket-order-grid,
   .ticket-promo-form,
   .ticket-form-grid {

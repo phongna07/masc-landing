@@ -190,3 +190,12 @@ CI=1 NEXT_TELEMETRY_DISABLED=1 pnpm --filter web exec next build --webpack
 ```
 
 Run `pnpm db:generate` after schema changes and inspect SQL/metadata; generating does not apply migrations. The existing non-payment API test script can validate the touched activity-input sanitizer. Type checks/builds are not payment tests, authenticated browser verification, bank verification, or proof that a migration applies to a particular deployed database.
+
+
+## Referral tracking
+
+The optional referral field sits beside the promo code on `/tickets`. A link such as `/tickets?code=NAME` prefills it; logged-out buyers keep that URL inside the login `next` destination. Buyers may edit or clear the field before checkout. Codes allow up to 64 ASCII letters, digits, hyphens or underscores and are trimmed and stored in uppercase. Referral codes never change prices, require no eligibility check, and can be used alongside an optional promo code. Promo details continue to be saved in the order snapshot.
+
+Each order stores its referral code independently, including unpaid and free orders. Retrying the same checkout request cannot change its referral attribution. Existing orders have no referral code. Apply generated migration `0027_marvelous_franklin_storm.sql` to a confirmed database before deploying; generation does not apply it.
+
+Ticket admins can filter purchased orders by referral code and inspect per-code order counts, paid-order counts and issued-ticket quantities. Counts cover all pages matching the other order filters, independently of the selected referral. Counts distinguish unpaid checkouts from paid orders; a package order is one use even when it issues multiple tickets. The saved code also appears in admin order details and the order CSV export. No new environment variables are required.

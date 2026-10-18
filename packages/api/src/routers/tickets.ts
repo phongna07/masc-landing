@@ -9,7 +9,7 @@ import { adminAreaProcedure, freshProtectedProcedure, router } from "../index";
 import { accessibleTicket, audit, buyerOrder, getTicketConfig, ownedOrder, rateLimit } from "../tickets/core";
 import { confirmCheckIn, lookupTicket } from "../tickets/check-in";
 import { checkInLogsInput, listCheckInLogs } from "../tickets/check-in-logs";
-import { batchDetail, batchInput, changeTicket, createGiftBatch, enqueueDelivery, listBatches, listOrders, orderDetail, pageInput, recipientInput, recordRefund, recordResolution, refundInput, setEntranceStaff, settingsInput, ticketHistory, updateRecipient, updateSettings } from "../tickets/management";
+import { batchDetail, batchInput, changeTicket, createGiftBatch, enqueueDelivery, listBatches, listOrders, listReferralUsage, orderDetail, orderPageInput, pageInput, recipientInput, recordRefund, recordResolution, refundInput, setEntranceStaff, settingsInput, ticketHistory, updateRecipient, updateSettings } from "../tickets/management";
 import { cancelCheckout, checkoutInput, reconcileOrder, resolveLatePayment, runReconciliation, startCheckout } from "../tickets/payments";
 import { payos } from "../tickets/payos";
 import { runTicketEmailJobs } from "../tickets/email";
@@ -67,7 +67,8 @@ export const ticketsRouter = router({
 		return { ...tickets!, ...admissions! };
 	})),
 	settings: root.input(settingsInput).mutation(({ ctx, input }) => safeErrors(() => updateSettings(input, ctx.session.user.id))),
-	orders: root.input(pageInput).query(({ input }) => safeErrors(() => listOrders(input))),
+	referrals: root.input(pageInput).query(({ input }) => safeErrors(() => listReferralUsage(input))),
+	orders: root.input(orderPageInput).query(({ input }) => safeErrors(() => listOrders(input))),
 	orderDetail: root.input(idInput).query(({ input }) => safeErrors(() => orderDetail(input.id))),
 	batches: root.input(pageInput).query(({ input }) => safeErrors(() => listBatches(input))),
 	batchDetail: root.input(idInput).query(({ input }) => safeErrors(() => batchDetail(input.id))),

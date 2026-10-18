@@ -1800,7 +1800,8 @@
       "promoBuyerLimitReached": "You have reached the order limit for this promo code.",
       "promoLimitTooLow": "The limit cannot be lower than completed orders plus reserved uses.",
       "promoDuplicate": "A promo code with this name already exists.",
-      "promoCheckRequired": "Check your promo code before placing the order, or clear the field."
+      "promoCheckRequired": "Check your promo code before placing the order, or clear the field.",
+      "referralCodeFormat": "Use up to 64 letters, digits, hyphens, or underscores for the referral code."
     },
     "email": {
       "subject": "Your ticket purchase is confirmed",
@@ -1835,7 +1836,8 @@
       "payment": "Payment status",
       "fulfillment": "Fulfillment status",
       "created": "Created at",
-      "promoCode": "Promo code"
+      "promoCode": "Promo code",
+      "referralCode": "Referral code"
     },
     "recordResolution": "Record external payment resolution",
     "resolutionHelp": "Record how the organizer handled the issue. This note does not change verified settlement, issue tickets, refund money, revoke tickets, or restore capacity. Financial and payment records remain visible.",
@@ -1961,6 +1963,20 @@
       "freeHelp": "This package is free with your promo code. Confirm to receive your tickets immediately.",
       "confirmFree": "Confirm and receive tickets",
       "used": "Promo code: {code}"
+    },
+    "referral": {
+      "heading": "Have a referral code?",
+      "code": "Referral code",
+      "format": "Use up to 64 letters, numbers, hyphens or underscores.",
+      "help": "Optional. Enter the code of the person who referred you. This is saved with your order and does not change the price.",
+      "used": "Referral code: {code}",
+      "usage": "Referral code usage",
+      "usageHelp": "Counts include all pages matching the filters above. Each order counts as one use, including unpaid checkouts. Paid orders and issued tickets are shown separately. Codes are grouped without regard to letter case.",
+      "filter": "Filter orders by referral code",
+      "orders": "Orders",
+      "paidOrders": "Paid orders",
+      "issuedTickets": "Issued tickets",
+      "empty": "No referral codes match these filters."
     }
   }
 }
