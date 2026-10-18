@@ -272,9 +272,9 @@ export default function HomePageClient({ countdown }: { countdown: CountdownConf
               </h1>
               <div className="hero-bottom reveal">
                 <p>{t("hero.description")}</p>
-                <div className="hero-brand-action">
+                {env.NEXT_PUBLIC_IS_SELLING_TICKETS_OPENED && <div className="hero-brand-action">
                   <SessionAwareLink className="primary-button hero-brand-button" destination="/tickets" signedInLabel={t("hero.buyTickets")} signedOutLabel={t("hero.buyTickets")} />
-                </div>
+                </div>}
               </div>
             </div>
 
@@ -520,7 +520,10 @@ export default function HomePageClient({ countdown }: { countdown: CountdownConf
               })}
             </h2>
             <p>{t("finalCta.description")}</p>
-            <div className="final-ticket-actions"><SessionAwareLink className="primary-button light" destination="/tickets" signedInLabel={t("hero.buyTickets")} signedOutLabel={t("hero.buyTickets")} />
+            <div className="final-ticket-actions">
+            {env.NEXT_PUBLIC_IS_SELLING_TICKETS_OPENED && (
+              <SessionAwareLink className="primary-button light" destination="/tickets" signedInLabel={t("hero.buyTickets")} signedOutLabel={t("hero.buyTickets")} />
+            )}
             {env.NEXT_PUBLIC_IS_REGISTRATION_OPENED && (
               <SessionAwareLink
                 className="primary-button light ticket-registration-link"

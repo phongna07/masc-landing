@@ -3,12 +3,18 @@ import { z } from "zod";
 
 export const env = createEnv({
   client: {
+    NEXT_PUBLIC_IS_SELLING_TICKETS_OPENED: z
+      .enum(["true", "false"])
+      .default("false")
+      .transform((value) => value === "true"),
     NEXT_PUBLIC_IS_REGISTRATION_OPENED: z
       .enum(["true", "false"])
       .default("false")
       .transform((value) => value === "true"),
   },
   runtimeEnv: {
+    NEXT_PUBLIC_IS_SELLING_TICKETS_OPENED:
+      process.env.NEXT_PUBLIC_IS_SELLING_TICKETS_OPENED,
     NEXT_PUBLIC_IS_REGISTRATION_OPENED:
       process.env.NEXT_PUBLIC_IS_REGISTRATION_OPENED,
   },

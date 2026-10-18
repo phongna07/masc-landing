@@ -22,6 +22,12 @@ PayOS [does not provide a separate sandbox](https://payos.vn/docs/moi-truong-tes
 4. Keep `BETTER_AUTH_URL`, `CORS_ORIGIN`, the Google OAuth application's allowed origin/callback, and `TICKET_APP_URL` consistent. Existing Better Auth Google wiring remains in use. Next.js must run the ticket handlers in the Node runtime with outbound access to PayOS and Neon HTTPS **and WebSockets**. The ticket transaction helper uses the installed Neon `Pool` driver with `ws`; the rest of the repository keeps its existing HTTP database client. Interactive transactions and row locks are [supported through Neon Pool](https://github.com/neondatabase/serverless#sessions-transactions-and-node-postgres-compatibility).
 5. Configure email delivery with `MAIL_USERNAME`, `ZEPTOMAIL_URL`, and `ZEPTOMAIL_TOKEN`. ZeptoMail is the sole email provider. Verify the sending domain and attachment delivery with ZeptoMail. Ticket jobs use a separate queue, not competition `email_queue` fields. PNG attachments use the documented [ZeptoMail attachment fields](https://www.zoho.com/cpaas/help/api/email-sending.html). Tracking is disabled for ticket emails; there are no public QR image URLs.
 
+## Public ticket sales switch
+
+Set `NEXT_PUBLIC_IS_SELLING_TICKETS_OPENED=true` in the deployment environment or gitignored `apps/web/.env` to show buyer ticket links and the dashboard ticket-sale announcement, and allow access to `/tickets` and `/my-tickets`. Setting it to `false` (the default when unset) hides those elements and redirects those routes and their subpaths, including order pages, to `/` before authentication. Only the literal values `true` and `false` are accepted.
+
+This public flag is embedded at build time; rebuild and redeploy after changing it. It controls buyer pages and navigation; admin ticket tools, APIs, payment webhooks, and background workers remain available.
+
 ## URLs and webhook registration
 
 - Webhook: `TICKET_APP_URL` + `/api/tickets/payos/webhook`.
