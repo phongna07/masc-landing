@@ -6,7 +6,7 @@ import loginBackground from "@/assets/image-3.png";
 import AuthForm from "@/components/auth-form";
 import SiteHeader from "@/components/site-header";
 
-export default function LoginPageClient() {
+export default function LoginPageClient({ next }: { next: string }) {
   return (
     <main className="auth-page">
       <div className="auth-background" aria-hidden="true">
@@ -23,7 +23,7 @@ export default function LoginPageClient() {
       <SiteHeader />
 
       <section className="auth-layout" aria-label="MASC account portal">
-        <AuthForm />
+        <AuthForm next={next} />
       </section>
     </main>
   );

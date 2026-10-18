@@ -11,18 +11,29 @@ export const adminAreas = [
   "rounds",
   "roundOneCvScreening",
   "activityLogs",
+  "tickets",
+  "checkIn",
+  "manageAdmins",
 ] as const;
 
 export type AdminArea = (typeof adminAreas)[number];
 
 export const adminRoleConfig = {
-  root: {
+  developer: {
     defaultRoute: "/admin",
     allowedAreas: adminAreas,
+  },
+  root: {
+    defaultRoute: "/admin",
+    allowedAreas: adminAreas.filter((area) => area !== "manageAdmins"),
   },
   professional: {
     defaultRoute: "/admin/cv-screening-round-1",
     allowedAreas: ["rounds", "roundOneCvScreening"],
+  },
+  "entrance-staff": {
+    defaultRoute: "/admin/check-in",
+    allowedAreas: ["checkIn"],
   },
 } as const satisfies Record<
   AdminRole,

@@ -7,6 +7,7 @@ import { roundOneProblemStatementRouter } from "./round-one-problem-statement";
 import { roundProblemStatementRouter } from "./round-problem-statement";
 import { roundSubmissionRouter } from "./round-submission";
 import { userAnnouncementsRouter } from "./user-announcements";
+import { ticketsRouter } from "./tickets";
 
 export const appRouter = router({
   announcements: announcementsRouter,
@@ -16,6 +17,7 @@ export const appRouter = router({
   roundProblemStatement: roundProblemStatementRouter,
   roundSubmission: roundSubmissionRouter,
   userAnnouncements: userAnnouncementsRouter,
+  tickets: ticketsRouter,
   uploadLimits: protectedProcedure.query(getUploadLimits),
   healthCheck: publicProcedure.query(() => {
     return "OK";

@@ -1,6 +1,6 @@
-import { requireAdminArea } from "../../admin-auth";
+import { requireAdminArea } from "@/app/admin/admin-auth";
 
-export default async function RoundAdminLayout({
+export default async function SubmissionsAdminLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;

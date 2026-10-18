@@ -3,7 +3,7 @@ import localFont from "next/font/local";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getTranslations } from "next-intl/server";
 import NextTopLoader from "nextjs-toploader";
-import { Analytics } from "@vercel/analytics/next";
+import PrivateAnalytics from "@/components/private-analytics";
 
 import "../index.css";
 import logo from "../assets/logo.png";
@@ -75,7 +75,7 @@ export default async function RootLayout({
         <NextIntlClientProvider>
           <Providers>{children}</Providers>
         </NextIntlClientProvider>
-        <Analytics />
+        <PrivateAnalytics />
       </body>
     </html>
   );

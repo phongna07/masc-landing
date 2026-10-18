@@ -48,6 +48,8 @@ import {
   uploadLimitKinds,
 } from "../upload-limits";
 
+import { adminManagementRouter } from "./admin-management";
+
 const signedUrlExpirySeconds = 300;
 const officePreviewUrlExpirySeconds = 60 * 60;
 const overviewProcedure = adminAreaProcedure("overview");
@@ -444,6 +446,7 @@ async function assignRoundOneTrack(input: { teamId: string; trackId: string }) {
   return { id: input.teamId, preferenceStatus: "assigned" as const, assignedTrackId: input.trackId };
 }
 export const adminRouter = router({
+  manageAdmins: adminManagementRouter,
   getHomeCountdownSettings: overviewProcedure.query(getHomeCountdownSettings),
   setHomeCountdownSettings: overviewProcedure.input(homeCountdownInputSchema).mutation(async ({ input }) => {
     const settings = await saveHomeCountdownSettings(input);

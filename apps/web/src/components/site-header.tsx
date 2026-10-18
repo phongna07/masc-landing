@@ -7,7 +7,7 @@ import { authClient } from "@/lib/auth-client";
 import { BrandLogo } from "@/components/hero-brand-logo";
 import LanguageSwitcher from "@/components/language-switcher";
 import UserMenu from "@/components/user-menu";
-import { env } from "@masc-landing/env/web";
+import SessionAwareLink from "@/components/session-aware-link";
 
 type SiteHeaderProps = {
   landingPage?: boolean;
@@ -35,7 +35,8 @@ export default function SiteHeader({ landingPage = false }: SiteHeaderProps) {
         <a href="https://www.facebook.com/MarketingAllStarChallenge" target="_blank">{t("news")}</a>
       </nav>
       <div className="header-actions">
-        {env.NEXT_PUBLIC_IS_REGISTRATION_OPENED && !isPending && (
+        <SessionAwareLink className="header-cta header-ticket-link" destination="/tickets" signedInLabel={t("tickets")} signedOutLabel={t("tickets")} />
+        {!isPending && (
           session?.user ? (
             <UserMenu />
           ) : (

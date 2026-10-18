@@ -4,7 +4,7 @@ import { useTranslations } from "next-intl";
 
 import GoogleSignInButton from "./google-sign-in-button";
 
-export default function AuthForm() {
+export default function AuthForm({ next }: { next: string }) {
   const t = useTranslations("Auth");
 
   return (
@@ -17,7 +17,7 @@ export default function AuthForm() {
         </div>
 
         <div className="auth-social">
-          <GoogleSignInButton />
+          <GoogleSignInButton next={next} />
           <p className="auth-signin-note">{t("secureSignIn")}</p>
         </div>
       </div>

@@ -5,6 +5,8 @@ type EmailLayoutOptions = {
     styles?: string;
 };
 
+const footerNote = "Email này được gửi tự động nên không thể tiếp nhận phản hồi. Nếu bạn cần hỗ trợ vui lòng liên hệ qua Email: masc26.work@gmail.com";
+
 function escapeHtml(value: string) {
     return value.replace(/[&<>"']/g, (character) => ({
         "&": "&amp;",
@@ -44,6 +46,8 @@ export function renderEmailLayout({
         .content li > ul, .content li > ol { margin-top: 6px; margin-bottom: 0; }
         .content a { color: #5d3593; text-decoration: underline; }
         .greeting { font-size: 16px; font-weight: bold; margin-bottom: 15px; }
+        .footer-note { padding: 20px 25px; border-top: 1px solid #e5e5e5; color: #666666; font-size: 12px; line-height: 1.6; }
+        .footer-note a { color: #5d3593; }
         ${styles}
         @media screen and (max-width: 600px) {
             body { padding: 0; }
@@ -58,9 +62,10 @@ export function renderEmailLayout({
         <div class="content">
 ${contentHtml}
         </div>
+        <div class="footer-note">Email này được gửi tự động nên không thể tiếp nhận phản hồi. Nếu bạn cần hỗ trợ vui lòng liên hệ qua Email: <a href="mailto:masc26.work@gmail.com">masc26.work@gmail.com</a></div>
     </div>
 </body>
 </html>`;
 
-    return { html, text: contentText };
+    return { html, text: `${contentText}\n\n${footerNote}` };
 }

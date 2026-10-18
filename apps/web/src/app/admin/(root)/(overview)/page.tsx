@@ -3,6 +3,7 @@
 import type { UploadLimitKind } from "@masc-landing/api/upload-limits";
 import { MAX_PROBLEM_STATEMENT_FILE_SIZE } from "@masc-landing/api/round-one-problem-statements";
 import { Button } from "@masc-landing/ui/components/button";
+import { Accordion, AccordionHeader, AccordionItem, AccordionPanel, AccordionTrigger } from "@masc-landing/ui/components/accordion";
 import { roundIds } from "@masc-landing/api/rounds";
 import { Card, CardContent, CardHeader, CardTitle } from "@masc-landing/ui/components/card";
 import { ConfirmationDialog } from "@masc-landing/ui/components/confirmation-dialog";
@@ -11,9 +12,9 @@ import { Input } from "@masc-landing/ui/components/input";
 import { Label } from "@masc-landing/ui/components/label";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
-import { useEffect, useRef, useState, type FormEvent } from "react";
+import { useEffect, useRef, useState, type FormEvent, type ReactNode } from "react";
 import { toast } from "sonner";
-import { ArrowDownIcon, ArrowUpIcon, DownloadIcon, FileTextIcon, PencilIcon, PlusIcon, Trash2Icon, UploadIcon } from "lucide-react";
+import { ArrowDownIcon, ArrowUpIcon, ChevronDownIcon, DownloadIcon, FileTextIcon, PencilIcon, PlusIcon, Trash2Icon, UploadIcon } from "lucide-react";
 
 import FileInput from "@/components/file-input";
 import { useRoundLabel } from "@/hooks/use-round-label";
@@ -65,126 +66,159 @@ export default function AdminPage() {
 
 	return <>
 		<AdminHeading eyebrow={t("eyebrow")} title={t("overview.title")} description={t("overview.description")} />
-		<PreferenceSettingsSection />
-		<RoundProblemStatementsSection />
-		<section className="admin-setting-section" aria-labelledby="dashboard-visibility-settings-title">
-			<div className="admin-setting-section-heading"><h2 id="dashboard-visibility-settings-title">{t("overview.visibilitySectionTitle")}</h2>
-				<p>{t("overview.visibilitySectionDescription")}</p></div>
-			{dashboardTabSettings.isPending ? <AdminLoading /> : dashboardTabSettings.isError ?
-				<AdminError title={t("errors.loadTitle")} description={t("overview.visibilityLoadError")} retry={() => dashboardTabSettings.refetch()} retryLabel={t("actions.retry")} /> :
-				<div className="admin-round-settings">{roundIds.map((round) => {
-					const displayRound = roundLabel(round);
-					const isVisible = dashboardTabSettings.data[round];
-					const isUpdating = updateDashboardTab.isPending && updateDashboardTab.variables?.round === round;
-					return <Card className="admin-round-setting" key={round}>
-						<CardHeader><div><CardTitle>{t("overview.roundTitle", { roundLabel: displayRound })}</CardTitle><p>{t("overview.visibilityRoundDescription", { roundLabel: displayRound })}</p></div>
-							<span className={isVisible ? "is-open" : "is-closed"}>{t(isVisible ? "overview.visible" : "overview.hidden")}</span></CardHeader>
-						<CardContent><Button variant={isVisible ? "default" : "outline"} role="switch" aria-checked={isVisible}
-							disabled={updateDashboardTab.isPending} onClick={() => updateDashboardTab.mutate({ round, isVisible: !isVisible })}
-						>{isUpdating ? t("overview.updating") : t(isVisible ? "overview.hideAction" : "overview.showAction")}</Button></CardContent>
-					</Card>;
-				})}</div>}
-		</section>
-		<section className="admin-setting-section" aria-labelledby="round-end-settings-title">
-			<div className="admin-setting-section-heading"><h2 id="round-end-settings-title">{t("overview.roundEndSectionTitle")}</h2>
-				<p>{t("overview.roundEndSectionDescription")}</p></div>
-			{roundEndSettings.isPending ? <AdminLoading /> : roundEndSettings.isError ?
-				<AdminError title={t("errors.loadTitle")} description={t("overview.roundEndLoadError")} retry={() => roundEndSettings.refetch()} retryLabel={t("actions.retry")} /> :
-				<div className="admin-round-settings">{roundIds.map((round) => {
-					const displayRound = roundLabel(round);
-					const isEnded = roundEndSettings.data[round];
-					const isUpdating = updateRoundEnded.isPending && updateRoundEnded.variables?.round === round;
-					return <Card className="admin-round-setting" key={round}>
-						<CardHeader><div><CardTitle>{t("overview.roundTitle", { roundLabel: displayRound })}</CardTitle><p>{t("overview.roundEndRoundDescription", { roundLabel: displayRound })}</p></div>
-							<span className={isEnded ? "is-closed" : "is-open"}>{t(isEnded ? "overview.ended" : "overview.notEnded")}</span></CardHeader>
-						<CardContent><Button variant={isEnded ? "default" : "outline"} role="switch" aria-checked={isEnded}
-							disabled={updateRoundEnded.isPending} onClick={() => updateRoundEnded.mutate({ round, isEnded: !isEnded })}
-						>{isUpdating ? t("overview.updating") : t(isEnded ? "overview.markNotEnded" : "overview.markEnded")}</Button></CardContent>
-					</Card>;
-				})}</div>}
-		</section>
-		<section className="admin-setting-section" aria-labelledby="admission-settings-title">
-			<div className="admin-setting-section-heading"><h2 id="admission-settings-title">{t("overview.admissionSectionTitle")}</h2>
-				<p>{t("overview.admissionSectionDescription")}</p></div>
-			{admissionSettings.isPending ? <AdminLoading /> : admissionSettings.isError ?
-				<AdminError title={t("errors.loadTitle")} description={t("overview.admissionLoadError")} retry={() => admissionSettings.refetch()} retryLabel={t("actions.retry")} /> :
-				<div className="admin-round-settings">{(["0.5", "1"] as const).map((round) => { const displayRound = roundLabel(round); const isOpen = admissionSettings.data[round]; return <Card className="admin-round-setting" key={round}>
-					<CardHeader><div><CardTitle>{t("overview.roundTitle", { roundLabel: displayRound })}</CardTitle><p>{t("overview.admissionRoundDescription", { roundLabel: displayRound })}</p></div>
-						<span className={isOpen ? "is-open" : "is-closed"}>{t(isOpen ? "overview.open" : "overview.closed")}</span></CardHeader>
-					<CardContent><Button role="switch" aria-checked={isOpen} disabled={updateAdmission.isPending}
-						onClick={() => updateAdmission.mutate({ round, isOpen: !isOpen })}>{t(isOpen ? "overview.closeAdmission" : "overview.openAdmission")}</Button></CardContent>
-				</Card>; })}</div>}
-		</section>
-		<section className="admin-setting-section" aria-labelledby="submission-settings-title">
-			<div className="admin-setting-section-heading">
-				<h2 id="submission-settings-title">{t("overview.submissionSectionTitle")}</h2>
-				<p>{t("overview.submissionSectionDescription")}</p>
-			</div>
-			{settings.isPending ? <AdminLoading /> : settings.isError ? (
-				<AdminError title={t("errors.loadTitle")} description={t("overview.loadError")} retry={() => settings.refetch()} retryLabel={t("actions.retry")} />
-			) : <div className="admin-round-settings">
-				{roundIds.map((round) => {
-					const displayRound = roundLabel(round);
-					const isOpen = settings.data[round];
-					const isUpdating = update.isPending && update.variables?.round === round;
-					return <Card className={`admin-round-setting${round === "1" ? " admin-round-one-submission-setting" : ""}`} key={round}>
-						<CardHeader><div><CardTitle>{t("overview.roundTitle", { roundLabel: displayRound })}</CardTitle><p>{t("overview.roundDescription", { roundLabel: displayRound })}</p></div>
-							<span className={isOpen ? "is-open" : "is-closed"}>{t(isOpen ? "overview.open" : "overview.closed")}</span>
-						</CardHeader>
-						<CardContent className={round === "1" ? "admin-round-one-submission-content" : undefined}>
-							<Button variant={isOpen ? "default" : "outline"} role="switch" aria-checked={isOpen}
-							disabled={update.isPending} onClick={() => update.mutate({ round, isOpen: !isOpen })}
-							>{isUpdating ? t("overview.updating") : t(isOpen ? "overview.closeAction" : "overview.openAction")}</Button>
-							{round === "1" && <div className="admin-track-submission-settings">
-								<div className="admin-track-submission-heading"><strong>{t("overview.trackSubmissions.title")}</strong>
-									<p>{t("overview.trackSubmissions.description")}</p></div>
-								{!isOpen && <p className="admin-track-submission-master-note">
-									{t("overview.trackSubmissions.masterClosed")}
-								</p>}
-								{trackSubmissionSettings.isPending ? <p className="admin-track-submission-message">{t("actions.loading")}</p>
-									: trackSubmissionSettings.isError ? <div className="admin-track-submission-message admin-track-submission-error">
-										<p>{t("overview.trackSubmissions.loadError")}</p>
-										<Button type="button" size="sm" variant="outline" onClick={() => trackSubmissionSettings.refetch()}>
-											{t("actions.retry")}
-										</Button>
-									</div> : <div className="admin-track-submission-list">
-										{trackSubmissionSettings.data.map((track) => {
-											const isTrackUpdating = updateTrackSubmission.isPending
-												&& updateTrackSubmission.variables?.trackId === track.id;
-											return <div className="admin-track-submission-row" key={track.id}>
-												<div><strong>{track.name}</strong><span>{t(track.isActive
-													? "overview.trackSubmissions.active" : "overview.trackSubmissions.inactive")}</span></div>
-												<span className={track.isSubmissionOpen ? "is-open" : "is-closed"}>{t(track.isSubmissionOpen
-													? "overview.trackSubmissions.configuredOpen" : "overview.trackSubmissions.configuredClosed")}</span>
-												<Button type="button" size="sm" variant={track.isSubmissionOpen ? "default" : "outline"}
-													role="switch" aria-checked={track.isSubmissionOpen} disabled={updateTrackSubmission.isPending}
-													onClick={() => updateTrackSubmission.mutate({ trackId: track.id, isOpen: !track.isSubmissionOpen })}>
-													{isTrackUpdating ? t("overview.updating") : t(track.isSubmissionOpen
-														? "overview.trackSubmissions.closeAction" : "overview.trackSubmissions.openAction")}
+		<Accordion className="admin-settings-accordion" multiple>
+			<SettingsGroup value="participation" title={t("overview.groups.participation.title")}
+				description={t("overview.groups.participation.description")}>
+				<section className="admin-setting-section" aria-labelledby="admission-settings-title">
+					<div className="admin-setting-section-heading"><h3 id="admission-settings-title">{t("overview.admissionSectionTitle")}</h3>
+						<p>{t("overview.admissionSectionDescription")}</p></div>
+					{admissionSettings.isPending ? <AdminLoading /> : admissionSettings.isError ?
+						<AdminError title={t("errors.loadTitle")} description={t("overview.admissionLoadError")} retry={() => admissionSettings.refetch()} retryLabel={t("actions.retry")} /> :
+						<div className="admin-round-settings">{(["0.5", "1"] as const).map((round) => { const displayRound = roundLabel(round); const isOpen = admissionSettings.data[round]; return <Card className="admin-round-setting" key={round}>
+							<CardHeader><div><CardTitle>{t("overview.roundTitle", { roundLabel: displayRound })}</CardTitle><p>{t("overview.admissionRoundDescription", { roundLabel: displayRound })}</p></div>
+								<span className={isOpen ? "is-open" : "is-closed"}>{t(isOpen ? "overview.open" : "overview.closed")}</span></CardHeader>
+							<CardContent><Button role="switch" aria-checked={isOpen} disabled={updateAdmission.isPending}
+								onClick={() => updateAdmission.mutate({ round, isOpen: !isOpen })}>{t(isOpen ? "overview.closeAdmission" : "overview.openAdmission")}</Button></CardContent>
+						</Card>; })}</div>}
+				</section>
+				<section className="admin-setting-section" aria-labelledby="submission-settings-title">
+					<div className="admin-setting-section-heading">
+						<h3 id="submission-settings-title">{t("overview.submissionSectionTitle")}</h3>
+						<p>{t("overview.submissionSectionDescription")}</p>
+					</div>
+					{settings.isPending ? <AdminLoading /> : settings.isError ? (
+						<AdminError title={t("errors.loadTitle")} description={t("overview.loadError")} retry={() => settings.refetch()} retryLabel={t("actions.retry")} />
+					) : <div className="admin-round-settings">
+						{roundIds.map((round) => {
+							const displayRound = roundLabel(round);
+							const isOpen = settings.data[round];
+							const isUpdating = update.isPending && update.variables?.round === round;
+							return <Card className={`admin-round-setting${round === "1" ? " admin-round-one-submission-setting" : ""}`} key={round}>
+								<CardHeader><div><CardTitle>{t("overview.roundTitle", { roundLabel: displayRound })}</CardTitle><p>{t("overview.roundDescription", { roundLabel: displayRound })}</p></div>
+									<span className={isOpen ? "is-open" : "is-closed"}>{t(isOpen ? "overview.open" : "overview.closed")}</span>
+								</CardHeader>
+								<CardContent className={round === "1" ? "admin-round-one-submission-content" : undefined}>
+									<Button variant={isOpen ? "default" : "outline"} role="switch" aria-checked={isOpen}
+									disabled={update.isPending} onClick={() => update.mutate({ round, isOpen: !isOpen })}
+									>{isUpdating ? t("overview.updating") : t(isOpen ? "overview.closeAction" : "overview.openAction")}</Button>
+									{round === "1" && <div className="admin-track-submission-settings">
+										<div className="admin-track-submission-heading"><strong>{t("overview.trackSubmissions.title")}</strong>
+											<p>{t("overview.trackSubmissions.description")}</p></div>
+										{!isOpen && <p className="admin-track-submission-master-note">
+											{t("overview.trackSubmissions.masterClosed")}
+										</p>}
+										{trackSubmissionSettings.isPending ? <p className="admin-track-submission-message">{t("actions.loading")}</p>
+											: trackSubmissionSettings.isError ? <div className="admin-track-submission-message admin-track-submission-error">
+												<p>{t("overview.trackSubmissions.loadError")}</p>
+												<Button type="button" size="sm" variant="outline" onClick={() => trackSubmissionSettings.refetch()}>
+													{t("actions.retry")}
 												</Button>
-											</div>;
-										})}
+											</div> : <div className="admin-track-submission-list">
+												{trackSubmissionSettings.data.map((track) => {
+													const isTrackUpdating = updateTrackSubmission.isPending
+														&& updateTrackSubmission.variables?.trackId === track.id;
+													return <div className="admin-track-submission-row" key={track.id}>
+														<div><strong>{track.name}</strong><span>{t(track.isActive
+															? "overview.trackSubmissions.active" : "overview.trackSubmissions.inactive")}</span></div>
+														<span className={track.isSubmissionOpen ? "is-open" : "is-closed"}>{t(track.isSubmissionOpen
+															? "overview.trackSubmissions.configuredOpen" : "overview.trackSubmissions.configuredClosed")}</span>
+														<Button type="button" size="sm" variant={track.isSubmissionOpen ? "default" : "outline"}
+															role="switch" aria-checked={track.isSubmissionOpen} disabled={updateTrackSubmission.isPending}
+															onClick={() => updateTrackSubmission.mutate({ trackId: track.id, isOpen: !track.isSubmissionOpen })}>
+															{isTrackUpdating ? t("overview.updating") : t(track.isSubmissionOpen
+																? "overview.trackSubmissions.closeAction" : "overview.trackSubmissions.openAction")}
+														</Button>
+													</div>;
+												})}
+											</div>}
 									</div>}
-							</div>}
-						</CardContent>
-					</Card>;
-				})}
-			</div>}
-		</section>
-		<section className="admin-setting-section" aria-labelledby="upload-limit-settings-title">
-			<div className="admin-setting-section-heading"><h2 id="upload-limit-settings-title">{t("overview.uploadLimits.title")}</h2>
-				<p>{t("overview.uploadLimits.description")}</p></div>
-			{uploadLimits.isPending ? <AdminLoading /> : uploadLimits.isError ?
-				<AdminError title={t("errors.loadTitle")} description={t("overview.uploadLimits.loadError")}
-					retry={() => uploadLimits.refetch()} retryLabel={t("actions.retry")} /> :
-				<div className="admin-upload-limit-settings">
-					{(["participantCv", "roundSubmission"] as const).map((kind) =>
-						<UploadLimitCard key={kind} kind={kind} maxFileSize={uploadLimits.data[kind]}
-							onSaved={() => uploadLimits.refetch()} />)}
-				</div>}
-		</section>
-		<CountdownSettingsSection />
+								</CardContent>
+							</Card>;
+						})}
+					</div>}
+				</section>
+				<section className="admin-setting-section" aria-labelledby="upload-limit-settings-title">
+					<div className="admin-setting-section-heading"><h3 id="upload-limit-settings-title">{t("overview.uploadLimits.title")}</h3>
+						<p>{t("overview.uploadLimits.description")}</p></div>
+					{uploadLimits.isPending ? <AdminLoading /> : uploadLimits.isError ?
+						<AdminError title={t("errors.loadTitle")} description={t("overview.uploadLimits.loadError")}
+							retry={() => uploadLimits.refetch()} retryLabel={t("actions.retry")} /> :
+						<div className="admin-upload-limit-settings">
+							{(["participantCv", "roundSubmission"] as const).map((kind) =>
+								<UploadLimitCard key={kind} kind={kind} maxFileSize={uploadLimits.data[kind]}
+									onSaved={() => uploadLimits.refetch()} />)}
+						</div>}
+				</section>
+			</SettingsGroup>
+			<SettingsGroup value="content" title={t("overview.groups.content.title")}
+				description={t("overview.groups.content.description")}>
+				<PreferenceSettingsSection />
+				<RoundProblemStatementsSection />
+			</SettingsGroup>
+			<SettingsGroup value="display" title={t("overview.groups.display.title")}
+				description={t("overview.groups.display.description")}>
+				<section className="admin-setting-section" aria-labelledby="dashboard-visibility-settings-title">
+					<div className="admin-setting-section-heading"><h3 id="dashboard-visibility-settings-title">{t("overview.visibilitySectionTitle")}</h3>
+						<p>{t("overview.visibilitySectionDescription")}</p></div>
+					{dashboardTabSettings.isPending ? <AdminLoading /> : dashboardTabSettings.isError ?
+						<AdminError title={t("errors.loadTitle")} description={t("overview.visibilityLoadError")} retry={() => dashboardTabSettings.refetch()} retryLabel={t("actions.retry")} /> :
+						<div className="admin-round-settings">{roundIds.map((round) => {
+							const displayRound = roundLabel(round);
+							const isVisible = dashboardTabSettings.data[round];
+							const isUpdating = updateDashboardTab.isPending && updateDashboardTab.variables?.round === round;
+							return <Card className="admin-round-setting" key={round}>
+								<CardHeader><div><CardTitle>{t("overview.roundTitle", { roundLabel: displayRound })}</CardTitle><p>{t("overview.visibilityRoundDescription", { roundLabel: displayRound })}</p></div>
+									<span className={isVisible ? "is-open" : "is-closed"}>{t(isVisible ? "overview.visible" : "overview.hidden")}</span></CardHeader>
+								<CardContent><Button variant={isVisible ? "default" : "outline"} role="switch" aria-checked={isVisible}
+									disabled={updateDashboardTab.isPending} onClick={() => updateDashboardTab.mutate({ round, isVisible: !isVisible })}
+								>{isUpdating ? t("overview.updating") : t(isVisible ? "overview.hideAction" : "overview.showAction")}</Button></CardContent>
+							</Card>;
+						})}</div>}
+				</section>
+				<section className="admin-setting-section" aria-labelledby="round-end-settings-title">
+					<div className="admin-setting-section-heading"><h3 id="round-end-settings-title">{t("overview.roundEndSectionTitle")}</h3>
+						<p>{t("overview.roundEndSectionDescription")}</p></div>
+					{roundEndSettings.isPending ? <AdminLoading /> : roundEndSettings.isError ?
+						<AdminError title={t("errors.loadTitle")} description={t("overview.roundEndLoadError")} retry={() => roundEndSettings.refetch()} retryLabel={t("actions.retry")} /> :
+						<div className="admin-round-settings">{roundIds.map((round) => {
+							const displayRound = roundLabel(round);
+							const isEnded = roundEndSettings.data[round];
+							const isUpdating = updateRoundEnded.isPending && updateRoundEnded.variables?.round === round;
+							return <Card className="admin-round-setting" key={round}>
+								<CardHeader><div><CardTitle>{t("overview.roundTitle", { roundLabel: displayRound })}</CardTitle><p>{t("overview.roundEndRoundDescription", { roundLabel: displayRound })}</p></div>
+									<span className={isEnded ? "is-closed" : "is-open"}>{t(isEnded ? "overview.ended" : "overview.notEnded")}</span></CardHeader>
+								<CardContent><Button variant={isEnded ? "default" : "outline"} role="switch" aria-checked={isEnded}
+									disabled={updateRoundEnded.isPending} onClick={() => updateRoundEnded.mutate({ round, isEnded: !isEnded })}
+								>{isUpdating ? t("overview.updating") : t(isEnded ? "overview.markNotEnded" : "overview.markEnded")}</Button></CardContent>
+							</Card>;
+						})}</div>}
+				</section>
+				<CountdownSettingsSection />
+			</SettingsGroup>
+		</Accordion>
 	</>;
+}
+
+function SettingsGroup({ value, title, description, children }: {
+	value: string;
+	title: string;
+	description: string;
+	children: ReactNode;
+}) {
+	return <AccordionItem className="admin-settings-group" value={value}>
+		<AccordionHeader className="admin-settings-group-heading" render={<h2 />}>
+			<AccordionTrigger className="admin-settings-group-trigger">
+				<span className="admin-settings-group-copy">
+					<span className="admin-settings-group-title">{title}</span>
+					<span className="admin-settings-group-description">{description}</span>
+				</span>
+				<ChevronDownIcon aria-hidden="true" />
+			</AccordionTrigger>
+		</AccordionHeader>
+		<AccordionPanel className="admin-settings-group-panel" keepMounted>
+			<div className="admin-settings-group-content">{children}</div>
+		</AccordionPanel>
+	</AccordionItem>;
 }
 
 function PreferenceSettingsSection() {
@@ -225,7 +259,7 @@ function PreferenceSettingsSection() {
 		if (name) create.mutate({ name });
 	};
 	return <section className="admin-setting-section" aria-labelledby="preference-settings-title">
-		<div className="admin-setting-section-heading"><h2 id="preference-settings-title">{t("overview.preferences.title")}</h2>
+		<div className="admin-setting-section-heading"><h3 id="preference-settings-title">{t("overview.preferences.title")}</h3>
 			<p>{t("overview.preferences.description")}</p></div>
 		{publicationSettings.isPending ? <AdminLoading /> : publicationSettings.isError ?
 			<AdminError title={t("errors.loadTitle")} description={t("overview.preferences.publication.loadError")}

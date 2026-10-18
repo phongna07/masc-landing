@@ -6,14 +6,15 @@ const MAX_KEYS = 50;
 const MAX_STRING_LENGTH = 200;
 const MAX_SERIALIZED_LENGTH = 4096;
 const REDACTED = "[REDACTED]";
-const sensitiveKeyPattern = /(authorization|body|content|cookie|description|feedback|html|objectkey|password|secret|subject|text|token|url)/i;
+const sensitiveKeyPattern = /(authorization|body|content|cookie|description|feedback|html|objectkey|password|secret|subject|text|token|url|code|qr|reason|note|recipient|buyer)/i;
 
 function sanitizeValue(value: unknown, depth: number): AdminActivityLogInput {
   if (value === null || typeof value === "boolean" || typeof value === "number") return value;
   if (typeof value === "string") {
-    return value.length > MAX_STRING_LENGTH
-      ? `${value.slice(0, MAX_STRING_LENGTH)}…[TRUNCATED]`
-      : value;
+    const safeValue = value.replace(/[A-HJ-NP-Z2-9]{20}/gi, REDACTED);
+    return value.length > MAX_STRING_LENGTH || safeValue.length > MAX_STRING_LENGTH
+      ? `${safeValue.slice(0, MAX_STRING_LENGTH)}…[TRUNCATED]`
+      : safeValue;
   }
   if (typeof value === "bigint") return value.toString();
   if (value instanceof Date) return value.toISOString();

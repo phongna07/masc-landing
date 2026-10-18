@@ -9,7 +9,7 @@ import { useLocale, useTranslations } from "next-intl";
 import { useEffect, useRef, useState } from "react";
 
 import { queryClient, trpc } from "@/utils/trpc";
-import { formatDate } from "../../admin-state";
+import { formatDate } from "@/app/admin/admin-state";
 
 export function RoundPdfExport({ round, disabled }: { round: RoundId; disabled: boolean }) {
 	const t = useTranslations("Admin.round.bulkExport");

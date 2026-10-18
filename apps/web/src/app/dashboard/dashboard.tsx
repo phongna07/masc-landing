@@ -38,7 +38,7 @@ import type { inferRouterOutputs } from "@trpc/server";
 import {
   ArrowDownIcon, ArrowRightIcon, CheckCircle2Icon, ChevronDownIcon, CircleXIcon, DownloadIcon, FilePlus2Icon,
   FileTextIcon, ListChecksIcon, MegaphoneIcon, MessageSquareQuoteIcon, RefreshCwIcon, Trash2Icon,
-  TriangleAlertIcon, XIcon
+  TicketIcon, TriangleAlertIcon, XIcon
 } from "lucide-react";
 import type { Route } from "next";
 import dynamic from "next/dynamic";
@@ -142,6 +142,9 @@ export default function Dashboard({ session, activeTab, initialMemberships, init
           </span>
         </Link>
         <div className="dashboard-nav-actions">
+          <Link className="dashboard-ticket-nav" href="/my-tickets">
+            <TicketIcon aria-hidden="true" />{t("actions.myTickets")}
+          </Link>
           <LanguageSwitcher />
           <UserMenu />
         </div>
@@ -161,6 +164,20 @@ export default function Dashboard({ session, activeTab, initialMemberships, init
             <ArrowDownIcon aria-hidden="true" />
           </Button>}
         </div>
+
+        {activeTab === "overview" && <section className="dashboard-ticket-promo" aria-labelledby="dashboard-ticket-promo-title">
+          <div className="dashboard-ticket-promo-copy">
+            <p className="dashboard-eyebrow"><TicketIcon aria-hidden="true" />{t("ticketSale.eyebrow")}</p>
+            <h2 id="dashboard-ticket-promo-title">{t("ticketSale.title")}</h2>
+            <p>{t("ticketSale.description")}</p>
+          </div>
+          <div className="dashboard-ticket-promo-actions">
+            <Button className="dashboard-ticket-buy" size="lg" nativeButton={false} render={<Link href="/tickets" />}>
+              {t("ticketSale.buy")}<ArrowRightIcon aria-hidden="true" />
+            </Button>
+            <Link className="dashboard-ticket-secondary" href="/my-tickets">{t("actions.myTickets")}</Link>
+          </div>
+        </section>}
 
         {activeTab === "overview" && <PromotionAnnouncements initialAnnouncements={initialUserAnnouncements} />}
 

@@ -114,6 +114,37 @@ dialog[open]::backdrop {
   background: rgba(255, 255, 255, 0.04);
 }
 
+.dashboard-ticket-nav {
+  display: inline-flex;
+  min-height: 40px;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 10px;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 500;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: color 180ms ease, background 180ms ease;
+}
+
+.dashboard-ticket-nav svg {
+  width: 16px;
+  height: 16px;
+  color: #d2a66c;
+}
+
+.dashboard-ticket-nav:hover {
+  color: var(--ink);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.dashboard-ticket-nav:focus-visible,
+.dashboard-ticket-secondary:focus-visible {
+  outline: 2px solid #f2d584;
+  outline-offset: 4px;
+}
+
 .user-menu-avatar {
   display: inline-block;
   width: 24px;
@@ -149,6 +180,85 @@ dialog[open]::backdrop {
 
 .dashboard-heading {
   max-width: 760px;
+}
+
+.dashboard-ticket-promo {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 32px;
+  margin: -14px 0 46px;
+  padding: clamp(24px, 3vw, 36px);
+  border: 1px solid rgba(210, 166, 108, 0.4);
+  background: linear-gradient(110deg, rgba(210, 166, 108, 0.14), rgba(123, 102, 255, 0.08));
+}
+
+.dashboard-ticket-promo .dashboard-eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin: 0 0 14px;
+}
+
+.dashboard-ticket-promo .dashboard-eyebrow svg {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
+.dashboard-ticket-promo h2 {
+  max-width: 680px;
+  margin: 0 0 12px;
+  font-family: var(--font-castela), Georgia, serif;
+  font-size: clamp(28px, 3vw, 38px);
+  font-weight: 400;
+  line-height: 1.2;
+}
+
+.dashboard-ticket-promo-copy > p:last-child {
+  max-width: 650px;
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.7;
+}
+
+.dashboard-ticket-promo-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 14px;
+}
+
+.dashboard-ticket-buy {
+  min-height: 48px;
+  gap: 12px;
+  padding-inline: 24px;
+  border-color: #f2d584;
+  color: var(--night);
+  background: #f2d584;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.dashboard-ticket-buy:hover {
+  border-color: #ffe5a0;
+  color: var(--night);
+  background: #ffe5a0;
+}
+
+.dashboard-ticket-secondary {
+  align-self: center;
+  padding: 4px;
+  color: var(--muted);
+  font-size: 13px;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  cursor: pointer;
+}
+
+.dashboard-ticket-secondary:hover {
+  color: var(--ink);
 }
 
 .dashboard-announcement-jump {
@@ -1830,6 +1940,15 @@ dialog[open]::backdrop {
     gap: 22px;
   }
 
+  .dashboard-ticket-nav {
+    padding-inline: 4px;
+  }
+
+  .dashboard-ticket-promo {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 24px;
+  }
+
   .dashboard-fields,
   .awareness-options,
   .overview-grid,
@@ -2380,6 +2499,9 @@ dialog[open]::backdrop {
   position: sticky;
   top: 76px;
   height: calc(100svh - 76px);
+  height: calc(100dvh - 76px);
+  overflow-y: auto;
+  overscroll-behavior-y: contain;
   padding: 34px 22px;
   border-right: 1px solid var(--line);
   background: rgba(10, 9, 13, .82);
@@ -2721,6 +2843,79 @@ dialog[open]::backdrop {
   .admin-upload-limit-card .admin-upload-limit-form [data-slot="button"] {
     width: 100%;
   }
+}
+
+.admin-settings-accordion {
+  display: grid;
+  gap: 18px;
+}
+
+.admin-settings-group {
+  min-width: 0;
+  border: 1px solid rgba(255, 255, 255, .19);
+  background: rgba(17, 16, 20, .88);
+}
+
+.admin-settings-group-heading {
+  margin: 0;
+}
+
+.admin-settings-group-trigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  width: 100%;
+  padding: clamp(18px, 3vw, 28px);
+  color: var(--ink);
+  text-align: left;
+  cursor: pointer;
+}
+
+.admin-settings-group-trigger:hover,
+.admin-settings-group-trigger[data-panel-open] {
+  background: rgba(123, 102, 255, .08);
+}
+
+.admin-settings-group-trigger:focus-visible {
+  outline: 2px solid #f2d584;
+  outline-offset: -3px;
+}
+
+.admin-settings-group-copy {
+  display: grid;
+  min-width: 0;
+  gap: 8px;
+}
+
+.admin-settings-group-title {
+  font-family: var(--font-castela), Georgia, serif;
+  font-size: clamp(24px, 3vw, 30px);
+  font-weight: 400;
+  line-height: 1.2;
+}
+
+.admin-settings-group-description {
+  color: var(--muted);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.65;
+}
+
+.admin-settings-group-trigger>svg {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  color: #f2d584;
+}
+
+.admin-settings-group-trigger[data-panel-open]>svg {
+  transform: rotate(180deg);
+}
+
+.admin-settings-group-content {
+  padding: clamp(18px, 3vw, 28px);
+  border-top: 1px solid var(--line);
 }
 
 .admin-setting-section+.admin-setting-section {
@@ -3527,7 +3722,7 @@ dialog[open]::backdrop {
   margin-bottom: 20px;
 }
 
-.admin-setting-section-heading h2 {
+.admin-setting-section-heading h3 {
   margin: 0 0 8px;
   font-family: var(--font-castela), Georgia, serif;
   font-size: 28px;
@@ -4133,6 +4328,7 @@ dialog[open]::backdrop {
   gap: 8px;
 }
 
+.admin-management-form select,
 .mail-form-field>select,
 .mail-campaign-preview-card select {
   width: 100%;
@@ -4144,6 +4340,7 @@ dialog[open]::backdrop {
   padding: 6px 9px;
 }
 
+.admin-management-form select option,
 .mail-form-field>select option,
 .mail-campaign-preview-card select option {
   background: #17161b;
@@ -4395,6 +4592,21 @@ dialog[open]::backdrop {
   margin-top: 28px;
 }
 
+.mail-queue {
+  margin-top: 48px;
+  padding-top: 32px;
+  border-top: 1px solid var(--line);
+}
+
+.mail-queue-table {
+  min-width: 1080px;
+}
+
+.mail-queue-recipient {
+  max-width: 280px;
+  overflow-wrap: anywhere;
+}
+
 .mail-team-heading {
   align-items: center;
   margin-bottom: 16px;
@@ -4644,6 +4856,10 @@ dialog[open]::backdrop {
 }
 
 @media (max-width: 850px) {
+  .admin-navbar {
+    height: 68px;
+  }
+
   .admin-layout {
     display: block;
   }
@@ -4659,6 +4875,7 @@ dialog[open]::backdrop {
     left: 0;
     width: min(82vw, 300px);
     height: calc(100svh - 68px);
+    height: calc(100dvh - 68px);
     transform: translateX(-101%);
     transition: transform .2s ease;
   }
@@ -5644,6 +5861,61 @@ img {
   gap: 36px;
   margin-top: 42px;
   margin-left: 16%;
+}
+
+.final-ticket-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 14px;
+}
+
+.final-ticket-actions .primary-button.ticket-registration-link {
+  border: 1px solid rgba(255, 255, 255, .4);
+  color: var(--ink);
+  background: transparent;
+}
+
+.header-ticket-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+}
+
+.auth-callback-page {
+  display: grid;
+  place-items: center;
+  padding: 24px;
+}
+
+.auth-callback-card {
+  display: grid;
+  justify-items: center;
+  gap: 20px;
+  width: min(100%, 440px);
+  padding: 48px 28px;
+  border: 1px solid var(--border);
+  background: rgba(17, 16, 20, .88);
+  text-align: center;
+}
+
+.auth-callback-card p {
+  margin: 0;
+}
+
+.auth-callback-status {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.auth-callback-status svg {
+  width: 18px;
+  height: 18px;
+  color: var(--ring);
 }
 
 .hero-bottom p {

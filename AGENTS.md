@@ -118,7 +118,18 @@ Use strict TypeScript and match nearby formatting; tabs are common in TS/TSX. Co
 
 Keep pages and layouts as Server Components unless hooks, browser APIs, or client-side state require "use client". Put reusable primitives in packages/ui and page-specific compositions in apps/web. Business rules and tRPC procedures belong in packages/api, authentication wiring in packages/auth, schema/query primitives in packages/db, and environment declarations in packages/env.
 
-User-facing text must be added to both apps/web/messages/en.json and apps/web/messages/vi.json. No formatter or linter is configured, so avoid unrelated formatting churn and do not invent lint/format commands.
+Before creating or changing UI, inspect existing components and comparable screens. Match the project's established visual style, including typography, spacing, colors, borders, and interaction patterns. Reuse existing components and their variants from packages/ui and apps/web wherever suitable instead of introducing duplicate components or a separate design style.
+
+Use the existing Sonner integration and shared toast components for toast notifications and transient alerts. Display them at the bottom right of the screen (`position="bottom-right"`) and follow existing toast usage patterns.
+
+User-facing text must be added to both apps/web/messages/en.json and apps/web/messages/vi.json. Follow these translation guidelines:
+
+- Write Vietnamese copy for the context, audience, and purpose of each page using natural language appropriate for a Vietnamese website. Do not translate English into Vietnamese word for word.
+- Individual Vietnamese entries may differ in wording and meaning from their English counterparts when that better serves the context; preserve essential facts, required actions, and interpolation placeholders.
+- Keep English terms when a Vietnamese translation would feel unnatural or less appropriate. For example, retain "Dashboard", "Email" (do not translate it as "Thư"), and "Check-in" where suitable; "Timeline cuộc thi" may be more appropriate than "Lịch cuộc thi".
+- Preserve brand names exactly, including "Marketing All-Star Challenge", "Hypernova", and "VinUni House of Marketers".
+
+No formatter or linter is configured, so avoid unrelated formatting churn and do not invent lint/format commands.
 
 ## Validation and testing
 

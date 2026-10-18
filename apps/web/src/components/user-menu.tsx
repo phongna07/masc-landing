@@ -1,3 +1,5 @@
+"use client";
+
 import { Button } from "@masc-landing/ui/components/button";
 import {
   DropdownMenu,
