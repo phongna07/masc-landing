@@ -1,6 +1,7 @@
 "use client";
 
 import type { AppRouter } from "@masc-landing/api/routers/index";
+import { env } from "@masc-landing/env/web";
 import { roundIds, type RoundId } from "@masc-landing/api/rounds";
 import { shouldShowProblemStatementReminder } from "@masc-landing/api/round-problem-statements";
 import {
@@ -142,9 +143,9 @@ export default function Dashboard({ session, activeTab, initialMemberships, init
           </span>
         </Link>
         <div className="dashboard-nav-actions">
-          <Link className="dashboard-ticket-nav" href="/my-tickets">
+          {env.NEXT_PUBLIC_IS_SELLING_TICKETS_OPENED && <Link className="dashboard-ticket-nav" href="/my-tickets">
             <TicketIcon aria-hidden="true" />{t("actions.myTickets")}
-          </Link>
+          </Link>}
           <LanguageSwitcher />
           <UserMenu />
         </div>
@@ -165,7 +166,7 @@ export default function Dashboard({ session, activeTab, initialMemberships, init
           </Button>}
         </div>
 
-        {activeTab === "overview" && <section className="dashboard-ticket-promo" aria-labelledby="dashboard-ticket-promo-title">
+        {env.NEXT_PUBLIC_IS_SELLING_TICKETS_OPENED && activeTab === "overview" && <section className="dashboard-ticket-promo" aria-labelledby="dashboard-ticket-promo-title">
           <div className="dashboard-ticket-promo-copy">
             <p className="dashboard-eyebrow"><TicketIcon aria-hidden="true" />{t("ticketSale.eyebrow")}</p>
             <h2 id="dashboard-ticket-promo-title">{t("ticketSale.title")}</h2>

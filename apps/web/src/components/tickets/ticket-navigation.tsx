@@ -1,5 +1,6 @@
 "use client";
 
+import { env } from "@masc-landing/env/web";
 import type { Route } from "next";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -13,6 +14,7 @@ export default function TicketNavigation({ admin = false }: { admin?: boolean })
 	const pathname = usePathname();
 	return <nav className="ticket-tabs" aria-label={t("navigation")}>
 		{(admin ? adminLinks : buyerLinks).map(({ href, key }) => {
+			if (!admin && key !== "dashboard" && !env.NEXT_PUBLIC_IS_SELLING_TICKETS_OPENED) return null;
 			const active = pathname === href || (href !== "/admin/tickets" && pathname.startsWith(`${href}/`));
 			return <Link key={href} href={href as Route} aria-current={active ? "page" : undefined}>{t(key)}</Link>;
 		})}

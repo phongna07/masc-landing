@@ -1,5 +1,6 @@
 "use client";
 
+import { env } from "@masc-landing/env/web";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 
@@ -35,7 +36,9 @@ export default function SiteHeader({ landingPage = false }: SiteHeaderProps) {
         <a href="https://www.facebook.com/MarketingAllStarChallenge" target="_blank">{t("news")}</a>
       </nav>
       <div className="header-actions">
-        <SessionAwareLink className="header-cta header-ticket-link" destination="/tickets" signedInLabel={t("tickets")} signedOutLabel={t("tickets")} />
+        {env.NEXT_PUBLIC_IS_SELLING_TICKETS_OPENED && (
+          <SessionAwareLink className="header-cta header-ticket-link" destination="/tickets" signedInLabel={t("tickets")} signedOutLabel={t("tickets")} />
+        )}
         {!isPending && (
           session?.user ? (
             <UserMenu />
