@@ -204,6 +204,13 @@
       "when": 1792760375860,
       "tag": "0028_loud_johnny_storm",
       "breakpoints": true
+    },
+    {
+      "idx": 29,
+      "version": "7",
+      "when": 1792763764060,
+      "tag": "0029_amazing_blacklash",
+      "breakpoints": true
     }
   ]
 }

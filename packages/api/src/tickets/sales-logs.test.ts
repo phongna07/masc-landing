@@ -128,6 +128,41 @@ test("creation issues all credentials while online sales are closed, emails imme
 	assert.equal("emailAttemptId" in sale, false);
 });
 
+for (const category of ["normal", "vip"] as const) {
+	test(`zero-VND ${category} sales issue free tickets, email immediately, and preserve inventory and retry rules`, async () => {
+		const request = input({ category, amountReceived: 0 });
+		const sale = await caller().create(request);
+		assert.equal(sale.amountReceived, 0);
+		assert.equal(sale.emailStatus, "sent");
+		const detail = await caller().detail({ id: sale.id });
+		assert.equal(detail.tickets.length, request.quantity);
+		assert.ok(detail.tickets.every(ticket => ticket.source === "sales-log" && ticket.category === category && ticket.validity === "valid"));
+		assert.equal((await getTicketConfig()).vipUsed, category === "vip" ? request.quantity : 0);
+		if (category === "vip") {
+			await db.update(ticketSettings).set({ vipCapacity: request.quantity });
+			await assert.rejects(caller().create(input({ category, quantity: 1, amountReceived: 0 })), { message: "vipSoldOut" });
+		}
+		const mail = sendMail.mock.calls[0]!.arguments[0]!;
+		assert.match(mail.subject, /vé miễn phí/);
+		for (const body of [mail.text, mail.html]) {
+			assert.match(body, /vé miễn phí/);
+			assert.doesNotMatch(body, /xác nhận thanh toán/);
+			assert.match(body, /Tổng tiền đơn hàng: 0/);
+		}
+		assert.equal(mail.attachments?.length, request.quantity);
+		assert.equal((await db.select().from(ticketOrders)).length, 0);
+		assert.equal((await db.select().from(ticketEmailJobs)).length, 0);
+		assert.equal((await caller().create(request)).id, sale.id);
+		assert.equal(sendMail.mock.callCount(), 1);
+		await assert.rejects(caller().create({ ...request, amountReceived: 1 }), { message: "requestChanged" });
+		await createSalesLog(input({ amountReceived: 1 }), actor);
+		assert.deepEqual((await caller().list({ minAmount: 0, maxAmount: 0 })).items.map(log => log.id), [sale.id]);
+		const ticket = detail.tickets[0]!;
+		assert.equal((await lookupTicket("staff", ticket.code, randomUUID())).outcome, "ready");
+		assert.equal((await confirmCheckIn({ ticketId: ticket.id, credentialVersion: ticket.credentialVersion, requestKey: randomUUID() }, "staff", false)).outcome, "accepted");
+	});
+}
+
 test("concurrent identical requests issue one sale and email; changed payloads conflict", async () => {
 	const request = input();
 	const results = await Promise.all([caller().create(request), caller().create(request), caller().create(request)]);
@@ -299,11 +334,12 @@ test("sales tickets use standard admission, replay protection, replacement and r
 });
 
 test("input and database constraints reject invalid amounts, quantities and mixed ticket ownership", async () => {
-	for (const changes of [{ quantity: 0 }, { quantity: 101 }, { amountReceived: 0 }, { amountReceived: 2_000_000_001 }, { amountReceived: 1.5 }, { buyerName: "  " }, { buyerPhone: " " }, { buyerEmail: "invalid" }]) assert.equal(createSalesLogInput.safeParse({ ...input(), ...changes }).success, false);
+	for (const changes of [{ quantity: 0 }, { quantity: 101 }, { amountReceived: -1 }, { amountReceived: "0" }, { amountReceived: null }, { amountReceived: undefined }, { amountReceived: 2_000_000_001 }, { amountReceived: 1.5 }, { buyerName: "  " }, { buyerPhone: " " }, { buyerEmail: "invalid" }]) assert.equal(createSalesLogInput.safeParse({ ...input(), ...changes }).success, false);
 	for (const filters of [{ from: "2026-02-30" }, { minAmount: 10, maxAmount: 1 }, { from: "2026-10-02", to: "2026-10-01" }, { pageSize: 500 }, { sort: "proofObjectKey" }]) assert.equal(salesLogPageInput.safeParse(filters).success, false);
 	const log = await createSalesLog(input({ quantity: 1 }), actor);
 	const [ticket] = await db.select().from(admissionTickets);
 	await assert.rejects(db.update(admissionTickets).set({ ownerId: "buyer" }).where(eq(admissionTickets.id, ticket!.id)));
 	await assert.rejects(db.insert(admissionTickets).values({ id: randomUUID(), source: "sales-log", salesLogId: log.id, category: "normal", ordinal: 1, code: "A".repeat(20) }));
 	await assert.rejects(db.update(salesLogs).set({ quantity: 101 }));
+	await assert.rejects(db.update(salesLogs).set({ amountReceived: -1 }));
 });
