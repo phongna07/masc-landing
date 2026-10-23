@@ -1,62 +1,120 @@
-# masc-landing
+![Marketing All-Star Challenge 2026 — Hypernova landing page preview](apps/web/public/preview.png)
 
-This project was created with [Better-T-Stack](https://github.com/AmanVarshney01/create-better-t-stack), a modern TypeScript stack that combines Next.js, Self, TRPC, and more.
+# Marketing All-Star Challenge — Hypernova
+
+A competition and event platform for **Marketing All-Star Challenge 2026**, bringing together the public website, participant dashboard, and organizer tools in one application. Built for the competition by Kotler Klub and VinUni House of Marketers.
+
+Participants can explore the competition, register their teams, submit work across rounds, and purchase event tickets. Organizers can manage admissions, review submissions, communicate with teams, and handle event check-in.
 
 ## Features
 
-- **TypeScript** - For type safety and improved developer experience
-- **Next.js** - Full-stack React framework
-- **TailwindCSS** - Utility-first CSS for rapid UI development
-- **Shared UI package** - shadcn/ui primitives live in `packages/ui`
-- **tRPC** - End-to-end type-safe APIs
-- **Drizzle** - TypeScript-first ORM
-- **PostgreSQL** - Database engine
-- **Authentication** - Better-Auth
+### Competition website
 
-## Getting Started
+- **Animated landing page** with a space-inspired visual identity, GSAP animations, and a configurable registration countdown.
+- **Competition information** covering the timeline, mentors, and rulebook.
+- **English and Vietnamese** interfaces with a language switcher.
+- **Google sign-in** with persistent sessions and access to participant tools.
 
-First, install the dependencies:
+### Participant dashboard
+
+- **Team registration** with member details and round-specific admission workflows.
+- **CV screening and track preferences** with CV and supporting-document uploads.
+- **Round submissions** with problem statement previews, file uploads, submission status, and attempt limits.
+- **Results and updates** through published scores, feedback, promotion notices, and announcements.
+- **Private file access** through authorized, short-lived upload and download URLs.
+
+### Organizer workspace
+
+- **Team and user management** across competition rounds, including admissions, CV screening, track assignments, and team progression.
+- **Submission review** with scoring, feedback publication, and controls for submission availability.
+- **Competition settings** for countdowns, round problem statements, and announcements.
+- **Email campaigns** with audience filters, a rich text editor, personalized templates, and previews.
+- **Data exports** for team and submission spreadsheets, plus bulk PDF downloads as ZIP archives.
+- **Role-based administration** with separate access for competition organizers and entrance staff, plus activity logs.
+
+### Ticketing and event check-in
+
+- **Ticket checkout** with PayOS payments, promo codes, order status, and purchase history.
+- **Digital tickets** with QR codes, downloadable ticket images, and email delivery.
+- **Ticket operations** for purchased orders, gifted ticket batches, refunds, payment reconciliation, and customizable ticket templates.
+- **QR check-in** with camera scanning, ticket lookup, and check-in logs.
+
+## Technology stack
+
+| Area | Technologies | Purpose |
+| --- | --- | --- |
+| Application | Next.js 16, React 19, TypeScript | App Router pages, server rendering, and typed application code |
+| UI and styling | Tailwind CSS 4, shadcn/ui, Base UI, Lucide, Sonner | Shared components, styling, icons, and notifications |
+| Animation | GSAP | Landing page motion and scroll animations |
+| Localization | next-intl | English and Vietnamese messages and locale handling |
+| API and data fetching | tRPC 11, TanStack Query, Zod | Typed client/server calls, query caching, and input validation |
+| Authentication | Better Auth, Google OAuth | Sign-in and session management |
+| Database | PostgreSQL, Neon, Drizzle ORM | Persistent data, typed queries, and SQL migrations |
+| File storage | Cloudflare R2, AWS S3 SDK | Private uploads and signed file access |
+| Payments | PayOS | Ticket checkout and payment webhooks |
+| Email | ZeptoMail | Participant communications and ticket delivery |
+| Tickets and exports | ZXing, qrcode, Sharp, write-excel-file | QR scanning, ticket image generation, and spreadsheet exports |
+| Background exports | Node.js, Archiver, esbuild, Render | PostgreSQL-backed jobs that stream PDF ZIP archives to R2 |
+| Workspace | pnpm | Shared packages and workspace dependency management |
+
+## Project structure
+
+```text
+masc-landing/
+├── apps/
+│   ├── web/           # Next.js website, participant dashboard, and admin tools
+│   └── pdf-exporter/  # Background service for bulk PDF ZIP exports
+├── packages/
+│   ├── api/           # tRPC routers, business rules, email, tickets, and storage
+│   ├── auth/          # Better Auth configuration and session helpers
+│   ├── db/            # Drizzle schemas, queries, and generated migrations
+│   ├── env/           # Validated server and browser environment variables
+│   ├── ui/            # Shared UI components, hooks, and global styles
+│   └── config/        # Shared TypeScript configuration
+└── render.yaml        # PDF exporter deployment configuration
+```
+
+## Local development
+
+Use Node.js and pnpm installed in your development environment. Run commands from the repository root.
 
 ```bash
 pnpm install
+cp apps/web/.env.example apps/web/.env
 ```
 
-This repository is a pnpm workspace: install dependencies from the repository
-root so that `apps/*` and `packages/*` are linked correctly.
+Fill in `apps/web/.env` with your PostgreSQL connection, Better Auth settings, Google OAuth credentials, private R2 bucket credentials, and ZeptoMail configuration. The [environment template](apps/web/.env.example) documents each variable; ticketing and the PDF exporter have additional settings.
 
-## Database Setup
-
-This project uses PostgreSQL with Drizzle ORM.
-
-1. Make sure you have a PostgreSQL database set up.
-2. Update your `apps/web/.env` file with your PostgreSQL connection details.
-
-3. Apply the schema to your database:
+For a new database, confirm that `DATABASE_URL` points to the intended target, then apply the committed migrations with `pnpm db:migrate`. This command changes the configured database.
 
 ```bash
-pnpm db:push
+pnpm dev:web
 ```
 
-### Administrator access
+Open [localhost:3000](http://localhost:3000). Registration and ticket sales visibility are controlled by `NEXT_PUBLIC_IS_REGISTRATION_OPENED` and `NEXT_PUBLIC_IS_SELLING_TICKETS_OPENED`; rebuild after changing browser-visible flags in a deployed environment.
 
-Administrator access is controlled by the `admin_emails` database table. There
-is intentionally no API for changing this allowlist. Add and remove normalized
-(lowercase, trimmed) email addresses manually as a developer:
+### Validation
 
-```sql
-INSERT INTO admin_emails (email) VALUES ('admin@example.com');
-DELETE FROM admin_emails WHERE email = 'admin@example.com';
+Check the web application's TypeScript types:
+
+```bash
+pnpm --filter web exec tsc --noEmit
 ```
 
-The table starts empty, so add the first administrator after applying the
-database migration.
+Run the production build with the required environment configured:
 
-## Cloudflare R2 Setup
+```bash
+CI=1 NEXT_TELEMETRY_DISABLED=1 pnpm --filter web exec next build --webpack
+```
 
-Round 1 files are stored in a private R2 bucket. Configure `R2_ACCOUNT_ID`,
-`R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`, and `R2_BUCKET` in
-`apps/web/.env`. Keep the bucket private and add a CORS policy for each web
-application origin that uploads files:
+The root `pnpm check-types` runs only packages that define a `check-types` script; it does not check the web application. See [AGENTS.md](AGENTS.md) for package-specific checks and database workflows.
+
+<details>
+<summary>Storage and background export setup</summary>
+
+### Private file storage
+
+Keep the R2 bucket private. Configure `R2_ACCOUNT_ID`, `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`, and `R2_BUCKET`, and allow uploads from each web application origin with a bucket CORS policy:
 
 ```json
 [
@@ -69,109 +127,23 @@ application origin that uploads files:
 ]
 ```
 
-Replace the example production origin with the deployed application origin.
-Downloads use short-lived server-authorized URLs and do not require a public
-bucket domain.
+Replace the example production origin with your deployed origin. Downloads use short-lived authorized URLs and do not require a public bucket domain.
 
-## Bulk PDF exports on Render
+### Bulk PDF exports
 
-The admin page for each competition round can create a ZIP containing the
-latest PDF submission from every team. Export requests are stored in the
-existing PostgreSQL database. The `pdf-exporter` service claims those requests,
-streams the PDFs from R2 into a ZIP, and streams the ZIP back to R2 without
-holding the whole archive in memory. Completed archives expire after 24 hours
-by default.
+The exporter claims jobs from the same PostgreSQL database as the web app, streams the latest PDF from each team into a ZIP, and uploads the archive to R2. Archives expire after 24 hours by default.
 
-Before deploying the exporter, apply the generated database migration to the
-same database used by the web app:
+Deploy the service using the [Render Blueprint](render.yaml). Configure `DATABASE_URL` and the same R2 credentials as the web app, with read, write, and delete access to the bucket. Set `PDF_EXPORTER_URL` in the web app to the deployed service origin. The admin interface calls its `/health` endpoint to wake an idle Render Free instance, which can take about a minute.
 
-```bash
-pnpm db:migrate
-```
+Optional worker settings are `EXPORT_TTL_HOURS`, `POLL_INTERVAL_MS`, `JOB_STALE_AFTER_MINUTES`, and `JOB_MAX_ATTEMPTS`. No Redis instance or persistent disk is required.
 
-The root `render.yaml` defines a Free web service with a `/health` endpoint.
-Create a Render Blueprint from the repository, then provide these secret values
-when prompted:
-
-- `DATABASE_URL`: the web app's existing PostgreSQL connection URL
-- `R2_ACCOUNT_ID`
-- `R2_ACCESS_KEY_ID`
-- `R2_SECRET_ACCESS_KEY`
-- `R2_BUCKET`
-
-The R2 credentials need read, write, and delete access to the same private
-bucket used for submissions. No Redis instance, persistent disk, or public R2
-bucket is required. Optional worker settings include `EXPORT_TTL_HOURS`,
-`POLL_INTERVAL_MS`, `JOB_STALE_AFTER_MINUTES`, and `JOB_MAX_ATTEMPTS`.
-
-Set `PDF_EXPORTER_URL` in the deployed web application's server environment to
-the Render service origin, for example
-`https://masc-pdf-exporter.onrender.com`. After an administrator queues a job,
-the browser requests this service's `/health` endpoint to wake a sleeping Free
-instance. The request can take about one minute after an idle spin-down.
-
-For a local worker run, load the same variables into the shell and run:
+To run the exporter locally, load its database and R2 variables into your shell, then run:
 
 ```bash
 pnpm --filter pdf-exporter build
 pnpm --filter pdf-exporter start
 ```
 
-Then, run the development server:
+</details>
 
-```bash
-pnpm dev
-```
-
-Open [http://localhost:3000](http://localhost:3000) in your browser to see the fullstack application.
-
-## UI Customization
-
-React web apps in this stack share shadcn/ui primitives through `packages/ui`.
-
-- Change design tokens and global styles in `packages/ui/src/styles/globals.css`
-- Update shared primitives in `packages/ui/src/components/*`
-- Adjust shadcn aliases or style config in `packages/ui/components.json` and `apps/web/components.json`
-
-### Add more shared components
-
-Run this from the project root to add more primitives to the shared UI package:
-
-```bash
-npx shadcn@latest add accordion dialog popover sheet table -c packages/ui
-```
-
-Import shared components like this:
-
-```tsx
-import { Button } from "@masc-landing/ui/components/button";
-```
-
-### Add app-specific blocks
-
-If you want to add app-specific blocks instead of shared primitives, run the shadcn CLI from `apps/web`.
-
-## Project Structure
-
-```
-masc-landing/
-├── apps/
-│   ├── pdf-exporter/ # PostgreSQL-backed bulk PDF export service
-│   └── web/          # Fullstack application (Next.js)
-├── packages/
-│   ├── ui/          # Shared shadcn/ui components and styles
-│   ├── api/         # API layer / business logic
-│   ├── auth/        # Authentication configuration & logic
-│   └── db/          # Database schema & queries
-```
-
-## Available Scripts
-
-- `pnpm dev`: Start all applications in development mode
-- `pnpm build`: Build all applications
-- `pnpm dev:web`: Start only the web application
-- `pnpm check-types`: Check TypeScript types across all apps
-- `pnpm db:push`: Push schema changes to database
-- `pnpm db:generate`: Generate database client/types
-- `pnpm db:migrate`: Run database migrations
-- `pnpm db:studio`: Open database studio UI
+Originally scaffolded with [Better-T-Stack](https://github.com/AmanVarshney01/create-better-t-stack).
