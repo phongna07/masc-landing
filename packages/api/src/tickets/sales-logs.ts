@@ -13,7 +13,7 @@ export const createSalesLogInput = z.object({
 	requestKey: z.uuid(), buyerName: z.string().trim().min(1).max(120),
 	buyerEmail: z.string().trim().toLowerCase().pipe(z.email().max(254)),
 	buyerPhone: z.string().trim().min(1).max(40), category: z.enum(["normal", "vip"]),
-	quantity: z.number().int().min(1).max(100), amountReceived: z.number().int().min(1).max(2_000_000_000),
+	quantity: z.number().int().min(1).max(100), amountReceived: z.number().int().min(0).max(2_000_000_000),
 	proof: uploadedProofInput.optional(),
 });
 export const salesLogPageInput = z.object({

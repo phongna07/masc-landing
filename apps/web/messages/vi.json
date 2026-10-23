@@ -2060,7 +2060,9 @@
         "proof": "Chụp lại màn hình chuyển khoản của người mua.",
         "submit": "Điền thông tin vào form bên dưới và đính kèm ảnh chuyển khoản.",
         "result": "Sau khi gửi form, hệ thống sẽ tự động tạo mã QR check-in và gửi về Email của người mua."
-      }
+      },
+      "freeAmount": "Miễn phí ({amount})",
+      "freeAmountHelp": "Nhập 0 VND để cấp vé miễn phí."
     },
     "salesLog": "Bán vé trực tiếp"
   }

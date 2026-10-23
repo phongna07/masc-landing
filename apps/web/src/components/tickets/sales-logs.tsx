@@ -26,6 +26,10 @@ function SaleDetail({ id, isRoot, refresh }: { id: string; isRoot: boolean; refr
 	const t = useTranslations("Tickets.sales");
 	const ticketT = useTranslations("Tickets");
 	const locale = useLocale();
+	const formatAmount = (amount: number) => {
+		const formatted = new Intl.NumberFormat(locale, { style: "currency", currency: "VND", maximumFractionDigits: 0 }).format(amount);
+		return amount === 0 ? t("freeAmount", { amount: formatted }) : formatted;
+	};
 	const notify = useTicketNotifications();
 	const detail = useQuery(trpc.salesLogs.detail.queryOptions({ id }));
 	const proof = useMutation(trpc.salesLogs.proof.mutationOptions({ onError: notify.error }));
@@ -49,7 +53,7 @@ function SaleDetail({ id, isRoot, refresh }: { id: string; isRoot: boolean; refr
 					<h3>{t("columns.category")}</h3>
 					<strong className="sales-log-primary">{ticketT(`categories.${data.log.category}`)}</strong>
 					<p>{t("quantity")}: {data.log.quantity}</p>
-					<dl className="sales-log-amount"><dt>{t("amount")}</dt><dd>{new Intl.NumberFormat(locale, { style: "currency", currency: "VND", maximumFractionDigits: 0 }).format(data.log.amountReceived)}</dd></dl>
+					<dl className="sales-log-amount"><dt>{t("amount")}</dt><dd>{formatAmount(data.log.amountReceived)}</dd></dl>
 				</div>
 				<div>
 					<h3>{t("creator")}</h3>
@@ -107,6 +111,10 @@ export default function SalesLogs({ manage = false, isRoot = false, initialId }:
 	const t = useTranslations("Tickets.sales");
 	const ticketT = useTranslations("Tickets");
 	const locale = useLocale();
+	const formatAmount = (amount: number) => {
+		const formatted = new Intl.NumberFormat(locale, { style: "currency", currency: "VND", maximumFractionDigits: 0 }).format(amount);
+		return amount === 0 ? t("freeAmount", { amount: formatted }) : formatted;
+	};
 	const [page, setPage] = useState(0);
 	const [filters, setFilters] = useState(defaults);
 	const [selected, setSelected] = useState<string | null>(z.uuid().safeParse(initialId).success ? initialId! : null);
@@ -149,7 +157,7 @@ export default function SalesLogs({ manage = false, isRoot = false, initialId }:
 		<div className="ticket-toolbar"><Button type="button" variant="outline" onClick={() => { setFilters(defaults); setPage(0); }}>{ticketT("logs.reset")}</Button><Button type="button" variant="outline" disabled={logs.isFetching || invalidDate || invalidAmount} onClick={() => void logs.refetch()}>{ticketT("logs.refresh")}</Button><p>{ticketT("logs.timezone")}</p></div>
 		<TicketError error={invalidDate ? { message: "invalidDateRange" } : invalidAmount ? { message: "invalidAmountRange" } : logs.error} />
 		{!invalidDate && !invalidAmount && <>{logs.isPending && <TicketLoading />}{logs.data && <>{logs.data.total === 0 ? <TicketEmpty message={t("empty")} /> : <div className="ticket-scroll"><table className="admin-table ticket-table"><caption className="sr-only">{t("manageTitle")}</caption><thead><tr>{sortKeys.map(key => <th key={key} scope="col" aria-sort={filters.sort === key ? filters.direction === "asc" ? "ascending" : "descending" : "none"}><button type="button" className="sales-log-sort" onClick={() => { setFilters(current => ({ ...current, sort: key, direction: current.sort === key && current.direction === "asc" ? "desc" : "asc" })); setPage(0); }}>{t(`columns.${key}`)}{filters.sort === key ? filters.direction === "asc" ? " ↑" : " ↓" : " ↕"}</button></th>)}<th scope="col">{t("proof")}</th><th scope="col">{t("details")}</th></tr></thead><tbody>{logs.data.items.map(log => <tr key={log.id}>
-			<td><TicketTime value={log.createdAt} /></td><td><strong>{log.buyerName}</strong><span>{log.buyerEmail}</span><span>{log.buyerPhone}</span></td><td><strong>{log.creatorName}</strong><span>{log.creatorEmail}</span></td><td>{ticketT(`categories.${log.category}`)}</td><td>{log.quantity}</td><td>{new Intl.NumberFormat(locale, { style: "currency", currency: "VND", maximumFractionDigits: 0 }).format(log.amountReceived)}</td><td>{ticketT(`emailStatus.${log.emailStatus}`)}</td><td>{t(log.hasProof ? "hasProof" : "noProof")}</td><td><Button type="button" variant="outline" size="sm" aria-label={t("detailsFor", { name: log.buyerName })} onClick={() => setSelected(log.id)}>{t("details")}</Button></td>
+			<td><TicketTime value={log.createdAt} /></td><td><strong>{log.buyerName}</strong><span>{log.buyerEmail}</span><span>{log.buyerPhone}</span></td><td><strong>{log.creatorName}</strong><span>{log.creatorEmail}</span></td><td>{ticketT(`categories.${log.category}`)}</td><td>{log.quantity}</td><td>{formatAmount(log.amountReceived)}</td><td>{ticketT(`emailStatus.${log.emailStatus}`)}</td><td>{t(log.hasProof ? "hasProof" : "noProof")}</td><td><Button type="button" variant="outline" size="sm" aria-label={t("detailsFor", { name: log.buyerName })} onClick={() => setSelected(log.id)}>{t("details")}</Button></td>
 		</tr>)}</tbody></table></div>}<Pagination page={page} total={logs.data.total} pageSize={logs.data.pageSize} setPage={setPage} /></>}</>}
 		<Dialog open={selected !== null} onOpenChange={open => { if (!open) setSelected(null); }}>
 			<DialogContent className="ticket-admin sales-log-dialog">

@@ -2060,7 +2060,9 @@
         "proof": "Take a screenshot of the buyer’s bank transfer confirmation.",
         "submit": "Complete the form below and attach the transfer screenshot.",
         "result": "After you submit the form, the system automatically generates the check-in QR code and emails it to the buyer."
-      }
+      },
+      "freeAmount": "Free ({amount})",
+      "freeAmountHelp": "Enter 0 VND to issue free tickets."
     },
     "salesLog": "Sales logs"
   }

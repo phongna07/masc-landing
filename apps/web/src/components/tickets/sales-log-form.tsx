@@ -69,7 +69,7 @@ export default function SalesLogForm({ onCreated }: { onCreated: (id: string) =>
 			<label>{t("buyerPhone")}<Input type="tel" required maxLength={40} autoComplete="off" value={form.buyerPhone} onChange={e => setForm({ ...form, buyerPhone: e.target.value })} /></label>
 			<label>{ticketT("category")}<select value={form.category} onChange={e => setForm({ ...form, category: e.target.value as typeof form.category })}>{["normal", "vip"].map(category => <option key={category} value={category}>{ticketT(`categories.${category}`)}</option>)}</select></label>
 			<label>{t("quantity")}<Input type="number" required min={1} max={100} step={1} value={form.quantity} onChange={e => setForm({ ...form, quantity: Number(e.target.value) })} /></label>
-			<label>{t("amount")}<Input type="number" required min={1} max={2000000000} step={1} value={form.amountReceived} onChange={e => setForm({ ...form, amountReceived: e.target.value })} /></label>
+			<label>{t("amount")}<Input aria-describedby="sales-log-amount-help" type="number" required min={0} max={2000000000} step={1} value={form.amountReceived} onChange={e => setForm({ ...form, amountReceived: e.target.value })} /><span id="sales-log-amount-help">{t("freeAmountHelp")}</span></label>
 			<label className="ticket-field-full">{t("proofOptional")}<Input ref={fileInput} type="file" accept="image/jpeg,image/png,image/webp" onChange={e => setFile(e.target.files?.[0] ?? null)} /><span>{t("proofHelp")}</span></label>
 		</fieldset>
 		{config.data && <p>{t("vipAvailable", { count: config.data.vipAvailable })}</p>}
