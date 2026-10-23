@@ -62,7 +62,7 @@ export const ticketsRouter = router({
 	emailJobs: root.input(emailJobsInput).query(({ input }) => safeErrors(() => listTicketEmailJobs(input))),
 	checkInLogs: root.input(checkInLogsInput).query(({ input }) => safeErrors(() => listCheckInLogs(input))),
 	stats: root.query(() => safeErrors(async () => {
-		const [tickets] = await db.select({ purchased: sql<number>`count(*) filter (where ${admissionTickets.source} = 'purchased')::int`, gifted: sql<number>`count(*) filter (where ${admissionTickets.source} = 'gifted')::int`, revoked: sql<number>`count(*) filter (where ${admissionTickets.validity} = 'revoked')::int` }).from(admissionTickets);
+		const [tickets] = await db.select({ purchased: sql<number>`count(*) filter (where ${admissionTickets.source} = 'purchased')::int`, salesLog: sql<number>`count(*) filter (where ${admissionTickets.source} = 'sales-log')::int`, gifted: sql<number>`count(*) filter (where ${admissionTickets.source} = 'gifted')::int`, revoked: sql<number>`count(*) filter (where ${admissionTickets.validity} = 'revoked')::int` }).from(admissionTickets);
 		const [admissions] = await db.select({ accepted: sql<number>`count(*) filter (where ${ticketCheckIns.outcome} = 'accepted')::int` }).from(ticketCheckIns);
 		return { ...tickets!, ...admissions! };
 	})),

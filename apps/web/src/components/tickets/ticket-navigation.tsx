@@ -7,7 +7,7 @@ import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
 
 const buyerLinks = [{ href: "/tickets", key: "buy" }, { href: "/my-tickets", key: "myTickets" }, { href: "/dashboard", key: "dashboard" }] as const;
-const adminLinks = [{ href: "/admin/tickets", key: "overview" }, { href: "/admin/tickets/purchased", key: "purchased" }, { href: "/admin/tickets/gifted", key: "gifted" }, { href: "/admin/check-in", key: "checkIn" }, { href: "/admin/tickets/check-in-logs", key: "checkInLogs" }, { href: "/admin/tickets/templates", key: "templates" }] as const;
+const adminLinks = [{ href: "/admin/tickets", key: "overview" }, { href: "/admin/tickets/purchased", key: "purchased" }, { href: "/admin/tickets/gifted", key: "gifted" }, { href: "/admin/tickets/manage-sales-log", key: "salesLog" }, { href: "/admin/check-in", key: "checkIn" }, { href: "/admin/tickets/check-in-logs", key: "checkInLogs" }, { href: "/admin/tickets/templates", key: "templates" }] as const;
 
 export default function TicketNavigation({ admin = false }: { admin?: boolean }) {
 	const t = useTranslations("Tickets");

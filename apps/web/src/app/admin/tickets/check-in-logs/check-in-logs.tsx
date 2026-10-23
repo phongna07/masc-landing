@@ -36,7 +36,7 @@ export default function CheckInLogs() {
 		<div className="ticket-grid ticket-filters">
 			<label>{t("search")}<Input maxLength={100} value={filters.search} onChange={e => update("search", e.target.value)} placeholder={t("logs.searchPlaceholder")} /></label>
 			<label>{t("logs.staff")}<Input maxLength={100} value={filters.staff} onChange={e => update("staff", e.target.value)} placeholder={t("logs.staffPlaceholder")} /></label>
-			<label>{t("logs.columns.source")}<select value={filters.source} onChange={e => update("source", e.target.value as Filters["source"])}><option value="">{t("all")}</option>{["purchased", "gifted", "unknown"].map(key => <option key={key} value={key}>{t(`logs.sources.${key}`)}</option>)}</select></label>
+			<label>{t("logs.columns.source")}<select value={filters.source} onChange={e => update("source", e.target.value as Filters["source"])}><option value="">{t("all")}</option>{["purchased", "gifted", "sales-log", "unknown"].map(key => <option key={key} value={key}>{t(`logs.sources.${key}`)}</option>)}</select></label>
 			<label>{t("category")}<select value={filters.category} onChange={e => update("category", e.target.value as Filters["category"])}><option value="">{t("all")}</option>{["normal", "vip"].map(key => <option key={key} value={key}>{t(`categories.${key}`)}</option>)}</select></label>
 			<label>{t("logs.columns.outcome")}<select value={filters.outcome} onChange={e => update("outcome", e.target.value as Filters["outcome"])}><option value="">{t("all")}</option>{["accepted", "rejected"].map(key => <option key={key} value={key}>{t(`outcomes.${key}`)}</option>)}</select></label>
 			<label>{t("logs.admissionType")}<select value={filters.admissionType} onChange={e => update("admissionType", e.target.value as Filters["admissionType"])}><option value="">{t("all")}</option>{["standard", "override"].map(key => <option key={key} value={key}>{t(`logs.types.${key}`)}</option>)}</select></label>
@@ -69,6 +69,7 @@ export default function CheckInLogs() {
 						<td><TicketTime value={event.createdAt} /></td>
 						<td>{event.ordinal ? <strong>{t("logs.ticketNumber", { number: event.ordinal })}</strong> : <strong>{t("logs.sources.unknown")}</strong>}
 							{event.orderId ? <Link className="admin-row-link" href={`/admin/tickets/purchased/${event.orderId}`}>{t("order")} · {event.orderCode}</Link> : event.batchId ? <Link className="admin-row-link" href={`/admin/tickets/gifted/${event.batchId}`}>{event.batchTitle}</Link> : null}
+							{event.salesLogId && <Link className="admin-row-link" href={`/admin/tickets/manage-sales-log?id=${event.salesLogId}`}>{t("salesLog")} · {event.salesLogId}</Link>}
 							{event.ticketId && <span>{event.ticketId}</span>}
 						</td>
 						<td>{t(`logs.sources.${event.source ?? "unknown"}`)}</td>

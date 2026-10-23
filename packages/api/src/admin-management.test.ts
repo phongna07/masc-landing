@@ -16,7 +16,7 @@ const { adminManagementRouter } = await import("./routers/admin-management");
 
 before(async () => {
 	await client.exec(`
-		CREATE TYPE admin_role AS ENUM ('root', 'professional', 'entrance-staff', 'developer');
+		CREATE TYPE admin_role AS ENUM ('root', 'professional', 'entrance-staff', 'developer', 'sales-collaborator');
 		CREATE TABLE admin_emails (
 			email text PRIMARY KEY CHECK (email <> '' AND email = lower(btrim(email))), role admin_role NOT NULL
 		);
@@ -66,7 +66,7 @@ test("every operation requires a fresh session and developer access", async () =
 test("developers can list all records and create, rename, change roles, and delete other admins", async () => {
 	const api = caller();
 	assert.equal((await api.list()).filter(row => row.role === "developer").length, 2);
-	for (const role of ["root", "professional", "entrance-staff"] as const) {
+	for (const role of ["root", "professional", "entrance-staff", "sales-collaborator"] as const) {
 		assert.deepEqual(await api.create({ email: "  NEW@EXAMPLE.COM  ", role }), { email: "new@example.com", role });
 		assert.deepEqual(await api.update({ originalEmail: " NEW@EXAMPLE.COM ", email: "RENAMED@EXAMPLE.COM", role: "professional" }), { email: "renamed@example.com", role: "professional" });
 		assert.equal((await api.list()).some(row => row.email === "new@example.com"), false);
@@ -74,7 +74,7 @@ test("developers can list all records and create, rename, change roles, and dele
 	}
 	assert.equal((await api.list()).length, 5);
 	const logs = await db.select().from(adminActivityLogs);
-	assert.equal(logs.length, 9);
+	assert.equal(logs.length, 12);
 	assert.ok(logs.every(row => row.outcome === "success" && row.actorRole === "developer"));
 });
 

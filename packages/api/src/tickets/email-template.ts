@@ -4,15 +4,17 @@ import type { Order, Ticket } from "./core";
 import { escapeXml } from "./artwork";
 import { ticketTemplateCopy } from "./template-input";
 
-export function renderTicketEmail(tickets: Ticket[], order: Order | undefined) {
+export function renderTicketEmail(tickets: Ticket[], order: Order | undefined, sale?: { category: "normal" | "vip"; quantity: number; amountReceived: number }) {
 	if (!tickets.length) throw new Error("No tickets for delivery");
 	const copy = ticketTemplateCopy;
 	const total = order ? new Intl.NumberFormat("vi-VN", { style: "currency", currency: "VND", maximumFractionDigits: 0 }).format(order.snapshot.totalPrice) : "";
-	const bodyHtml = `<p>${escapeXml(order ? copy.intro : copy.giftIntro)}</p>`;
+	const purchase = Boolean(order || sale);
+	const bodyHtml = `<p>${escapeXml(purchase ? copy.intro : copy.giftIntro)}</p>`;
 	const lines: string[] = [copy.confidential, copy.attachments];
 	if (order) lines.push(`${copy.order}: ${order.id}`, `${copy.package}: ${order.snapshot.packageName}`, `${copy.quantity}: ${order.snapshot.quantity}`, `${copy.total}: ${total}`);
 	if (tickets.some(ticket => ticket.validity === "revoked")) lines.push(copy.revokedNotice);
-	const heading = order ? copy.subject : copy.giftSubject;
+	if (sale) lines.push(`${copy.category}: ${copy[sale.category]}`, `${copy.quantity}: ${sale.quantity}`, `${copy.total}: ${new Intl.NumberFormat("vi-VN", { style: "currency", currency: "VND", maximumFractionDigits: 0 }).format(sale.amountReceived)}`);
+	const heading = purchase ? copy.subject : copy.giftSubject;
 	const subject = heading.replace(/[\r\n]+/g, " ");
 	const contentHtml = `<h1 class="ticket-heading">${escapeXml(heading)}</h1>${bodyHtml}${lines.map((line, index) => `<p${index === 0 ? ' class="ticket-notice"' : ""}>${escapeXml(line)}</p>`).join("")}`;
 	return {

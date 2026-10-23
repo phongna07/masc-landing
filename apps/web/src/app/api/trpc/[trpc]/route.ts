@@ -13,7 +13,7 @@ async function handler(req: NextRequest) {
     router: appRouter,
     createContext: () => createContext(req),
   });
-  if (req.nextUrl.pathname.includes("tickets.")) {
+  if (req.nextUrl.pathname.includes("tickets.") || req.nextUrl.pathname.includes("salesLogs.")) {
     response.headers.set("Cache-Control", "private, no-store");
     response.headers.set("Referrer-Policy", "no-referrer");
   }

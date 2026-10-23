@@ -31,7 +31,7 @@ export function TicketHistory({ id, root = false }: { id: string; root?: boolean
 	})}{root && adminHistory.data?.actions.map(action => <p key={action.id}>{t.has(`audit.${action.action}`) ? t(`audit.${action.action}`) : action.action} · {action.reason} · {t("actor")}: {action.actorId} · <TicketTime value={action.createdAt} /></p>)}{total > 50 && <Pagination page={page} total={total} pageSize={50} setPage={setPage} />}</div>;
 }
 
-export default function TicketCard({ ticket, root = false, children }: { ticket: TicketRecord; root?: boolean; children?: React.ReactNode }) {
+export default function TicketCard({ ticket, root = false, showHistory = true, children }: { ticket: TicketRecord; root?: boolean; showHistory?: boolean; children?: React.ReactNode }) {
 	const t = useTranslations("Tickets");
 	const notify = useTicketNotifications();
 	const { download, isDownloading } = useTicketDownload();
@@ -48,7 +48,7 @@ export default function TicketCard({ ticket, root = false, children }: { ticket:
 		{open && <div className="ticket-credential"><div className="ticket-credential-heading"><strong>{t("code")}</strong>
 			<Button className="ticket-button-utility" type="button" disabled={isDownloading} aria-busy={isDownloading} onClick={() => void download(`${imageUrl}&download=1`, `ticket-${ticket.ordinal}.png`, "image/png", "imageFailed")} variant="outline"><DownloadIcon aria-hidden="true" />{t("savePng")}</Button>
 			</div><code className="ticket-code">{ticket.code}</code><p className="ticket-section-label">{t("admissionQr")}</p>{imageError ? <TicketError error={{ message: "imageFailed" }} /> : <img className="ticket-artwork" src={imageUrl} alt={t("imageAlt")} onError={() => { setImageError(true); notify.error({ message: "imageFailed" }); }} />}
-			<details><summary>{t("history")}</summary><TicketHistory id={ticket.id} root={root} /></details>
+			{showHistory && <details><summary>{t("history")}</summary><TicketHistory id={ticket.id} root={root} /></details>}
 		</div>}
 		{children}
 	</article>;

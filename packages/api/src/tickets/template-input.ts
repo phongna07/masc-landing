@@ -17,6 +17,7 @@ export const ticketTemplateCopy = Object.freeze({
 	"networkingLunch": "Bao gồm Networking Lunch",
 	"confidential": "Mã vé và mã QR có thể được dùng để vào cửa. Vui lòng không đăng công khai và chỉ gửi cho người sẽ sử dụng vé.",
 	"code": "Mã vé",
+	"category": "Loại vé",
 	"package": "Gói vé",
 	"total": "Tổng tiền đơn hàng",
 	"order": "Đơn hàng",

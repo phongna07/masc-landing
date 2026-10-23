@@ -83,11 +83,12 @@ before(async () => {
 			key text PRIMARY KEY, window_start timestamptz NOT NULL DEFAULT now(), count integer NOT NULL DEFAULT 1
 		);
 		CREATE TABLE admission_tickets (
-			id text PRIMARY KEY, source text NOT NULL, category text NOT NULL, order_id text, batch_id text, owner_id text,
+			id text PRIMARY KEY, source text NOT NULL, category text NOT NULL, order_id text, batch_id text, sales_log_id text, owner_id text,
 			ordinal integer NOT NULL, code text NOT NULL UNIQUE, validity text NOT NULL DEFAULT 'valid', benefits jsonb NOT NULL DEFAULT '[]',
 			recipient_name text, recipient_phone text, recipient_email text, accepted_count integer NOT NULL DEFAULT 0,
 			credential_version integer NOT NULL DEFAULT 1, created_at timestamptz NOT NULL DEFAULT now(), UNIQUE(order_id, ordinal)
 		);
+		CREATE TABLE ticket_sales_logs (id text PRIMARY KEY, category text NOT NULL, quantity integer NOT NULL);
 		CREATE TABLE ticket_credentials (code_hash text PRIMARY KEY, ticket_id text NOT NULL, created_at timestamptz NOT NULL DEFAULT now());
 		CREATE TABLE ticket_email_jobs (
 			id text PRIMARY KEY, dedupe_key text NOT NULL UNIQUE, order_id text, ticket_id text, to_address text NOT NULL,
@@ -111,7 +112,7 @@ before(async () => {
 });
 after(() => client.close());
 beforeEach(async () => {
-	await client.exec("TRUNCATE ticket_orders, ticket_promos, ticket_audit, ticket_rate_limits, ticket_settings, ticket_packages, admission_tickets, ticket_credentials, ticket_email_jobs, ticket_payment_events, admin_emails, admin_activity_logs;");
+	await client.exec("TRUNCATE ticket_sales_logs, ticket_orders, ticket_promos, ticket_audit, ticket_rate_limits, ticket_settings, ticket_packages, admission_tickets, ticket_credentials, ticket_email_jobs, ticket_payment_events, admin_emails, admin_activity_logs;");
 	await db.insert(ticketSettings).values({ isSalesOpened: true });
 	createPayment.mock.resetCalls();
 	getPayment.mock.resetCalls();
