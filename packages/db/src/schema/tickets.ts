@@ -86,12 +86,53 @@ export const giftBatches = pgTable("ticket_gift_batches", {
 	createdAt: time("created_at").notNull().defaultNow(),
 }, t => [check("gift_batch_bounded", sql`${t.quantity} between 1 and 100`)]);
 
+export const salesLogs = pgTable("ticket_sales_logs", {
+	id: text("id").primaryKey(),
+	requestKey: text("request_key").notNull(),
+	buyerName: text("buyer_name").notNull(),
+	buyerEmail: text("buyer_email").notNull(),
+	buyerPhone: text("buyer_phone").notNull(),
+	category: text("category", { enum: ["normal", "vip"] }).notNull(),
+	quantity: integer("quantity").notNull(),
+	amountReceived: integer("amount_received").notNull(),
+	proofUploadId: text("proof_upload_id"),
+	proofObjectKey: text("proof_object_key"),
+	proofFilename: text("proof_filename"),
+	createdBy: text("created_by").notNull(),
+	creatorName: text("creator_name").notNull(),
+	creatorEmail: text("creator_email").notNull(),
+	createdAt: time("created_at").notNull().defaultNow(),
+	emailStatus: text("email_status", { enum: ["pending", "sending", "sent", "failed"] }).notNull().default("pending"),
+	emailLeaseUntil: time("email_lease_until"),
+	emailAttemptId: text("email_attempt_id"),
+	emailSentAt: time("email_sent_at"),
+}, t => [
+	uniqueIndex("sales_log_creator_request_unique").on(t.createdBy, t.requestKey),
+	index("sales_log_created_idx").on(t.createdAt, t.id),
+	index("sales_log_creator_idx").on(t.createdBy, t.createdAt),
+	check("sales_log_values", sql`${t.quantity} between 1 and 100 and ${t.amountReceived} between 1 and 2000000000 and ${t.category} in ('normal', 'vip') and ${t.emailStatus} in ('pending', 'sending', 'sent', 'failed') and ${t.buyerName} ~ '[^[:space:]]' and ${t.buyerPhone} ~ '[^[:space:]]'`),
+	check("sales_log_proof_shape", sql`(${t.proofUploadId} is null and ${t.proofObjectKey} is null and ${t.proofFilename} is null) or (${t.proofUploadId} is not null and ${t.proofObjectKey} is not null and ${t.proofFilename} is not null)`),
+]);
+
+// Attempts are delivery history only: no worker or automatic retry processes them.
+export const salesLogEmailAttempts = pgTable("ticket_sales_log_email_attempts", {
+	id: text("id").primaryKey(),
+	salesLogId: text("sales_log_id").notNull().references(() => salesLogs.id, { onDelete: "restrict" }),
+	requestKey: text("request_key").notNull(),
+	actorId: text("actor_id").notNull(),
+	status: text("status", { enum: ["sending", "sent", "failed"] }).notNull(),
+	error: text("error"),
+	createdAt: time("created_at").notNull().defaultNow(),
+	finishedAt: time("finished_at"),
+}, t => [uniqueIndex("sales_email_request_unique").on(t.salesLogId, t.requestKey), index("sales_email_log_idx").on(t.salesLogId, t.createdAt)]);
+
 export const admissionTickets = pgTable("admission_tickets", {
 	id: text("id").primaryKey(),
-	source: text("source", { enum: ["purchased", "gifted"] }).notNull(),
+	source: text("source", { enum: ["purchased", "gifted", "sales-log"] }).notNull(),
 	category: text("category", { enum: ["normal", "vip"] }).notNull(),
 	orderId: text("order_id").references(() => ticketOrders.id, { onDelete: "restrict" }),
 	batchId: text("batch_id").references(() => giftBatches.id, { onDelete: "restrict" }),
+	salesLogId: text("sales_log_id").references(() => salesLogs.id, { onDelete: "restrict" }),
 	ownerId: text("owner_id").references(() => user.id, { onDelete: "restrict" }),
 	ordinal: integer("ordinal").notNull(),
 	code: text("code").notNull().unique(),
@@ -103,7 +144,7 @@ export const admissionTickets = pgTable("admission_tickets", {
 	acceptedCount: integer("accepted_count").notNull().default(0),
 	credentialVersion: integer("credential_version").notNull().default(1),
 	createdAt: time("created_at").notNull().defaultNow(),
-}, t => [uniqueIndex("ticket_order_ordinal_unique").on(t.orderId, t.ordinal), uniqueIndex("ticket_batch_ordinal_unique").on(t.batchId, t.ordinal), index("admission_ticket_owner_idx").on(t.ownerId), foreignKey({ name: "ticket_buyer_ownership_fk", columns: [t.orderId, t.ownerId], foreignColumns: [ticketOrders.id, ticketOrders.buyerId] }).onDelete("restrict"), check("ticket_code_format", sql`${t.code} ~ '^[A-HJ-NP-Z2-9]{20}$'`), check("ticket_validity_values", sql`${t.validity} in ('valid', 'revoked') and ${t.category} in ('normal', 'vip') and ${t.acceptedCount} >= 0 and ${t.credentialVersion} >= 1 and ${t.ordinal} >= 1`), check("ticket_source_ownership", sql`(${t.source} = 'purchased' and ${t.orderId} is not null and ${t.ownerId} is not null and ${t.batchId} is null) or (${t.source} = 'gifted' and ${t.batchId} is not null and ${t.orderId} is null and ${t.ownerId} is null)`)]);
+}, t => [uniqueIndex("ticket_order_ordinal_unique").on(t.orderId, t.ordinal), uniqueIndex("ticket_batch_ordinal_unique").on(t.batchId, t.ordinal), uniqueIndex("ticket_sales_log_ordinal_unique").on(t.salesLogId, t.ordinal), index("admission_ticket_owner_idx").on(t.ownerId), foreignKey({ name: "ticket_buyer_ownership_fk", columns: [t.orderId, t.ownerId], foreignColumns: [ticketOrders.id, ticketOrders.buyerId] }).onDelete("restrict"), check("ticket_code_format", sql`${t.code} ~ '^[A-HJ-NP-Z2-9]{20}$'`), check("ticket_validity_values", sql`${t.validity} in ('valid', 'revoked') and ${t.category} in ('normal', 'vip') and ${t.acceptedCount} >= 0 and ${t.credentialVersion} >= 1 and ${t.ordinal} >= 1`), check("ticket_source_ownership", sql`(${t.source} = 'purchased' and ${t.orderId} is not null and ${t.ownerId} is not null and ${t.batchId} is null and ${t.salesLogId} is null) or (${t.source} = 'gifted' and ${t.batchId} is not null and ${t.orderId} is null and ${t.ownerId} is null and ${t.salesLogId} is null) or (${t.source} = 'sales-log' and ${t.salesLogId} is not null and ${t.orderId} is null and ${t.ownerId} is null and ${t.batchId} is null)`)]);
 
 // Tombstones ensure replaced credentials can never be reused; old codes are not stored.
 export const ticketCredentials = pgTable("ticket_credentials", {

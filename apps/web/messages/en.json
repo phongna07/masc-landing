@@ -567,7 +567,7 @@
   "Admin": {
     "manageAdmins": {
       "title": "Manage admins",
-      "description": "Manage admin access by email and assign root, professional, or entrance-staff roles.",
+      "description": "Manage admin access by Email and assign root, professional, entrance-staff, or sales-collaborator roles.",
       "developerNotice": "Developer records are read-only. Developer access can only be configured directly in the database.",
       "create": "Add admin",
       "edit": "Edit",
@@ -601,7 +601,8 @@
       "root": "Root admin",
       "professional": "Professional admin",
       "user": "User",
-      "entrance-staff": "Entrance staff"
+      "entrance-staff": "Entrance staff",
+      "sales-collaborator": "Sales collaborator"
     },
     "nav": {
       "homeLabel": "MASC 2026 - return home",
@@ -620,7 +621,8 @@
       "mail": "Mail",
       "submissions": "Submissions",
       "tickets": "Tickets",
-      "checkIn": "Entrance check-in"
+      "checkIn": "Entrance check-in",
+      "salesLog": "Sales log"
     },
     "stats": {
       "label": "Summary statistics",
@@ -1564,14 +1566,15 @@
       "sources": {
         "purchased": "Purchased",
         "gifted": "Gifted",
-        "unknown": "Unidentified ticket"
+        "unknown": "Unidentified ticket",
+        "sales-log": "Offline sale"
       }
     },
     "settings": "Ticket settings",
     "salesToggle": "Open new ticket purchases",
     "salesToggleHelp": "Closing sales blocks new orders and preserves existing unexpired checkouts.",
     "vipCapacity": "Purchased VIP capacity",
-    "capacityHelp": "Gifted VIP tickets are excluded. Capacity cannot fall below fulfilled purchases plus active reservations. Refunds do not automatically restore capacity.",
+    "capacityHelp": "Gifted VIP tickets are excluded. Capacity must cover online purchases, active reservations, and offline VIP ticket quantities. Refunds and ticket revocation do not automatically restore capacity.",
     "priceSnapshotHelp": "Prices affect new orders only. Existing unexpired payment links keep their original price.",
     "saved": "Saved.",
     "saveSettings": "Save settings",
@@ -1714,7 +1717,8 @@
       "purchased": "Purchased tickets issued",
       "gifted": "Gifted tickets issued",
       "revoked": "Revoked tickets",
-      "accepted": "Accepted admissions"
+      "accepted": "Accepted admissions",
+      "salesLog": "Offline tickets"
     },
     "audit": {
       "settingsUpdated": "Ticket settings updated",
@@ -1737,7 +1741,10 @@
       "promoCreated": "Promo code created",
       "promoUpdated": "Promo code updated",
       "promoApplied": "Promo code applied to order",
-      "freeOrderCompleted": "Free promo order completed"
+      "freeOrderCompleted": "Free promo order completed",
+      "salesLogCreated": "Offline sale recorded",
+      "salesEmailSent": "Offline ticket Email sent",
+      "salesEmailFailed": "Offline ticket Email failed"
     },
     "camera": {
       "idle": "Camera is stopped.",
@@ -1801,7 +1808,13 @@
       "promoLimitTooLow": "The limit cannot be lower than completed orders plus reserved uses.",
       "promoDuplicate": "A promo code with this name already exists.",
       "promoCheckRequired": "Check your promo code before placing the order, or clear the field.",
-      "referralCodeFormat": "Use up to 64 letters, digits, hyphens, or underscores for the referral code."
+      "referralCodeFormat": "Use up to 64 letters, digits, hyphens, or underscores for the referral code.",
+      "invalidProof": "Upload a valid JPEG, PNG, or WebP image, up to 5 MiB.",
+      "proofUploadFailed": "The proof could not be uploaded. Please try again.",
+      "invalidAmountRange": "The minimum amount must not exceed the maximum.",
+      "emailSending": "A ticket Email is already being sent. Refresh its status before retrying.",
+      "emailAlreadySent": "This confirmation was already sent. Ask a ticket admin if another copy is needed.",
+      "invalidBuyerContact": "Enter the buyer’s name and phone number."
     },
     "email": {
       "subject": "Your ticket purchase is confirmed",
@@ -1977,6 +1990,78 @@
       "paidOrders": "Paid orders",
       "issuedTickets": "Issued tickets",
       "empty": "No referral codes match these filters."
-    }
+    },
+    "sales": {
+      "title": "Sales log",
+      "manageTitle": "Manage sales logs",
+      "intro": "This page streamlines offline ticket sales at the booth. Buyers do not need to sign in with Google or go through the website’s purchase and payment flow.",
+      "manageIntro": "Review offline ticket sales, payment proofs, ticket credentials, and email delivery.",
+      "create": "Record a sale",
+      "formHelp": "Enter the buyer’s contact details and the total amount already received. One QR ticket will be issued for each admission. No buyer account is required.",
+      "buyerName": "Buyer’s name",
+      "buyerEmail": "Buyer’s Email",
+      "buyerPhone": "Buyer’s phone number",
+      "quantity": "Number of tickets",
+      "amount": "Total received (VND)",
+      "proofOptional": "Transaction proof (optional)",
+      "proofHelp": "One JPEG, PNG, or WebP image, up to 5 MiB.",
+      "proof": "Transaction proof",
+      "viewProof": "View transaction proof",
+      "proofAlt": "Bank transaction proof",
+      "hasProof": "Attached",
+      "noProof": "Not attached",
+      "vipAvailable": "VIP places available: {count}",
+      "submit": "Record sale and send tickets",
+      "submitting": "Issuing tickets and sending Email…",
+      "retryCreate": "Retry this submission",
+      "retryCreationHelp": "The last response was not confirmed. Retry the same submission to recover its result without issuing duplicate tickets.",
+      "created": "Sale recorded and tickets emailed.",
+      "createdEmailFailed": "Sale recorded and tickets issued. Email delivery failed; retry from the sale details.",
+      "createdEmailPending": "Sale recorded and tickets issued. Check Email status in the sale details.",
+      "ownHistory": "Your sales history",
+      "allHistory": "Sales history",
+      "creator": "Recorded by",
+      "searchPlaceholder": "Log ID, name, Email, or phone number",
+      "minAmount": "Minimum received (VND)",
+      "maxAmount": "Maximum received (VND)",
+      "emailStatus": "Email delivery",
+      "checkIn": "Ticket check-in",
+      "admitted": "Has an admitted ticket",
+      "unused": "Has an unused ticket",
+      "details": "View details",
+      "detailsFor": "View sale details for {name}",
+      "empty": "No sales logs match these filters.",
+      "immutable": "Recorded buyer details, ticket quantity, and payment amount cannot be changed.",
+      "retryEmailHelp": "Email retries reuse the existing tickets. If an earlier delivery was interrupted, the buyer may receive a duplicate Email.",
+      "resend": "Resend ticket Email",
+      "retryEmail": "Retry ticket Email",
+      "sendTitle": "Send ticket confirmation",
+      "sendDescription": "Send all tickets from this sale to {email}. This does not create additional tickets.",
+      "sendConfirm": "Send Email",
+      "emailSent": "Ticket Email sent.",
+      "attempts": "Email delivery attempts (latest 100)",
+      "noAttempts": "No Email delivery attempt has been recorded.",
+      "deliveryUncertain": "The previous send was interrupted; delivery is uncertain.",
+      "deliveryFailed": "Email delivery failed.",
+      "columns": {
+        "createdAt": "Recorded at",
+        "buyer": "Buyer",
+        "creator": "Recorded by",
+        "category": "Ticket type",
+        "quantity": "Tickets",
+        "amountReceived": "Received (VND)",
+        "emailStatus": "Email delivery"
+      },
+      "close": "Close",
+      "cancel": "Cancel",
+      "guidance": {
+        "title": "Important instructions for booth Sales staff",
+        "contacts": "Ask for the buyer’s <strong>full name, phone number, and Email</strong>.",
+        "proof": "Take a screenshot of the buyer’s bank transfer confirmation.",
+        "submit": "Complete the form below and attach the transfer screenshot.",
+        "result": "After you submit the form, the system automatically generates the check-in QR code and emails it to the buyer."
+      }
+    },
+    "salesLog": "Sales logs"
   }
 }

@@ -6,11 +6,11 @@ import { RefreshCwIcon } from "lucide-react";
 export function AdminHeading({ eyebrow, title, description, badge }: {
   eyebrow: string;
   title: string;
-  description: string;
+  description?: string;
   badge?: string;
 }) {
   return <div className="admin-heading"><p>{eyebrow}</p><div className="admin-heading-title"><h1>{title}</h1>
-    {badge && <span className="admin-heading-badge">{badge}</span>}</div><span>{description}</span></div>;
+    {badge && <span className="admin-heading-badge">{badge}</span>}</div>{description && <span>{description}</span>}</div>;
 }
 
 export function AdminMetrics({ label, metrics, isPending, isError, errorLabel, retry, retryLabel, locale }: {

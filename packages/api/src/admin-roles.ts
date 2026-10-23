@@ -12,6 +12,7 @@ export const adminAreas = [
   "roundOneCvScreening",
   "activityLogs",
   "tickets",
+  "salesLog",
   "checkIn",
   "manageAdmins",
 ] as const;
@@ -34,6 +35,10 @@ export const adminRoleConfig = {
   "entrance-staff": {
     defaultRoute: "/admin/check-in",
     allowedAreas: ["checkIn"],
+  },
+  "sales-collaborator": {
+    defaultRoute: "/admin/sales-log",
+    allowedAreas: ["salesLog"],
   },
 } as const satisfies Record<
   AdminRole,

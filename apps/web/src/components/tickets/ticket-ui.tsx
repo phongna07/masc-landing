@@ -6,11 +6,11 @@ import { Skeleton } from "@masc-landing/ui/components/skeleton";
 import { ArrowLeftIcon, ArrowRightIcon, AlertCircleIcon, TicketIcon } from "lucide-react";
 import { AdminHeading } from "@/app/admin/admin-state";
 
-export function TicketHeading({ title, description, admin = false, action }: { title: string; description: string; admin?: boolean; action?: React.ReactNode }) {
+export function TicketHeading({ title, description, admin = false, action }: { title: string; description?: string; admin?: boolean; action?: React.ReactNode }) {
 	const t = useTranslations("Tickets");
 	const adminT = useTranslations("Admin");
 	return <div className={admin ? "admin-heading-actions ticket-page-heading" : "dashboard-heading-row ticket-page-heading"}>
-		{admin ? <AdminHeading eyebrow={adminT("eyebrow")} title={title} description={description} /> : <div className="dashboard-heading"><p className="dashboard-eyebrow">{t("eyebrow")}</p><h1>{title}</h1><p>{description}</p></div>}
+		{admin ? <AdminHeading eyebrow={adminT("eyebrow")} title={title} description={description} /> : <div className="dashboard-heading"><p className="dashboard-eyebrow">{t("eyebrow")}</p><h1>{title}</h1>{description && <p>{description}</p>}</div>}
 		{action}
 	</div>;
 }

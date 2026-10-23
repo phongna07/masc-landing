@@ -33,6 +33,7 @@ before(async () => {
 			('purchased', 'purchased', 'normal', 'order', NULL, 1, NULL, NULL, NULL, 'SECRET_PURCHASE_CODE'),
 			('gifted', 'gifted', 'vip', NULL, 'batch', 1, 'Bao Guest', 'bao@example.com', '0911111111', 'SECRET_GIFT_CODE'),
 			('anonymous-gift', 'gifted', 'normal', NULL, 'batch', 2, NULL, NULL, NULL, 'SECRET_ANONYMOUS_CODE');
+		ALTER TABLE admission_tickets ADD COLUMN sales_log_id text;
 		CREATE TABLE ticket_check_ins (
 			id text PRIMARY KEY, ticket_id text, actor_id text, request_key text, outcome text,
 			reason text, is_override boolean, created_at timestamptz

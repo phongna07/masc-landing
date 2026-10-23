@@ -567,7 +567,7 @@
   "Admin": {
     "manageAdmins": {
       "title": "Quản lý quản trị viên",
-      "description": "Cấp quyền quản trị theo Email với vai trò quản trị viên cấp cao, chuyên môn hoặc nhân viên check-in.",
+      "description": "Quản lý quyền truy cập Dashboard theo Email và phân vai trò quản trị, chuyên môn, nhân viên check-in hoặc cộng tác viên bán vé.",
       "developerNotice": "Các bản ghi Developer chỉ có thể xem. Quyền Developer phải được cấu hình trực tiếp trong cơ sở dữ liệu.",
       "create": "Thêm quản trị viên",
       "edit": "Chỉnh sửa",
@@ -601,7 +601,8 @@
       "root": "Quản trị viên cấp cao",
       "professional": "Ban chuyên môn",
       "user": "Người dùng",
-      "entrance-staff": "Nhân viên check-in"
+      "entrance-staff": "Nhân viên check-in",
+      "sales-collaborator": "Cộng tác viên bán vé"
     },
     "nav": {
       "homeLabel": "MASC 2026 - về trang chủ",
@@ -620,7 +621,8 @@
       "mail": "Email",
       "submissions": "Bài nộp",
       "tickets": "Quản lý vé",
-      "checkIn": "Check-in"
+      "checkIn": "Check-in",
+      "salesLog": "Bán vé trực tiếp"
     },
     "stats": {
       "label": "Thống kê tổng quan",
@@ -1564,14 +1566,15 @@
       "sources": {
         "purchased": "Vé mua",
         "gifted": "Vé tặng",
-        "unknown": "Không xác định được vé"
+        "unknown": "Không xác định được vé",
+        "sales-log": "Bán trực tiếp"
       }
     },
     "settings": "Thiết lập bán vé",
     "salesToggle": "Mở bán vé",
     "salesToggleHelp": "Khi ngừng mở bán, người mua không thể tạo đơn mới. Các đơn còn trong hạn vẫn có thể thanh toán.",
     "vipCapacity": "Tổng số vé VIP mở bán",
-    "capacityHelp": "Số lượng này không tính vé VIP tặng và phải đủ cho vé đã bán cùng vé đang giữ chỗ. Việc hoàn tiền không tự động cộng lại số vé VIP còn có thể bán.",
+    "capacityHelp": "Số chỗ VIP phải đủ cho vé mua online, vé đang giữ chỗ và toàn bộ vé VIP bán trực tiếp; không tính vé VIP tặng. Hoàn tiền hoặc thu hồi vé không tự động cộng lại số chỗ còn trống.",
     "priceSnapshotHelp": "Giá mới chỉ áp dụng cho đơn tạo sau khi lưu. Các đơn còn trong hạn thanh toán vẫn giữ giá đã đặt.",
     "saved": "Đã lưu.",
     "saveSettings": "Lưu thiết lập",
@@ -1714,7 +1717,8 @@
       "purchased": "Vé mua đã cấp",
       "gifted": "Vé tặng đã cấp",
       "revoked": "Vé đã thu hồi",
-      "accepted": "Lượt check-in thành công"
+      "accepted": "Lượt check-in thành công",
+      "salesLog": "Vé bán trực tiếp"
     },
     "audit": {
       "settingsUpdated": "Đã cập nhật thiết lập bán vé",
@@ -1737,7 +1741,10 @@
       "promoCreated": "Đã tạo mã ưu đãi",
       "promoUpdated": "Đã cập nhật mã ưu đãi",
       "promoApplied": "Đã áp dụng mã ưu đãi cho đơn vé",
-      "freeOrderCompleted": "Đã hoàn tất đơn vé miễn phí"
+      "freeOrderCompleted": "Đã hoàn tất đơn vé miễn phí",
+      "salesLogCreated": "Đã ghi nhận bán vé trực tiếp",
+      "salesEmailSent": "Đã gửi Email vé bán trực tiếp",
+      "salesEmailFailed": "Gửi Email vé bán trực tiếp không thành công"
     },
     "camera": {
       "idle": "Camera chưa bật. Bấm “Bật camera” để bắt đầu quét.",
@@ -1801,7 +1808,13 @@
       "promoLimitTooLow": "Giới hạn không được thấp hơn số lượt đã sử dụng cộng với số lượt đang giữ.",
       "promoDuplicate": "Mã ưu đãi này đã tồn tại.",
       "promoCheckRequired": "Vui lòng kiểm tra mã ưu đãi trước khi đặt vé, hoặc xóa mã để tiếp tục.",
-      "referralCodeFormat": "Mã giới thiệu có tối đa 64 ký tự, gồm chữ cái không dấu, chữ số, dấu gạch ngang hoặc gạch dưới."
+      "referralCodeFormat": "Mã giới thiệu có tối đa 64 ký tự, gồm chữ cái không dấu, chữ số, dấu gạch ngang hoặc gạch dưới.",
+      "invalidProof": "Vui lòng chọn ảnh JPEG, PNG hoặc WebP hợp lệ, tối đa 5 MiB.",
+      "proofUploadFailed": "Chưa tải được ảnh chuyển khoản. Vui lòng thử lại.",
+      "invalidAmountRange": "Số tiền tối thiểu không được lớn hơn số tiền tối đa.",
+      "emailSending": "Email vé đang được gửi. Vui lòng cập nhật tình trạng trước khi thử lại.",
+      "emailAlreadySent": "Email xác nhận đã được gửi. Vui lòng liên hệ quản trị viên vé nếu cần gửi lại.",
+      "invalidBuyerContact": "Vui lòng nhập họ tên và số điện thoại người mua."
     },
     "email": {
       "subject": "Xác nhận mua vé tham dự chung kết Marketing All-Star Challenge",
@@ -1977,6 +1990,78 @@
       "paidOrders": "Đơn đã thanh toán",
       "issuedTickets": "Vé đã phát hành",
       "empty": "Chưa có mã giới thiệu phù hợp với bộ lọc."
-    }
+    },
+    "sales": {
+      "title": "Bán vé trực tiếp",
+      "manageTitle": "Quản lý bán vé trực tiếp",
+      "intro": "Giao diện này giúp tối ưu việc bán vé offline tại booth. Người mua không cần đăng nhập tài khoản Google hay mua vé và thanh toán qua website.",
+      "manageIntro": "Tra cứu các lượt bán vé trực tiếp, ảnh chuyển khoản, thông tin vé và tình trạng gửi Email.",
+      "create": "Ghi nhận lượt bán vé",
+      "formHelp": "Nhập thông tin người mua và tổng số tiền đã nhận. Mỗi lượt vào cửa có một vé QR riêng. Người mua không cần tạo tài khoản.",
+      "buyerName": "Họ tên người mua",
+      "buyerEmail": "Email người mua",
+      "buyerPhone": "Số điện thoại người mua",
+      "quantity": "Số lượng vé",
+      "amount": "Tổng tiền đã nhận (VND)",
+      "proofOptional": "Ảnh chuyển khoản (không bắt buộc)",
+      "proofHelp": "Chọn một ảnh JPEG, PNG hoặc WebP, tối đa 5 MiB.",
+      "proof": "Ảnh chuyển khoản",
+      "viewProof": "Xem ảnh chuyển khoản",
+      "proofAlt": "Ảnh xác nhận giao dịch chuyển khoản",
+      "hasProof": "Đã đính kèm",
+      "noProof": "Chưa đính kèm",
+      "vipAvailable": "Số chỗ VIP còn lại: {count}",
+      "submit": "Ghi nhận và gửi vé",
+      "submitting": "Đang tạo vé và gửi Email…",
+      "retryCreate": "Thử lại lượt ghi nhận này",
+      "retryCreationHelp": "Chưa nhận được kết quả xác nhận. Hãy thử lại lượt ghi nhận này để lấy kết quả, hệ thống sẽ không tạo thêm vé trùng.",
+      "created": "Đã ghi nhận bán vé và gửi vé qua Email.",
+      "createdEmailFailed": "Đã ghi nhận và tạo vé nhưng chưa gửi được Email. Bạn có thể gửi lại trong phần chi tiết.",
+      "createdEmailPending": "Đã ghi nhận và tạo vé. Vui lòng kiểm tra tình trạng gửi Email trong phần chi tiết.",
+      "ownHistory": "Các lượt bán vé của bạn",
+      "allHistory": "Lịch sử bán vé",
+      "creator": "Người ghi nhận",
+      "searchPlaceholder": "Mã ghi nhận, họ tên, Email hoặc số điện thoại",
+      "minAmount": "Số tiền tối thiểu (VND)",
+      "maxAmount": "Số tiền tối đa (VND)",
+      "emailStatus": "Tình trạng gửi Email",
+      "checkIn": "Check-in vé",
+      "admitted": "Có vé đã Check-in",
+      "unused": "Có vé chưa Check-in",
+      "details": "Xem chi tiết",
+      "detailsFor": "Xem lượt mua vé của {name}",
+      "empty": "Không có lượt bán vé phù hợp với bộ lọc.",
+      "immutable": "Thông tin người mua, số lượng vé và số tiền đã ghi nhận không thể chỉnh sửa.",
+      "retryEmailHelp": "Gửi lại Email sử dụng các vé đã tạo. Nếu lần gửi trước bị gián đoạn, người mua có thể nhận Email trùng.",
+      "resend": "Gửi lại Email vé",
+      "retryEmail": "Thử gửi lại vé",
+      "sendTitle": "Gửi Email xác nhận vé",
+      "sendDescription": "Gửi toàn bộ vé của lượt mua này đến {email}. Thao tác này không tạo thêm vé.",
+      "sendConfirm": "Gửi Email",
+      "emailSent": "Đã gửi Email vé.",
+      "attempts": "Lịch sử gửi Email (100 lần gần nhất)",
+      "noAttempts": "Chưa ghi nhận lần gửi Email nào.",
+      "deliveryUncertain": "Lần gửi trước bị gián đoạn, chưa xác định người mua đã nhận Email hay chưa.",
+      "deliveryFailed": "Gửi Email không thành công.",
+      "columns": {
+        "createdAt": "Thời gian ghi nhận",
+        "buyer": "Người mua",
+        "creator": "Người ghi nhận",
+        "category": "Loại vé",
+        "quantity": "Số vé",
+        "amountReceived": "Đã nhận (VND)",
+        "emailStatus": "Gửi Email"
+      },
+      "close": "Đóng",
+      "cancel": "Hủy",
+      "guidance": {
+        "title": "Lưu ý dành cho Sales tại booth",
+        "contacts": "Hỏi <strong>họ tên, số điện thoại và Email</strong> của người mua.",
+        "proof": "Chụp lại màn hình chuyển khoản của người mua.",
+        "submit": "Điền thông tin vào form bên dưới và đính kèm ảnh chuyển khoản.",
+        "result": "Sau khi gửi form, hệ thống sẽ tự động tạo mã QR check-in và gửi về Email của người mua."
+      }
+    },
+    "salesLog": "Bán vé trực tiếp"
   }
 }

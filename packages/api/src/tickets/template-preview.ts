@@ -11,7 +11,7 @@ export function sampleTicketDelivery(input: Pick<z.infer<typeof previewTicketTem
 		code: `PREVIEW-ONLY-${index + 1}`, ordinal: index + 1, validity: input.validity,
 		benefits: input.category === "vip" ? ["networkingLunch"] : [],
 		orderId: input.source === "purchased" ? "PREVIEW-ORDER" : null, batchId: input.source === "gifted" ? "PREVIEW-BATCH" : null,
-		ownerId: null, recipientName: "Alex", recipientPhone: null, recipientEmail: null,
+		salesLogId: null, ownerId: null, recipientName: "Alex", recipientPhone: null, recipientEmail: null,
 		acceptedCount: 0, credentialVersion: 1, createdAt: new Date(0),
 	}));
 	const packageName = input.category === "vip" ? "VIP" : input.quantity === 3 ? "Platinum" : input.quantity === 2 ? "Golden" : "Silver";

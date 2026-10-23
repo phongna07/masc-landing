@@ -11,7 +11,7 @@ const emailSchema = z.string().trim().toLowerCase().pipe(z.email().max(254));
 // Developer access is provisioned only through manual database changes.
 const adminInput = z.object({
 	email: emailSchema,
-	role: z.enum(["root", "professional", "entrance-staff"]),
+	role: z.enum(["root", "professional", "entrance-staff", "sales-collaborator"]),
 });
 const targetInput = z.object({ originalEmail: emailSchema });
 

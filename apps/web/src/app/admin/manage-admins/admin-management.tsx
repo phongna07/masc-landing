@@ -18,7 +18,7 @@ import { AdminEmpty, AdminError, AdminHeading, AdminLoading } from "../admin-sta
 
 type EditableRole = Exclude<AdminRole, "developer">;
 type AdminForm = { originalEmail?: string; email: string; role: EditableRole };
-const editableRoles = ["root", "professional", "entrance-staff"] as const;
+const editableRoles = ["root", "professional", "entrance-staff", "sales-collaborator"] as const;
 
 export default function AdminManagement() {
 	const t = useTranslations("Admin.manageAdmins");

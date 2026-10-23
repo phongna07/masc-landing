@@ -2,8 +2,8 @@ import { createHash, randomInt, randomUUID } from "node:crypto";
 import { TRPCError } from "@trpc/server";
 import { db } from "@masc-landing/db";
 import { ticketTransaction, type TicketTransaction } from "@masc-landing/db/ticket-transaction";
-import { admissionTickets, ticketAudit, ticketCredentials, ticketOrders, ticketPackages, ticketRateLimits, ticketSettings } from "@masc-landing/db/schema/tickets";
-import { and, eq, inArray, lte, sql } from "drizzle-orm";
+import { admissionTickets, ticketAudit, ticketCredentials, ticketOrders, ticketPackages, ticketRateLimits, ticketSettings, salesLogs } from "@masc-landing/db/schema/tickets";
+import { and, eq, inArray, lte, or, sql } from "drizzle-orm";
 
 export const checkoutMinutes = 15;
 export const codeAlphabet = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
@@ -53,7 +53,8 @@ export async function releaseExpiredReservations(tx: TicketTransaction) {
 export async function vipUsage(tx: TicketTransaction) {
 	const [result] = await tx.select({ count: sql<number>`count(*)::int` }).from(ticketOrders)
 		.where(inArray(ticketOrders.reservation, ["held", "consumed"]));
-	return result?.count ?? 0;
+	const [offline] = await tx.select({ count: sql<number>`coalesce(sum(${salesLogs.quantity}), 0)::int` }).from(salesLogs).where(eq(salesLogs.category, "vip"));
+	return (result?.count ?? 0) + (offline?.count ?? 0);
 }
 
 export async function getTicketConfig() {
@@ -105,8 +106,9 @@ export async function ownedOrder(orderId: string, buyerId: string) {
 	return order;
 }
 
-export async function accessibleTicket(ticketId: string, userId: string, isRoot: boolean) {
-	const [ticket] = await db.select().from(admissionTickets).where(and(eq(admissionTickets.id, ticketId), isRoot ? undefined : and(eq(admissionTickets.ownerId, userId), eq(admissionTickets.source, "purchased"))));
+export async function accessibleTicket(ticketId: string, userId: string, isRoot: boolean, canViewOwnSales = false) {
+	const ownSales = canViewOwnSales ? sql`(${admissionTickets.source} = 'sales-log' and exists (select 1 from ticket_sales_logs s where s.id = ${admissionTickets.salesLogId} and s.created_by = ${userId}))` : undefined;
+	const [ticket] = await db.select().from(admissionTickets).where(and(eq(admissionTickets.id, ticketId), isRoot ? undefined : or(and(eq(admissionTickets.ownerId, userId), eq(admissionTickets.source, "purchased")), ownSales)));
 	if (!ticket) ticketError("notFound", "NOT_FOUND");
 	return ticket;
 }
