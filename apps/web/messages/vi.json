@@ -2000,7 +2000,7 @@
       "formHelp": "Nhập thông tin người mua và tổng số tiền đã nhận. Mỗi lượt vào cửa có một vé QR riêng. Người mua không cần tạo tài khoản.",
       "buyerName": "Họ tên người mua",
       "buyerEmail": "Email người mua",
-      "buyerPhone": "Số điện thoại người mua",
+      "buyerPhone": "Số điện thoại người mua (không bắt buộc)",
       "quantity": "Số lượng vé",
       "amount": "Tổng tiền đã nhận (VND)",
       "proofOptional": "Ảnh chuyển khoản (không bắt buộc)",

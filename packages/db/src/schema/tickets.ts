@@ -110,7 +110,7 @@ export const salesLogs = pgTable("ticket_sales_logs", {
 	uniqueIndex("sales_log_creator_request_unique").on(t.createdBy, t.requestKey),
 	index("sales_log_created_idx").on(t.createdAt, t.id),
 	index("sales_log_creator_idx").on(t.createdBy, t.createdAt),
-	check("sales_log_values", sql`${t.quantity} between 1 and 100 and ${t.amountReceived} between 0 and 2000000000 and ${t.category} in ('normal', 'vip') and ${t.emailStatus} in ('pending', 'sending', 'sent', 'failed') and ${t.buyerName} ~ '[^[:space:]]' and ${t.buyerPhone} ~ '[^[:space:]]'`),
+	check("sales_log_values", sql`${t.quantity} between 1 and 100 and ${t.amountReceived} between 0 and 2000000000 and ${t.category} in ('normal', 'vip') and ${t.emailStatus} in ('pending', 'sending', 'sent', 'failed') and ${t.buyerName} ~ '[^[:space:]]'`),
 	check("sales_log_proof_shape", sql`(${t.proofUploadId} is null and ${t.proofObjectKey} is null and ${t.proofFilename} is null) or (${t.proofUploadId} is not null and ${t.proofObjectKey} is not null and ${t.proofFilename} is not null)`),
 ]);
 
