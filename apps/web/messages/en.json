@@ -2000,7 +2000,7 @@
       "formHelp": "Enter the buyer’s contact details and the total amount already received. One QR ticket will be issued for each admission. No buyer account is required.",
       "buyerName": "Buyer’s name",
       "buyerEmail": "Buyer’s Email",
-      "buyerPhone": "Buyer’s phone number",
+      "buyerPhone": "Buyer’s phone number (optional)",
       "quantity": "Number of tickets",
       "amount": "Total received (VND)",
       "proofOptional": "Transaction proof (optional)",

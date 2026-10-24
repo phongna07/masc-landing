@@ -34,7 +34,7 @@ export default function SalesLogForm({ onCreated }: { onCreated: (id: string) =>
 		setBusy(true); setError(null);
 		try {
 			if (!request.current) {
-				if (!form.buyerName.trim() || !form.buyerPhone.trim()) throw new Error("invalidBuyerContact");
+				if (!form.buyerName.trim()) throw new Error("invalidBuyerContact");
 				let proof: SaleInput["proof"];
 				if (file) {
 					if (!imageTypes.includes(file.type as typeof imageTypes[number]) || file.size < 1 || file.size > 5 * 1024 * 1024) throw new Error("invalidProof");
@@ -66,7 +66,7 @@ export default function SalesLogForm({ onCreated }: { onCreated: (id: string) =>
 		<fieldset disabled={busy || locked} className="ticket-form-grid sales-log-fieldset">
 			<label>{t("buyerName")}<Input required maxLength={120} autoComplete="off" value={form.buyerName} onChange={e => setForm({ ...form, buyerName: e.target.value })} /></label>
 			<label>{t("buyerEmail")}<Input type="email" required maxLength={254} autoComplete="off" value={form.buyerEmail} onChange={e => setForm({ ...form, buyerEmail: e.target.value })} /></label>
-			<label>{t("buyerPhone")}<Input type="tel" required maxLength={40} autoComplete="off" value={form.buyerPhone} onChange={e => setForm({ ...form, buyerPhone: e.target.value })} /></label>
+			<label>{t("buyerPhone")}<Input type="tel" maxLength={40} autoComplete="off" value={form.buyerPhone} onChange={e => setForm({ ...form, buyerPhone: e.target.value })} /></label>
 			<label>{ticketT("category")}<select value={form.category} onChange={e => setForm({ ...form, category: e.target.value as typeof form.category })}>{["normal", "vip"].map(category => <option key={category} value={category}>{ticketT(`categories.${category}`)}</option>)}</select></label>
 			<label>{t("quantity")}<Input type="number" required min={1} max={100} step={1} value={form.quantity} onChange={e => setForm({ ...form, quantity: Number(e.target.value) })} /></label>
 			<label>{t("amount")}<Input aria-describedby="sales-log-amount-help" type="number" required min={0} max={2000000000} step={1} value={form.amountReceived} onChange={e => setForm({ ...form, amountReceived: e.target.value })} /><span id="sales-log-amount-help">{t("freeAmountHelp")}</span></label>

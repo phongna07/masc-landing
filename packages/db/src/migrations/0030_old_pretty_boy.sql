@@ -1,0 +1,2 @@
+ALTER TABLE "ticket_sales_logs" DROP CONSTRAINT "sales_log_values";--> statement-breakpoint
+ALTER TABLE "ticket_sales_logs" ADD CONSTRAINT "sales_log_values" CHECK ("ticket_sales_logs"."quantity" between 1 and 100 and "ticket_sales_logs"."amount_received" between 0 and 2000000000 and "ticket_sales_logs"."category" in ('normal', 'vip') and "ticket_sales_logs"."email_status" in ('pending', 'sending', 'sent', 'failed') and "ticket_sales_logs"."buyer_name" ~ '[^[:space:]]');

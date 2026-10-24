@@ -50,7 +50,7 @@ before(async () => {
 	`);
 	// Validate the actual generated migration against the preceding ticket schema.
 	const directory = new URL("../../../db/src/migrations/", import.meta.url);
-	for (const filename of (await readdir(directory)).filter(name => /^00(1[89]|2\d)_.*\.sql$/.test(name)).sort()) {
+	for (const filename of (await readdir(directory)).filter(name => /^00(1[89]|[23]\d)_.*\.sql$/.test(name)).sort()) {
 		if (filename.startsWith("0028_")) {
 			await client.exec(`
 				INSERT INTO ticket_gift_batches (id, request_key, category, quantity, title, created_by) VALUES ('legacy-gift', 'legacy-key', 'normal', 1, 'Legacy', 'root');
@@ -333,8 +333,23 @@ test("sales tickets use standard admission, replay protection, replacement and r
 	assert.ok(logs.items.every(item => item.salesLogId === log.id));
 });
 
+test("sales logs allow omitted, empty and whitespace-only buyer phone numbers", async () => {
+	for (const buyerPhone of [undefined, "", "   "]) {
+		const sale = input({ buyerPhone, quantity: 1 });
+		assert.equal(sale.buyerPhone, "");
+		const log = await createSalesLog(sale, actor);
+		assert.equal(log.buyerPhone, "");
+		const [ticket] = await db.select().from(admissionTickets).where(eq(admissionTickets.salesLogId, log.id));
+		assert.equal(ticket?.recipientPhone, "");
+		assert.equal((await createSalesLog(sale, actor)).id, log.id);
+	}
+	const omitted = { ...input() };
+	Reflect.deleteProperty(omitted, "buyerPhone");
+	assert.equal(createSalesLogInput.parse(omitted).buyerPhone, "");
+});
+
 test("input and database constraints reject invalid amounts, quantities and mixed ticket ownership", async () => {
-	for (const changes of [{ quantity: 0 }, { quantity: 101 }, { amountReceived: -1 }, { amountReceived: "0" }, { amountReceived: null }, { amountReceived: undefined }, { amountReceived: 2_000_000_001 }, { amountReceived: 1.5 }, { buyerName: "  " }, { buyerPhone: " " }, { buyerEmail: "invalid" }]) assert.equal(createSalesLogInput.safeParse({ ...input(), ...changes }).success, false);
+	for (const changes of [{ quantity: 0 }, { quantity: 101 }, { amountReceived: -1 }, { amountReceived: "0" }, { amountReceived: null }, { amountReceived: undefined }, { amountReceived: 2_000_000_001 }, { amountReceived: 1.5 }, { buyerName: "  " }, { buyerPhone: "1".repeat(41) }, { buyerEmail: "invalid" }]) assert.equal(createSalesLogInput.safeParse({ ...input(), ...changes }).success, false);
 	for (const filters of [{ from: "2026-02-30" }, { minAmount: 10, maxAmount: 1 }, { from: "2026-10-02", to: "2026-10-01" }, { pageSize: 500 }, { sort: "proofObjectKey" }]) assert.equal(salesLogPageInput.safeParse(filters).success, false);
 	const log = await createSalesLog(input({ quantity: 1 }), actor);
 	const [ticket] = await db.select().from(admissionTickets);
