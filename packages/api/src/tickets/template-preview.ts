@@ -15,11 +15,13 @@ export function sampleTicketDelivery(input: Pick<z.infer<typeof previewTicketTem
 		acceptedCount: 0, credentialVersion: 1, createdAt: new Date(0),
 	}));
 	const packageName = input.category === "vip" ? "VIP" : input.quantity === 3 ? "Platinum" : input.quantity === 2 ? "Golden" : "Silver";
+	const bundleQuantity = input.category === "vip" ? tickets.length : 1;
+	const unitPrice = input.category === "vip" ? 199000 : input.quantity === 3 ? 349000 : input.quantity === 2 ? 249000 : 129000;
 	const order: Order | undefined = input.source === "purchased" ? {
 		id: "PREVIEW-ORDER", buyerId: "preview", requestKey: "preview", providerOrderCode: 0,
 		referralCode: null, promoId: null, promoReservation: "none", paymentLinkId: null, checkoutUrl: null, buyerEmail: "preview@example.invalid", buyerName: "Alex", buyerPhone: "0901234567",
 		locale: "vi", paymentStatus: "paid", fulfillmentStatus: "issued", reservation: "none", settledAmount: 0, issue: null,
-		snapshot: { packageName, category: input.category, quantity: tickets.length, benefits: tickets[0]!.benefits, currency: "VND", totalPrice: input.category === "vip" ? 199000 * tickets.length : input.quantity === 3 ? 349000 : input.quantity === 2 ? 249000 : 129000 },
+		snapshot: { packageName, category: input.category, quantity: tickets.length, bundleQuantity, unitPrice, benefits: tickets[0]!.benefits, currency: "VND", totalPrice: unitPrice * bundleQuantity },
 		expiresAt: new Date(0), paidAt: new Date(0), createdAt: new Date(0), updatedAt: new Date(0), createAttemptedAt: null,
 		reconcileAttempts: 0, nextReconcileAt: new Date(0), reconcileLeaseUntil: null, reconcileLeaseId: null, reconcileRequestId: null,
 		lastVerifiedAt: null, providerStatus: null, checkoutClosedAt: null, resolutionNote: null, resolvedAt: null, resolvedBy: null,

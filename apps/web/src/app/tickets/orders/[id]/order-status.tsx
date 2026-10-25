@@ -48,7 +48,7 @@ export default function OrderStatus({ id }: { id: string }) {
 				</div>
 			</div>
 			<dl className="ticket-payment-success-summary">
-				<div><dt>{t("package")}</dt><dd>{value.snapshot.packageName}{value.snapshot.promo && <p>{t("promo.used", { code: value.snapshot.promo.code })}</p>}</dd></div>
+				<div><dt>{t("package")}</dt><dd>{t("bundleSelection", { count: value.snapshot.bundleQuantity ?? 1, name: value.snapshot.packageName })}{value.snapshot.promo && <p>{t("promo.used", { code: value.snapshot.promo.code })}</p>}</dd></div>
 				<div><dt>{t("success.quantityLabel")}</dt><dd>{t("quantity", { count: value.snapshot.quantity })}</dd></div>
 				<div><dt>{t("success.totalPaid")}</dt><dd>{total}</dd></div>
 			</dl>
@@ -59,7 +59,7 @@ export default function OrderStatus({ id }: { id: string }) {
 			</div>
 			<TicketError error={verify.error || cancel.error} />
 		</section> : <section className="ticket-panel" aria-live="polite"><h2>{t(`payment.${value.paymentStatus}`)}</h2><p>{t("fulfillmentLabel")}: {t(`fulfillment.${value.fulfillmentStatus}`)}</p>
-			{value.snapshot.promo && <p>{t("promo.used", { code: value.snapshot.promo.code })}</p>}<p>{value.snapshot.packageName} · {t("quantity", { count: value.snapshot.quantity })} · {new Intl.NumberFormat(locale, { style: "currency", currency: "VND", maximumFractionDigits: 0 }).format(value.snapshot.totalPrice)}</p>
+			{value.snapshot.promo && <p>{t("promo.used", { code: value.snapshot.promo.code })}</p>}<p>{t("bundleSelection", { count: value.snapshot.bundleQuantity ?? 1, name: value.snapshot.packageName })} · {t("quantity", { count: value.snapshot.quantity })} · {new Intl.NumberFormat(locale, { style: "currency", currency: "VND", maximumFractionDigits: 0 }).format(value.snapshot.totalPrice)}</p>
 			{["creating", "pending", "processing"].includes(value.paymentStatus) && <div className="ticket-payment-status" role="status"><LoaderCircleIcon className="motion-safe:animate-spin" aria-hidden="true" /><p>{t("confirming")}</p></div>}
 			{value.issue && <p className="ticket-warning">{t.has(`issues.${value.issue}`) ? t(`issues.${value.issue}`) : t("issues.providerMismatch")}</p>}
 			<p>{t("expires")}: <TicketTime value={value.expiresAt} /></p>

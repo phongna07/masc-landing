@@ -10,30 +10,36 @@ import { checkoutUrl, orderReturnUrl, payos, validCheckoutUrl } from "./payos";
 import { reconciliationClaim, reconciliationCompletion, reconciliationDue, reconciliationOwner, reconciliationRequest } from "./reconciliation";
 import { checkedPromoInput, eligiblePromo, reacquirePromo } from "./promos";
 
+import { bundleQuantityInput, maxOrderAmount } from "./quantity";
+
 export const checkoutInput = z.object({
 	requestKey: z.uuid(), packageName: z.enum(["Silver", "Golden", "Platinum", "VIP"]),
+	bundleQuantity: bundleQuantityInput,
 	promo: checkedPromoInput.optional(),
 	referralCode: z.string().trim().max(64).regex(/^[A-Za-z0-9_-]*$/).toUpperCase().optional(),
 	buyerName: z.string().trim().min(1).max(120), buyerPhone: z.string().trim().min(1).max(40),
 });
 type Buyer = { id: string; email: string };
 
-export async function startCheckout(buyer: Buyer, input: z.infer<typeof checkoutInput>) {
-	input = checkoutInput.parse(input);
+export async function startCheckout(buyer: Buyer, raw: z.input<typeof checkoutInput>) {
+	const input = checkoutInput.parse(raw);
 	await rateLimit(buyer.id, "checkout", 10);
 	const order = await ticketTransaction(async tx => {
 		const settings = await lockSales(tx);
 		await releaseExpiredReservations(tx);
 		const [existing] = await tx.select().from(ticketOrders).where(and(eq(ticketOrders.buyerId, buyer.id), eq(ticketOrders.requestKey, input.requestKey)));
 		if (existing) {
-			if (existing.snapshot.packageName !== input.packageName || (existing.snapshot.promo?.code ?? null) !== (input.promo?.code ?? null) || existing.referralCode !== (input.referralCode || null)) ticketError("requestChanged", "CONFLICT");
+			if (existing.snapshot.packageName !== input.packageName || (existing.snapshot.bundleQuantity ?? 1) !== input.bundleQuantity || (existing.snapshot.promo?.code ?? null) !== (input.promo?.code ?? null) || existing.referralCode !== (input.referralCode || null)) ticketError("requestChanged", "CONFLICT");
 			return existing;
 		}
 		if (!settings.isSalesOpened) ticketError("salesClosed", "PRECONDITION_FAILED");
 		const [pack] = await tx.select().from(ticketPackages).where(eq(ticketPackages.name, input.packageName));
 		if (!pack) ticketError("notFound", "NOT_FOUND");
-		const promo = input.promo ? await eligiblePromo(tx, input.promo.code, buyer.id, input.promo.revision) : null;
-		const totalPrice = promo ? promo.prices[pack.name] : pack.price;
+		const promo = input.promo ? await eligiblePromo(tx, input.promo.code, buyer.id, input.promo.revision, input.bundleQuantity) : null;
+		const unitPrice = promo ? promo.prices[pack.name] : pack.price;
+		const totalPrice = unitPrice * input.bundleQuantity;
+		const quantity = pack.quantity * input.bundleQuantity;
+		if (totalPrice > maxOrderAmount) ticketError("orderAmountTooHigh");
 		if (totalPrice > 0) payos(); // Validate configuration before committing any paid order or reservation.
 		if (pack.category === "vip") {
 			// lockSales serializes this check with reservation creation across instances.
@@ -44,14 +50,14 @@ export async function startCheckout(buyer: Buyer, input: z.infer<typeof checkout
 				await audit(tx, buyer.id, "vipReservationBlocked", held.id, null, "rejected");
 				return null;
 			}
-			if (await vipUsage(tx) >= settings.vipCapacity) ticketError("vipSoldOut", "CONFLICT");
+			if (await vipUsage(tx) + quantity > settings.vipCapacity) ticketError("vipSoldOut", "CONFLICT");
 		}
 		for (let attempt = 0; attempt < 8; attempt++) {
 			const [created] = await tx.insert(ticketOrders).values({
 				id: randomUUID(), buyerId: buyer.id, requestKey: input.requestKey, providerOrderCode: randomInt(1_000_000_000_000, 10_000_000_000_000),
 				referralCode: input.referralCode || null,
 				buyerEmail: buyer.email, buyerName: input.buyerName, buyerPhone: input.buyerPhone, locale: "vi",
-				snapshot: { packageName: pack.name, category: pack.category, quantity: pack.quantity, benefits: pack.benefits, currency: "VND", totalPrice, ...(promo ? { promo: { code: promo.code, revision: promo.revision, originalPrice: pack.price } } : {}) },
+				snapshot: { packageName: pack.name, category: pack.category, quantity, bundleQuantity: input.bundleQuantity, unitPrice, benefits: pack.benefits, currency: "VND", totalPrice, ...(promo ? { promo: { code: promo.code, revision: promo.revision, originalPrice: pack.price } } : {}) },
 				promoId: promo?.id, promoReservation: promo ? "held" : "none",
 				reservation: pack.category === "vip" ? "held" : "none",
 				expiresAt: sql`date_trunc('second', now()) + interval '15 minutes'`, nextReconcileAt: sql`now() + interval '30 seconds'`,
@@ -84,7 +90,7 @@ async function createPaymentLink(orderId: string) {
 			orderCode: order.providerOrderCode, amount: order.snapshot.totalPrice, description: "MASC" + String(order.providerOrderCode).slice(-5),
 			returnUrl: orderReturnUrl(order.id), cancelUrl: orderReturnUrl(order.id), expiredAt: Math.floor(order.expiresAt.getTime() / 1000),
 			buyerEmail: order.buyerEmail, buyerName: order.buyerName, buyerPhone: order.buyerPhone,
-			items: [{ name: order.snapshot.packageName, quantity: 1, price: order.snapshot.totalPrice }],
+			items: [{ name: order.snapshot.packageName, quantity: order.snapshot.bundleQuantity ?? 1, price: order.snapshot.unitPrice ?? order.snapshot.totalPrice }],
 		});
 		await ticketTransaction(async tx => {
 			await lockSales(tx);
@@ -259,7 +265,7 @@ export async function resolveLatePayment(orderId: string, actorId: string, reaso
 		await releaseExpiredReservations(tx);
 		const [order] = await tx.select().from(ticketOrders).where(eq(ticketOrders.id, orderId)).for("update");
 		if (!order || order.fulfillmentStatus === "issued" || order.issue !== "latePayment" || order.settledAmount !== order.snapshot.totalPrice || !order.lastVerifiedAt || Date.now() - order.lastVerifiedAt.getTime() > 60_000) ticketError("resolutionNotAllowed", "CONFLICT");
-		if (order.snapshot.category === "vip" && order.reservation !== "held" && order.reservation !== "consumed" && await vipUsage(tx) >= settings.vipCapacity) ticketError("vipSoldOut", "CONFLICT");
+		if (order.snapshot.category === "vip" && order.reservation !== "held" && order.reservation !== "consumed" && await vipUsage(tx) + order.snapshot.quantity > settings.vipCapacity) ticketError("vipSoldOut", "CONFLICT");
 		await reacquirePromo(tx, order);
 		await fulfill(tx, order);
 		await audit(tx, actorId, "resolveLatePayment", orderId, reason);

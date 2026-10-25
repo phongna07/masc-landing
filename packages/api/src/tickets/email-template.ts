@@ -12,7 +12,7 @@ export function renderTicketEmail(tickets: Ticket[], order: Order | undefined, s
 	const freeSale = sale?.amountReceived === 0;
 	const bodyHtml = `<p>${escapeXml(freeSale ? copy.freeIntro : purchase ? copy.intro : copy.giftIntro)}</p>`;
 	const lines: string[] = [copy.confidential, copy.attachments];
-	if (order) lines.push(`${copy.order}: ${order.id}`, `${copy.package}: ${order.snapshot.packageName}`, `${copy.quantity}: ${order.snapshot.quantity}`, `${copy.total}: ${total}`);
+	if (order) lines.push(`${copy.order}: ${order.id}`, `${copy.package}: ${order.snapshot.bundleQuantity ?? 1} x ${order.snapshot.packageName}`, `${copy.quantity}: ${order.snapshot.quantity}`, `${copy.total}: ${total}`);
 	if (tickets.some(ticket => ticket.validity === "revoked")) lines.push(copy.revokedNotice);
 	if (sale) lines.push(`${copy.category}: ${copy[sale.category]}`, `${copy.quantity}: ${sale.quantity}`, `${copy.total}: ${new Intl.NumberFormat("vi-VN", { style: "currency", currency: "VND", maximumFractionDigits: 0 }).format(sale.amountReceived)}`);
 	const heading = freeSale ? copy.freeSubject : purchase ? copy.subject : copy.giftSubject;
