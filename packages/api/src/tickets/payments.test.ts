@@ -18,7 +18,7 @@ const buyer = { id: "buyer", email: "buyer@example.com" };
 const otherBuyer = { id: "other-buyer", email: "other@example.com" };
 let creationFailure: Error | null = null;
 let providerUnavailable = false;
-const createPayment = mock.fn(async (input: { orderCode: number; amount: number; buyerName: string; buyerPhone: string }) => {
+const createPayment = mock.fn(async (input: { orderCode: number; amount: number; buyerName: string; buyerPhone: string; items: { name: string; quantity: number; price: number }[] }) => {
 	if (creationFailure) throw creationFailure;
 	return {
 		orderCode: input.orderCode, amount: input.amount, currency: "VND",
@@ -34,6 +34,9 @@ const provider = mock.fn(() => {
 	return { paymentRequests: { create: createPayment, get: getPayment } };
 });
 
+const sendTicketMail = mock.fn(async (_input: Parameters<typeof import("../email/send-mail").sendMail>[0]) => {});
+mock.module(new URL("../email/send-mail.ts", import.meta.url).href, { namedExports: { sendMail: sendTicketMail } });
+
 mock.module("@masc-landing/db", { namedExports: { db } });
 mock.module("@masc-landing/db/ticket-transaction", { namedExports: {
 	ticketTransaction: (work: Parameters<typeof db.transaction>[0]) => db.transaction(work),
@@ -45,7 +48,12 @@ mock.module(new URL("./payos.ts", import.meta.url).href, { namedExports: {
 	validCheckoutUrl: (url: string) => url.startsWith("https://pay.payos.vn/web/"),
 } });
 mock.module("@masc-landing/env/server", { namedExports: { env: {} } });
-const { checkPromo, listPromos, promoInput, savePromo } = await import("./promos");
+const { checkPromo, checkPromoInput, listPromos, promoInput, savePromo } = await import("./promos");
+const { renderOrderCsv } = await import("./order-csv");
+const { exportOrders } = await import("./export");
+const { runTicketEmailJobs } = await import("./email");
+const { getTicketConfig } = await import("./core");
+const { updateSettings } = await import("./management");
 const { ticketsRouter } = await import("../routers/tickets");
 const { checkoutInput, startCheckout, applyProviderStatus, reconcileOrder, runReconciliation, resolveLatePayment } = await import("./payments");
 
@@ -109,11 +117,13 @@ before(async () => {
 	await client.exec(await readFile(new URL("../../../db/src/migrations/0024_fancy_iron_man.sql", import.meta.url), "utf8"));
 	await client.exec(await readFile(new URL("../../../db/src/migrations/0026_little_marvel_apes.sql", import.meta.url), "utf8"));
 	await client.exec(await readFile(new URL("../../../db/src/migrations/0027_marvelous_franklin_storm.sql", import.meta.url), "utf8"));
+	await client.exec(await readFile(new URL("../../../db/src/migrations/0031_fluffy_mole_man.sql", import.meta.url), "utf8"));
 });
 after(() => client.close());
 beforeEach(async () => {
 	await client.exec("TRUNCATE ticket_sales_logs, ticket_orders, ticket_promos, ticket_audit, ticket_rate_limits, ticket_settings, ticket_packages, admission_tickets, ticket_credentials, ticket_email_jobs, ticket_payment_events, admin_emails, admin_activity_logs;");
 	await db.insert(ticketSettings).values({ isSalesOpened: true });
+	sendTicketMail.mock.resetCalls();
 	createPayment.mock.resetCalls();
 	getPayment.mock.resetCalls();
 	provider.mock.resetCalls();
@@ -121,7 +131,7 @@ beforeEach(async () => {
 	providerUnavailable = false;
 });
 
-function checkout(packageName: "VIP" | "Silver" = "VIP", requestKey = randomUUID(), actor = buyer) {
+function checkout(packageName: "VIP" | "Silver" = "VIP", requestKey: string = randomUUID(), actor = buyer) {
 	return startCheckout(actor, { requestKey, packageName, buyerName: "Nguyễn Gia Khánh", buyerPhone: "0901234567" });
 }
 
@@ -566,4 +576,277 @@ test("referral migration preserves existing orders without assigning a code", as
 		await legacy.exec(await readFile(new URL("../../../db/src/migrations/0027_marvelous_franklin_storm.sql", import.meta.url), "utf8"));
 		assert.deepEqual((await legacy.query("SELECT * FROM ticket_orders")).rows, [{ id: "legacy", referral_code: null }]);
 	} finally { await legacy.close(); }
+});
+
+const bundleSizes = { Silver: 1, Golden: 2, Platinum: 3, VIP: 1 };
+const bundlePrices = { Silver: 129000, Golden: 249000, Platinum: 349000, VIP: 199000 };
+function buyBundles(packageName: keyof typeof bundleSizes, bundleQuantity: number, options: Partial<Parameters<typeof startCheckout>[1]> = {}, actor = buyer) {
+	return startCheckout(actor, { requestKey: randomUUID(), packageName, bundleQuantity, buyerName: "Buyer", buyerPhone: "123", ...options });
+}
+
+for (const packageName of ["Silver", "Golden", "Platinum", "VIP"] as const) {
+	for (const bundleQuantity of [1, 3, 10]) {
+		test(`${bundleQuantity} ${packageName} bundles charge per bundle and issue individual tickets exactly once`, async () => {
+			const order = await buyBundles(packageName, bundleQuantity);
+			assert.equal(order.snapshot.bundleQuantity, bundleQuantity);
+			assert.equal(order.snapshot.quantity, bundleSizes[packageName] * bundleQuantity);
+			assert.equal(order.snapshot.unitPrice, bundlePrices[packageName]);
+			assert.equal(order.snapshot.totalPrice, bundlePrices[packageName] * bundleQuantity);
+			const payload = createPayment.mock.calls[0]!.arguments[0];
+			assert.equal(payload.amount, order.snapshot.totalPrice);
+			assert.deepEqual(payload.items, [{ name: packageName, quantity: bundleQuantity, price: bundlePrices[packageName] }]);
+			await applyProviderStatus(order.id, statusFor(order));
+			await applyProviderStatus(order.id, statusFor(order));
+			const issued = await db.select().from(admissionTickets);
+			assert.equal(issued.length, bundleSizes[packageName] * bundleQuantity);
+			assert.equal(new Set(issued.map(ticket => ticket.code)).size, issued.length);
+			assert.deepEqual(issued.map(ticket => ticket.ordinal).sort((a, b) => a - b), Array.from({ length: issued.length }, (_, i) => i + 1));
+			assert.ok(issued.every(ticket => ticket.ownerId === buyer.id && ticket.category === order.snapshot.category));
+			assert.ok(issued.every(ticket => JSON.stringify(ticket.benefits) === JSON.stringify(packageName === "VIP" ? ["networkingLunch"] : [])));
+			assert.equal((await db.select().from(ticketEmailJobs)).length, 1);
+		});
+	}
+}
+
+for (const bundleQuantity of [0, -1, 1.5, 11, 100, null, "3", NaN, Infinity]) {
+	test(`checkout and promo checks reject bundle quantity ${String(bundleQuantity)}`, async () => {
+		const input = { requestKey: randomUUID(), packageName: "Golden", buyerName: "Buyer", buyerPhone: "123", bundleQuantity };
+		assert.equal(checkoutInput.safeParse(input).success, false);
+		assert.equal(checkPromoInput.safeParse({ code: "MASC", bundleQuantity }).success, false);
+		await assert.rejects(caller().checkout(input as unknown as Parameters<ReturnType<typeof caller>["checkout"]>[0]));
+		assert.equal((await db.select().from(ticketOrders)).length, 0);
+		assert.equal(createPayment.mock.callCount(), 0);
+	});
+}
+
+test("quantity is immutable on retries, with defaults compatible with legacy snapshots", async () => {
+	const requestKey = randomUUID();
+	const order = await buyBundles("Golden", 3, { requestKey });
+	assert.equal((await buyBundles("Golden", 3, { requestKey })).id, order.id);
+	await assert.rejects(buyBundles("Golden", 2, { requestKey }), { message: "requestChanged" });
+	assert.equal(createPayment.mock.callCount(), 1);
+	const legacy = await checkout("Silver");
+	const { bundleQuantity: _quantity, unitPrice: _price, ...snapshot } = legacy.snapshot;
+	await db.update(ticketOrders).set({ snapshot }).where(eq(ticketOrders.id, legacy.id));
+	assert.equal((await checkout("Silver", legacy.requestKey)).id, legacy.id);
+	await assert.rejects(buyBundles("Silver", 2, { requestKey: legacy.requestKey }), { message: "requestChanged" });
+});
+
+test("order totals are bounded before creating any order, reservation or payment", async () => {
+	await getTicketConfig();
+	await client.query("UPDATE ticket_packages SET price = 1000000000 WHERE name = 'Golden'");
+	await assert.rejects(buyBundles("Golden", 3), { message: "orderAmountTooHigh" });
+	assert.equal((await db.select().from(ticketOrders)).length, 0);
+	assert.equal(createPayment.mock.callCount(), 0);
+	const boundary = await buyBundles("Golden", 2);
+	assert.equal(boundary.snapshot.totalPrice, 2_000_000_000);
+	const code = await promo({ prices: { ...promoPrices, Golden: 1_000_000_000 } });
+	await assert.rejects(buyBundles("Golden", 3, { promo: code }), { message: "orderAmountTooHigh" });
+	assert.equal((await listPromos())[0]!.held, 0);
+});
+
+test("Golden x 3 delivery includes six distinct PNG attachments and both quantity summaries", async () => {
+	const order = await buyBundles("Golden", 3);
+	await applyProviderStatus(order.id, statusFor(order));
+	await runTicketEmailJobs(1);
+	assert.equal(sendTicketMail.mock.callCount(), 1);
+	const mail = sendTicketMail.mock.calls[0]!.arguments[0];
+	assert.match(mail.text, /3 x Golden/);
+	assert.match(mail.text, /Số lượng vé: 6/);
+	assert.equal(mail.attachments!.length, 6);
+	assert.deepEqual(mail.attachments!.map(attachment => attachment.name), Array.from({ length: 6 }, (_, i) => `ticket-${i + 1}.png`));
+	assert.equal(new Set(mail.attachments!.map(attachment => attachment.content)).size, 6);
+	for (const attachment of mail.attachments!) {
+		assert.equal(attachment.mimeType, "image/png");
+		assert.equal(Buffer.from(attachment.content, "base64").subarray(0, 8).toString("hex"), "89504e470d0a1a0a");
+	}
+	await applyProviderStatus(order.id, statusFor(order));
+	await runTicketEmailJobs(1);
+	assert.equal(sendTicketMail.mock.callCount(), 1);
+});
+
+test("promo prices and usage multiply by bundles, including free orders", async () => {
+	const code = await promo({ totalLimit: 6, perBuyerLimit: 6, prices: { ...promoPrices, Platinum: 0 } });
+	const order = await buyBundles("Golden", 3, { promo: code });
+	assert.equal(order.snapshot.totalPrice, 3 * promoPrices.Golden);
+	assert.equal(order.snapshot.unitPrice, promoPrices.Golden);
+	assert.equal(order.snapshot.promo!.originalPrice, bundlePrices.Golden);
+	assert.deepEqual(createPayment.mock.calls[0]!.arguments[0].items, [{ name: "Golden", quantity: 3, price: promoPrices.Golden }]);
+	assert.equal((await listPromos())[0]!.held, 3);
+	await applyProviderStatus(order.id, statusFor(order));
+	const free = await buyBundles("Platinum", 3, { promo: code });
+	assert.equal(free.fulfillmentStatus, "issued");
+	assert.equal(free.snapshot.quantity, 9);
+	assert.equal((await listPromos())[0]!.held, 0);
+	assert.equal((await listPromos())[0]!.consumed, 6);
+	assert.equal(createPayment.mock.callCount(), 1);
+	assert.equal((await db.select().from(admissionTickets)).length, 15);
+});
+
+test("promo checks, checkout and admin limit edits all enforce bundle usage", async () => {
+	const code = await promo({ totalLimit: 5, perBuyerLimit: 3 });
+	await assert.rejects(checkPromo(code.code, buyer.id, 4), { message: "promoBuyerLimitReached" });
+	await buyBundles("Golden", 3, { promo: code });
+	await assert.rejects(buyBundles("Silver", 1, { promo: code }), { message: "promoBuyerLimitReached" });
+	await assert.rejects(checkPromo(code.code, otherBuyer.id, 3), { message: "promoLimitReached" });
+	await assert.rejects(buyBundles("Golden", 3, { promo: code }, otherBuyer), { message: "promoLimitReached" });
+	await assert.rejects(savePromo({ ...code, totalLimit: 2 }, "admin", true), { message: "promoLimitTooLow" });
+	await assert.rejects(savePromo({ ...code, perBuyerLimit: 2 }, "admin", true), { message: "promoLimitTooLow" });
+	assert.equal((await db.select().from(ticketOrders)).length, 1);
+});
+
+test("concurrent bundle purchases cannot over-reserve promo uses", async () => {
+	const code = await promo({ totalLimit: 5 });
+	const results = await Promise.allSettled([buyBundles("Golden", 3, { promo: code }), buyBundles("Golden", 3, { promo: code }, otherBuyer)]);
+	assert.equal(results.filter(result => result.status === "fulfilled").length, 1);
+	assert.equal((await listPromos())[0]!.held, 3);
+});
+
+for (const terminal of ["CANCELLED", "EXPIRED", "FAILED"] as const) {
+	test(`${terminal} releases every reserved promo bundle`, async () => {
+		const code = await promo({ totalLimit: 3 });
+		const order = await buyBundles("Golden", 3, { promo: code });
+		await applyProviderStatus(order.id, statusFor(order, terminal, 0));
+		assert.equal((await listPromos())[0]!.held, 0);
+		await buyBundles("Golden", 3, { promo: code }, otherBuyer);
+		assert.equal((await listPromos())[0]!.held, 3);
+	});
+}
+
+test("late-payment approval reacquires all released promo uses", async () => {
+	const code = await promo({ totalLimit: 3 });
+	const expired = await buyBundles("Golden", 3, { promo: code });
+	await db.update(ticketOrders).set({ expiresAt: sql`now() - interval '1 second'` }).where(eq(ticketOrders.id, expired.id));
+	const replacement = await buyBundles("Golden", 1, { promo: code }, otherBuyer);
+	await assert.rejects(resolveLatePayment(expired.id, "admin", "Approve late payment"), { message: "promoLimitReached" });
+	await applyProviderStatus(replacement.id, statusFor(replacement, "CANCELLED", 0));
+	await resolveLatePayment(expired.id, "admin", "Approve late payment");
+	assert.equal((await listPromos())[0]!.consumed, 3);
+	assert.equal((await db.select().from(admissionTickets)).length, 6);
+});
+
+test("VIP inventory and admin capacity use ticket quantities, including offline sales", async () => {
+	await db.update(ticketSettings).set({ vipCapacity: 5 });
+	await client.query("INSERT INTO ticket_sales_logs VALUES ('offline', 'vip', 1)");
+	const order = await buyBundles("VIP", 3);
+	assert.equal((await getTicketConfig()).vipAvailable, 1);
+	await assert.rejects(buyBundles("VIP", 2, {}, otherBuyer), { message: "vipSoldOut" });
+	await assert.rejects(buyBundles("VIP", 1), reservationConflict);
+	await assert.rejects(updateSettings({ isSalesOpened: true, vipCapacity: 3, prices: bundlePrices }, "admin"), { message: "capacityTooLow" });
+	await applyProviderStatus(order.id, statusFor(order));
+	assert.equal((await getTicketConfig()).vipUsed, 4);
+	await buyBundles("VIP", 1, {}, otherBuyer);
+	assert.equal((await getTicketConfig()).vipAvailable, 0);
+});
+
+test("concurrent multi-VIP orders cannot oversell stock", async () => {
+	await db.update(ticketSettings).set({ vipCapacity: 5 });
+	const results = await Promise.allSettled([buyBundles("VIP", 3), buyBundles("VIP", 3, {}, otherBuyer)]);
+	assert.equal(results.filter(result => result.status === "fulfilled").length, 1);
+	assert.equal((await getTicketConfig()).vipUsed, 3);
+});
+
+test("late VIP approval requires stock for the full order", async () => {
+	await db.update(ticketSettings).set({ vipCapacity: 3 });
+	const expired = await buyBundles("VIP", 3);
+	await db.update(ticketOrders).set({ expiresAt: sql`now() - interval '1 second'` }).where(eq(ticketOrders.id, expired.id));
+	const replacement = await buyBundles("VIP", 1, {}, otherBuyer);
+	await assert.rejects(resolveLatePayment(expired.id, "admin", "Approve late payment"), { message: "vipSoldOut" });
+	await applyProviderStatus(replacement.id, statusFor(replacement, "CANCELLED", 0));
+	await resolveLatePayment(expired.id, "admin", "Approve late payment");
+	assert.equal((await getTicketConfig()).vipUsed, 3);
+	assert.equal((await db.select().from(admissionTickets)).length, 3);
+});
+
+test("referral reports count six issued admissions for three Golden bundles", async () => {
+	await client.query("INSERT INTO admin_emails VALUES ('root@example.com', 'root')");
+	const order = await buyBundles("Golden", 3, { referralCode: "sale" });
+	await applyProviderStatus(order.id, statusFor(order));
+	assert.deepEqual(await caller("root@example.com").referrals({}), [{ code: "SALE", orders: 1, paidOrders: 1, issuedTickets: 6 }]);
+	const page = await caller().mine({});
+	assert.equal(page.items[0]!.snapshot.bundleQuantity, 3);
+	assert.equal(page.items[0]!.tickets.length, 6);
+	assert.equal((await caller("root@example.com").orders({})).items[0]!.snapshot.quantity, 6);
+});
+
+test("bundle migration preserves historical snapshots and validates new snapshot arithmetic", async () => {
+	const legacy = new PGlite();
+	try {
+		await legacy.exec("CREATE TABLE ticket_orders (id text PRIMARY KEY, snapshot jsonb NOT NULL, promo_id text, CONSTRAINT ticket_order_snapshot_shape CHECK ((snapshot->>'totalPrice')::integer >= 0));");
+		const snapshot = { packageName: "Golden", category: "normal", quantity: 2, currency: "VND", totalPrice: 249000, benefits: [] };
+		await legacy.query("INSERT INTO ticket_orders VALUES ('old', $1, null), ('free', $2, 'promo')", [JSON.stringify(snapshot), JSON.stringify({ ...snapshot, totalPrice: 0 })]);
+		await legacy.exec(await readFile(new URL("../../../db/src/migrations/0031_fluffy_mole_man.sql", import.meta.url), "utf8"));
+		assert.deepEqual((await legacy.query("SELECT snapshot FROM ticket_orders WHERE id = 'old'")).rows, [{ snapshot }]);
+		assert.deepEqual((await legacy.query("SELECT snapshot FROM ticket_orders WHERE id = 'free'")).rows, [{ snapshot: { ...snapshot, totalPrice: 0 } }]);
+		const valid = { ...snapshot, bundleQuantity: 3, quantity: 6, unitPrice: 249000, totalPrice: 747000 };
+		await legacy.query("INSERT INTO ticket_orders VALUES ('new', $1, null)", [JSON.stringify(valid)]);
+		for (const invalid of [
+			{ ...valid, quantity: 3 }, { ...valid, quantity: 6.5 }, { ...valid, quantity: null },
+			{ ...valid, totalPrice: 249000 }, { ...valid, totalPrice: 747000.5 }, { ...valid, totalPrice: -1 },
+			{ ...valid, bundleQuantity: 0 }, { ...valid, bundleQuantity: 11, quantity: 22, totalPrice: 2739000 },
+			{ ...valid, bundleQuantity: 1.5, quantity: 3, totalPrice: 373500 }, { ...valid, bundleQuantity: null },
+			{ ...valid, bundleQuantity: "3" }, { ...valid, unitPrice: null }, { ...valid, unitPrice: "249000" },
+			{ ...valid, unitPrice: 249000.5, totalPrice: 747001.5 }, { ...valid, unitPrice: 1_000_000_000, totalPrice: 3_000_000_000 },
+			{ ...valid, category: "vip" }, { ...valid, packageName: "UNKNOWN" }, { ...valid, currency: "USD" },
+			{ ...snapshot, bundleQuantity: 1 }, { ...snapshot, unitPrice: 249000 }, { ...snapshot, totalPrice: 0 },
+			{},
+		]) await assert.rejects(legacy.query("UPDATE ticket_orders SET snapshot = $1 WHERE id = 'new'", [JSON.stringify(invalid)]));
+	} finally { await legacy.close(); }
+});
+
+
+test("order CSV aligns localized headers with admission quantities and appended bundle columns", async () => {
+	const order = await buyBundles("Golden", 3, { referralCode: "SALES" });
+	await applyProviderStatus(order.id, statusFor(order));
+	const rows = await exportOrders("admin");
+	const legacy = { ...rows[0]!, id: "legacy", snapshot: { packageName: "Golden", category: "normal" as const, quantity: 2, totalPrice: 249000, currency: "VND" as const, benefits: [] } };
+	for (const locale of ["en", "vi"]) {
+		const copy = JSON.parse(await readFile(new URL(`../../../../apps/web/messages/${locale}.json`, import.meta.url), "utf8")).Tickets;
+		const csv = renderOrderCsv([...rows, legacy], copy);
+		assert.ok(csv.startsWith("\ufeff"));
+		const [header, purchased, historical] = csv.slice(1).split("\r\n").map(line => Array.from(line.matchAll(/"((?:[^"]|"")*)"(?:,|$)/g), match => match[1]!.replaceAll('""', '"')));
+		assert.deepEqual(header, Object.values(copy.exportHeaders));
+		assert.equal(header!.length, 15);
+		assert.equal(purchased!.length, header!.length);
+		assert.equal(historical!.length, header!.length);
+		assert.equal(purchased![5], "6");
+		assert.equal(purchased![6], "747000");
+		assert.equal(purchased![12], "SALES");
+		assert.deepEqual(purchased!.slice(-2), ["3", "249000"]);
+		assert.equal(historical![5], "2");
+		assert.deepEqual(historical!.slice(-2), ["1", "249000"]);
+		const escaped = renderOrderCsv([{ ...rows[0]!, buyerEmail: '=HYPERLINK("bad")' }], copy);
+		assert.ok(escaped.includes('"\'=HYPERLINK(""bad"")"'));
+	}
+});
+
+test("free multi-VIP bundles enforce inventory before consuming any promo uses", async () => {
+	await db.update(ticketSettings).set({ vipCapacity: 2 });
+	const code = await promo({ prices: { ...promoPrices, VIP: 0 }, totalLimit: 3 });
+	await assert.rejects(buyBundles("VIP", 3, { promo: code }), { message: "vipSoldOut" });
+	assert.equal((await db.select().from(ticketOrders)).length, 0);
+	assert.equal((await listPromos())[0]!.consumed, 0);
+	await db.update(ticketSettings).set({ vipCapacity: 3 });
+	const order = await buyBundles("VIP", 3, { promo: code });
+	assert.equal(order.fulfillmentStatus, "issued");
+	assert.equal((await getTicketConfig()).vipUsed, 3);
+	assert.equal((await listPromos())[0]!.consumed, 3);
+	assert.equal((await db.select().from(admissionTickets)).length, 3);
+	assert.equal(createPayment.mock.callCount(), 0);
+});
+
+test("legacy promo orders retain one-use accounting and one-bundle email summaries", async () => {
+	const code = await promo({ totalLimit: 4 });
+	const order = await promoCheckout(code, "Golden");
+	const { bundleQuantity: _quantity, unitPrice: _price, ...snapshot } = order.snapshot;
+	await db.update(ticketOrders).set({ snapshot }).where(eq(ticketOrders.id, order.id));
+	assert.equal((await listPromos())[0]!.held, 1);
+	await buyBundles("Golden", 3, { promo: code }, otherBuyer);
+	assert.equal((await listPromos())[0]!.held, 4);
+	await applyProviderStatus(order.id, statusFor(order));
+	await runTicketEmailJobs(1);
+	const mail = sendTicketMail.mock.calls[0]!.arguments[0];
+	assert.match(mail.text, /1 x Golden/);
+	assert.match(mail.text, /Số lượng vé: 2/);
+	assert.equal(mail.attachments!.length, 2);
 });

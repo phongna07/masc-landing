@@ -218,6 +218,13 @@
       "when": 1792856134040,
       "tag": "0030_old_pretty_boy",
       "breakpoints": true
+    },
+    {
+      "idx": 31,
+      "version": "7",
+      "when": 1792918502031,
+      "tag": "0031_fluffy_mole_man",
+      "breakpoints": true
     }
   ]
 }

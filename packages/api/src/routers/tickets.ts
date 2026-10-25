@@ -32,7 +32,7 @@ const idInput = z.object({ id: z.uuid() });
 const historyInput = idInput.extend({ page: z.number().int().min(0).max(100000).default(0) });
 
 export const ticketsRouter = router({
-	checkPromo: buyer.input(checkPromoInput).mutation(({ ctx, input }) => safeErrors(() => checkPromo(input.code, ctx.session.user.id))),
+	checkPromo: buyer.input(checkPromoInput).mutation(({ ctx, input }) => safeErrors(() => checkPromo(input.code, ctx.session.user.id, input.bundleQuantity))),
 	promos: root.query(() => safeErrors(listPromos)),
 	createPromo: root.input(promoInput).mutation(({ ctx, input }) => safeErrors(() => savePromo(input, ctx.session.user.id))),
 	updatePromo: root.input(updatePromoInput).mutation(({ ctx, input }) => safeErrors(() => savePromo(input, ctx.session.user.id, true))),

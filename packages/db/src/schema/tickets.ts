@@ -3,7 +3,7 @@ import { bigint, boolean, check, foreignKey, index, integer, jsonb, pgTable, tex
 import { user } from "./auth";
 
 export type TicketBenefit = "networkingLunch";
-export type OrderSnapshot = { packageName: string; category: "normal" | "vip"; quantity: number; benefits: TicketBenefit[]; currency: "VND"; totalPrice: number; promo?: { code: string; revision: string; originalPrice: number } };
+export type OrderSnapshot = { packageName: string; category: "normal" | "vip"; quantity: number; bundleQuantity?: number; unitPrice?: number; benefits: TicketBenefit[]; currency: "VND"; totalPrice: number; promo?: { code: string; revision: string; originalPrice: number } };
 const time = (name: string) => timestamp(name, { withTimezone: true, mode: "date" });
 
 export const ticketSettings = pgTable("ticket_settings", {
@@ -73,7 +73,29 @@ export const ticketOrders = pgTable("ticket_orders", {
 	resolutionNote: text("resolution_note"),
 	resolvedAt: time("resolved_at"),
 	resolvedBy: text("resolved_by"),
-}, t => [uniqueIndex("ticket_order_request_unique").on(t.buyerId, t.requestKey), uniqueIndex("ticket_order_buyer_pair_unique").on(t.id, t.buyerId), index("ticket_order_recovery_idx").on(t.nextReconcileAt), index("ticket_order_buyer_idx").on(t.buyerId), index("ticket_order_referral_idx").on(t.referralCode), check("ticket_order_referral_format", sql`${t.referralCode} is null or ${t.referralCode} ~ '^[A-Z0-9_-]{1,64}$'`), index("ticket_order_promo_usage_idx").on(t.promoId, t.promoReservation, t.buyerId), check("ticket_order_promo_reservation", sql`(${t.promoId} is null and ${t.promoReservation} = 'none') or (${t.promoId} is not null and ${t.promoReservation} in ('held', 'consumed', 'released') and ${t.snapshot}->'promo' is not null)`), check("ticket_order_buyer_name_required", sql`${t.buyerName} ~ '[^[:space:]]'`), check("ticket_order_buyer_phone_required", sql`${t.buyerPhone} ~ '[^[:space:]]'`), check("ticket_order_amount_nonnegative", sql`${t.settledAmount} >= 0`), check("ticket_order_snapshot_shape", sql`${t.snapshot}->>'currency' = 'VND' and ((${t.snapshot}->>'totalPrice')::integer > 0 or ((${t.snapshot}->>'totalPrice')::integer = 0 and ${t.promoId} is not null)) and ((${t.snapshot}->>'packageName' = 'Silver' and ${t.snapshot}->>'category' = 'normal' and (${t.snapshot}->>'quantity')::integer = 1) or (${t.snapshot}->>'packageName' = 'Golden' and ${t.snapshot}->>'category' = 'normal' and (${t.snapshot}->>'quantity')::integer = 2) or (${t.snapshot}->>'packageName' = 'Platinum' and ${t.snapshot}->>'category' = 'normal' and (${t.snapshot}->>'quantity')::integer = 3) or (${t.snapshot}->>'packageName' = 'VIP' and ${t.snapshot}->>'category' = 'vip' and (${t.snapshot}->>'quantity')::integer = 1))`)]);
+}, t => [uniqueIndex("ticket_order_request_unique").on(t.buyerId, t.requestKey), uniqueIndex("ticket_order_buyer_pair_unique").on(t.id, t.buyerId), index("ticket_order_recovery_idx").on(t.nextReconcileAt), index("ticket_order_buyer_idx").on(t.buyerId), index("ticket_order_referral_idx").on(t.referralCode), check("ticket_order_referral_format", sql`${t.referralCode} is null or ${t.referralCode} ~ '^[A-Z0-9_-]{1,64}$'`), index("ticket_order_promo_usage_idx").on(t.promoId, t.promoReservation, t.buyerId), check("ticket_order_promo_reservation", sql`(${t.promoId} is null and ${t.promoReservation} = 'none') or (${t.promoId} is not null and ${t.promoReservation} in ('held', 'consumed', 'released') and ${t.snapshot}->'promo' is not null)`), check("ticket_order_buyer_name_required", sql`${t.buyerName} ~ '[^[:space:]]'`), check("ticket_order_buyer_phone_required", sql`${t.buyerPhone} ~ '[^[:space:]]'`), check("ticket_order_amount_nonnegative", sql`${t.settledAmount} >= 0`), check("ticket_order_snapshot_shape", sql`coalesce(
+		${t.snapshot}->>'currency' = 'VND'
+		and jsonb_typeof(${t.snapshot}->'totalPrice') = 'number'
+		and (${t.snapshot}->>'totalPrice')::numeric between 0 and 2000000000
+		and (${t.snapshot}->>'totalPrice')::numeric = trunc((${t.snapshot}->>'totalPrice')::numeric)
+		and ((${t.snapshot}->>'totalPrice')::numeric > 0 or ${t.promoId} is not null)
+		and (
+			(not (${t.snapshot} ? 'bundleQuantity') and not (${t.snapshot} ? 'unitPrice'))
+			or (jsonb_typeof(${t.snapshot}->'bundleQuantity') = 'number'
+				and (${t.snapshot}->>'bundleQuantity')::numeric between 1 and 10
+				and (${t.snapshot}->>'bundleQuantity')::numeric = trunc((${t.snapshot}->>'bundleQuantity')::numeric)
+				and jsonb_typeof(${t.snapshot}->'unitPrice') = 'number'
+				and (${t.snapshot}->>'unitPrice')::numeric between 0 and 1000000000
+				and (${t.snapshot}->>'unitPrice')::numeric = trunc((${t.snapshot}->>'unitPrice')::numeric))
+		)
+		and (${t.snapshot}->>'totalPrice')::numeric = coalesce((${t.snapshot}->>'unitPrice')::numeric, (${t.snapshot}->>'totalPrice')::numeric) * coalesce((${t.snapshot}->>'bundleQuantity')::numeric, 1)
+		and jsonb_typeof(${t.snapshot}->'quantity') = 'number'
+		and (
+			(${t.snapshot}->>'packageName' = 'Silver' and ${t.snapshot}->>'category' = 'normal' and (${t.snapshot}->>'quantity')::numeric = coalesce((${t.snapshot}->>'bundleQuantity')::numeric, 1))
+			or (${t.snapshot}->>'packageName' = 'Golden' and ${t.snapshot}->>'category' = 'normal' and (${t.snapshot}->>'quantity')::numeric = 2 * coalesce((${t.snapshot}->>'bundleQuantity')::numeric, 1))
+			or (${t.snapshot}->>'packageName' = 'Platinum' and ${t.snapshot}->>'category' = 'normal' and (${t.snapshot}->>'quantity')::numeric = 3 * coalesce((${t.snapshot}->>'bundleQuantity')::numeric, 1))
+			or (${t.snapshot}->>'packageName' = 'VIP' and ${t.snapshot}->>'category' = 'vip' and (${t.snapshot}->>'quantity')::numeric = coalesce((${t.snapshot}->>'bundleQuantity')::numeric, 1))
+		), false)`)]);
 
 export const giftBatches = pgTable("ticket_gift_batches", {
 	id: text("id").primaryKey(),

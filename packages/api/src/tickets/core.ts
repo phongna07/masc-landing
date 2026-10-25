@@ -51,7 +51,7 @@ export async function releaseExpiredReservations(tx: TicketTransaction) {
 }
 
 export async function vipUsage(tx: TicketTransaction) {
-	const [result] = await tx.select({ count: sql<number>`count(*)::int` }).from(ticketOrders)
+	const [result] = await tx.select({ count: sql<number>`coalesce(sum((${ticketOrders.snapshot}->>'quantity')::int), 0)::int` }).from(ticketOrders)
 		.where(inArray(ticketOrders.reservation, ["held", "consumed"]));
 	const [offline] = await tx.select({ count: sql<number>`coalesce(sum(${salesLogs.quantity}), 0)::int` }).from(salesLogs).where(eq(salesLogs.category, "vip"));
 	return (result?.count ?? 0) + (offline?.count ?? 0);
