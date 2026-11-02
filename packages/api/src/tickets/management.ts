@@ -92,7 +92,7 @@ export async function enqueueDelivery(input: { orderId?: string; ticketId?: stri
 
 export const pageInput = z.object({ page: z.number().int().min(0).max(100000).default(0), search: z.string().trim().max(100).default(""), status: z.string().max(40).default(""), category: z.enum(["", "normal", "vip"]).default(""), validity: z.enum(["", "valid", "revoked"]).default(""), fulfillment: z.enum(["", "pending", "issued", "review"]).default(""), emailStatus: z.enum(["", "pending", "sending", "sent", "failed"]).default("") });
 const pageSize = 20;
-export const orderPageInput = pageInput.extend({ referralCode: z.string().trim().max(64).toUpperCase().default("") });
+export const orderPageInput = pageInput.extend({ referralCode: z.string().trim().max(64).toUpperCase().default(""), promoCode: z.string().trim().max(64).toUpperCase().default("") });
 function orderFilter(input: z.infer<typeof pageInput>, buyerId?: string) {
 	return and(buyerId ? eq(ticketOrders.buyerId, buyerId) : undefined,
 		input.search ? or(ilike(ticketOrders.id, `%${input.search}%`), ilike(ticketOrders.buyerEmail, `%${input.search}%`), ilike(ticketOrders.buyerName, `%${input.search}%`)) : undefined,
@@ -114,8 +114,9 @@ export async function listReferralUsage(input: z.infer<typeof pageInput>) {
 		.groupBy(ticketOrders.referralCode).orderBy(sql`count(*) desc`, ticketOrders.referralCode);
 }
 
-export async function listOrders(input: z.infer<typeof pageInput> & { referralCode?: string }, buyerId?: string) {
-	const filter = and(orderFilter(input, buyerId), input.referralCode ? eq(ticketOrders.referralCode, input.referralCode) : undefined);
+export async function listOrders(input: z.infer<typeof pageInput> & { referralCode?: string; promoCode?: string }, buyerId?: string) {
+	const filter = and(orderFilter(input, buyerId), input.referralCode ? eq(ticketOrders.referralCode, input.referralCode) : undefined,
+		input.promoCode ? sql`${ticketOrders.snapshot}->'promo'->>'code' = ${input.promoCode}` : undefined);
 	const [rows, totals] = await Promise.all([
 		db.select().from(ticketOrders).where(filter).orderBy(desc(ticketOrders.createdAt), ticketOrders.id).limit(pageSize).offset(input.page * pageSize),
 		db.select({ total: sql<number>`count(*)::int` }).from(ticketOrders).where(filter),

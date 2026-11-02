@@ -1530,6 +1530,8 @@
     "previous": "Previous",
     "next": "Next",
     "page": "Page {page} · {total} records",
+    "pageNumber": "Page {page}",
+    "totalRecords": "{total} records in total",
     "overview": "Overview",
     "purchased": "Purchased tickets and orders",
     "gifted": "Gifted tickets and batches",
@@ -1957,6 +1959,8 @@
       }
     },
     "promo": {
+      "filter": "Filter orders by promo code",
+      "filterPlaceholder": "Enter an exact promo code",
       "management": "Promo codes",
       "managementHelp": "Set a separate price for each package. Changes apply to new orders; existing orders retain their saved prices.",
       "create": "Create promo code",
