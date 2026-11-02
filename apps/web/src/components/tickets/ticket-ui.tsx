@@ -30,7 +30,7 @@ export function TicketError({ error }: { error: { message: string } | null | und
 	return <div className="ticket-error" role="alert"><AlertCircleIcon aria-hidden="true" /><p>{t.has(`errors.${error.message}`) ? t(`errors.${error.message}`) : t("errors.operationFailed")}</p></div>;
 }
 
-export function Pagination({ page, total, pageSize, setPage }: { page: number; total: number; pageSize: number; setPage: (page: number) => void }) {
+export function Pagination({ page, total, pageSize, setPage, showTotal = true }: { page: number; total: number; pageSize: number; setPage: (page: number) => void; showTotal?: boolean }) {
 	const t = useTranslations("Tickets");
-	return <nav className="ticket-pagination" aria-label={t("pagination")}><Button type="button" variant="outline" onClick={() => setPage(page - 1)} disabled={!page}><ArrowLeftIcon aria-hidden="true" />{t("previous")}</Button><span>{t("page", { page: page + 1, total })}</span><Button type="button" variant="outline" onClick={() => setPage(page + 1)} disabled={(page + 1) * pageSize >= total}>{t("next")}<ArrowRightIcon aria-hidden="true" /></Button></nav>;
+	return <nav className="ticket-pagination" aria-label={t("pagination")}><Button type="button" variant="outline" onClick={() => setPage(page - 1)} disabled={!page}><ArrowLeftIcon aria-hidden="true" />{t("previous")}</Button><span>{showTotal ? t("page", { page: page + 1, total }) : t("pageNumber", { page: page + 1 })}</span><Button type="button" variant="outline" onClick={() => setPage(page + 1)} disabled={(page + 1) * pageSize >= total}>{t("next")}<ArrowRightIcon aria-hidden="true" /></Button></nav>;
 }

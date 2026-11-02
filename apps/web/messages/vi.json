@@ -1530,6 +1530,8 @@
     "previous": "Trang trước",
     "next": "Trang sau",
     "page": "Trang {page} · Tổng cộng {total} mục",
+    "pageNumber": "Trang {page}",
+    "totalRecords": "Tổng cộng {total} mục",
     "overview": "Tổng quan",
     "purchased": "Đơn mua vé",
     "gifted": "Vé tặng",
@@ -1957,6 +1959,8 @@
       }
     },
     "promo": {
+      "filter": "Lọc đơn hàng theo mã ưu đãi",
+      "filterPlaceholder": "Nhập chính xác mã ưu đãi",
       "management": "Mã ưu đãi",
       "managementHelp": "Thiết lập giá riêng cho từng gói vé. Thay đổi chỉ áp dụng cho đơn mới; các đơn đã tạo vẫn giữ giá đã đặt.",
       "create": "Tạo mã ưu đãi",
