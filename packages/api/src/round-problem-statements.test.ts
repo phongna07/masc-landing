@@ -10,8 +10,8 @@ const membership = (round: RoundId, status: "pending" | "approved" | "rejected" 
 	registered: true, round, team: { status },
 });
 
-test("problem statements accept both later rounds and the inclusive 200 MiB boundary", () => {
-	for (const round of ["2", "3"]) {
+test("problem statements accept all later rounds and the inclusive 200 MiB boundary", () => {
+	for (const round of ["2", "3", "4", "5"]) {
 		for (const fileSize of [1, MAX_PROBLEM_STATEMENT_FILE_SIZE]) {
 			assert.equal(problemStatementFileSchema.safeParse({ ...file, round, fileSize, filename: "STATEMENT.PDF" }).success, true);
 		}
@@ -20,7 +20,7 @@ test("problem statements accept both later rounds and the inclusive 200 MiB boun
 
 test("uploads reject unsupported rounds, extensions, MIME types, and invalid sizes", () => {
 	for (const invalid of [
-		{ round: "0.5" }, { round: "1" }, { round: "4" },
+		{ round: "0.5" }, { round: "1" }, { round: "6" },
 		{ filename: "statement.txt" }, { filename: "statement.pdf.exe" }, { filename: "" },
 		{ mimeType: "text/plain" }, { mimeType: "" },
 		{ fileSize: 0 }, { fileSize: -1 }, { fileSize: 1.5 }, { fileSize: MAX_PROBLEM_STATEMENT_FILE_SIZE + 1 },
@@ -30,7 +30,7 @@ test("uploads reject unsupported rounds, extensions, MIME types, and invalid siz
 });
 
 test("approved membership must match the requested round", () => {
-	for (const round of ["2", "3"] as const) {
+	for (const round of ["2", "3", "4", "5"] as const) {
 		assert.equal(isAdmittedToProblemStatementRound(round, membership(round)), true);
 		for (const status of ["pending", "rejected"] as const) {
 			assert.equal(isAdmittedToProblemStatementRound(round, membership(round, status)), false);
@@ -53,7 +53,7 @@ test("Round 1 preview admission additionally requires an assigned track, indepen
 });
 
 test("approved captains and teammates have the same statement access", () => {
-	for (const round of ["2", "3"] as const) {
+	for (const round of ["2", "3", "4", "5"] as const) {
 		for (const role of ["captain", "member"] as const) {
 			const admitted = { ...membership(round), role };
 			assert.equal(isAdmittedToProblemStatementRound(round, admitted), true);
@@ -62,7 +62,7 @@ test("approved captains and teammates have the same statement access", () => {
 });
 
 test("later-round reminders require publication, open submissions, and approved membership", () => {
-	for (const round of ["2", "3"] as const) {
+	for (const round of ["2", "3", "4", "5"] as const) {
 		for (const isPublished of [false, true]) {
 			for (const isSubmissionOpen of [false, true]) {
 				for (const status of ["pending", "approved", "rejected"] as const) {

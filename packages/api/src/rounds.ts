@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const roundIds = ["0.5", "1", "2", "3"] as const;
+export const roundIds = ["0.5", "1", "2", "3", "4", "5"] as const;
 export const roundSchema = z.enum(roundIds);
 export type RoundId = z.infer<typeof roundSchema>;
 

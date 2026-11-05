@@ -20,7 +20,9 @@
     "round1": "Vòng 1",
     "round2": "Vòng 2",
     "round3": "Vòng thực chiến",
-    "numbered": "Vòng {round}"
+    "numbered": "Vòng {round}",
+    "round4": "Mini Case",
+    "round5": "Final Slide Presentation"
   },
   "Home": {
     "header": {
@@ -293,13 +295,17 @@
         "0_5": "The Ignition",
         "1": "The Star Gathering",
         "2": "The Stellar Forge",
-        "3": "The Cosmic Blast"
+        "3": "The Cosmic Blast",
+        "4": "Mini Case",
+        "5": "Final Slide Presentation"
       },
       "description": {
         "0_5": "Đăng ký đội thi để bắt đầu hành trình cùng MASC.",
         "1": "Nộp CV của cả 3 thành viên để đăng ký xét tuyển.",
         "2": "Dành cho các đội được Ban tổ chức chọn vào Vòng 2.",
-        "3": "Dành cho các đội vượt qua Vòng 2 và được chọn vào Vòng thực chiến."
+        "3": "Dành cho các đội vượt qua Vòng 2 và được chọn vào Vòng thực chiến.",
+        "4": "Dành cho các đội đã được chọn vào Mini Case.",
+        "5": "Dành cho các đội đã được chọn vào Final Slide Presentation."
       },
       "problemStatementPublished": "Đề bài {roundLabel} đã được công bố."
     },
@@ -477,7 +483,9 @@
       "round": "{roundLabel}",
       "round1": "Vòng 1",
       "round2": "Vòng 2",
-      "round3": "Vòng thực chiến"
+      "round3": "Vòng thực chiến",
+      "round4": "Mini Case",
+      "round5": "Final Slide Presentation"
     },
     "round": {
       "title": "Bài nộp {roundLabel}",

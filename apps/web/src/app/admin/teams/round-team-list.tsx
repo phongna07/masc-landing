@@ -25,7 +25,7 @@ import { queryClient, trpc } from "@/utils/trpc";
 import { AdminEmpty, AdminError, AdminHeading, AdminLoading, AdminMetrics, formatDate } from "../admin-state";
 import { exportTeamsToExcel } from "./team-excel-export";
 
-const targets: Record<RoundId, RoundId[]> = { "0.5": ["1", "2"], "1": ["2"], "2": ["3"], "3": [] };
+const targets: Record<RoundId, RoundId[]> = { "0.5": ["1", "2"], "1": ["2"], "2": ["3"], "3": ["4"], "4": ["5"], "5": [] };
 
 export default function RoundTeamList({ round }: { round: RoundId }) {
   const t = useTranslations("Admin"); const locale = useLocale();
@@ -80,6 +80,8 @@ export default function RoundTeamList({ round }: { round: RoundId }) {
     if (round === "0.5" && (targetRound === "1" || targetRound === "2")) promote.mutate({ sourceRound: round, targetRound, teamIds: selected });
     else if (round === "1" && targetRound === "2") promote.mutate({ sourceRound: round, targetRound, teamIds: selected });
     else if (round === "2" && targetRound === "3") promote.mutate({ sourceRound: round, targetRound, teamIds: selected });
+    else if (round === "3" && targetRound === "4") promote.mutate({ sourceRound: round, targetRound, teamIds: selected });
+    else if (round === "4" && targetRound === "5") promote.mutate({ sourceRound: round, targetRound, teamIds: selected });
   };
   const runExport = async () => {
     if (isExporting) return;

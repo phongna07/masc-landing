@@ -10,6 +10,6 @@ export const roundProblemStatements = pgTable("round_problem_statements", {
 	createdAt: timestamp("created_at").defaultNow().notNull(),
 	updatedAt: timestamp("updated_at").defaultNow().notNull(),
 }, (table) => [
-	check("round_problem_statements_round_check", sql`${table.round} in ('2', '3')`),
+	check("round_problem_statements_round_check", sql`${table.round} in ('2', '3', '4', '5')`),
 	check("round_problem_statements_file_check", sql`${table.mimeType} = 'application/pdf' and ${table.fileSize} > 0 and ${table.fileSize} <= 209715200`),
 ]);

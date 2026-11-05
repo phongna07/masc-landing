@@ -20,7 +20,9 @@
     "round1": "Round 1",
     "round2": "Round 2",
     "round3": "Practical Round",
-    "numbered": "Round {round}"
+    "numbered": "Round {round}",
+    "round4": "Mini Case",
+    "round5": "Final Slide Presentation"
   },
   "Home": {
     "header": {
@@ -293,13 +295,17 @@
         "0_5": "The Ignition",
         "1": "The Star Gathering",
         "2": "The Stellar Forge",
-        "3": "The Cosmic Blast"
+        "3": "The Cosmic Blast",
+        "4": "Mini Case",
+        "5": "Final Slide Presentation"
       },
       "description": {
         "0_5": "Create a team and begin your MASC journey.",
         "1": "Apply with a CV for each of the three team members.",
         "2": "Eligible teams are promoted by the organizers.",
-        "3": "Eligible Round 2 teams are promoted by the organizers."
+        "3": "Eligible Round 2 teams are promoted by the organizers.",
+        "4": "For teams promoted to Mini Case.",
+        "5": "For teams promoted to Final Slide Presentation."
       },
       "problemStatementPublished": "The problem statement for {roundLabel} has been published."
     },
@@ -477,7 +483,9 @@
       "round": "{roundLabel}",
       "round1": "Round 1",
       "round2": "Round 2",
-      "round3": "Practical Round"
+      "round3": "Practical Round",
+      "round4": "Mini Case",
+      "round5": "Final Slide Presentation"
     },
     "round": {
       "title": "{roundLabel} submission",

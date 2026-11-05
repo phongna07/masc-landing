@@ -42,9 +42,9 @@ export const roundProblemStatementRouter = router({
 		const rows = await db.select({ round: roundProblemStatements.round,
 			originalFilename: roundProblemStatements.originalFilename, fileSize: roundProblemStatements.fileSize,
 		}).from(roundProblemStatements);
-		const metadata: Record<ProblemStatementRound, { originalFilename: string; fileSize: number } | null> = { "2": null, "3": null };
+		const metadata: Record<ProblemStatementRound, { originalFilename: string; fileSize: number } | null> = { "2": null, "3": null, "4": null, "5": null };
 		for (const row of rows) {
-			if (row.round === "2" || row.round === "3") metadata[row.round] = { originalFilename: row.originalFilename, fileSize: row.fileSize };
+			if (row.round === "2" || row.round === "3" || row.round === "4" || row.round === "5") metadata[row.round] = { originalFilename: row.originalFilename, fileSize: row.fileSize };
 		}
 		return metadata;
 	}),

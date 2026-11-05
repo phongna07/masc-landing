@@ -15,6 +15,12 @@ import {
 	roundTwoSubmissions,
 	roundTwoTeams,
 	teams,
+	roundFourTeams,
+	roundFourMembers,
+	roundFourSubmissions,
+	roundFiveTeams,
+	roundFiveMembers,
+	roundFiveSubmissions,
 } from "@masc-landing/db/schema/index";
 import { env } from "@masc-landing/env/server";
 import { TRPCError } from "@trpc/server";
@@ -110,6 +116,16 @@ function registrationTables(round: RoundId) {
 		team: roundTwoTeams as unknown as typeof teams,
 		member: roundTwoMembers as unknown as typeof members,
 		submission: roundTwoSubmissions as unknown as typeof roundSubmissions,
+	};
+	if (round === "4") return {
+		team: roundFourTeams as unknown as typeof teams,
+		member: roundFourMembers as unknown as typeof members,
+		submission: roundFourSubmissions as unknown as typeof roundSubmissions,
+	};
+	if (round === "5") return {
+		team: roundFiveTeams as unknown as typeof teams,
+		member: roundFiveMembers as unknown as typeof members,
+		submission: roundFiveSubmissions as unknown as typeof roundSubmissions,
 	};
 	return {
 		team: roundThreeTeams as unknown as typeof teams,

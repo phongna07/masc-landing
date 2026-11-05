@@ -158,7 +158,7 @@ export async function exportRoundSubmissionsToExcel(round: RoundId, submissions:
 
 	const { default: writeExcelFile } = await import("write-excel-file/browser");
 	await writeExcelFile(sheetData, {
-		sheet: `Round ${round} Submissions`,
+		sheet: round === "4" ? "Mini Case" : round === "5" ? "Final Slide Presentation" : `Round ${round} Submissions`,
 		columns,
 		stickyRowsCount: 1,
 		stickyColumnsCount: 2,

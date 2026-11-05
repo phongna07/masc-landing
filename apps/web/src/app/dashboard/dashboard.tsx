@@ -322,7 +322,7 @@ function RoundDashboard({ round, session, settings, uploadLimits, preferenceSett
       : <><TeamOverview membership={membership.data} />
         {membership.data.round === "1" && <RoundOnePreferences membership={membership.data}
           preferenceSettings={preferenceSettings} />}
-        {membership.data.team.status === "approved" && (round === "2" || round === "3") && <RoundProblemStatement round={round} />}
+        {membership.data.team.status === "approved" && (round === "2" || round === "3" || round === "4" || round === "5") && <RoundProblemStatement round={round} />}
         {membership.data.team.status === "approved"
           && (membership.data.round !== "1" || membership.data.team.preferenceStatus === "assigned")
           && <RoundSubmission round={round} maxFileSize={uploadLimits.roundSubmission}

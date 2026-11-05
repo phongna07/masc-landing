@@ -10,6 +10,10 @@ import {
 	roundTwoMembers,
 	roundTwoTeams,
 	teams,
+	roundFourTeams,
+	roundFourMembers,
+	roundFiveTeams,
+	roundFiveMembers,
 } from "@masc-landing/db/schema/index";
 import { and, eq, or, sql } from "drizzle-orm";
 
@@ -206,19 +210,107 @@ async function roundThreeMembership(user: MembershipUser) {
 	};
 }
 
+async function roundFourMembership(user: MembershipUser) {
+	const email = user.email.trim().toLowerCase();
+	const [membership] = await db.select({
+		isCaptain: roundFourMembers.isCaptain,
+		teamId: roundFourTeams.id,
+		teamName: roundFourTeams.teamName,
+		registrationStatus: roundFourTeams.registrationStatus,
+		isEliminated: roundFourTeams.isEliminated,
+		captainPhone: roundFourTeams.captainPhone,
+		sourceTeamId: roundFourTeams.sourceRoundThreeTeamId,
+	}).from(roundFourMembers).innerJoin(roundFourTeams, eq(roundFourMembers.teamId, roundFourTeams.id)).where(or(
+		and(eq(roundFourTeams.captainId, user.id), eq(roundFourMembers.isCaptain, true)),
+		sql`lower(${roundFourMembers.email}) = ${email}`,
+	)).limit(1);
+	if (!membership) return { registered: false as const, round: "4" as const };
+	const roster = await db.select({
+		id: roundFourMembers.id,
+		fullName: roundFourMembers.fullName,
+		email: roundFourMembers.email,
+		birthdate: roundFourMembers.birthdate,
+		universityName: roundFourMembers.universityName,
+		isCaptain: roundFourMembers.isCaptain,
+	}).from(roundFourMembers).where(eq(roundFourMembers.teamId, membership.teamId))
+		.orderBy(sql`${roundFourMembers.isCaptain} desc`, roundFourMembers.fullName);
+	return {
+		registered: true as const,
+		round: "4" as const,
+		role: membership.isCaptain ? "captain" as const : "member" as const,
+		team: {
+			id: membership.teamId,
+			name: membership.teamName,
+			status: membership.registrationStatus,
+			isEliminated: membership.isEliminated,
+			captainPhone: membership.captainPhone,
+			admissionMethod: "promotion" as const,
+			sourceRound: "3" as const,
+			sourceTeamId: membership.sourceTeamId,
+			members: roster,
+		},
+	};
+}
+
+async function roundFiveMembership(user: MembershipUser) {
+	const email = user.email.trim().toLowerCase();
+	const [membership] = await db.select({
+		isCaptain: roundFiveMembers.isCaptain,
+		teamId: roundFiveTeams.id,
+		teamName: roundFiveTeams.teamName,
+		registrationStatus: roundFiveTeams.registrationStatus,
+		isEliminated: roundFiveTeams.isEliminated,
+		captainPhone: roundFiveTeams.captainPhone,
+		sourceTeamId: roundFiveTeams.sourceRoundFourTeamId,
+	}).from(roundFiveMembers).innerJoin(roundFiveTeams, eq(roundFiveMembers.teamId, roundFiveTeams.id)).where(or(
+		and(eq(roundFiveTeams.captainId, user.id), eq(roundFiveMembers.isCaptain, true)),
+		sql`lower(${roundFiveMembers.email}) = ${email}`,
+	)).limit(1);
+	if (!membership) return { registered: false as const, round: "5" as const };
+	const roster = await db.select({
+		id: roundFiveMembers.id,
+		fullName: roundFiveMembers.fullName,
+		email: roundFiveMembers.email,
+		birthdate: roundFiveMembers.birthdate,
+		universityName: roundFiveMembers.universityName,
+		isCaptain: roundFiveMembers.isCaptain,
+	}).from(roundFiveMembers).where(eq(roundFiveMembers.teamId, membership.teamId))
+		.orderBy(sql`${roundFiveMembers.isCaptain} desc`, roundFiveMembers.fullName);
+	return {
+		registered: true as const,
+		round: "5" as const,
+		role: membership.isCaptain ? "captain" as const : "member" as const,
+		team: {
+			id: membership.teamId,
+			name: membership.teamName,
+			status: membership.registrationStatus,
+			isEliminated: membership.isEliminated,
+			captainPhone: membership.captainPhone,
+			admissionMethod: "promotion" as const,
+			sourceRound: "4" as const,
+			sourceTeamId: membership.sourceTeamId,
+			members: roster,
+		},
+	};
+}
+
 export async function getRoundMembership(user: MembershipUser, round: RoundId) {
 	if (round === "0.5") return roundHalfMembership(user);
 	if (round === "1") return roundOneMembership(user);
 	if (round === "2") return roundTwoMembership(user);
+	if (round === "4") return roundFourMembership(user);
+	if (round === "5") return roundFiveMembership(user);
 	return roundThreeMembership(user);
 }
 
 export async function getRoundMemberships(user: MembershipUser) {
-	const [roundHalf, roundOne, roundTwo, roundThree] = await Promise.all([
+	const [roundHalf, roundOne, roundTwo, roundThree, roundFour, roundFive] = await Promise.all([
 		roundHalfMembership(user),
 		roundOneMembership(user),
 		roundTwoMembership(user),
 		roundThreeMembership(user),
+		roundFourMembership(user),
+		roundFiveMembership(user),
 	]);
-	return { "0.5": roundHalf, "1": roundOne, "2": roundTwo, "3": roundThree };
+	return { "0.5": roundHalf, "1": roundOne, "2": roundTwo, "3": roundThree, "4": roundFour, "5": roundFive };
 }

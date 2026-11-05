@@ -3,7 +3,9 @@ import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { db } from "@masc-landing/db";
 import { members, roundOneMembers, roundOneSubmissions, roundOneTeams, roundSubmissions,
   roundThreeMembers, roundThreeSubmissions, roundThreeTeams, roundTwoMembers, roundTwoSubmissions,
-  roundTwoTeams, teams } from "@masc-landing/db/schema/index";
+  roundTwoTeams, teams,
+  roundFourTeams, roundFourMembers, roundFourSubmissions, roundFiveTeams, roundFiveMembers, roundFiveSubmissions,
+} from "@masc-landing/db/schema/index";
 import { env } from "@masc-landing/env/server";
 import { TRPCError } from "@trpc/server";
 import { and, desc, eq, or, sql } from "drizzle-orm";
@@ -44,6 +46,10 @@ function tablesForRound(round: RoundId) {
     member: roundOneMembers as unknown as typeof members, submission: roundOneSubmissions as unknown as typeof roundSubmissions };
   if (round === "2") return { team: roundTwoTeams as unknown as typeof teams,
     member: roundTwoMembers as unknown as typeof members, submission: roundTwoSubmissions as unknown as typeof roundSubmissions };
+  if (round === "4") return { team: roundFourTeams as unknown as typeof teams,
+    member: roundFourMembers as unknown as typeof members, submission: roundFourSubmissions as unknown as typeof roundSubmissions };
+  if (round === "5") return { team: roundFiveTeams as unknown as typeof teams,
+    member: roundFiveMembers as unknown as typeof members, submission: roundFiveSubmissions as unknown as typeof roundSubmissions };
   return { team: roundThreeTeams as unknown as typeof teams,
     member: roundThreeMembers as unknown as typeof members, submission: roundThreeSubmissions as unknown as typeof roundSubmissions };
 }

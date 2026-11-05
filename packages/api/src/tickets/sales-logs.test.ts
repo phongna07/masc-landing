@@ -48,9 +48,10 @@ before(async () => {
 		INSERT INTO "user" VALUES ('buyer', 'Buyer', 'buyer@example.com');
 		CREATE TABLE admin_activity_logs (id text PRIMARY KEY, actor_user_id text NOT NULL, actor_name text NOT NULL, actor_email text NOT NULL, actor_role text NOT NULL, procedure_path text NOT NULL, procedure_type text NOT NULL, input jsonb, outcome text NOT NULL, error_code text, created_at timestamp DEFAULT now());
 	`);
-	// Validate the actual generated migration against the preceding ticket schema.
+	// Validate ticket migrations 0018–0031 against the preceding ticket schema.
+	// Later competition migrations require tables outside this isolated fixture.
 	const directory = new URL("../../../db/src/migrations/", import.meta.url);
-	for (const filename of (await readdir(directory)).filter(name => /^00(1[89]|[23]\d)_.*\.sql$/.test(name)).sort()) {
+	for (const filename of (await readdir(directory)).filter(name => /^00(1[89]|2\d|3[01])_.*\.sql$/.test(name)).sort()) {
 		if (filename.startsWith("0028_")) {
 			await client.exec(`
 				INSERT INTO ticket_gift_batches (id, request_key, category, quantity, title, created_by) VALUES ('legacy-gift', 'legacy-key', 'normal', 1, 'Legacy', 'root');
