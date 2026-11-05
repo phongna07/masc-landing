@@ -1451,3 +1451,19 @@ p.ticket-warning {
 @media (max-width: 520px) {
   .sales-log-guidance { grid-template-columns: minmax(0, 1fr); gap: 12px; }
 }
+
+.entrance-info-table td {
+  min-width: 240px;
+  max-width: 400px;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+.entrance-info-field {
+  display: block;
+  margin-bottom: 0.35rem;
+}
+
+.entrance-info-field small {
+  color: var(--muted-foreground);
+}
