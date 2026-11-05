@@ -619,6 +619,7 @@
       "close": "Đóng menu quản trị"
     },
     "tabs": {
+      "entranceInfo": "Thông tin vào cửa",
       "manageAdmins": "Quản lý quản trị viên",
       "overview": "Tổng quan",
       "announcements": "Thông báo",
@@ -2085,5 +2086,97 @@
       "freeAmountHelp": "Nhập 0 VND để cấp vé miễn phí."
     },
     "salesLog": "Bán vé trực tiếp"
+  },
+  "EntranceInfo": {
+    "title": "Thông tin vào cửa",
+    "description": "Toàn bộ vé đã cấp từ mọi nguồn. Thông tin liên hệ sử dụng thông tin người mua nếu chưa có thông tin người nhận. Thời gian hiển thị theo giờ Việt Nam (UTC+07:00).",
+    "search": "Tìm kiếm thông tin vé",
+    "searchPlaceholder": "Tên, email, số điện thoại, đơn hàng hoặc thông tin khác",
+    "refresh": "Tải lại",
+    "exportExcel": "Xuất Excel",
+    "exporting": "Đang xuất…",
+    "exportHelp": "File Excel luôn bao gồm toàn bộ vé đã tải, kể cả khi đang tìm kiếm.",
+    "exportSuccess": "Đã xuất {count} vé ra Excel.",
+    "exportError": "Không thể xuất Excel. Vui lòng thử lại.",
+    "counts": "{matching} vé phù hợp / tổng {total} vé",
+    "empty": "Chưa có vé nào được cấp.",
+    "noMatches": "Không tìm thấy vé phù hợp.",
+    "groups": {
+      "ticket": "Thông tin vé",
+      "contact": "Liên hệ chính",
+      "recipient": "Người nhận",
+      "buyer": "Người mua",
+      "order": "Đơn mua vé",
+      "gift": "Lô vé tặng",
+      "sales": "Đơn bán của cộng tác viên"
+    },
+    "columns": {
+      "id": "ID vé",
+      "source": "Nguồn vé",
+      "category": "Loại vé",
+      "ordinal": "Số thứ tự vé",
+      "benefits": "Quyền lợi",
+      "validity": "Tình trạng vé",
+      "createdAt": "Thời gian cấp vé",
+      "acceptedCount": "Số lần Check-in thành công",
+      "contactName": "Tên liên hệ",
+      "contactEmail": "Email liên hệ",
+      "contactPhone": "Số điện thoại liên hệ",
+      "recipientName": "Tên người nhận",
+      "recipientEmail": "Email người nhận",
+      "recipientPhone": "Số điện thoại người nhận",
+      "buyerName": "Tên người mua",
+      "buyerEmail": "Email người mua",
+      "buyerPhone": "Số điện thoại người mua",
+      "orderId": "ID đơn hàng",
+      "orderCode": "Mã đơn hàng",
+      "packageName": "Gói vé",
+      "orderQuantity": "Số vé trong đơn",
+      "paymentStatus": "Trạng thái thanh toán",
+      "fulfillmentStatus": "Trạng thái cấp vé",
+      "orderPrice": "Tổng tiền đơn hàng (VND)",
+      "paidAt": "Thời gian thanh toán",
+      "promoCode": "Mã ưu đãi",
+      "referralCode": "Mã giới thiệu",
+      "batchId": "ID lô vé tặng",
+      "batchTitle": "Tên lô vé tặng",
+      "batchNote": "Ghi chú lô vé tặng",
+      "salesLogId": "ID đơn bán vé",
+      "salesQuantity": "Số vé trong đơn bán",
+      "amountReceived": "Số tiền đã nhận (VND)",
+      "issuerName": "Tên người cấp vé",
+      "issuerEmail": "Email người cấp vé"
+    },
+    "sources": {
+      "purchased": "Vé mua trực tuyến",
+      "gifted": "Vé tặng",
+      "sales-log": "Vé từ cộng tác viên"
+    },
+    "categories": {
+      "normal": "Vé thường",
+      "vip": "Vé VIP"
+    },
+    "validities": {
+      "valid": "Hợp lệ",
+      "revoked": "Đã thu hồi"
+    },
+    "payments": {
+      "creating": "Đang tạo liên kết thanh toán",
+      "pending": "Chờ thanh toán",
+      "processing": "Đang xử lý thanh toán",
+      "paid": "Đã xác nhận thanh toán",
+      "cancelled": "Đã hủy",
+      "expired": "Hết hạn thanh toán",
+      "failed": "Không tạo được liên kết thanh toán",
+      "review": "Cần kiểm tra thanh toán"
+    },
+    "fulfillments": {
+      "pending": "Chưa cấp vé",
+      "issued": "Đã cấp vé",
+      "review": "Tạm dừng cấp vé để kiểm tra"
+    },
+    "benefits": {
+      "networkingLunch": "Bao gồm Networking Lunch"
+    }
   }
 }

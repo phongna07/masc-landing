@@ -619,6 +619,7 @@
       "close": "Close admin navigation"
     },
     "tabs": {
+      "entranceInfo": "Entrance information",
       "manageAdmins": "Manage admins",
       "overview": "Overview",
       "announcements": "Announcements",
@@ -2085,5 +2086,97 @@
       "freeAmountHelp": "Enter 0 VND to issue free tickets."
     },
     "salesLog": "Sales logs"
+  },
+  "EntranceInfo": {
+    "title": "Entrance information",
+    "description": "All issued tickets across every source. Contact details fall back to the buyer when recipient details are missing. Times are shown in Vietnam time (UTC+07:00).",
+    "search": "Search all ticket information",
+    "searchPlaceholder": "Name, email, phone number, order, or any other detail",
+    "refresh": "Refresh",
+    "exportExcel": "Export Excel",
+    "exporting": "Exporting…",
+    "exportHelp": "Excel always includes all loaded tickets, even when a search is active.",
+    "exportSuccess": "Exported {count} tickets to Excel.",
+    "exportError": "Could not export tickets. Please try again.",
+    "counts": "{matching} matching / {total} total tickets",
+    "empty": "No tickets have been issued yet.",
+    "noMatches": "No tickets match your search.",
+    "groups": {
+      "ticket": "Ticket",
+      "contact": "Main contact",
+      "recipient": "Recipient",
+      "buyer": "Buyer",
+      "order": "Purchase",
+      "gift": "Gift batch",
+      "sales": "Collaborator sale"
+    },
+    "columns": {
+      "id": "Ticket ID",
+      "source": "Source",
+      "category": "Category",
+      "ordinal": "Ticket number",
+      "benefits": "Benefits",
+      "validity": "Validity",
+      "createdAt": "Issued at",
+      "acceptedCount": "Accepted check-ins",
+      "contactName": "Contact name",
+      "contactEmail": "Contact email",
+      "contactPhone": "Contact phone",
+      "recipientName": "Recipient name",
+      "recipientEmail": "Recipient email",
+      "recipientPhone": "Recipient phone",
+      "buyerName": "Buyer name",
+      "buyerEmail": "Buyer email",
+      "buyerPhone": "Buyer phone",
+      "orderId": "Order ID",
+      "orderCode": "Order code",
+      "packageName": "Package",
+      "orderQuantity": "Order ticket quantity",
+      "paymentStatus": "Payment status",
+      "fulfillmentStatus": "Fulfillment status",
+      "orderPrice": "Order total (VND)",
+      "paidAt": "Paid at",
+      "promoCode": "Promo code",
+      "referralCode": "Referral code",
+      "batchId": "Gift batch ID",
+      "batchTitle": "Gift batch title",
+      "batchNote": "Gift batch note",
+      "salesLogId": "Sales log ID",
+      "salesQuantity": "Sales ticket quantity",
+      "amountReceived": "Amount received (VND)",
+      "issuerName": "Issuer name",
+      "issuerEmail": "Issuer email"
+    },
+    "sources": {
+      "purchased": "Purchased",
+      "gifted": "Gifted",
+      "sales-log": "Sales collaborator"
+    },
+    "categories": {
+      "normal": "Normal",
+      "vip": "VIP"
+    },
+    "validities": {
+      "valid": "Valid",
+      "revoked": "Revoked"
+    },
+    "payments": {
+      "creating": "Creating payment link",
+      "pending": "Awaiting payment",
+      "processing": "Payment processing",
+      "paid": "Payment verified",
+      "cancelled": "Cancelled",
+      "expired": "Expired",
+      "failed": "Payment link failed",
+      "review": "Payment requires admin review"
+    },
+    "fulfillments": {
+      "pending": "Pending issuance",
+      "issued": "Issued",
+      "review": "Issuance held for review"
+    },
+    "benefits": {
+      "networkingLunch": "Includes Networking Lunch"
+    }
   }
 }

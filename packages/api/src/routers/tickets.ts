@@ -8,6 +8,7 @@ import { canAccessAdminArea } from "../admin-roles";
 import { adminAreaProcedure, freshProtectedProcedure, router } from "../index";
 import { accessibleTicket, audit, buyerOrder, getTicketConfig, ownedOrder, rateLimit } from "../tickets/core";
 import { confirmCheckIn, lookupTicket } from "../tickets/check-in";
+import { listEntranceInfo } from "../tickets/entrance-info";
 import { checkInLogsInput, listCheckInLogs } from "../tickets/check-in-logs";
 import { batchDetail, batchInput, changeTicket, createGiftBatch, enqueueDelivery, listBatches, listOrders, listReferralUsage, orderDetail, orderPageInput, pageInput, recipientInput, recordRefund, recordResolution, refundInput, setEntranceStaff, settingsInput, ticketHistory, updateRecipient, updateSettings } from "../tickets/management";
 import { cancelCheckout, checkoutInput, reconcileOrder, resolveLatePayment, runReconciliation, startCheckout } from "../tickets/payments";
@@ -58,6 +59,7 @@ export const ticketsRouter = router({
 		const history = await ticketHistory(input.id, input.page);
 		return { checkIns: history.checkIns.map(({ outcome, createdAt, isOverride }) => ({ outcome, createdAt, isOverride })), total: history.checkInTotal, pageSize: history.pageSize };
 	})),
+	entranceInfo: adminAreaProcedure("entranceInfo").query(() => safeErrors(listEntranceInfo)),
 	adminConfig: root.query(() => safeErrors(getTicketConfig)),
 	emailJobs: root.input(emailJobsInput).query(({ input }) => safeErrors(() => listTicketEmailJobs(input))),
 	checkInLogs: root.input(checkInLogsInput).query(({ input }) => safeErrors(() => listCheckInLogs(input))),

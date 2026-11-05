@@ -14,6 +14,7 @@ export const adminAreas = [
   "tickets",
   "salesLog",
   "checkIn",
+  "entranceInfo",
   "manageAdmins",
 ] as const;
 
@@ -34,7 +35,7 @@ export const adminRoleConfig = {
   },
   "entrance-staff": {
     defaultRoute: "/admin/check-in",
-    allowedAreas: ["checkIn"],
+    allowedAreas: ["checkIn", "entranceInfo"],
   },
   "sales-collaborator": {
     defaultRoute: "/admin/sales-log",

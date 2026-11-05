@@ -23,6 +23,7 @@ const items = [
   { href: "/admin/mail", key: "mail", area: "mail", icon: MailIcon },
   { href: "/admin/tickets", key: "tickets", area: "tickets", icon: FileTextIcon },
   { href: "/admin/sales-log", key: "salesLog", area: "salesLog", icon: FileTextIcon },
+  { href: "/admin/entrance-info", key: "entranceInfo", area: "entranceInfo", icon: UsersIcon },
   { href: "/admin/check-in", key: "checkIn", area: "checkIn", icon: ClipboardCheckIcon },
   { href: "/admin/submissions", key: "submissions", area: "rounds", icon: FileTextIcon },
 ] as const;
