@@ -5,6 +5,8 @@ const roundFilenameTokens: Record<RoundId, string> = {
 	"1": "Round 1 Submission",
 	"2": "Round 2 Submission",
 	"3": "Practical Round Submission",
+	"4": "Mini Case Submission",
+	"5": "Final Slide Presentation Submission",
 };
 
 function sanitizeFilenameComponent(value: string) {

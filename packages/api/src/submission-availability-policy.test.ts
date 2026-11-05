@@ -42,8 +42,10 @@ test("Round 1 denies a team without an assigned track", () => {
 });
 
 test("other rounds depend only on their master setting", () => {
-	assert.deepEqual(resolveSubmissionAvailability({ round: "2", roundOpen: true }),
-		{ isOpen: true, reason: null });
-	assert.deepEqual(resolveSubmissionAvailability({ round: "2", roundOpen: false }),
-		{ isOpen: false, reason: "ROUND_SUBMISSION_CLOSED" });
+	for (const round of ["0.5", "2", "3", "4", "5"] as const) {
+		assert.deepEqual(resolveSubmissionAvailability({ round, roundOpen: true }),
+			{ isOpen: true, reason: null });
+		assert.deepEqual(resolveSubmissionAvailability({ round, roundOpen: false }),
+			{ isOpen: false, reason: "ROUND_SUBMISSION_CLOSED" });
+	}
 });

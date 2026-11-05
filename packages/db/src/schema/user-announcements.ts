@@ -28,7 +28,7 @@ export const userAnnouncements = pgTable(
     createdAt: timestamp("created_at").defaultNow().notNull(),
   },
   (table) => [
-    check("user_announcements_promoted_round_check", sql`${table.promotedRound} in (1, 2, 3)`),
+    check("user_announcements_promoted_round_check", sql`${table.promotedRound} in (1, 2, 3, 4, 5)`),
     index("user_announcements_user_created_at_idx").on(table.userId, table.createdAt),
     uniqueIndex("user_announcements_user_source_unique_idx").on(table.userId, table.sourceKey),
   ],

@@ -8,7 +8,9 @@ const roundLabelKeys = {
 	"1": "round1",
 	"2": "round2",
 	"3": "round3",
-} as const satisfies Record<RoundId, "preliminary" | "round1" | "round2" | "round3">;
+	"4": "round4",
+	"5": "round5",
+} as const satisfies Record<RoundId, "preliminary" | "round1" | "round2" | "round3" | "round4" | "round5">;
 
 export function useRoundLabel() {
 	const t = useTranslations("RoundLabels");

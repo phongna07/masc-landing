@@ -15,7 +15,7 @@ import { useRoundLabel } from "@/hooks/use-round-label";
 import { queryClient, trpc } from "@/utils/trpc";
 import { AdminEmpty, AdminError, AdminLoading, formatBirthdate, formatDate } from "../admin-state";
 
-const targets: Record<RoundId, RoundId[]> = { "0.5": ["1", "2"], "1": ["2"], "2": ["3"], "3": [] };
+const targets: Record<RoundId, RoundId[]> = { "0.5": ["1", "2"], "1": ["2"], "2": ["3"], "3": ["4"], "4": ["5"], "5": [] };
 
 export default function RoundTeamDetail({ round, teamId }: { round: RoundId; teamId: string }) {
   const t = useTranslations("Admin"); const locale = useLocale();
@@ -44,6 +44,8 @@ export default function RoundTeamDetail({ round, teamId }: { round: RoundId; tea
     if (round === "0.5" && (targetRound === "1" || targetRound === "2")) promote.mutate({ sourceRound: round, targetRound, teamIds: [teamId] });
     else if (round === "1" && targetRound === "2") promote.mutate({ sourceRound: round, targetRound, teamIds: [teamId] });
     else if (round === "2" && targetRound === "3") promote.mutate({ sourceRound: round, targetRound, teamIds: [teamId] });
+    else if (round === "3" && targetRound === "4") promote.mutate({ sourceRound: round, targetRound, teamIds: [teamId] });
+    else if (round === "4" && targetRound === "5") promote.mutate({ sourceRound: round, targetRound, teamIds: [teamId] });
   };
   const captain = team.data.members.find((member) => member.isCaptain);
   return <><Link className="admin-back-link" href={`/admin/teams/round-${round}`}><ArrowLeftIcon />{t("actions.backToTeams")}</Link>

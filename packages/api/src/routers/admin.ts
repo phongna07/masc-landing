@@ -5,7 +5,8 @@ import {
   adminActivityLogs, adminEmails, admissionSettings, dashboardTabSettings, mailCampaigns, members, preferencesSettings, problemStatementPublicationSettings, roundOneMemberCvs,
   pdfExportJobs, roundEndSettings, roundOneMembers, roundOneSubmissions, roundOneTeams, roundSubmissions, roundThreeMembers,
   roundThreeSubmissions, roundThreeTeams, roundTwoMembers, roundTwoSubmissions, roundTwoTeams,
-  submissionSettings, teams, uploadLimitSettings, user, userAnnouncements
+  submissionSettings, teams, uploadLimitSettings, user, userAnnouncements,
+  roundFourTeams, roundFourMembers, roundFourSubmissions, roundFiveTeams, roundFiveMembers, roundFiveSubmissions,
 } from "@masc-landing/db/schema/index";
 import { env } from "@masc-landing/env/server";
 import { TRPCError } from "@trpc/server";
@@ -87,12 +88,16 @@ const promotionPairSchema = z.discriminatedUnion("sourceRound", [
   z.object({ sourceRound: z.literal("0.5"), targetRound: z.enum(["1", "2"]), teamIds: z.array(z.string().min(1).max(128)).min(1).max(500) }),
   z.object({ sourceRound: z.literal("1"), targetRound: z.literal("2"), teamIds: z.array(z.string().min(1).max(128)).min(1).max(500) }),
   z.object({ sourceRound: z.literal("2"), targetRound: z.literal("3"), teamIds: z.array(z.string().min(1).max(128)).min(1).max(500) }),
+  z.object({ sourceRound: z.literal("3"), targetRound: z.literal("4"), teamIds: z.array(z.string().min(1).max(128)).min(1).max(500) }),
+  z.object({ sourceRound: z.literal("4"), targetRound: z.literal("5"), teamIds: z.array(z.string().min(1).max(128)).min(1).max(500) }),
 ]);
 
 function registrationTables(round: RoundId) {
   if (round === "0.5") return { team: teams, member: members };
   if (round === "1") return { team: roundOneTeams as unknown as typeof teams, member: roundOneMembers as unknown as typeof members };
   if (round === "2") return { team: roundTwoTeams as unknown as typeof teams, member: roundTwoMembers as unknown as typeof members };
+  if (round === "4") return { team: roundFourTeams as unknown as typeof teams, member: roundFourMembers as unknown as typeof members };
+  if (round === "5") return { team: roundFiveTeams as unknown as typeof teams, member: roundFiveMembers as unknown as typeof members };
   return { team: roundThreeTeams as unknown as typeof teams, member: roundThreeMembers as unknown as typeof members };
 }
 
@@ -109,6 +114,8 @@ function submissionTables(round: RoundId) {
   if (round === "0.5") return { ...registration, submission: roundSubmissions };
   if (round === "1") return { ...registration, submission: roundOneSubmissions as unknown as typeof roundSubmissions };
   if (round === "2") return { ...registration, submission: roundTwoSubmissions as unknown as typeof roundSubmissions };
+  if (round === "4") return { ...registration, submission: roundFourSubmissions as unknown as typeof roundSubmissions };
+  if (round === "5") return { ...registration, submission: roundFiveSubmissions as unknown as typeof roundSubmissions };
   return { ...registration, submission: roundThreeSubmissions as unknown as typeof roundSubmissions };
 }
 
@@ -247,6 +254,40 @@ async function getExportTeamRows(round: RoundId): Promise<ExportTeamRow[]> {
       }));
   }
 
+  if (round === "4") {
+    const rows = await db.select({
+      id: roundFourTeams.id, name: roundFourTeams.teamName,
+      status: roundFourTeams.registrationStatus, isEliminated: roundFourTeams.isEliminated,
+      createdAt: roundFourTeams.createdAt,
+      captainPhone: roundFourTeams.captainPhone, awarenessSource: roundFourTeams.awarenessSource,
+      awarenessSourceDetail: roundFourTeams.awarenessSourceDetail,
+      sourceTeamId: roundFourTeams.sourceRoundThreeTeamId, sourceTeamName: roundThreeTeams.teamName
+    })
+      .from(roundFourTeams).leftJoin(roundThreeTeams, eq(roundFourTeams.sourceRoundThreeTeamId, roundThreeTeams.id))
+      .orderBy(desc(roundFourTeams.createdAt), asc(roundFourTeams.teamName));
+    return rows.map((row) => ({
+      ...row, admissionMethod: "promotion", sourceRound: "3",
+      preferenceStatus: null, preferences: [], assignedTrack: null
+    }));
+  }
+
+  if (round === "5") {
+    const rows = await db.select({
+      id: roundFiveTeams.id, name: roundFiveTeams.teamName,
+      status: roundFiveTeams.registrationStatus, isEliminated: roundFiveTeams.isEliminated,
+      createdAt: roundFiveTeams.createdAt,
+      captainPhone: roundFiveTeams.captainPhone, awarenessSource: roundFiveTeams.awarenessSource,
+      awarenessSourceDetail: roundFiveTeams.awarenessSourceDetail,
+      sourceTeamId: roundFiveTeams.sourceRoundFourTeamId, sourceTeamName: roundFourTeams.teamName
+    })
+      .from(roundFiveTeams).leftJoin(roundFourTeams, eq(roundFiveTeams.sourceRoundFourTeamId, roundFourTeams.id))
+      .orderBy(desc(roundFiveTeams.createdAt), asc(roundFiveTeams.teamName));
+    return rows.map((row) => ({
+      ...row, admissionMethod: "promotion", sourceRound: "4",
+      preferenceStatus: null, preferences: [], assignedTrack: null
+    }));
+  }
+
   const rows = await db.select({
     id: roundThreeTeams.id, name: roundThreeTeams.teamName,
     status: roundThreeTeams.registrationStatus, isEliminated: roundThreeTeams.isEliminated,
@@ -343,6 +384,26 @@ async function promoteOne(input: PromotionInput, sourceTeamId: string) {
           sourceRoundOneTeamId: input.sourceRound === "1" ? sourceTeam.id : null
         }),
         db.insert(roundTwoMembers).values(targetRoster), notification,
+      ]);
+    } else if (input.targetRound === "4") {
+      await db.batch([
+        db.insert(roundFourTeams).values({
+          id: targetTeamId, teamName: sourceTeam.name,
+          registrationStatus: "approved", captainId: sourceTeam.captainId, captainPhone: sourceTeam.captainPhone,
+          awarenessSource: sourceTeam.awarenessSource, awarenessSourceDetail: sourceTeam.awarenessSourceDetail,
+          sourceRoundThreeTeamId: sourceTeam.id
+        }),
+        db.insert(roundFourMembers).values(targetRoster), notification,
+      ]);
+    } else if (input.targetRound === "5") {
+      await db.batch([
+        db.insert(roundFiveTeams).values({
+          id: targetTeamId, teamName: sourceTeam.name,
+          registrationStatus: "approved", captainId: sourceTeam.captainId, captainPhone: sourceTeam.captainPhone,
+          awarenessSource: sourceTeam.awarenessSource, awarenessSourceDetail: sourceTeam.awarenessSourceDetail,
+          sourceRoundFourTeamId: sourceTeam.id
+        }),
+        db.insert(roundFiveMembers).values(targetRoster), notification,
       ]);
     } else {
       await db.batch([

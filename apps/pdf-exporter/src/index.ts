@@ -11,13 +11,17 @@ import {
 	roundTwoSubmissions,
 	roundTwoTeams,
 	teams,
+	roundFourTeams,
+	roundFourSubmissions,
+	roundFiveTeams,
+	roundFiveSubmissions,
 } from "@masc-landing/db/schema/index";
 import archiver, { type Archiver } from "archiver";
 import { and, asc, eq, getTableName, lt, sql } from "drizzle-orm";
 import { createServer } from "node:http";
 import { PassThrough, Readable } from "node:stream";
 
-type RoundId = "0.5" | "1" | "2" | "3";
+type RoundId = "0.5" | "1" | "2" | "3" | "4" | "5";
 
 const config = {
 	databaseUrl: requiredEnv("DATABASE_URL"),
@@ -236,6 +240,14 @@ function tablesForRound(round: RoundId) {
 		team: roundTwoTeams as unknown as typeof teams,
 		submission: roundTwoSubmissions as unknown as typeof roundSubmissions,
 	};
+	if (round === "4") return {
+		team: roundFourTeams as unknown as typeof teams,
+		submission: roundFourSubmissions as unknown as typeof roundSubmissions,
+	};
+	if (round === "5") return {
+		team: roundFiveTeams as unknown as typeof teams,
+		submission: roundFiveSubmissions as unknown as typeof roundSubmissions,
+	};
 	return {
 		team: roundThreeTeams as unknown as typeof teams,
 		submission: roundThreeSubmissions as unknown as typeof roundSubmissions,
@@ -345,6 +357,8 @@ function archiveName(round: RoundId) {
 		"1": "Round_1",
 		"2": "Round_2",
 		"3": "Round_3",
+		"4": "Mini_Case",
+		"5": "Final_Slide_Presentation",
 	};
 	return `MASC'26_${token[round]}_Submissions.zip`;
 }

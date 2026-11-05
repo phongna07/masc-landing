@@ -5,7 +5,7 @@ import { MAX_PROBLEM_STATEMENT_FILE_SIZE } from "./round-one-problem-statements"
 import type { RoundId } from "./rounds";
 import { resolveSubmissionAvailability } from "./submission-availability-policy";
 
-export const problemStatementRoundSchema = z.enum(["2", "3"]);
+export const problemStatementRoundSchema = z.enum(["2", "3", "4", "5"]);
 export type ProblemStatementRound = z.infer<typeof problemStatementRoundSchema>;
 export const problemStatementFileSchema = z.object({
 	round: problemStatementRoundSchema,

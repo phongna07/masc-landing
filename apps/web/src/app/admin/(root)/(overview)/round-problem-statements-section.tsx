@@ -29,7 +29,7 @@ export default function RoundProblemStatementsSection() {
 		{metadata.isPending || publication.isPending ? <AdminLoading /> : metadata.isError || publication.isError ?
 			<AdminError title={t("errors.loadTitle")} description={t("overview.roundProblemStatements.loadError")}
 				retry={() => { void metadata.refetch(); void publication.refetch(); }} retryLabel={t("actions.retry")} /> :
-			<div className="admin-round-problem-statements">{(["2", "3"] as const).map((round) =>
+			<div className="admin-round-problem-statements">{(["2", "3", "4", "5"] as const).map((round) =>
 				<RoundProblemStatementControls key={round} round={round} statement={metadata.data[round]}
 					isPublished={publication.data[round]} onFileChanged={() => metadata.refetch()}
 					onPublicationChanged={() => publication.refetch()} />)}</div>}
