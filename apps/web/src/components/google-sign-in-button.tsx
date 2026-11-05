@@ -90,40 +90,47 @@ export default function GoogleSignInButton({ next = "/dashboard" }: { next?: str
     const height = 600;
     const left = window.screenX + (window.outerWidth - width) / 2;
     const top = window.screenY + (window.outerHeight - height) / 2;
-    const popup = window.open(
-      "",
-      "google-sign-in",
-      `popup,width=${width},height=${height},left=${Math.round(left)},top=${Math.round(top)}`,
-    );
-
-    if (!popup) {
-      toast.error(t("google.allowPopups"));
-      return;
+    let popup: Window | null = null;
+    try {
+      popup = window.open(
+        "",
+        "google-sign-in",
+        `popup,width=${width},height=${height},left=${Math.round(left)},top=${Math.round(top)}`,
+      );
+      if (popup?.closed) popup = null;
+    } catch {
+      // Some browsers throw instead of returning null when popups are blocked.
     }
 
     popupRef.current = popup;
     setIsPending(true);
 
     try {
+      const callbackParams = new URLSearchParams({ next: loginDestination(next) });
+      if (popup) callbackParams.set("popup", "1");
       const { data, error } = await authClient.signIn.social({
         provider: "google",
-        callbackURL: `/login/google-callback?next=${encodeURIComponent(loginDestination(next))}`,
-        errorCallbackURL: `/login/google-callback?error=1&next=${encodeURIComponent(loginDestination(next))}`,
+        callbackURL: `/login/google-callback?${callbackParams}`,
+        errorCallbackURL: `/login/google-callback?error=1&${callbackParams}`,
         disableRedirect: true,
       });
 
       if (error || !data?.url) {
-        popup.close();
+        popup?.close();
         popupRef.current = null;
         setIsPending(false);
         toast.error(t("google.failed"));
         return;
       }
 
-      popup.location.href = data.url;
-      toast.info(t("google.opened"));
+      if (popup) {
+        popup.location.href = data.url;
+        toast.info(t("google.opened"));
+      } else {
+        window.location.assign(data.url);
+      }
     } catch {
-      popup.close();
+      popup?.close();
       popupRef.current = null;
       setIsPending(false);
       toast.error(t("google.failed"));
