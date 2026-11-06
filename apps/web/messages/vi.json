@@ -508,7 +508,7 @@
       "submittedAt": "Cập nhật lần cuối: {date}",
       "attemptsUsed": "Đã nộp {used}/{max} lần",
       "limitTitle": "Đã hết lượt nộp bài {roundLabel}",
-      "limitDescription": "Đội của bạn đã dùng hết 3 lượt nộp bài cho vòng này.",
+      "limitDescription": "Đội của bạn đã dùng hết {max} lượt nộp bài cho vòng này.",
       "replace": "Nộp lại bài",
       "download": "Tải tệp",
       "previewLabel": "Xem trước tệp",
@@ -528,7 +528,7 @@
         "fileEmpty": "Tệp đã chọn không có nội dung hoặc không đọc được. Vui lòng chọn lại tệp.",
         "fileSize": "Vui lòng chọn tệp có dung lượng không quá {maxSize}.",
         "submit": "Không thể tải bài nộp lên. Hãy kiểm tra tệp và thử lại.",
-        "limit": "Đội của bạn đã dùng hết 3 lượt nộp bài.",
+        "limit": "Đội của bạn đã dùng hết {max} lượt nộp bài.",
         "conflict": "Một thành viên khác vừa nộp bài cùng lúc. Hệ thống đã cập nhật bài mới nhất. Bạn có thể nộp lại nếu đội còn lượt.",
         "download": "Không thể tải tệp xuống. Vui lòng thử lại."
       }

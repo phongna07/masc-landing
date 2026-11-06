@@ -1,7 +1,7 @@
 "use client";
 
 import { roundSubmissionAccept, roundSubmissionExtension, roundSubmissionMimeTypes } from "@masc-landing/api/submission-files";
-import type { RoundId } from "@masc-landing/api/rounds";
+import { MAX_SUBMISSION_ATTEMPTS, type RoundId } from "@masc-landing/api/rounds";
 import { Button } from "@masc-landing/ui/components/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@masc-landing/ui/components/card";
 import { Input } from "@masc-landing/ui/components/input";
@@ -46,7 +46,7 @@ export default function RoundSubmission({ round, maxFileSize, sectionNumber = "0
   const trackSubmissionClosed = round === "1"
     && submission.data?.submissionClosedReason === "ROUND_ONE_TRACK_SUBMISSION_CLOSED";
   const attemptsUsed = submission.data?.attemptsUsed ?? 0;
-  const maxAttempts = submission.data?.maxAttempts ?? 3;
+  const maxAttempts = submission.data?.maxAttempts ?? MAX_SUBMISSION_ATTEMPTS;
   const canSubmit = submission.data?.canSubmit ?? false;
   const showForm = canSubmit && (!existing || editing);
   const status = existing && !showForm
@@ -62,7 +62,7 @@ export default function RoundSubmission({ round, maxFileSize, sectionNumber = "0
   const statusDescription = status === "submitted"
     ? t("round.submittedAt", { date: format.dateTime(new Date(existing!.updatedAt), { dateStyle: "medium", timeStyle: "short" }) })
     : status === "limit"
-      ? t("round.limitDescription")
+      ? t("round.limitDescription", { max: maxAttempts })
     : status === "unavailable"
       ? t(trackSubmissionClosed ? "round.trackUnavailableDescription" : "round.unavailableDescription")
       : t(existing ? "round.replaceDescription" : "round.openDescription");
@@ -116,7 +116,7 @@ export default function RoundSubmission({ round, maxFileSize, sectionNumber = "0
       } else if (message === "ATTEMPT_LIMIT_REACHED" || message === "SUBMISSION_CONFLICT") {
         await submission.refetch();
         setEditing(false);
-        toast.error(t(message === "ATTEMPT_LIMIT_REACHED" ? "round.errors.limit" : "round.errors.conflict"));
+        toast.error(t(message === "ATTEMPT_LIMIT_REACHED" ? "round.errors.limit" : "round.errors.conflict", { max: maxAttempts }));
       } else setError(t("round.errors.submit"));
     } finally {
       setIsSubmitting(false);

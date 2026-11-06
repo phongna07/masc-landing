@@ -56,7 +56,7 @@ export default function CompetitionRulebook() {
 				<h3>b. Cổng thông tin thí sinh</h3>
 				<ul>
 					<li>Sau khi đăng nhập, đội thi được truy cập "Cổng thông tin", bao gồm: thông báo từ Ban Tổ chức và khu vực nộp bài.</li>
-					<li>Mỗi đội thi có 03 (ba) lượt nộp bài trước thời hạn đóng cổng của mỗi vòng thi.</li>
+					<li>Mỗi đội thi có 05 (năm) lượt nộp bài trước thời hạn đóng cổng của mỗi vòng thi.</li>
 					<li>Sau thời điểm đóng cổng nộp bài, mọi yêu cầu nộp bổ sung phải được gửi qua email đến Ban Tổ chức và sẽ được xem xét theo từng trường hợp cụ thể.</li>
 				</ul>
 				<h3>c. Hồ sơ thí sinh</h3>

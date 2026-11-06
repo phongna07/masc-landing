@@ -86,8 +86,10 @@ before(async () => {
 			await client.exec(`CREATE ${index.isUnique ? "UNIQUE" : ""} INDEX ${identifier(index.name)} ON ${identifier(table.name)} (${columns.join(",")}) ${index.where ? `WHERE ${index.where}` : ""}`);
 		}
 	}
-	for (const statement of (await readFile(new URL("0032_skinny_mattie_franklin.sql", directory), "utf8")).split("--> statement-breakpoint")) {
-		if (statement.trim()) await client.exec(statement);
+	for (const migration of ["0032_skinny_mattie_franklin.sql", "0033_remarkable_lady_ursula.sql", "0034_workable_puppet_master.sql"]) {
+		for (const statement of (await readFile(new URL(migration, directory), "utf8")).split("--> statement-breakpoint")) {
+			if (statement.trim()) await client.exec(statement);
+		}
 	}
 });
 after(() => client.close());
@@ -201,13 +203,21 @@ test("uploads enforce closure, PDF validation, attempts, isolation, and publishe
 		objectSize = 43;
 		await assert.rejects(teammate.finalize({ ...file, uploadId: first.uploadId, description: "" }), { message: "UPLOAD_MISMATCH" });
 		objectSize = 42;
-		for (let attempt = 1; attempt <= 3; attempt++) {
+		for (let attempt = 1; attempt <= 5; attempt++) {
+			const beforeAttempt = await participant.current({ round });
+			assert.equal(beforeAttempt.canSubmit, true);
+			assert.equal(beforeAttempt.maxAttempts, 5);
+			assert.equal(beforeAttempt.attemptsRemaining, 6 - attempt);
 			const upload = await teammate.createUploadUrl(file);
 			assert.equal((await teammate.finalize({ ...file, uploadId: upload.uploadId, description: "Question" })).attemptNumber, attempt);
 		}
 		await assert.rejects(participant.createUploadUrl(file), { message: "ATTEMPT_LIMIT_REACHED" });
 		const current = await participant.current({ round });
-		assert.equal(current.attemptsUsed, 3);
+		assert.equal(current.attemptsUsed, 5);
+		assert.equal(current.maxAttempts, 5);
+		assert.equal(current.attemptsRemaining, 0);
+		assert.equal(current.canSubmit, false);
+		await assert.rejects(teammate.finalize({ ...file, uploadId: crypto.randomUUID(), description: "Sixth attempt" }), { message: "ATTEMPT_LIMIT_REACHED" });
 		assert.equal(current.submission!.originalFilename, roundSubmissionFilename("Test Team", round));
 		const submissions = await admin.listRoundSubmissions({ round });
 		assert.equal(submissions.length, 1);
@@ -221,6 +231,25 @@ test("uploads enforce closure, PDF validation, attempts, isolation, and publishe
 	assert.equal((await participant.current({ round: "3" })).submission, null);
 });
 
+
+test("all round submission tables accept attempts four and five and reject attempts outside one through five", async () => {
+	await promoteBoth();
+	for (const round of roundIds) {
+		const table = round === "0.5" ? "round_submissions" : `round_${round}_submissions`;
+		const member = round === "4" || round === "5"
+			? (await client.query<{ id: string; team_id: string }>(`SELECT id, team_id FROM round_${round}_members LIMIT 1`)).rows[0]!
+			: { id: "member", team_id: "team" };
+		const insertAttempt = (attempt: number) => client.query(`
+			INSERT INTO "${table}" (id, team_id, round, attempt_number, submitted_by_member_id,
+				description, object_key, original_filename, mime_type, file_size)
+			VALUES ($1, $4, $2, $3, $5, '', 'key', 'submission.pdf', 'application/pdf', 42)
+		`, [crypto.randomUUID(), round, attempt, member.team_id, member.id]);
+		for (const attempt of [1, 2, 3, 4, 5]) await insertAttempt(attempt);
+		for (const attempt of [0, 6]) {
+			await assert.rejects(insertAttempt(attempt), { code: "23514", constraint: `${table}_attempt_number_check` });
+		}
+	}
+});
 
 test("new-round problem statements support upload, publication, preview, and independent replacement", async () => {
 	await promoteBoth();

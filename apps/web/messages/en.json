@@ -508,7 +508,7 @@
       "submittedAt": "Last updated {date}",
       "attemptsUsed": "{used} / {max} attempts used",
       "limitTitle": "{roundLabel} submission limit reached",
-      "limitDescription": "Your team has used all 3 submission attempts for this round.",
+      "limitDescription": "Your team has used all {max} submission attempts for this round.",
       "replace": "Resubmit",
       "download": "Download file",
       "previewLabel": "File preview",
@@ -528,7 +528,7 @@
         "fileEmpty": "The selected file is empty or could not be read. Choose it again.",
         "fileSize": "The file must be no larger than {maxSize}.",
         "submit": "The submission could not be uploaded. Check the file and try again.",
-        "limit": "Your team has already used all 3 submission attempts.",
+        "limit": "Your team has already used all {max} submission attempts.",
         "conflict": "Another team member submitted at the same time. The latest submission has been loaded; try again if attempts remain.",
         "download": "The file could not be downloaded. Please try again."
       }

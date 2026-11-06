@@ -369,7 +369,7 @@ export const roundSubmissions = pgTable(
   },
   (table) => [
     uniqueIndex("round_submissions_team_id_round_attempt_unique_idx").on(table.teamId, table.round, table.attemptNumber),
-    check("round_submissions_attempt_number_check", sql`${table.attemptNumber} between 1 and 3`),
+    check("round_submissions_attempt_number_check", sql`${table.attemptNumber} between 1 and 5`),
     check("round_submissions_score_check", sql`${table.score} >= 0`),
     index("round_submissions_round_updated_at_idx").on(table.round, table.updatedAt),
     check("round_submissions_round_0_5_only_check", sql`${table.round} = '0.5'`),
@@ -397,7 +397,7 @@ export const roundOneSubmissions = pgTable(
   },
   (table) => [
     uniqueIndex("round_1_submissions_team_attempt_unique_idx").on(table.teamId, table.attemptNumber),
-    check("round_1_submissions_attempt_number_check", sql`${table.attemptNumber} between 1 and 3`),
+    check("round_1_submissions_attempt_number_check", sql`${table.attemptNumber} between 1 and 5`),
     check("round_1_submissions_score_check", sql`${table.score} >= 0`),
     index("round_1_submissions_updated_at_idx").on(table.updatedAt),
     check("round_1_submissions_round_check", sql`${table.round} = '1'`),
@@ -425,7 +425,7 @@ export const roundTwoSubmissions = pgTable(
   },
   (table) => [
     uniqueIndex("round_2_submissions_team_attempt_unique_idx").on(table.teamId, table.attemptNumber),
-    check("round_2_submissions_attempt_number_check", sql`${table.attemptNumber} between 1 and 3`),
+    check("round_2_submissions_attempt_number_check", sql`${table.attemptNumber} between 1 and 5`),
     check("round_2_submissions_score_check", sql`${table.score} >= 0`),
     index("round_2_submissions_updated_at_idx").on(table.updatedAt),
     check("round_2_submissions_round_check", sql`${table.round} = '2'`),
@@ -453,7 +453,7 @@ export const roundThreeSubmissions = pgTable(
   },
   (table) => [
     uniqueIndex("round_3_submissions_team_attempt_unique_idx").on(table.teamId, table.attemptNumber),
-    check("round_3_submissions_attempt_number_check", sql`${table.attemptNumber} between 1 and 3`),
+    check("round_3_submissions_attempt_number_check", sql`${table.attemptNumber} between 1 and 5`),
     check("round_3_submissions_score_check", sql`${table.score} >= 0`),
     index("round_3_submissions_updated_at_idx").on(table.updatedAt),
     check("round_3_submissions_round_check", sql`${table.round} = '3'`),
@@ -481,7 +481,7 @@ export const roundFourSubmissions = pgTable(
   },
   (table) => [
     uniqueIndex("round_4_submissions_team_attempt_unique_idx").on(table.teamId, table.attemptNumber),
-    check("round_4_submissions_attempt_number_check", sql`${table.attemptNumber} between 1 and 3`),
+    check("round_4_submissions_attempt_number_check", sql`${table.attemptNumber} between 1 and 5`),
     check("round_4_submissions_score_check", sql`${table.score} >= 0`),
     index("round_4_submissions_updated_at_idx").on(table.updatedAt),
     check("round_4_submissions_round_check", sql`${table.round} = '4'`),
@@ -509,7 +509,7 @@ export const roundFiveSubmissions = pgTable(
   },
   (table) => [
     uniqueIndex("round_5_submissions_team_attempt_unique_idx").on(table.teamId, table.attemptNumber),
-    check("round_5_submissions_attempt_number_check", sql`${table.attemptNumber} between 1 and 3`),
+    check("round_5_submissions_attempt_number_check", sql`${table.attemptNumber} between 1 and 5`),
     check("round_5_submissions_score_check", sql`${table.score} >= 0`),
     index("round_5_submissions_updated_at_idx").on(table.updatedAt),
     check("round_5_submissions_round_check", sql`${table.round} = '5'`),
