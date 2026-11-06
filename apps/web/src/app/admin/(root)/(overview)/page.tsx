@@ -1,6 +1,7 @@
 "use client";
 
 import type { UploadLimitKind } from "@masc-landing/api/upload-limits";
+import { MAX_UPLOAD_LIMIT_BYTES, MEBIBYTE } from "@masc-landing/api/upload-limit-validation";
 import { MAX_PROBLEM_STATEMENT_FILE_SIZE } from "@masc-landing/api/round-one-problem-statements";
 import { Button } from "@masc-landing/ui/components/button";
 import { Accordion, AccordionHeader, AccordionItem, AccordionPanel, AccordionTrigger } from "@masc-landing/ui/components/accordion";
@@ -25,7 +26,7 @@ import RichTextEditor from "../../mail/rich-text-editor";
 import CountdownSettingsSection from "./countdown-settings-section";
 import RoundProblemStatementsSection from "./round-problem-statements-section";
 
-const MEBIBYTE = 1024 * 1024;
+const MAX_UPLOAD_LIMIT_MIB = MAX_UPLOAD_LIMIT_BYTES / MEBIBYTE;
 
 export default function AdminPage() {
 	const t = useTranslations("Admin");
@@ -520,7 +521,7 @@ function UploadLimitCard({ kind, maxFileSize, onSaved }: {
 		if (!cleanValue) return setError(t("overview.uploadLimits.validation.required"));
 		if (!/^\d+$/.test(cleanValue)) return setError(t("overview.uploadLimits.validation.integer"));
 		const maxFileSizeMiB = Number(cleanValue);
-		if (maxFileSizeMiB < 1 || maxFileSizeMiB > 100) {
+		if (maxFileSizeMiB < 1 || maxFileSizeMiB > MAX_UPLOAD_LIMIT_MIB) {
 			return setError(t("overview.uploadLimits.validation.range"));
 		}
 		setError(null);
@@ -534,7 +535,7 @@ function UploadLimitCard({ kind, maxFileSize, onSaved }: {
 			<p>{t(`overview.uploadLimits.${kind}.description`)}</p></div></CardHeader>
 		<CardContent><form className="admin-upload-limit-form" onSubmit={submit} noValidate>
 			<div className="admin-upload-limit-field"><Label htmlFor={inputId}>{t("overview.uploadLimits.inputLabel")}</Label>
-				<div className="admin-upload-limit-input"><Input id={inputId} type="number" min="1" max="100" step="1"
+				<div className="admin-upload-limit-input"><Input id={inputId} type="number" min="1" max={MAX_UPLOAD_LIMIT_MIB} step="1"
 					inputMode="numeric" value={value} disabled={update.isPending} aria-invalid={!!error}
 					aria-describedby={error ? errorId : undefined} onChange={(event) => setValue(event.target.value)} />
 					<span aria-hidden="true">MiB</span></div></div>

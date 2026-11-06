@@ -1,5 +1,6 @@
 "use client";
 
+import { roundSubmissionAccept, roundSubmissionExtension, roundSubmissionMimeTypes } from "@masc-landing/api/submission-files";
 import type { RoundId } from "@masc-landing/api/rounds";
 import { Button } from "@masc-landing/ui/components/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@masc-landing/ui/components/card";
@@ -14,8 +15,6 @@ import { toast } from "sonner";
 import FileInput from "@/components/file-input";
 import { useRoundLabel } from "@/hooks/use-round-label";
 import { queryClient, trpc } from "@/utils/trpc";
-
-const mimeTypes: Record<string, string> = { pdf: "application/pdf" };
 
 export default function RoundSubmission({ round, maxFileSize, sectionNumber = "01" }: {
   round: RoundId;
@@ -80,8 +79,8 @@ export default function RoundSubmission({ round, maxFileSize, sectionNumber = "0
   const chooseFile = (selected: File | null) => {
     setFile(selected);
     if (!selected) return setError(null);
-    const mimeType = mimeTypes[selected.name.split(".").pop()?.toLowerCase() ?? ""];
-    if (!mimeType) return setError(t("round.errors.fileType"));
+    const extension = roundSubmissionExtension(selected.name);
+    if (!extension) return setError(t("round.errors.fileType"));
     if (selected.size === 0) return setError(t("round.errors.fileEmpty"));
     if (selected.size > maxFileSize) {
       return setError(t("round.errors.fileSize", { maxSize: formatUploadLimit(maxFileSize) }));
@@ -93,12 +92,13 @@ export default function RoundSubmission({ round, maxFileSize, sectionNumber = "0
     event.preventDefault(); setError(null); const cleanDescription = description.trim();
     if (cleanDescription.length > 5000) return setError(t("round.errors.descriptionLength"));
     if (!file) return setError(t("round.errors.fileRequired"));
-    const mimeType = mimeTypes[file.name.split(".").pop()?.toLowerCase() ?? ""];
-    if (!mimeType) return setError(t("round.errors.fileType"));
+    const extension = roundSubmissionExtension(file.name);
+    if (!extension) return setError(t("round.errors.fileType"));
     if (file.size === 0) return setError(t("round.errors.fileEmpty"));
     if (file.size > maxFileSize) {
       return setError(t("round.errors.fileSize", { maxSize: formatUploadLimit(maxFileSize) }));
     }
+    const mimeType = roundSubmissionMimeTypes[extension];
     const metadata = { round, filename: file.name, mimeType, fileSize: file.size };
     setIsSubmitting(true);
     try {
@@ -143,7 +143,7 @@ export default function RoundSubmission({ round, maxFileSize, sectionNumber = "0
       {existing.mimeType === "application/pdf" && preview.data?.previewUrl && <div className="submission-preview"><Label>{t("round.previewLabel")}</Label><iframe src={preview.data.previewUrl} title={t("round.previewTitle", { filename: existing.originalFilename })} /></div>}
     </CardContent>}
     {showForm && <form onSubmit={submit} className="round-submission-form" noValidate>
-      <CardContent className="round-submission-fields"><Field id="round-submission-file" label={t("round.fileLabel")}><FileInput id="round-submission-file" selectedFileName={file ? `${file.name} · ${formatBytes(file.size)}` : null} accept=".pdf,application/pdf" onChange={(event) => chooseFile(event.target.files?.[0] ?? null)} /><span className="field-hint">{t("round.fileHint", { maxSize: formatUploadLimit(maxFileSize) })}</span></Field>
+      <CardContent className="round-submission-fields"><Field id="round-submission-file" label={t("round.fileLabel")}><FileInput id="round-submission-file" selectedFileName={file ? `${file.name} · ${formatBytes(file.size)}` : null} accept={roundSubmissionAccept} onChange={(event) => chooseFile(event.target.files?.[0] ?? null)} /><span className="field-hint">{t("round.fileHint", { maxSize: formatUploadLimit(maxFileSize) })}</span></Field>
       <Field id="round-submission-question" label={t("round.descriptionLabel")}><Input id="round-submission-question" className="submission-question-input" type="text" value={description} maxLength={5000} onChange={(event) => setDescription(event.target.value)} /><span className="field-hint">{t("round.characters", { count: description.length })}</span></Field></CardContent>
       {error && <p className="form-error" role="alert">{error}</p>}<div className="registration-submit">{editing ? <Button type="button" variant="outline" onClick={() => { setEditing(false); setError(null); }}>{t("round.cancel")}</Button> : <span />}
       <Button type="submit" size="lg" disabled={isSubmitting} aria-busy={isSubmitting}><UploadIcon aria-hidden="true" />{isSubmitting ? t("round.uploading") : t("round.submit", { roundLabel })}</Button></div></form>}

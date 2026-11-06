@@ -19,7 +19,7 @@ Participants can explore the competition, register their teams, submit work acro
 
 - **Team registration** with member details and round-specific admission workflows.
 - **CV screening and track preferences** with CV and supporting-document uploads.
-- **Round submissions** with problem statement previews, file uploads, submission status, and attempt limits.
+- **Round submissions** with problem statement previews, PDF/PPTX uploads, submission status, and attempt limits.
 - **Results and updates** through published scores, feedback, promotion notices, and announcements.
 - **Private file access** through authorized, short-lived upload and download URLs.
 
@@ -29,7 +29,7 @@ Participants can explore the competition, register their teams, submit work acro
 - **Submission review** with scoring, feedback publication, and controls for submission availability.
 - **Competition settings** for countdowns, round problem statements, and announcements.
 - **Email campaigns** with audience filters, a rich text editor, personalized templates, and previews.
-- **Data exports** for team and submission spreadsheets, plus bulk PDF downloads as ZIP archives.
+- **Data exports** for team and submission spreadsheets, plus bulk submission downloads as ZIP archives.
 - **Role-based administration** with separate access for competition organizers and entrance staff, plus activity logs.
 
 ### Ticketing and event check-in
@@ -54,7 +54,7 @@ Participants can explore the competition, register their teams, submit work acro
 | Payments | PayOS | Ticket checkout and payment webhooks |
 | Email | ZeptoMail | Participant communications and ticket delivery |
 | Tickets and exports | ZXing, qrcode, Sharp, write-excel-file | QR scanning, ticket image generation, and spreadsheet exports |
-| Background exports | Node.js, Archiver, esbuild, Render | PostgreSQL-backed jobs that stream PDF ZIP archives to R2 |
+| Background exports | Node.js, Archiver, esbuild, Render | PostgreSQL-backed jobs that stream submission ZIP archives to R2 |
 | Workspace | pnpm | Shared packages and workspace dependency management |
 
 ## Project structure
@@ -63,7 +63,7 @@ Participants can explore the competition, register their teams, submit work acro
 masc-landing/
 ├── apps/
 │   ├── web/           # Next.js website, participant dashboard, and admin tools
-│   └── pdf-exporter/  # Background service for bulk PDF ZIP exports
+│   └── pdf-exporter/  # Background service for bulk submission ZIP exports
 ├── packages/
 │   ├── api/           # tRPC routers, business rules, email, tickets, and storage
 │   ├── auth/          # Better Auth configuration and session helpers
@@ -129,9 +129,9 @@ Keep the R2 bucket private. Configure `R2_ACCOUNT_ID`, `R2_ACCESS_KEY_ID`, `R2_S
 
 Replace the example production origin with your deployed origin. Downloads use short-lived authorized URLs and do not require a public bucket domain.
 
-### Bulk PDF exports
+### Bulk submission exports
 
-The exporter claims jobs from the same PostgreSQL database as the web app, streams the latest PDF from each team into a ZIP, and uploads the archive to R2. Archives expire after 24 hours by default.
+The exporter claims jobs from the same PostgreSQL database as the web app, streams the latest submission (PDF or PPTX) from each team into a ZIP, and uploads the archive to R2. Archives expire after 24 hours by default.
 
 Deploy the service using the [Render Blueprint](render.yaml). Configure `DATABASE_URL` and the same R2 credentials as the web app, with read, write, and delete access to the bucket. Set `PDF_EXPORTER_URL` in the web app to the deployed service origin. The admin interface calls its `/health` endpoint to wake an idle Render Free instance, which can take about a minute.
 

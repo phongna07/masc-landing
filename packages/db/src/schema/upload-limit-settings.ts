@@ -15,7 +15,7 @@ export const uploadLimitSettings = pgTable(
 		),
 		check(
 			"upload_limit_settings_max_file_size_check",
-			sql`${table.maxFileSize} between 1048576 and 104857600`,
+			sql`${table.maxFileSize} between 1048576 and 1048576000`,
 		),
 	],
 );

@@ -44,6 +44,11 @@ export default function CheckInScanner({ isRoot }: { isRoot: boolean }) {
 	}));
 	const busy = lookup.isPending || admission.isPending;
 
+	useEffect(() => {
+		// Warm the decoder without requesting camera access. Start Scanner retries if preloading fails.
+		void import("@zxing/browser").catch(() => {});
+	}, []);
+
 	function stopCamera() { cameraGeneration.current++; controlsRef.current?.stop(); controlsRef.current = null; }
 	useEffect(() => {
 		const update = () => setOnline(navigator.onLine);

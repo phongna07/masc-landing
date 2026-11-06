@@ -6,7 +6,7 @@ import { S3Client } from "@aws-sdk/client-s3";
 import { drizzle } from "drizzle-orm/pglite";
 import type { Context } from "./context";
 import { roundFromSlug, roundIds, roundSchema } from "./rounds";
-import { roundSubmissionFilename } from "./submission-files";
+import { roundSubmissionExtension, roundSubmissionFilename, roundSubmissionMimeTypes } from "./submission-files";
 
 // Exercise the new migration, queries, and tRPC middleware in isolated PostgreSQL.
 // Only the external database connection and R2 transport are replaced.
@@ -33,11 +33,16 @@ const database = Object.assign(db, {
 });
 mock.module("@masc-landing/db", { namedExports: { db: database } });
 mock.module("@masc-landing/env/server", { namedExports: { env: { R2_ACCOUNT_ID: "test", R2_BUCKET: "test" } } });
+const signedCommands: { input: { Key?: string; ContentType?: string; ResponseContentDisposition?: string } }[] = [];
 mock.module("@aws-sdk/s3-request-presigner", { namedExports: {
-	getSignedUrl: async () => "https://example.com/isolated-test-upload",
+	getSignedUrl: async (_client: unknown, command: typeof signedCommands[number]) => {
+		signedCommands.push(command);
+		return "https://example.com/isolated-test-upload";
+	},
 } });
 let objectSize = 42;
-mock.method(S3Client.prototype, "send", async () => ({ ContentLength: objectSize, ContentType: "application/pdf" }));
+let objectMimeType = "application/pdf";
+mock.method(S3Client.prototype, "send", async () => ({ ContentLength: objectSize, ContentType: objectMimeType }));
 const { adminRouter } = await import("./routers/admin");
 const { roundSubmissionRouter } = await import("./routers/round-submission");
 const { roundProblemStatementRouter } = await import("./routers/round-problem-statement");
@@ -107,6 +112,8 @@ beforeEach(async () => {
 			('o', 'three', false, 'Other', 'other@example.com', '2002-01-01', 'University');
 	`);
 	objectSize = 42;
+	objectMimeType = "application/pdf";
+	signedCommands.length = 0;
 });
 
 async function promoteBoth() {
@@ -236,4 +243,58 @@ test("new-round problem statements support upload, publication, preview, and ind
 	await statements.remove({ round: "4" });
 	assert.equal(await memberStatements.current({ round: "4" }), null);
 	assert.equal((await memberStatements.current({ round: "5" }))!.originalFilename, "replacement.pdf");
+});
+
+
+test("PDF and PPTX submissions preserve their format through uploads, replacements, and downloads", async () => {
+	await promoteBoth();
+	for (const round of ["3", "4", "5"] as const) {
+		await admin.setRoundSubmissionOpen({ round, isOpen: true });
+		for (const extension of [".pptx", ".pdf", ".pptx"] as const) {
+			const file = { round, filename: `Original${extension.toUpperCase()}`, mimeType: roundSubmissionMimeTypes[extension], fileSize: 42 };
+			const filename = roundSubmissionFilename("Test Team", round, extension);
+			const upload = await teammate.createUploadUrl(file);
+			assert.equal(signedCommands.at(-1)!.input.ContentType, file.mimeType);
+			assert.ok(signedCommands.at(-1)!.input.Key!.endsWith(`/${upload.uploadId}/${filename}`));
+			objectMimeType = "application/octet-stream";
+			await assert.rejects(teammate.finalize({ ...file, uploadId: upload.uploadId, description: "" }), { message: "UPLOAD_MISMATCH" });
+			objectMimeType = file.mimeType;
+			await teammate.finalize({ ...file, uploadId: upload.uploadId, description: "Slides" });
+			const current = (await participant.current({ round })).submission!;
+			assert.equal(current.originalFilename, filename);
+			assert.equal(current.mimeType, file.mimeType);
+			await participant.createDownloadUrl({ round });
+			assert.ok(signedCommands.at(-1)!.input.Key!.endsWith(`/${filename}`));
+			assert.ok(signedCommands.at(-1)!.input.ResponseContentDisposition!.includes(filename));
+			const [submission] = await admin.listRoundSubmissions({ round });
+			await admin.createRoundDownloadUrl({ round, submissionId: submission!.id });
+			assert.ok(signedCommands.at(-1)!.input.ResponseContentDisposition!.includes(filename));
+			if (extension === ".pptx") {
+				await assert.rejects(participant.createPreviewUrl({ round }), { message: "UNSUPPORTED_PREVIEW" });
+				await assert.rejects(admin.createRoundPreviewUrl({ round, submissionId: submission!.id }), { message: "UNSUPPORTED_PREVIEW" });
+			}
+		}
+	}
+});
+
+test("submission validation rejects unsupported extensions and mismatched MIME types at both upload stages", async () => {
+	await admin.setRoundSubmissionOpen({ round: "3", isOpen: true });
+	for (const [filename, mimeType] of [
+		["slides.ppt", "application/vnd.ms-powerpoint"],
+		["slides.pptm", "application/vnd.ms-powerpoint.presentation.macroEnabled.12"],
+		["slides.pptx.exe", roundSubmissionMimeTypes[".pptx"]],
+		["slides.pptx", "application/pdf"],
+		["slides.pdf", roundSubmissionMimeTypes[".pptx"]],
+		["slides.pptx", "application/zip"],
+	]) {
+		const file = { round: "3" as const, filename: filename!, mimeType: mimeType!, fileSize: 42 };
+		await assert.rejects(participant.createUploadUrl(file), { message: "UNSUPPORTED_FILE" });
+		await assert.rejects(participant.finalize({ ...file, uploadId: crypto.randomUUID(), description: "" }), { message: "UNSUPPORTED_FILE" });
+	}
+	for (const round of roundIds) {
+		assert.ok(roundSubmissionFilename("Team/A", round, ".pptx").endsWith(".pptx"));
+	}
+	assert.equal(roundSubmissionExtension("SLIDES.PPTX"), ".pptx");
+	assert.equal(roundSubmissionExtension("slides.pptx.exe"), null);
+	assert.equal(roundSubmissionExtension("pptx"), null);
 });
