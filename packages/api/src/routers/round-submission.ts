@@ -12,12 +12,11 @@ import { and, desc, eq, or, sql } from "drizzle-orm";
 import { z } from "zod";
 
 import { freshProtectedProcedure, protectedProcedure, router } from "../index";
-import { roundIds, roundSchema, type RoundId } from "../rounds";
+import { MAX_SUBMISSION_ATTEMPTS, roundIds, roundSchema, type RoundId } from "../rounds";
 import { attachmentContentDisposition, roundSubmissionExtension, roundSubmissionFilename, roundSubmissionMimeTypes } from "../submission-files";
 import { getSubmissionAvailability, requireSubmissionOpen } from "../submission-settings";
 import { MAX_UPLOAD_LIMIT_BYTES, requireCurrentUploadLimit } from "../upload-limits";
 
-const MAX_ATTEMPTS = 3;
 const URL_EXPIRY_SECONDS = 300;
 const roundInput = z.object({ round: roundSchema });
 const fileInput = roundInput.extend({
@@ -150,8 +149,8 @@ export const roundSubmissionRouter = router({
     const used = submission?.attemptNumber ?? 0;
     return { submission: submission ?? null, isSubmissionOpen: availability.isOpen,
       submissionClosedReason: availability.reason, attemptsUsed: used,
-      attemptsRemaining: MAX_ATTEMPTS - used, maxAttempts: MAX_ATTEMPTS,
-      canSubmit: availability.isOpen && used < MAX_ATTEMPTS };
+      attemptsRemaining: MAX_SUBMISSION_ATTEMPTS - used, maxAttempts: MAX_SUBMISSION_ATTEMPTS,
+      canSubmit: availability.isOpen && used < MAX_SUBMISSION_ATTEMPTS };
   }),
   createUploadUrl: freshProtectedProcedure.input(fileInput).mutation(async ({ ctx, input }) => {
     const { submission } = tablesForRound(input.round);
@@ -159,7 +158,7 @@ export const roundSubmissionRouter = router({
     requireApprovedTeam(membership.registrationStatus);
     await requireSubmissionOpen(input.round, membership.teamId);
     await requireCurrentUploadLimit("roundSubmission", input.fileSize);
-    if (await attemptsUsed(submission, membership.teamId, input.round) >= MAX_ATTEMPTS) {
+    if (await attemptsUsed(submission, membership.teamId, input.round) >= MAX_SUBMISSION_ATTEMPTS) {
       throw new TRPCError({ code: "CONFLICT", message: "ATTEMPT_LIMIT_REACHED" });
     }
     const uploadId = crypto.randomUUID();
@@ -202,7 +201,7 @@ export const roundSubmissionRouter = router({
             object_key, original_filename, mime_type, file_size)
           select ${submissionId}, ${membership.teamId}, ${input.round}, next_attempt.attempt_number,
             ${membership.memberId}, ${input.description}, ${key}, ${filename}, ${input.mimeType}, ${input.fileSize}
-          from next_attempt where next_attempt.attempt_number <= ${MAX_ATTEMPTS}
+          from next_attempt where next_attempt.attempt_number <= ${MAX_SUBMISSION_ATTEMPTS}
           returning attempt_number
         `);
         if (inserted.rows.length === 0) {
