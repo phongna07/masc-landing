@@ -1546,6 +1546,12 @@
     "gifted": "Vé tặng",
     "checkIn": "Check-in",
     "checkInLogs": "Lịch sử check-in",
+    "recentCheckIns": {
+      "title": "Check-in gần đây",
+      "description": "Các lượt check-in thành công, mới nhất trước. Mỗi trang 20 lượt. Thời gian hiển thị theo giờ Việt Nam (UTC+7).",
+      "empty": "Chưa có lượt check-in thành công nào.",
+      "ticketId": "ID vé"
+    },
     "logs": {
       "intro": "Theo dõi lịch sử check-in của vé mua và vé tặng, gồm các lần xác nhận vào cửa, từ chối và cho phép vào lại.",
       "searchPlaceholder": "Tên, email, số điện thoại, ID vé, đơn hàng hoặc nhóm vé tặng",

@@ -1199,6 +1199,31 @@ p.ticket-warning {
   margin-block: 20px;
 }
 
+.ticket-recent-check-ins-trigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+}
+
+.ticket-recent-check-ins-trigger > svg {
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+}
+
+.ticket-recent-check-ins-trigger[data-panel-open] > svg {
+  transform: rotate(180deg);
+}
+
+.ticket-recent-check-ins-trigger:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 6px;
+}
+
 .ticket-scanner-grid > .ticket-panel,
 .ticket-scanner-results > .ticket-panel:first-child {
   margin-top: 0;

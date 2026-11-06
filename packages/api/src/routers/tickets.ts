@@ -9,7 +9,7 @@ import { adminAreaProcedure, freshProtectedProcedure, router } from "../index";
 import { accessibleTicket, audit, buyerOrder, getTicketConfig, ownedOrder, rateLimit } from "../tickets/core";
 import { confirmCheckIn, lookupTicket } from "../tickets/check-in";
 import { listEntranceInfo } from "../tickets/entrance-info";
-import { checkInLogsInput, listCheckInLogs } from "../tickets/check-in-logs";
+import { checkInLogsInput, listCheckInLogs, listRecentCheckIns, recentCheckInsInput } from "../tickets/check-in-logs";
 import { batchDetail, batchInput, changeTicket, createGiftBatch, enqueueDelivery, listBatches, listOrders, listReferralUsage, orderDetail, orderPageInput, pageInput, recipientInput, recordRefund, recordResolution, refundInput, setEntranceStaff, settingsInput, ticketHistory, updateRecipient, updateSettings } from "../tickets/management";
 import { cancelCheckout, checkoutInput, reconcileOrder, resolveLatePayment, runReconciliation, startCheckout } from "../tickets/payments";
 import { payos } from "../tickets/payos";
@@ -63,6 +63,7 @@ export const ticketsRouter = router({
 	adminConfig: root.query(() => safeErrors(getTicketConfig)),
 	emailJobs: root.input(emailJobsInput).query(({ input }) => safeErrors(() => listTicketEmailJobs(input))),
 	checkInLogs: root.input(checkInLogsInput).query(({ input }) => safeErrors(() => listCheckInLogs(input))),
+	recentCheckIns: staff.input(recentCheckInsInput).query(({ input }) => safeErrors(() => listRecentCheckIns(input))),
 	stats: root.query(() => safeErrors(async () => {
 		const [tickets] = await db.select({ purchased: sql<number>`count(*) filter (where ${admissionTickets.source} = 'purchased')::int`, salesLog: sql<number>`count(*) filter (where ${admissionTickets.source} = 'sales-log')::int`, gifted: sql<number>`count(*) filter (where ${admissionTickets.source} = 'gifted')::int`, revoked: sql<number>`count(*) filter (where ${admissionTickets.validity} = 'revoked')::int` }).from(admissionTickets);
 		const [admissions] = await db.select({ accepted: sql<number>`count(*) filter (where ${ticketCheckIns.outcome} = 'accepted')::int` }).from(ticketCheckIns);

@@ -6,7 +6,7 @@ import { Dialog, DialogClose, DialogContent, DialogDescription, DialogHeader, Di
 import { Textarea } from "@masc-landing/ui/components/textarea";
 import { Input } from "@masc-landing/ui/components/input";
 import { useEffect, useRef, useState } from "react";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
 import type { IScannerControls } from "@zxing/browser";
 import { trpc } from "@/utils/trpc";
@@ -17,6 +17,7 @@ import { CheckCircle2Icon, XCircleIcon, ScanLineIcon, PauseIcon, SearchIcon, Shi
 export default function CheckInScanner({ isRoot }: { isRoot: boolean }) {
 	const t = useTranslations("Tickets");
 	const notify = useTicketNotifications();
+	const queryClient = useQueryClient();
 	const [code, setCode] = useState("");
 	const [online, setOnline] = useState(true);
 	const [cameraState, setCameraState] = useState("idle");
@@ -33,6 +34,7 @@ export default function CheckInScanner({ isRoot }: { isRoot: boolean }) {
 	const lookup = useMutation(trpc.tickets.lookup.mutationOptions());
 	const admission = useMutation(trpc.tickets.checkIn.mutationOptions({
 		onSuccess: result => {
+			void queryClient.invalidateQueries({ queryKey: trpc.tickets.recentCheckIns.queryKey() });
 			notify.dismiss("ticket-lookup");
 			setConfirmationOpen(false);
 			if (result.outcome === "accepted") notify.success(t("admissionAccepted"), { id: "ticket-admission" });
