@@ -150,3 +150,42 @@ test("invalid date ranges and unbounded query inputs are rejected", () => {
 		assert.equal(checkInLogsInput.safeParse(input).success, false);
 	}
 });
+
+test("recent check-ins allow entrance staff and exclude rejected attempts and credentials", async () => {
+	await assert.rejects(caller(null).recentCheckIns({}), { code: "UNAUTHORIZED" });
+	for (const email of ["buyer@example.com", "professional@example.com"]) {
+		await assert.rejects(caller(email).recentCheckIns({}), { code: "FORBIDDEN" });
+	}
+	for (const email of ["root@example.com", "staff@example.com"]) {
+		const result = await caller(email).recentCheckIns({});
+		assert.equal(result.pageSize, 20);
+		assert.equal(result.total, 4);
+		assert.deepEqual(result.items.map(row => row.id), ["06", "04", "02", "01"]);
+		assert.equal(result.items.at(-1)!.recipientName, "Alice Buyer");
+		assert.equal(result.items.at(-1)!.recipientPhone, "0900000000");
+		assert.equal(result.items[1]!.isOverride, true);
+		assert.equal(result.items[1]!.actorName, null);
+		assert.equal(result.items[2]!.actorName, "Entrance Staff");
+		assert.equal(JSON.stringify(result).includes("SECRET_"), false);
+		assert.equal(result.items.some(row => "code" in row || "requestKey" in row || "recipientEmail" in row), false);
+	}
+});
+
+test("recent check-ins paginate 20 at a time with stable ordering for simultaneous admissions", async () => {
+	await client.exec(`INSERT INTO ticket_check_ins
+		SELECT 'recent-' || lpad(n::text, 2, '0'), 'gifted', 'staff', 'recent-' || n, 'accepted', 'firstAdmission', false, '2026-10-15T00:00:00Z'
+		FROM generate_series(1, 30) n`);
+	try {
+		const first = await caller("staff@example.com").recentCheckIns({});
+		const second = await caller("staff@example.com").recentCheckIns({ page: 1 });
+		assert.equal(first.total, 34);
+		assert.equal(second.total, 34);
+		assert.equal(first.items.length, 20);
+		assert.equal(second.items.length, 14);
+		assert.equal(first.items[0]!.id, "recent-01");
+		assert.equal(second.items[0]!.id, "recent-21");
+		assert.equal(new Set([...first.items, ...second.items].map(row => row.id)).size, 34);
+		assert.equal((await caller().recentCheckIns({ page: 2 })).items.length, 0);
+		await assert.rejects(caller().recentCheckIns({ page: -1 }), { code: "BAD_REQUEST" });
+	} finally { await client.exec("DELETE FROM ticket_check_ins WHERE id LIKE 'recent-%'"); }
+});

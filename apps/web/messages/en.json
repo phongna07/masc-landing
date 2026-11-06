@@ -1546,6 +1546,12 @@
     "gifted": "Gifted tickets and batches",
     "checkIn": "Entrance check-in",
     "checkInLogs": "Check-in Logs",
+    "recentCheckIns": {
+      "title": "Recent check-ins",
+      "description": "Successful check-ins, newest first. 20 per page. Times use Vietnam time (UTC+7).",
+      "empty": "No successful check-ins yet.",
+      "ticketId": "Ticket ID"
+    },
     "logs": {
       "intro": "Review check-ins for purchased and gifted tickets, including rejected attempts and admin overrides.",
       "searchPlaceholder": "Name, email, phone, ticket ID, order or gift batch",

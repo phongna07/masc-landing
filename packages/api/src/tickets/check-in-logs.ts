@@ -26,6 +26,29 @@ const recipientPhone = sql<string | null>`coalesce(${admissionTickets.recipientP
 const searchPattern = (value: string) => `%${value.replace(/[\\%_]/g, "\\$&")}%`;
 const dayStart = (date: string) => new Date(`${date}T00:00:00+07:00`);
 
+export const recentCheckInsInput = z.object({
+	page: z.number().int().min(0).max(100000).default(0),
+});
+
+export async function listRecentCheckIns({ page }: z.infer<typeof recentCheckInsInput>) {
+	const pageSize = 20;
+	const filter = eq(ticketCheckIns.outcome, "accepted");
+	const [items, totals] = await Promise.all([
+		db.select({
+			id: ticketCheckIns.id, createdAt: ticketCheckIns.createdAt, isOverride: ticketCheckIns.isOverride,
+			ticketId: ticketCheckIns.ticketId, ordinal: admissionTickets.ordinal, category: admissionTickets.category,
+			recipientName, recipientPhone, actorName: user.name,
+		}).from(ticketCheckIns)
+			.leftJoin(admissionTickets, eq(ticketCheckIns.ticketId, admissionTickets.id))
+			.leftJoin(ticketOrders, eq(admissionTickets.orderId, ticketOrders.id))
+			.leftJoin(user, eq(ticketCheckIns.actorId, user.id))
+			.where(filter).orderBy(desc(ticketCheckIns.createdAt), ticketCheckIns.id)
+			.limit(pageSize).offset(page * pageSize),
+		db.select({ total: sql<number>`count(*)::int` }).from(ticketCheckIns).where(filter),
+	]);
+	return { items, total: totals[0]?.total ?? 0, pageSize };
+}
+
 export async function listCheckInLogs(input: z.infer<typeof checkInLogsInput>) {
 	const filter = and(
 		input.search ? or(
