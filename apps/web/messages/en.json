@@ -498,7 +498,7 @@
       "descriptionLabel": "Do you have any questions for the Organizing Committee?",
       "noQuestionProvided": "No question provided",
       "fileLabel": "Submission file",
-      "fileHint": "PDF only - maximum {maxSize}.",
+      "fileHint": "PDF or PPTX - maximum {maxSize}.",
       "characters": "{count} / 5000 characters",
       "submit": "Submit {roundLabel}",
       "uploading": "Uploading…",
@@ -524,7 +524,7 @@
         "load": "Check your connection and try again.",
         "descriptionLength": "The optional question must be 5,000 characters or fewer.",
         "fileRequired": "Choose a submission file.",
-        "fileType": "Choose a PDF file.",
+        "fileType": "Choose a PDF or PPTX file.",
         "fileEmpty": "The selected file is empty or could not be read. Choose it again.",
         "fileSize": "The file must be no larger than {maxSize}.",
         "submit": "The submission could not be uploaded. Check the file and try again.",
@@ -743,14 +743,14 @@
       },
       "uploadLimits": {
         "title": "Participant upload size limits",
-        "description": "Set the maximum size of each PDF uploaded by participants. Changes apply to new uploads across all rounds.",
+        "description": "Set the maximum size of each file uploaded by participants. Changes apply to new uploads across all rounds.",
         "participantCv": {
           "title": "Participant CV PDFs",
           "description": "Maximum size of each member CV uploaded with a Round 1 application."
         },
         "roundSubmission": {
-          "title": "Round-submission PDFs",
-          "description": "Maximum size of each team submission PDF in every competition round."
+          "title": "Round-submission files (PDF or PPTX)",
+          "description": "Maximum size of each team submission file (PDF or PPTX) in every competition round."
         },
         "inputLabel": "Maximum file size",
         "save": "Save limit",
@@ -761,7 +761,7 @@
         "validation": {
           "required": "Enter a file size limit.",
           "integer": "Enter a whole number of MiB.",
-          "range": "Enter a value from 1 to 100 MiB."
+          "range": "Enter a value from 1 to 1000 MiB."
         }
       },
       "preferences": {
@@ -1328,14 +1328,14 @@
         "error": "Drafted feedback could not be published. Please try again."
       },
       "bulkExport": {
-        "title": "Download all PDFs",
-        "description": "Create one ZIP containing the latest PDF from every team in this round.",
+        "title": "Download all submissions",
+        "description": "Create one ZIP containing the latest submission (PDF or PPTX) from every team in this round.",
         "idle": "No archive has been created yet.",
         "pending": "The export is queued and will start shortly.",
         "waking": "Starting the free export service… This can take about one minute.",
-        "processing": "The PDFs are being collected. You can leave this page and come back later.",
+        "processing": "The submissions are being collected. You can leave this page and come back later.",
         "ready": "Archive size: {size}. Available until {expires}.",
-        "fileCount": "{count, plural, one {# PDF in ZIP} other {# PDFs in ZIP}}",
+        "fileCount": "{count, plural, one {# file in ZIP} other {# files in ZIP}}",
         "failed": "The archive could not be created. You can safely try again.",
         "expired": "The previous archive has expired. Create a new one to download the current submissions.",
         "statusError": "The archive status could not be loaded.",

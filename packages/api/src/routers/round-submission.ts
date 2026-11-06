@@ -13,13 +13,12 @@ import { z } from "zod";
 
 import { freshProtectedProcedure, protectedProcedure, router } from "../index";
 import { roundIds, roundSchema, type RoundId } from "../rounds";
-import { attachmentContentDisposition, roundSubmissionFilename } from "../submission-files";
+import { attachmentContentDisposition, roundSubmissionExtension, roundSubmissionFilename, roundSubmissionMimeTypes } from "../submission-files";
 import { getSubmissionAvailability, requireSubmissionOpen } from "../submission-settings";
 import { MAX_UPLOAD_LIMIT_BYTES, requireCurrentUploadLimit } from "../upload-limits";
 
 const MAX_ATTEMPTS = 3;
 const URL_EXPIRY_SECONDS = 300;
-const allowedFiles: Record<string, string> = { ".pdf": "application/pdf" };
 const roundInput = z.object({ round: roundSchema });
 const fileInput = roundInput.extend({
   filename: z.string().trim().min(1).max(255), mimeType: z.string().trim().min(1).max(160),
@@ -31,13 +30,11 @@ const s3 = new S3Client({
   credentials: { accessKeyId: env.R2_ACCESS_KEY_ID, secretAccessKey: env.R2_SECRET_ACCESS_KEY },
 });
 
-function extensionOf(filename: string) {
-  const dot = filename.lastIndexOf(".");
-  return dot < 0 ? "" : filename.slice(dot).toLowerCase();
-}
 function validateFile(file: z.infer<typeof fileInput>) {
-  const extension = extensionOf(file.filename);
-  if (allowedFiles[extension] !== file.mimeType) throw new TRPCError({ code: "BAD_REQUEST", message: "UNSUPPORTED_FILE" });
+  const extension = roundSubmissionExtension(file.filename);
+  if (!extension || roundSubmissionMimeTypes[extension] !== file.mimeType) {
+    throw new TRPCError({ code: "BAD_REQUEST", message: "UNSUPPORTED_FILE" });
+  }
   return extension;
 }
 function tablesForRound(round: RoundId) {
@@ -166,8 +163,8 @@ export const roundSubmissionRouter = router({
       throw new TRPCError({ code: "CONFLICT", message: "ATTEMPT_LIMIT_REACHED" });
     }
     const uploadId = crypto.randomUUID();
-    validateFile(input);
-    const filename = roundSubmissionFilename(membership.teamName, input.round);
+    const extension = validateFile(input);
+    const filename = roundSubmissionFilename(membership.teamName, input.round, extension);
     const uploadUrl = await getSignedUrl(s3, new PutObjectCommand({ Bucket: env.R2_BUCKET,
       Key: objectKey(input.round, membership.teamId, uploadId, filename), ContentType: input.mimeType,
       ContentLength: input.fileSize }), { expiresIn: URL_EXPIRY_SECONDS });
@@ -178,8 +175,8 @@ export const roundSubmissionRouter = router({
       const { submission } = tablesForRound(input.round);
       const membership = await membershipFor(input.round, ctx.session.user.id, ctx.session.user.email);
       requireApprovedTeam(membership.registrationStatus);
-      validateFile(input);
-      const filename = roundSubmissionFilename(membership.teamName, input.round);
+      const extension = validateFile(input);
+      const filename = roundSubmissionFilename(membership.teamName, input.round, extension);
       const key = objectKey(input.round, membership.teamId, input.uploadId, filename);
       try {
         await requireSubmissionOpen(input.round, membership.teamId);

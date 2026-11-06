@@ -1,0 +1,2 @@
+ALTER TABLE "upload_limit_settings" DROP CONSTRAINT "upload_limit_settings_max_file_size_check";--> statement-breakpoint
+ALTER TABLE "upload_limit_settings" ADD CONSTRAINT "upload_limit_settings_max_file_size_check" CHECK ("upload_limit_settings"."max_file_size" between 1048576 and 1048576000);

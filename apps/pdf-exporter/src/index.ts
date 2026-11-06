@@ -21,6 +21,8 @@ import { and, asc, eq, getTableName, lt, sql } from "drizzle-orm";
 import { createServer } from "node:http";
 import { PassThrough, Readable } from "node:stream";
 
+import { uniqueEntryName } from "./archive-files";
+
 type RoundId = "0.5" | "1" | "2" | "3" | "4" | "5";
 
 const config = {
@@ -136,9 +138,9 @@ async function processJob(job: ClaimedJob) {
 	}, 15_000);
 
 	try {
-		const files = await latestPdfSubmissions(job.round);
+		const files = await latestSubmissions(job.round);
 		if (files.length === 0) {
-			await markFailed(job.id, "No PDF submissions were found for this round.");
+			await markFailed(job.id, "No submissions were found for this round.");
 			return;
 		}
 
@@ -210,7 +212,7 @@ async function processJob(job: ClaimedJob) {
 	}
 }
 
-async function latestPdfSubmissions(round: RoundId) {
+async function latestSubmissions(round: RoundId) {
 	const { team, submission } = tablesForRound(round);
 	const tableName = sql.identifier(getTableName(submission));
 	return db.select({
@@ -220,7 +222,6 @@ async function latestPdfSubmissions(round: RoundId) {
 		teamName: team.teamName,
 	}).from(submission).innerJoin(team, eq(submission.teamId, team.id)).where(and(
 		eq(submission.round, round),
-		eq(submission.mimeType, "application/pdf"),
 		sql`not exists (
 			select 1 from ${tableName} as newer_submission
 			where newer_submission.team_id = ${submission.teamId}
@@ -334,21 +335,6 @@ function toReadable(body: unknown): Readable {
 		return Readable.from(body as AsyncIterable<Uint8Array>);
 	}
 	throw new Error("R2 returned an empty or unsupported object body.");
-}
-
-function uniqueEntryName(filename: string, usedNames: Set<string>) {
-	const safe = filename.trim().replace(/[<>:"/\\|?*\u0000-\u001F\u007F]/g, "_") || "submission.pdf";
-	const extensionIndex = safe.toLowerCase().endsWith(".pdf") ? safe.length - 4 : safe.length;
-	const base = safe.slice(0, extensionIndex);
-	const extension = safe.slice(extensionIndex) || ".pdf";
-	let candidate = `${base}${extension}`;
-	let suffix = 2;
-	while (usedNames.has(candidate.toLocaleLowerCase("en-US"))) {
-		candidate = `${base} (${suffix})${extension}`;
-		suffix += 1;
-	}
-	usedNames.add(candidate.toLocaleLowerCase("en-US"));
-	return candidate;
 }
 
 function archiveName(round: RoundId) {

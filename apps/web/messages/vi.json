@@ -498,7 +498,7 @@
       "descriptionLabel": "Câu hỏi dành cho Ban tổ chức (không bắt buộc)",
       "noQuestionProvided": "Đội chưa gửi câu hỏi.",
       "fileLabel": "Tệp bài nộp",
-      "fileHint": "Chỉ nhận tệp PDF, dung lượng tối đa {maxSize}.",
+      "fileHint": "Nhận tệp PDF hoặc PPTX, dung lượng tối đa {maxSize}.",
       "characters": "{count} / 5.000 ký tự",
       "submit": "Nộp bài {roundLabel}",
       "uploading": "Đang tải lên…",
@@ -524,7 +524,7 @@
         "load": "Vui lòng kiểm tra kết nối và thử lại.",
         "descriptionLength": "Câu hỏi không được dài quá 5.000 ký tự.",
         "fileRequired": "Vui lòng chọn tệp bài dự thi để nộp.",
-        "fileType": "Hãy chọn tệp PDF.",
+        "fileType": "Hãy chọn tệp PDF hoặc PPTX.",
         "fileEmpty": "Tệp đã chọn không có nội dung hoặc không đọc được. Vui lòng chọn lại tệp.",
         "fileSize": "Vui lòng chọn tệp có dung lượng không quá {maxSize}.",
         "submit": "Không thể tải bài nộp lên. Hãy kiểm tra tệp và thử lại.",
@@ -743,13 +743,13 @@
       },
       "uploadLimits": {
         "title": "Giới hạn dung lượng tệp của thí sinh",
-        "description": "Thiết lập dung lượng tối đa cho mỗi tệp PDF thí sinh tải lên. Giới hạn mới áp dụng cho các tệp được tải lên sau khi lưu, ở tất cả vòng thi.",
+        "description": "Thiết lập dung lượng tối đa cho mỗi tệp thí sinh tải lên. Giới hạn mới áp dụng cho các tệp được tải lên sau khi lưu, ở tất cả vòng thi.",
         "participantCv": {
           "title": "CV thí sinh (PDF)",
           "description": "Dung lượng tối đa cho mỗi CV thành viên khi đăng ký Vòng 1."
         },
         "roundSubmission": {
-          "title": "Bài dự thi (PDF)",
+          "title": "Bài dự thi (PDF hoặc PPTX)",
           "description": "Dung lượng tối đa cho mỗi tệp bài nộp, áp dụng cho mọi vòng thi."
         },
         "inputLabel": "Dung lượng tối đa mỗi tệp",
@@ -761,7 +761,7 @@
         "validation": {
           "required": "Vui lòng nhập dung lượng tối đa mỗi tệp.",
           "integer": "Vui lòng nhập số nguyên, tính theo MiB.",
-          "range": "Vui lòng nhập giá trị từ 1 đến 100 MiB."
+          "range": "Vui lòng nhập giá trị từ 1 đến 1000 MiB."
         }
       },
       "preferences": {
@@ -1328,14 +1328,14 @@
         "error": "Không thể công bố các nhận xét đang lưu nháp. Vui lòng thử lại."
       },
       "bulkExport": {
-        "title": "Tải tất cả tệp PDF",
-        "description": "Tạo một tệp ZIP chứa bản PDF mới nhất của mỗi đội trong vòng này.",
+        "title": "Tải tất cả bài nộp",
+        "description": "Tạo một tệp ZIP chứa bài nộp mới nhất (PDF hoặc PPTX) của mỗi đội trong vòng này.",
         "idle": "Chưa tạo tệp ZIP cho vòng này.",
         "pending": "Yêu cầu tạo tệp ZIP đã được ghi nhận và đang chờ xử lý.",
         "waking": "Đang khởi động dịch vụ xuất tệp… Có thể cần chờ khoảng một phút.",
         "processing": "Đang tổng hợp các bài nộp thành tệp ZIP. Bạn có thể rời trang và quay lại tải sau.",
         "ready": "Dung lượng tệp: {size}. Có thể tải đến {expires}.",
-        "fileCount": "{count} tệp PDF trong ZIP",
+        "fileCount": "{count} tệp trong ZIP",
         "failed": "Chưa tạo được tệp ZIP. Vui lòng thử lại.",
         "expired": "Tệp ZIP trước đã hết hạn tải. Tạo tệp mới để lấy các bài nộp hiện tại.",
         "statusError": "Không thể kiểm tra trạng thái tạo tệp ZIP.",
